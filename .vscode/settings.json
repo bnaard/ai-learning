@@ -2,15 +2,17 @@
     "latex-workshop.latex.outDir": "./out/",
     "latex-workshop.latex.recipes": [
         {
-            "name": "latexmk",
+            "name": "latexmk_lualatex->biber->latexmk_lualatex",
             "tools": [
-                "latexmk"
+                "latexmk_lualatex",
+                // "biber",
+                // "latexmk_lualatex"
             ]
         }
     ],
     "latex-workshop.latex.tools": [
         {
-            "name": "latexmk",
+            "name": "latexmk_lualatex",
             "command": "latexmk",
             "args": [
                 "--shell-escape", // added arg to default
@@ -21,9 +23,19 @@
                 "-pdf",
                 "-aux-directory=%OUTDIR%",
                 "-output-directory=%OUTDIR%",
+                "-bibtex",
                 "%DOC%"
             ]
         },
+        {
+            "name": "biber",
+            "command": "biber",
+            "args": [
+                "--input-directory=out",
+                "--output-directory=out",
+                "%DOCFILE%"
+            ]
+        }
         // {
         //     "name": "pdflatex",
         //     "command": "pdflatex",

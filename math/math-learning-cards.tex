@@ -12,7 +12,8 @@
 % Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
 % fontspec: https://texdoc.org/serve/fontspec/0
 % fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
-
+% biblatex: https://distrib-coffee.ipsl.jussieu.fr/pub/mirrors/ctan/macros/latex/contrib/biblatex/doc/biblatex.pdf
+% amsmath: https://www.latex-project.org/help/documentation/amsldoc.pdf
 
 \documentclass[8pt]{extarticle}
 
@@ -28,9 +29,9 @@
 % Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
 % to get a list of installed fonts: luaotfload-tool --list=format 
 \usepackage{fontspec}
-\setmainfont{FreeSans}[Scale=0.95]
-\setsansfont{FreeSans}[Scale=0.95]
-\setmonofont{FreeMono}[Scale=0.85]
+\setmainfont{FreeSans}[Scale=1]
+\setsansfont{FreeSans}[Scale=1]
+\setmonofont{FreeMono}[Scale=1]
 
 % font for the word "Mathematics" in the header
 \newfontfamily\mathheaderfont{QTGhoulFace} 
@@ -94,9 +95,23 @@
   linktocpage=false,
   linkbordercolor=white]{hyperref}
 
+% --- Math Environments --------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{nicematrix}
+\NiceMatrixOptions{cell-space-limits = 1pt}
+
+% --- Bibliography -------------------------------------------------------------
+\usepackage[autostyle=true]{csquotes} % recommended before biblatex
+\usepackage[backend=biber,style=numeric,sorting=nyt]{biblatex}
+\addbibresource{references.bib}
+
+\renewcommand{\bibfont}{\normalfont\footnotesize}
+
 % --- Helpers -----------------------------------------------------------------
 \usepackage{lipsum}
 \usepackage{enumitem}
+
+
 
 % --- Default options ---------------------------------------------------------
 % \pagestyle{empty}
@@ -106,7 +121,9 @@
 % \setlength\columnsep{1.75mm}
 % \setlength{\parskip}{0.1\baselineskip}
 
+
 \newcommand{\maincolor}{OliveGreen!80!White}
+\newcommand{\maincolspan}{4}
 
 
 
@@ -186,7 +203,7 @@
 
 
 % Skin for simple tables inside boxes
-\tcbsubskin{cheatboxtablesimple}{empty}{
+\tcbsubskin{boxtablesimple}{empty}{
     size=minimal,
     before skip=0.2\baselineskip,
     after skip=0.2\baselineskip,
@@ -227,13 +244,34 @@
     ]
 
 
-    % === Overview ================================================================
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Overview]
-        {name=overview,column=1,below=top, span=4}
-        Rust is a general-purpose programming language focused on performance, memory safety without garbage collector, and concurrency, using an ownership system preventing memory errors.
+    \newlength{\thispostercolwidth}
+    \setlength{\thispostercolwidth}{\tcbpostercolwidth}
 
-        \tcbsubtitle{\href{https://rustup.rs/}{Installation}}
-        More text
+    % === XXX ================================================================
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Linear Algebra]
+        {name=overview,column=1,below=top, span=\maincolspan}
+                
+        Linear algebra is the study of vectors and linear functions \cite[][p.9]{cherneyLinearAlgebra2013}.
+        \tcbsubtitle{Basics}
+        More text 
+        \tcbsubtitle{Vectors}
+        \begin{tcolorbox}
+            [
+                skin=boxtablesimple,
+                tabularray={
+                    columns={halign=l, valign=m},
+                    column{1}={\dimexpr 0.3\dimexpr \maincolspan\thispostercolwidth \relax\relax, colsep=0pt},
+                    column{2}={wd={\dimexpr 0.67\dimexpr \maincolspan\thispostercolwidth \relax\relax}, leftsep=1em, rightsep=0pt},
+                    rows={rowsep=0pt},
+                }
+            ]
+            $\vec{v} = \begin{pNiceMatrix} a_1 \\ a_2 \\ \vdots \\ a_n \end{pNiceMatrix} \neq \begin{pNiceMatrix} \CodeBefore \cellcolor[HTML]{FFFF88}{1-1,2-1} \Body a_2, \\ a_1, \\ \vdots \\ a_n \end{pNiceMatrix}$          &  n-dimensional vector. In broad terms, vectors are things one can add and linear functions are
+functions of vectors that respect vector addition \cite[][p.12]{cherneyLinearAlgebra2013}. \par Order of components matters. \\
+        \end{tcolorbox}
+
+        \tcbsubtitle{Eigenwert}
+
+        \tcbsubtitle{Eigenwert}
 
     \end{posterboxenv}
 
@@ -258,6 +296,25 @@
 
 % === Page 2 =================================================================
 
+% === Page 1 =================================================================
+\begin{tcbposter}[
+        poster = {spacing=0.6em, columns=12},
+        boxes = {},
+        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
+    ]
 
+    % === References ================================================================
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=References]
+        {name=overview,column=9,below=top, span=4}
+        \printbibliography[heading=none]
+
+    \end{posterboxenv}
+
+\end{tcbposter}
+
+
+% \printbibheading
+% % \printbibliography[type=book,heading=subbibliography,title={Book Sources}]
+% \printbibliography[nottype=book,heading=subbibliography,title={Other Sources}]
 
 \end{document}

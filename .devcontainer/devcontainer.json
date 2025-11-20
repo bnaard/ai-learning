@@ -3,7 +3,8 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "james-yu.latex-workshop"
+                "james-yu.latex-workshop",
+                "mblode.zotero"
             ],
             "settings": {
                 "latex-workshop.latex.outDir": "./out",
