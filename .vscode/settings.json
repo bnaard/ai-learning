@@ -1,0 +1,43 @@
+{
+    "latex-workshop.latex.outDir": "./out/",
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk",
+            "tools": [
+                "latexmk"
+            ]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "--shell-escape", // added arg to default
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdflatex=lualatex",
+                "-pdf",
+                "-aux-directory=%OUTDIR%",
+                "-output-directory=%OUTDIR%",
+                "%DOC%"
+            ]
+        },
+        // {
+        //     "name": "pdflatex",
+        //     "command": "pdflatex",
+        //     "args": [
+        //         "--shell-escape", // added arg to default
+        //         "-synctex=1",
+        //         "-interaction=nonstopmode",
+        //         "-file-line-error",
+        //         "-aux-directory=%OUTDIR%",
+        //         "-output-directory=%OUTDIR%",
+        //         "%DOC%"
+        //     ]
+        // }
+    ],
+    "latex-workshop.formatting.latex": "latexindent",
+    // "editor.formatOnSave": true,
+}

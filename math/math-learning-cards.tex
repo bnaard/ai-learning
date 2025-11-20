@@ -1,0 +1,263 @@
+% ----------------------------------------------------------------------------------------------------------------------
+% Math Learning Cards for AI - Released under the MIT License
+% ----------------------------------------------------------------------------------------------------------------------
+
+% User guides
+% Latex: https://ftp.agdsn.de/pub/mirrors/latex/dante/macros/latex/base/usrguide.pdf
+% Tabularray: https://mirror.physik.tu-berlin.de/pub/CTAN/macros/latex/contrib/tabularray/tabularray.pdf
+% TColorbox: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+% Posterbox Tutorial: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox-tutorial-poster.pdf#[0,{%22name%22:%22Fit%22}]
+% Xcolor: https://mirror.clientvps.com/CTAN/macros/latex/contrib/xcolor/xcolor.pdf
+% TikZ: https://tikz.dev/
+% Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
+% fontspec: https://texdoc.org/serve/fontspec/0
+% fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+
+
+\documentclass[8pt]{extarticle}
+
+
+% --- Hyphenation Rules --------------------------------------------------------
+\usepackage[USenglish]{babel}
+
+% --- Fonts --------------------------------------------------------------------
+
+% Ensure proper font encoding
+\usepackage[T1]{fontenc}
+
+% Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
+% to get a list of installed fonts: luaotfload-tool --list=format 
+\usepackage{fontspec}
+\setmainfont{FreeSans}[Scale=0.95]
+\setsansfont{FreeSans}[Scale=0.95]
+\setmonofont{FreeMono}[Scale=0.85]
+
+% font for the word "Mathematics" in the header
+\newfontfamily\mathheaderfont{QTGhoulFace} 
+
+
+% Emoji support
+\usepackage{emoji}
+
+% --- Page layout --------------------------------------------------------------
+\usepackage[
+    % showframe, 
+    nomarginpar, 
+    a4paper,
+    landscape, 
+    right=1.0cm, 
+    left=1.0cm, 
+    top=1.5cm, 
+    bottom=1.5cm,
+    headsep=0.25cm,
+    headheight=0.75cm,
+    footskip=0.5cm,
+]{geometry}
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+
+% --- TColorbox ---------------------------------------------------------------
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,raster,listings,breakable,minted, poster}
+
+
+% --- Tables -------------------------------------------------------------------
+\usepackage{tabularray}
+
+% --- Color Names -------------------------------------------------------------
+\usepackage[dvipsnames]{xcolor}
+
+% --- Graphics -----------------------------------------------------------------
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{svg}
+\graphicspath{{./figures/}{./icons/}{./logos/}}
+
+% --- URL and href -----------------------------------------------------------
+\colorlet{citecolor}{black}
+\colorlet{linkcolor}{black}
+\colorlet{urlcolor}{black}
+\usepackage[
+  bookmarks=true,
+  breaklinks=true,
+  pdfborder={0 0 0},
+  citecolor=citecolor,
+  linkcolor=linkcolor,
+  urlcolor=urlcolor,
+  colorlinks=true,
+  linktocpage=false,
+  hyperindex=true,
+  colorlinks=true,
+  linktocpage=false,
+  linkbordercolor=white]{hyperref}
+
+% --- Helpers -----------------------------------------------------------------
+\usepackage{lipsum}
+\usepackage{enumitem}
+
+% --- Default options ---------------------------------------------------------
+% \pagestyle{empty}
+% \setlength\parindent{0pt}
+% \setlength{\tabcolsep}{2pt}
+% \baselineskip=0pt
+% \setlength\columnsep{1.75mm}
+% \setlength{\parskip}{0.1\baselineskip}
+
+\newcommand{\maincolor}{OliveGreen!80!White}
+
+
+
+% --- TColorbox Skins ----------------------------------------------------------
+
+% Colorbox skin for bash listings
+\tcbsubskin{mintedbash}{empty}{
+        size=minimal,
+        listing engine=minted,
+        listing only,
+        minted style=friendly,
+        minted language=bash,
+        minted options={
+            fontsize=\footnotesize,
+            breaklines,
+            autogobble,
+        },
+        colback=gray!10!white,
+        colframe=gray!10!white,
+        listing only,
+        left=0em,
+        enhanced,
+}
+
+% Colorbox skin for python listings
+\tcbsubskin{mintedpython}{empty}{
+        size=minimal,
+        listing engine=minted,
+        listing only,
+        minted style=friendly,
+        minted language=python,
+        minted options={
+            fontsize=\footnotesize,
+            breaklines,
+            autogobble,
+        },
+        colback=gray!10!white,
+        colframe=gray!10!white,
+        listing only,
+        left=0em,
+        enhanced,
+        before skip=0.3\baselineskip,
+}
+
+% Skin for header box
+\tcbsubskin{headerboxskin}{empty}{
+        size=minimal,
+        coltitle=black!10!black,
+}
+
+
+
+% Skin for orange-based section boxes
+\tcbsubskin{sectionboxskin}{standard}{
+    size=title, 
+    left=0.2em,
+    right=0.2em,
+    arc=0.25mm,
+    colback=\maincolor!2!white,
+    colframe=\maincolor!75!black,
+    coltitle=\maincolor!10!black,
+    colbacktitle=\maincolor!75!white,
+    fonttitle=\sffamily\bfseries,
+    toptitle=0mm,
+    bottomtitle=0mm,
+    fontupper=\sffamily\small,
+    fontlower=\sffamily\small,
+    halign=left,
+    subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
+        colback=\maincolor!50!\maincolor!20!white,
+        colupper=\maincolor!50!gray,
+        fontupper=\sffamily\bfseries\small,
+        coltext=\maincolor!10!black,
+        height=1.1\baselineskip,
+      }, 
+}
+
+
+% Skin for simple tables inside boxes
+\tcbsubskin{cheatboxtablesimple}{empty}{
+    size=minimal,
+    before skip=0.2\baselineskip,
+    after skip=0.2\baselineskip,
+    colback=white,
+    colframe=gray,
+    frame empty,
+}
+
+
+
+
+
+% ----------------------------------------------------------------------------------------------------------------------
+% Header and Footer Settings
+% ----------------------------------------------------------------------------------------------------------------------
+
+\fancyhead[L]{
+    \LARGE {\mathheaderfont Mathematics} \textcolor{\maincolor}{for AI beginners}
+}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+
+
+% ----------------------------------------------------------------------------------------------------------------------
+% Main Document
+% ----------------------------------------------------------------------------------------------------------------------
+
+\begin{document}
+
+% === Page 1 =================================================================
+\begin{tcbposter}[
+        poster = {spacing=0.6em, columns=12},
+        boxes = {},
+        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
+    ]
+
+
+    % === Overview ================================================================
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Overview]
+        {name=overview,column=1,below=top, span=4}
+        Rust is a general-purpose programming language focused on performance, memory safety without garbage collector, and concurrency, using an ownership system preventing memory errors.
+
+        \tcbsubtitle{\href{https://rustup.rs/}{Installation}}
+        More text
+
+    \end{posterboxenv}
+
+
+    % === tbd ================================================================
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Overview]
+        {name=overview,column=5,below=top, span=4}
+        Rust is a general-purpose programming language focused on performance, memory safety without garbage collector, and concurrency, using an ownership system preventing memory errors.
+
+        \tcbsubtitle{\href{https://rustup.rs/}{Installation}}
+        More text
+
+    \end{posterboxenv}
+
+
+
+\end{tcbposter}
+
+
+
+\pagebreak
+
+% === Page 2 =================================================================
+
+
+
+\end{document}

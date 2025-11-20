@@ -1,0 +1,72 @@
+# LaTeX intermediate and output files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.maf
+*.mtc*
+*.out
+*.pdf
+*.ps
+*.synctex.gz
+*.toc
+*.xdv
+*.nav
+*.snm
+*.vrb
+*.acn
+*.acr
+*.alg
+*.glg
+*.glsdefs
+*.dvi
+*.run.xml
+*.bcf
+*.thm
+*.tdo
+*.pygtex
+*.pygstyle
+*.listing
+*tcbtemp
+
+# minted package output
+_minted-*
+*.minted
+
+# latexmk
+latexmkrc
+
+# Build folders
+build/
+output/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+svg-inkscape/
+cheatsheet/svg-inkscape/
+
+# Thumbnails
+._*
+
+# Files that might appear on network shares
+.Spotlight-V100
+.Trashes
+.DocumentRevisions-V100
+.fseventsd
