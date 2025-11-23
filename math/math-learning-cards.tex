@@ -99,6 +99,7 @@
 \usepackage{amsmath}
 \usepackage{nicematrix}
 \NiceMatrixOptions{cell-space-limits = 1pt}
+\usepackage{siunitx}
 
 % --- Bibliography -------------------------------------------------------------
 \usepackage[autostyle=true]{csquotes} % recommended before biblatex
@@ -253,18 +254,12 @@
         Linear algebra is the study of vectors and linear functions \textsuperscript{\cite[][p.9]{cherneyLinearAlgebra2013}}.
         \tcbsubtitle{Basics}
         More text
-        \tcbsubtitle{Vectors}
-        \begin{tcolorbox}
-            [
-                skin=boxtablesimple,
-                tabularray={
-                        columns={halign=l, valign=m},
-                        column{1}={\dimexpr 0.3\dimexpr \maincolspan\thispostercolwidth \relax\relax, colsep=0pt},
-                        column{2}={wd={\dimexpr 0.67\dimexpr \maincolspan\thispostercolwidth \relax\relax}, leftsep=1em, rightsep=0pt},
-                        rows={rowsep=0pt},
-                    }
-            ]
-            $\vec{v} =
+
+        \tcbsubtitle{N-Dimensional Vector}
+        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition \textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters. 
+
+        \begin{equation}
+            \vec{v} =
                 \begin{pNiceMatrix}
                     a_1 \\ a_2 \\ \vdots \\ a_n
                 \end{pNiceMatrix}
@@ -274,44 +269,52 @@
                     \cellcolor[HTML]{FFFF88}{1-1,2-1}
                     \Body
                     a_2 \\ a_1 \\ \vdots \\ a_n
-                \end{pNiceMatrix}$
-
-            &  n-dimensional vector. In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition \textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. \par Order of components matters. \\
-        \end{tcolorbox}
+                \end{pNiceMatrix}
+        \end{equation}
 
 
         \tcbsubtitle{Vector Calculations}
-        \begin{tcolorbox}
-            [
-                skin=boxtablesimple,
-                tabularray={
-                        hline{2-Z} = {0.5pt,solid, gray},
-                        columns={halign=l, valign=m},
-                        column{1}={\dimexpr 0.3\dimexpr \maincolspan\thispostercolwidth \relax\relax, colsep=0pt},
-                        column{2}={wd={\dimexpr 0.67\dimexpr \maincolspan\thispostercolwidth \relax\relax}, leftsep=1em, rightsep=0pt},
-                        rows={rowsep=4pt},
-                    }
-            ] 
-            $\left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}$ 
-            & Length (magnitude) of vector $\vec{x}$. \par Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}. \\
+        \textbf{Length (magnitude)} of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+ 
+        \begin{equation}
+            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2} 
+        \end{equation}
 
-            $\frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} = 
+        \textbf{Normalized vector (unit vector)} in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
+
+        \begin{equation}
+            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} = 
             \begin{pNiceMatrix}
                     \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
-                \end{pNiceMatrix}$
-            & Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}. \\
+            \end{pNiceMatrix}
+        \end{equation}
 
-            $\vec{v} \cdot \vec{u} =
+        \textbf{Dot product (scalar product)} of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+
+        \begin{equation}
+            \vec{v} \cdot \vec{u} =
             \begin{pNiceMatrix}
                 v_1 \\ v_2 \\ \vdots \\ v_n
             \end{pNiceMatrix}
             \cdot
             \begin{pNiceMatrix}
                 u_1 \\ u_2 \\ \vdots \\ u_n
-            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n$
-            & Dot product (scalar product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}. \\
+            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
+        \end{equation}
 
-        \end{tcolorbox}
+        \textbf{The angle $\Theta$} of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+
+        \begin{equation}
+            \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
+            \Rightarrow 
+            \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
+            \Rightarrow 
+            \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
+        \end{equation}
+
+        \textbf{Cosine similarity} is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar 
+        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.  
+
 
         \tcbsubtitle{Eigenwert}
 
