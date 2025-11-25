@@ -336,7 +336,145 @@
 
 % === Page 2 =================================================================
 
-% === Page 1 =================================================================
+\begin{tcbposter}[
+        poster = {spacing=0.6em, columns=12},
+        boxes = {},
+        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
+    ]
+
+    % === Advanced Mathematics ================================================================
+    % Reduce vertical space between items in all enumerations
+    \setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
+
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Mathematics]
+        {name=overview,column=1,below=top, span=4}
+        \tcbsubtitle{Content}
+            \begin{enumerate}[label=\arabic*.]
+                \item Calculus
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Differentiation
+                    \item Integration
+                    \item Partial Differentiation
+                    \item Vector Analysis
+                \end{enumerate}
+                \item Integral Transformations
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Convolution
+                    \item Complex Numbers
+                    \item Fourier Series
+                    \item Fourier Transformation
+                \end{enumerate}
+                \item Vector Algebra
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Scalars and Vectors
+                    \item Addition and Subtraction of Vectors
+                    \item Multiplication of Vectors, Vector Product, Scalar Product
+                \end{enumerate}
+                \item Vector Calculus
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Differentiation of Vectors
+                    \item Integration of Vectors
+                    \item Scalar and Vector Fields
+                    \item Vector Operators
+                \end{enumerate}
+                \item Matrices and Vector Spaces
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Basic Matrix Algebra and Systems of Linear Equations
+                    \item Transpose, Trace, Determinant, and Inverse of a Matrix
+                    \item Eigenvalues, Eigenvectors, and Diagonalization
+                    \item Tensors
+                \end{enumerate}
+                \item Information Theory
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Mean Squared Error (MSE) and Simple Linear Regression
+                    \item Area Under the ROC Curve and Gini Index
+                    \item Entropy
+                    \item Cross Entropy
+                \end{enumerate}
+            \end{enumerate}
+        \tcbsubtitle{Books}
+            \begin{enumerate}
+                \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1sted.) De Gruyter.
+                \item Riley, K. F., Hobson, M. P, \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+                \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+            \end{enumerate}
+    \end{posterboxenv}
+
+    % === Advanced Statistics ================================================================
+    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Statistics]
+        {name=overview,column=5,below=top, span=4}
+        \tcbsubtitle{Content}
+            \begin{enumerate}
+                \item Introduction to Statistics
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Random Variables
+                    \item Kolmogorov Axioms
+                    \item Probability Distributions
+                    \item Decomposing probability distributions
+                    \item Expectation Values and Moments
+                    \item Central Limit Theorem
+                    \item Sufficient Statistics
+                    \item Problems of Dimensionality
+                    \item Component Analysis and Discriminants
+                \end{enumerate}
+                \item Important Probability Distributions and their Applications
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Binomial Distribution
+                    \item Gauss or Normal Distribution
+                    \item Poisson and Gamma-Poisson Distribution
+                    \item Weibull Distribution
+                \end{enumerate}
+                \item Bayesian Statistics
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Bayes’ Rule
+                    \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+                    \item Conjugate Prior
+                    \item Bayesian \& Frequentist Approach
+                \end{enumerate}
+                \item Descriptive Statistics
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Mean, Median, Mode, Quantiles
+                    \item Variance, Skewness, Kurtosis
+                \end{enumerate}
+                \item Data Visualization
+                \begin{enumerate}[label*=\arabic*.]
+                    \item General Principles of Dataviz/Visual Communication
+                    \item 1D, 2D Histograms
+                    \item Box Plot, Violin Plot
+                    \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+                    \item Bar Chart
+                \end{enumerate}
+                \item Parameter Estimation
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Maximum Likelihood
+                    \item Ordinary Least Squares
+                    \item Expectation Maximization (EM)
+                    \item Lasso and Ridge Regularization
+                    \item Propagation of Uncertainties
+                \end{enumerate}
+                \item Hypothesis Test
+                \begin{enumerate}[label*=\arabic*.]
+                    \item Error of 1st and 2nd Kind
+                    \item Multiple Hypothesis Tests
+                    \item p-Value
+                \end{enumerate}
+            \end{enumerate}
+        \tcbsubtitle{Books}
+            \begin{enumerate}
+                \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+                \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+                \item Downey, A. (2014). Think stats. O’Reilley Publishing.
+                \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+                \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+            \end{enumerate}
+    \end{posterboxenv}
+
+\end{tcbposter}
+
+
+\pagebreak
+
+% === Page 3 =================================================================
 \begin{tcbposter}[
         poster = {spacing=0.6em, columns=12},
         boxes = {},
