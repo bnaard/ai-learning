@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------------------------------------------------
-% Math Learning Cards for AI - Released under the MIT License
+% AI & Data Analytics Learning Cards - Released under the MIT License
 % ----------------------------------------------------------------------------------------------------------------------
 
 % User guides
@@ -8,12 +8,16 @@
 % TColorbox: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
 % Posterbox Tutorial: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox-tutorial-poster.pdf#[0,{%22name%22:%22Fit%22}]
 % Xcolor: https://mirror.clientvps.com/CTAN/macros/latex/contrib/xcolor/xcolor.pdf
-% TikZ: https://tikz.dev/
+% TikZ and PGFPlots: https://tikz.dev/ and https://tikz.dev/pgfplots/
+%                    https://tug.ctan.org/info/visualtikz/VisualTikZ.pdf 
+% SVG Package: https://ctan.org/pkg/svg?lang=en
 % Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
 % fontspec: https://texdoc.org/serve/fontspec/0
 % fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 % biblatex: https://distrib-coffee.ipsl.jussieu.fr/pub/mirrors/ctan/macros/latex/contrib/biblatex/doc/biblatex.pdf
 % amsmath: https://www.latex-project.org/help/documentation/amsldoc.pdf
+% grapheur: https://ctan.tetaneutral.net/graphics/pgf/contrib/tkz-grapheur/doc/tkz-grapheur-doc-en.pdf
+% enumitem: https://mirror.ibcp.fr/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
 
 \documentclass[8pt]{extarticle}
 
@@ -34,7 +38,7 @@
 \setmonofont{FreeMono}[Scale=1]
 
 % font for the word "Mathematics" in the header
-\newfontfamily\mathheaderfont{QTGhoulFace} 
+\newfontfamily\headerfont{QTGhoulFace} 
 
 
 % Emoji support
@@ -45,11 +49,11 @@
     % showframe, 
     nomarginpar, 
     a4paper,
-    landscape, 
-    right=1.0cm, 
-    left=1.0cm, 
-    top=1.5cm, 
-    bottom=1.5cm,
+    portrait, 
+    right=0.75cm, 
+    left=0.75cm, 
+    top=1.25cm, 
+    bottom=1cm,
     headsep=0.25cm,
     headheight=0.75cm,
     footskip=0.5cm,
@@ -72,10 +76,45 @@
 \usepackage[dvipsnames]{xcolor}
 
 % --- Graphics -----------------------------------------------------------------
-\usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{svg}
 \graphicspath{{./figures/}{./icons/}{./logos/}}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric}    % for shapes
+\usetikzlibrary{arrows.meta}         % for arrows, Arrow tip library 
+\usetikzlibrary{positioning}         % for relative positioning
+\usetikzlibrary{calc}                % for calculations to make complex coordinate calculations
+%\usetikzlibrary{backgrounds}        % Background Library "defines background for pictures". To use this in a Tikzpicture, an option is passed, e.g. \begin{tikzpicture}[show background rectangle], with a background rectangle style defined before the picture. (e.g. \tikzset{background rectangle/.style={<define background rectangle style here>}}
+% \usetikzlibrary{calendars}         % for calendar drawings
+% \usetikzlibrary{fadings}           % for fading effects
+% \usetikzlibrary{patterns}          % for patterns
+% \usetikzlibrary{shadows}           % for shadow effects 
+\usetikzlibrary{chains}            % for chain effects
+\usetikzlibrary{fit}               % for fitting nodes together
+% \usetikzlibrary{er}                % for entity relationship diagrams
+% \usetikzlibrary{intersections}     % for calculating intersections of paths
+% \usetikzlibrary{mindmap}           % for mind maps
+\usetikzlibrary{matrix}            % for matrix drawings
+\usetikzlibrary{angles}           % for angle markings
+\usetikzlibrary{quotes}           % for quotes in angles
+% \usetikzlibrary{trees}             % for tree drawings
+% \usetikzlibrary{decorations.pathmorphing}  % for path decorations like zigzag lines
+\usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
+% \usetikzlibrary{decorations.markings}      % for markings along a path
+% \usetikzlibrary{decorations.shapes}        % for shape decorations
+% \usetikzlibrary{decorations.text}          % for text decorations along a path
+% \usetikzlibrary{pgfplots.colorbrewer}      % for color maps
+
+% \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
+
+\usepackage{adjustbox}          % for adjusting boxes
+
+\usepackage[labelfont=sf]{caption}  % for figure captions on non-floats
+
+\input{../shapes/flowchart_styles.tex}  % load flowchart styles
+
 
 % --- URL and href -----------------------------------------------------------
 \colorlet{citecolor}{black}
@@ -108,25 +147,41 @@
 
 \renewcommand{\bibfont}{\normalfont\footnotesize}
 
-% --- Helpers -----------------------------------------------------------------
-\usepackage{lipsum}
+
+% --- Enumerations -----------------------------------------------------------------
 \usepackage{enumitem}
 
+\setlist{noitemsep}
+\setlist[1]{labelindent=\parindent} % < Usually a good idea
+\setlist[itemize]{leftmargin=*}
+\setlist[itemize,1]{label=-}
+
+% --- Helpers -----------------------------------------------------------------
+\usepackage{lipsum}
+\usepackage{multicol}
 
 
-% --- Default options ---------------------------------------------------------
+% --- Options ---------------------------------------------------------
 % \pagestyle{empty}
 % \setlength\parindent{0pt}
 % \setlength{\tabcolsep}{2pt}
 % \baselineskip=0pt
-% \setlength\columnsep{1.75mm}
+\setlength{\columnsep}{0.75cm}
 % \setlength{\parskip}{0.1\baselineskip}
 
+\setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
 
-\newcommand{\maincolor}{OliveGreen!80!White}
+\captionsetup{font=small,labelfont={bf,sf}}
+% \captionsetup[sub]{font=small,labelfont={bf,sf}}
+
+
+\newcommand{\maincolor}{LimeGreen!90!Gray}
 \newcommand{\maincolspan}{4}
+\newcommand{\graphscale}{0.9}
 
-
+\title{Advanced Mathematics and Statistics for AI Beginners}
+\author{Bernhard Gerlach}
+\date{\today}
 
 % --- TColorbox Skins ----------------------------------------------------------
 
@@ -192,6 +247,8 @@
     bottomtitle=0mm,
     fontupper=\sffamily\small,
     fontlower=\sffamily\small,
+    lower separated=false,
+    valign lower=center,
     halign=left,
     subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
         colback=\maincolor!50!\maincolor!20!white,
@@ -200,6 +257,27 @@
         coltext=\maincolor!10!black,
         height=1.1\baselineskip,
       }, 
+}
+
+
+% Skin for sub-section boxes
+\tcbsubskin{subsectionboxskin}{standard}{
+    size=fbox, 
+    top=0.4em,
+    % left=0.2em,
+    % right=0.2em,
+    % arc=0.25mm,
+    % top=0.4mm, 
+    % bottom=0mm, 
+    % boxrule=0.2pt, 
+    % boxsep=0.1mm,
+    frame empty,
+    % colback=\maincolor!2!white,
+    colback=white,
+    colbacktitle=\maincolor!50!\maincolor!20!white,
+    fonttitle=\sffamily\bfseries\small,
+    coltitle=\maincolor!10!black,
+    % height=1.1\baselineskip,    
 }
 
 
@@ -214,6 +292,15 @@
 }
 
 
+\tcbsubskin{sectionraster}{sectionboxskin}{
+    raster columns=6,
+    raster equal height=rows,
+    raster row skip=0.25cm,
+    raster column skip=0.25cm,
+    skin=sectionboxskin,
+}
+
+
 
 
 
@@ -222,7 +309,7 @@
 % ----------------------------------------------------------------------------------------------------------------------
 
 \fancyhead[L]{
-    \LARGE {\mathheaderfont Mathematics} \textcolor{\maincolor}{for AI beginners}
+    \LARGE \textcolor{\maincolor}{\headerfont Mathematics} for AI beginners
 }
 \fancyhead[C]{}
 \fancyhead[R]{}
@@ -237,60 +324,160 @@
 
 \begin{document}
 
-% === Page 1 =================================================================
-\begin{tcbposter}[
-        poster = {spacing=0.6em, columns=12},
-        boxes = {},
-        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
+\begin{multicols}{2}[
+        \section{Advanced Mathematics}
     ]
+    \subsection{Calculus}
+    \subsubsection{Differentiation}
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Gradient, raster multicolumn=6]
+        The gradient for any function $y = f(x)$ is defined as follows. The gradient is also called the first derivative. The three notations $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable\textsuperscript{\cite[][p89]{yangMathematicsCivilEngineers2018} and \cite[][p393]{bronsteinTaschenbuchMathematik2001}}.
+        \tcblower
+        \begin{equation}
+            f'(x) = \frac{dy}{dx} = \frac{df(x)}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+        \end{equation}
 
-    \newlength{\thispostercolwidth}
-    \setlength{\thispostercolwidth}{\tcbpostercolwidth}
+        \vspace*{4ex}
+        \centering
+        \captionsetup{hypcap=false}
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=8cm,
+                height=6cm,
+                axis lines=middle,
+                axis line style={thick, -Stealth},
+                xlabel={$x$},
+                ylabel={$y = f(x)$},
+                xmin=0, xmax=3,
+                ymin=-0.5, ymax=5,
+                samples=100,
+                domain=0:2.2,
+                legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east},
+                clip=false,
+                ylabel style={at={(ticklabel cs:1.0)},anchor=south}, 
+                xlabel style={at={(1.0,0.1)},anchor=south}, 
+            ]
+            % Plot y = x^2
+            \addplot[thick, \maincolor!80!black, smooth] {x^2};
+            \addlegendentry{$y = x^2$}
+            
+            % Tangent at point P (x=1, y=1)
+            % Derivative: y' = 2x, at x=1: y'(1) = 2
+            % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
+            \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
+            \addlegendentry{Tangent at $P$}
+            
+            % Mark point P
+            \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
+            \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
+            
+            % Line M: vertical line from P down to x-axis (at x=1)
+            \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
+            \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
+            
+            % Line N: horizontal line from P to x=2 (parallel to x-axis)
+            \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
+            
+            % Vertical line at x=2 from x-axis up
+            % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
+            \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
+            
+            % Mark intersection points
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
+            
+            % Label dy: from N (y=1) to tangent (y=3) at x=2
+            \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
+            \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
+            
+            % Label delta y: from N (y=1) to curve (y=4) at x=2
+            \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
+            \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
+            
+            % Label x: from origin to where M hits x-axis (x=1)
+            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.45) -- (axis cs:1,-0.45);
+            \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.6) {$x$};
+            
+            % Label delta x = dx: from M (x=1) to x=2
+            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.45) -- (axis cs:2,-0.45);
+            \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.6) {$\Delta x = dx$};
+            
+            % Angle alpha where tangent crosses x-axis
+            % Tangent y=2x-1 crosses x-axis at x=0.5
+            % where A, B, and C are the vertices, and B is the apex
+            \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
+            % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
+            % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
+            
+            \end{axis}
+        \end{tikzpicture}
+        \captionof{figure}{Graph of $y = x^2$ with tangent line at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
 
-    % === XXX ================================================================
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Linear Algebra]
-        {name=overview,column=1,below=top, span=\maincolspan}
+        
+    \end{tcbitemize}    
+    \begin{enumerate}[label*=\arabic*.]
+        \item ...
+        \item Integration
+        \item Partial Differentiation
+        \item Vector Analysis
+    \end{enumerate}
 
-        Linear algebra is the study of vectors and linear functions \textsuperscript{\cite[][p.9]{cherneyLinearAlgebra2013}}.
-        \tcbsubtitle{Basics}
-        More text
+    \subsection{Integral Transformations}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Convolution
+        \item Complex Numbers
+        \item Fourier Series
+        \item Fourier Transformation
+    \end{enumerate}
 
-        \tcbsubtitle{N-Dimensional Vector}
-        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition \textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters. 
+    \subsection{Vector Algebra}
+    \subsubsection{Scalars and Vectors}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=N-Dimensional Vector, raster multicolumn=6]
+        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition\textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters.
 
         \begin{equation}
             \vec{v} =
-                \begin{pNiceMatrix}
-                    a_1 \\ a_2 \\ \vdots \\ a_n
-                \end{pNiceMatrix}
-                \neq
-                \begin{pNiceMatrix}
-                    \CodeBefore
-                    \cellcolor[HTML]{FFFF88}{1-1,2-1}
-                    \Body
-                    a_2 \\ a_1 \\ \vdots \\ a_n
-                \end{pNiceMatrix}
-        \end{equation}
-
-
-        \tcbsubtitle{Vector Calculations}
-        \textbf{Length (magnitude)} of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
- 
-        \begin{equation}
-            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2} 
-        \end{equation}
-
-        \textbf{Normalized vector (unit vector)} in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
-
-        \begin{equation}
-            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} = 
             \begin{pNiceMatrix}
-                    \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
+                a_1 \\ a_2 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+            \neq
+            \begin{pNiceMatrix}
+                \CodeBefore
+                \cellcolor[HTML]{FFFF88}{1-1,2-1}
+                \Body
+                a_2 \\ a_1 \\ \vdots \\ a_n
             \end{pNiceMatrix}
         \end{equation}
 
-        \textbf{Dot product (scalar product)} of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+        \tcbitem[title=Length (Magnitude), raster multicolumn=6]
+        Length (magnitude) of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+        \end{equation}
 
+        \tcbitem[title=Normalized vector (unit vector), raster multicolumn=6]
+        Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} =
+            \begin{pNiceMatrix}
+                \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
+            \end{pNiceMatrix}
+        \end{equation}
+
+    \end{tcbitemize}
+
+    \subsubsection{Addition and Subtraction of Vectors}
+    \subsubsection{Multiplication of Vectors, Vector Product, Scalar Product}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title=Scalar Product (dot product), raster multicolumn=6]
+        Scalar product (dot product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+        \tcblower
         \begin{equation}
             \vec{v} \cdot \vec{u} =
             \begin{pNiceMatrix}
@@ -302,196 +489,369 @@
             \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
         \end{equation}
 
-        \textbf{The angle $\Theta$} of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
-
+        \tcbitem[title=Angle, raster multicolumn=6]
+        The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+        \tcblower
         \begin{equation}
             \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
-            \Rightarrow 
+            \Rightarrow
             \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
-            \Rightarrow 
+            \Rightarrow
             \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
         \end{equation}
 
-        \textbf{Cosine similarity} is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar 
-        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.  
+        \tcbitem[title=Cosine similarity, raster multicolumn=6]
+        Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
+        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
+
+    \end{tcbitemize}
+
+    \subsection{Vector Calculus}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Differentiation of Vectors
+        \item Integration of Vectors
+        \item Scalar and Vector Fields
+        \item Vector Operators
+    \end{enumerate}
+
+    \subsection{Matrices and Vector Spaces}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Basic Matrix Algebra and Systems of Linear Equations
+        \item Transpose, Trace, Determinant, and Inverse of a Matrix
+        \item Eigenvalues, Eigenvectors, and Diagonalization
+        \item Tensors
+    \end{enumerate}
+
+    \subsection{Information Theory}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean Squared Error (MSE) and Simple Linear Regression
+        \item Area Under the ROC Curve and Gini Index
+        \item Entropy
+        \item Cross Entropy
+    \end{enumerate}
 
 
-        \tcbsubtitle{Eigenwert}
-
-    \end{posterboxenv}
-
-    % === tbd ================================================================
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Overview]
-        {name=overview,column=5,below=top, span=4}
-        Rust is a general-purpose programming language focused on performance, memory safety without garbage collector, and concurrency, using an ownership system preventing memory errors.
-
-        \tcbsubtitle{\href{https://rustup.rs/}{Installation}}
-        More text
-
-    \end{posterboxenv}
-
-\end{tcbposter}
-
-\pagebreak
-
-% === Page 2 =================================================================
-
-\begin{tcbposter}[
-        poster = {spacing=0.6em, columns=12},
-        boxes = {},
-        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
-    ]
-
-    % === Advanced Mathematics ================================================================
-    % Reduce vertical space between items in all enumerations
-    \setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
-
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Mathematics]
-        {name=overview,column=1,below=top, span=4}
-        \tcbsubtitle{Content}
-            \begin{enumerate}[label=\arabic*.]
-                \item Calculus
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Differentiation
-                    \item Integration
-                    \item Partial Differentiation
-                    \item Vector Analysis
-                \end{enumerate}
-                \item Integral Transformations
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Convolution
-                    \item Complex Numbers
-                    \item Fourier Series
-                    \item Fourier Transformation
-                \end{enumerate}
-                \item Vector Algebra
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Scalars and Vectors
-                    \item Addition and Subtraction of Vectors
-                    \item Multiplication of Vectors, Vector Product, Scalar Product
-                \end{enumerate}
-                \item Vector Calculus
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Differentiation of Vectors
-                    \item Integration of Vectors
-                    \item Scalar and Vector Fields
-                    \item Vector Operators
-                \end{enumerate}
-                \item Matrices and Vector Spaces
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Basic Matrix Algebra and Systems of Linear Equations
-                    \item Transpose, Trace, Determinant, and Inverse of a Matrix
-                    \item Eigenvalues, Eigenvectors, and Diagonalization
-                    \item Tensors
-                \end{enumerate}
-                \item Information Theory
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Mean Squared Error (MSE) and Simple Linear Regression
-                    \item Area Under the ROC Curve and Gini Index
-                    \item Entropy
-                    \item Cross Entropy
-                \end{enumerate}
-            \end{enumerate}
-        \tcbsubtitle{Books}
-            \begin{enumerate}
-                \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1sted.) De Gruyter.
-                \item Riley, K. F., Hobson, M. P, \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
-                \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
-            \end{enumerate}
-    \end{posterboxenv}
-
-    % === Advanced Statistics ================================================================
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Statistics]
-        {name=overview,column=5,below=top, span=4}
-        \tcbsubtitle{Content}
-            \begin{enumerate}
-                \item Introduction to Statistics
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Random Variables
-                    \item Kolmogorov Axioms
-                    \item Probability Distributions
-                    \item Decomposing probability distributions
-                    \item Expectation Values and Moments
-                    \item Central Limit Theorem
-                    \item Sufficient Statistics
-                    \item Problems of Dimensionality
-                    \item Component Analysis and Discriminants
-                \end{enumerate}
-                \item Important Probability Distributions and their Applications
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Binomial Distribution
-                    \item Gauss or Normal Distribution
-                    \item Poisson and Gamma-Poisson Distribution
-                    \item Weibull Distribution
-                \end{enumerate}
-                \item Bayesian Statistics
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Bayes’ Rule
-                    \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
-                    \item Conjugate Prior
-                    \item Bayesian \& Frequentist Approach
-                \end{enumerate}
-                \item Descriptive Statistics
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Mean, Median, Mode, Quantiles
-                    \item Variance, Skewness, Kurtosis
-                \end{enumerate}
-                \item Data Visualization
-                \begin{enumerate}[label*=\arabic*.]
-                    \item General Principles of Dataviz/Visual Communication
-                    \item 1D, 2D Histograms
-                    \item Box Plot, Violin Plot
-                    \item Scatter Plot, Scatter Plot Matrix, Profile Plot
-                    \item Bar Chart
-                \end{enumerate}
-                \item Parameter Estimation
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Maximum Likelihood
-                    \item Ordinary Least Squares
-                    \item Expectation Maximization (EM)
-                    \item Lasso and Ridge Regularization
-                    \item Propagation of Uncertainties
-                \end{enumerate}
-                \item Hypothesis Test
-                \begin{enumerate}[label*=\arabic*.]
-                    \item Error of 1st and 2nd Kind
-                    \item Multiple Hypothesis Tests
-                    \item p-Value
-                \end{enumerate}
-            \end{enumerate}
-        \tcbsubtitle{Books}
-            \begin{enumerate}
-                \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
-                \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
-                \item Downey, A. (2014). Think stats. O’Reilley Publishing.
-                \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
-                \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
-            \end{enumerate}
-    \end{posterboxenv}
-
-\end{tcbposter}
-
+\end{multicols}
 
 \pagebreak
 
-% === Page 3 =================================================================
-\begin{tcbposter}[
-        poster = {spacing=0.6em, columns=12},
-        boxes = {},
-        coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
-    ]
+\begin{multicols}{2}
+    \section{Advanced Statistics}
+    \subsection{Introduction to Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Random Variables
+        \item Kolmogorov Axioms
+        \item Probability Distributions
+        \item Decomposing probability distributions
+        \item Expectation Values and Moments
+        \item Central Limit Theorem
+        \item Sufficient Statistics
+        \item Problems of Dimensionality
+        \item Component Analysis and Discriminants
+    \end{enumerate}
+    \subsection{Important Probability Distributions and their Applications}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Binomial Distribution
+        \item Gauss or Normal Distribution
+        \item Poisson and Gamma-Poisson Distribution
+        \item Weibull Distribution
+    \end{enumerate}
+    \subsection{Bayesian Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Bayes’ Rule
+        \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+        \item Conjugate Prior
+        \item Bayesian \& Frequentist Approach
+    \end{enumerate}
+    \subsection{Descriptive Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean, Median, Mode, Quantiles
+        \item Variance, Skewness, Kurtosis
+    \end{enumerate}
+    \subsection{Data Visualization}
+    \begin{enumerate}[label*=\arabic*.]
+        \item General Principles of Dataviz/Visual Communication
+        \item 1D, 2D Histograms
+        \item Box Plot, Violin Plot
+        \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+        \item Bar Chart
+    \end{enumerate}
+    \subsection{Parameter Estimation}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Maximum Likelihood
+        \item Ordinary Least Squares
+        \item Expectation Maximization (EM)
+        \item Lasso and Ridge Regularization
+        \item Propagation of Uncertainties
+    \end{enumerate}
+    \subsection{Hypothesis Test}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Error of 1st and 2nd Kind
+        \item Multiple Hypothesis Tests
+        \item p-Value
+    \end{enumerate}
 
-    % === References ================================================================
-    \begin{posterboxenv}[skin=sectionboxskin, adjusted title=References]
-        {name=overview,column=9,below=top, span=4}
-        \printbibliography[heading=none]
 
-    \end{posterboxenv}
+\end{multicols}
 
-\end{tcbposter}
+\section{References}
+\printbibliography[heading=none]
+
+\pagebreak
+
+\section{Appendix}
+\subsection{Course Content Overview}
+\subsubsection{Advanced Mathematics}
+\begin{enumerate}[label=\arabic*.]
+    \item Calculus
+          \begin{enumerate}[label*=\arabic*.]
+              \item Differentiation
+              \item Integration
+              \item Partial Differentiation
+              \item Vector Analysis
+          \end{enumerate}
+    \item Integral Transformations
+          \begin{enumerate}[label*=\arabic*.]
+              \item Convolution
+              \item Complex Numbers
+              \item Fourier Series
+              \item Fourier Transformation
+          \end{enumerate}
+    \item Vector Algebra
+          \begin{enumerate}[label*=\arabic*.]
+              \item Scalars and Vectors
+              \item Addition and Subtraction of Vectors
+              \item Multiplication of Vectors, Vector Product, Scalar Product
+          \end{enumerate}
+    \item Vector Calculus
+          \begin{enumerate}[label*=\arabic*.]
+              \item Differentiation of Vectors
+              \item Integration of Vectors
+              \item Scalar and Vector Fields
+              \item Vector Operators
+          \end{enumerate}
+    \item Matrices and Vector Spaces
+          \begin{enumerate}[label*=\arabic*.]
+              \item Basic Matrix Algebra and Systems of Linear Equations
+              \item Transpose, Trace, Determinant, and Inverse of a Matrix
+              \item Eigenvalues, Eigenvectors, and Diagonalization
+              \item Tensors
+          \end{enumerate}
+    \item Information Theory
+          \begin{enumerate}[label*=\arabic*.]
+              \item Mean Squared Error (MSE) and Simple Linear Regression
+              \item Area Under the ROC Curve and Gini Index
+              \item Entropy
+              \item Cross Entropy
+          \end{enumerate}
+\end{enumerate}
+\subsubsection{Advanced Statistics}
+\begin{enumerate}
+    \item Introduction to Statistics
+          \begin{enumerate}[label*=\arabic*.]
+              \item Random Variables
+              \item Kolmogorov Axioms
+              \item Probability Distributions
+              \item Decomposing probability distributions
+              \item Expectation Values and Moments
+              \item Central Limit Theorem
+              \item Sufficient Statistics
+              \item Problems of Dimensionality
+              \item Component Analysis and Discriminants
+          \end{enumerate}
+    \item Important Probability Distributions and their Applications
+          \begin{enumerate}[label*=\arabic*.]
+              \item Binomial Distribution
+              \item Gauss or Normal Distribution
+              \item Poisson and Gamma-Poisson Distribution
+              \item Weibull Distribution
+          \end{enumerate}
+    \item Bayesian Statistics
+          \begin{enumerate}[label*=\arabic*.]
+              \item Bayes’ Rule
+              \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+              \item Conjugate Prior
+              \item Bayesian \& Frequentist Approach
+          \end{enumerate}
+    \item Descriptive Statistics
+          \begin{enumerate}[label*=\arabic*.]
+              \item Mean, Median, Mode, Quantiles
+              \item Variance, Skewness, Kurtosis
+          \end{enumerate}
+    \item Data Visualization
+          \begin{enumerate}[label*=\arabic*.]
+              \item General Principles of Dataviz/Visual Communication
+              \item 1D, 2D Histograms
+              \item Box Plot, Violin Plot
+              \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+              \item Bar Chart
+          \end{enumerate}
+    \item Parameter Estimation
+          \begin{enumerate}[label*=\arabic*.]
+              \item Maximum Likelihood
+              \item Ordinary Least Squares
+              \item Expectation Maximization (EM)
+              \item Lasso and Ridge Regularization
+              \item Propagation of Uncertainties
+          \end{enumerate}
+    \item Hypothesis Test
+          \begin{enumerate}[label*=\arabic*.]
+              \item Error of 1st and 2nd Kind
+              \item Multiple Hypothesis Tests
+              \item p-Value
+          \end{enumerate}
+\end{enumerate}
+\end{document}
+
+%     % === Advanced Mathematics ================================================================
+%     % Reduce vertical space between items in all enumerations
+%     \setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
+
+%     \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Mathematics]
+%         {name=overview,column=1,below=top, span=4}
+%         \tcbsubtitle{Content}
+%             \begin{enumerate}[label=\arabic*.]
+%                 \item Calculus
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Differentiation
+%                     \item Integration
+%                     \item Partial Differentiation
+%                     \item Vector Analysis
+%                 \end{enumerate}
+%                 \item Integral Transformations
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Convolution
+%                     \item Complex Numbers
+%                     \item Fourier Series
+%                     \item Fourier Transformation
+%                 \end{enumerate}
+%                 \item Vector Algebra
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Scalars and Vectors
+%                     \item Addition and Subtraction of Vectors
+%                     \item Multiplication of Vectors, Vector Product, Scalar Product
+%                 \end{enumerate}
+%                 \item Vector Calculus
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Differentiation of Vectors
+%                     \item Integration of Vectors
+%                     \item Scalar and Vector Fields
+%                     \item Vector Operators
+%                 \end{enumerate}
+%                 \item Matrices and Vector Spaces
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Basic Matrix Algebra and Systems of Linear Equations
+%                     \item Transpose, Trace, Determinant, and Inverse of a Matrix
+%                     \item Eigenvalues, Eigenvectors, and Diagonalization
+%                     \item Tensors
+%                 \end{enumerate}
+%                 \item Information Theory
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Mean Squared Error (MSE) and Simple Linear Regression
+%                     \item Area Under the ROC Curve and Gini Index
+%                     \item Entropy
+%                     \item Cross Entropy
+%                 \end{enumerate}
+%             \end{enumerate}
+%         \tcbsubtitle{Books}
+%             \begin{enumerate}
+%                 \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1sted.) De Gruyter.
+%                 \item Riley, K. F., Hobson, M. P, \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+%                 \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+%             \end{enumerate}
+%     \end{posterboxenv}
+
+%     % === Advanced Statistics ================================================================
+%     \begin{posterboxenv}[skin=sectionboxskin, adjusted title=Advanced Statistics]
+%         {name=overview,column=5,below=top, span=4}
+%         \tcbsubtitle{Content}
+%             \begin{enumerate}
+%                 \item Introduction to Statistics
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Random Variables
+%                     \item Kolmogorov Axioms
+%                     \item Probability Distributions
+%                     \item Decomposing probability distributions
+%                     \item Expectation Values and Moments
+%                     \item Central Limit Theorem
+%                     \item Sufficient Statistics
+%                     \item Problems of Dimensionality
+%                     \item Component Analysis and Discriminants
+%                 \end{enumerate}
+%                 \item Important Probability Distributions and their Applications
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Binomial Distribution
+%                     \item Gauss or Normal Distribution
+%                     \item Poisson and Gamma-Poisson Distribution
+%                     \item Weibull Distribution
+%                 \end{enumerate}
+%                 \item Bayesian Statistics
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Bayes’ Rule
+%                     \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+%                     \item Conjugate Prior
+%                     \item Bayesian \& Frequentist Approach
+%                 \end{enumerate}
+%                 \item Descriptive Statistics
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Mean, Median, Mode, Quantiles
+%                     \item Variance, Skewness, Kurtosis
+%                 \end{enumerate}
+%                 \item Data Visualization
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item General Principles of Dataviz/Visual Communication
+%                     \item 1D, 2D Histograms
+%                     \item Box Plot, Violin Plot
+%                     \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+%                     \item Bar Chart
+%                 \end{enumerate}
+%                 \item Parameter Estimation
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Maximum Likelihood
+%                     \item Ordinary Least Squares
+%                     \item Expectation Maximization (EM)
+%                     \item Lasso and Ridge Regularization
+%                     \item Propagation of Uncertainties
+%                 \end{enumerate}
+%                 \item Hypothesis Test
+%                 \begin{enumerate}[label*=\arabic*.]
+%                     \item Error of 1st and 2nd Kind
+%                     \item Multiple Hypothesis Tests
+%                     \item p-Value
+%                 \end{enumerate}
+%             \end{enumerate}
+%         \tcbsubtitle{Books}
+%             \begin{enumerate}
+%                 \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+%                 \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+%                 \item Downey, A. (2014). Think stats. O’Reilley Publishing.
+%                 \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+%                 \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+%             \end{enumerate}
+%     \end{posterboxenv}
+
+% \end{tcbposter}
+
+% \pagebreak
+
+% % === Page 3 =================================================================
+% \begin{tcbposter}[
+%         poster = {spacing=0.6em, columns=12},
+%         boxes = {},
+%         coverage={left=0pt, right=0pt, top=0pt, bottom=0pt},
+%     ]
+
+%     % === References ================================================================
+%     \begin{posterboxenv}[skin=sectionboxskin, adjusted title=References]
+%         {name=overview,column=9,below=top, span=4}
+%         \printbibliography[heading=none]
+
+%     \end{posterboxenv}
+
+% \end{tcbposter}
 
 % \printbibheading
 % % \printbibliography[type=book,heading=subbibliography,title={Book Sources}]
 % \printbibliography[nottype=book,heading=subbibliography,title={Other Sources}]
 
-\end{document}
+% \end{document}
