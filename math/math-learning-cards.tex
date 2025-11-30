@@ -489,9 +489,9 @@
             \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
         \end{equation}
 
-        \tcbitem[title=Angle, raster multicolumn=6]
+        \tcbitem[title=Angle and Cosine Similarity, raster multicolumn=6]
         The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
-        \tcblower
+
         \begin{equation}
             \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
             \Rightarrow
@@ -500,9 +500,11 @@
             \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
         \end{equation}
 
-        \tcbitem[title=Cosine similarity, raster multicolumn=6]
+        \vspace{2ex}
+        
         Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
         the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
+
 
     \end{tcbitemize}
 

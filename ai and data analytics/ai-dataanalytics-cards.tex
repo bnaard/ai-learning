@@ -2,6 +2,7 @@
 % AI & Data Analytics Learning Cards - Released under the MIT License
 % ----------------------------------------------------------------------------------------------------------------------
 
+
 % User guides
 % Latex: https://ftp.agdsn.de/pub/mirrors/latex/dante/macros/latex/base/usrguide.pdf
 % Tabularray: https://mirror.physik.tu-berlin.de/pub/CTAN/macros/latex/contrib/tabularray/tabularray.pdf
@@ -33,9 +34,9 @@
 % Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
 % to get a list of installed fonts: luaotfload-tool --list=format 
 \usepackage{fontspec}
-\setmainfont{FreeSans}[Scale=0.9]
-\setsansfont{FreeSans}[Scale=0.9]
-\setmonofont{FreeMono}[Scale=0.9]
+\setmainfont{FreeSans}[Scale=1]
+\setsansfont{FreeSans}[Scale=1]
+\setmonofont{FreeMono}[Scale=1]
 
 % font for the words "AI & Data Analytics" in the header
 \newfontfamily\headerfont{QTFuturePoster} 
@@ -50,10 +51,10 @@
     nomarginpar, 
     a4paper,
     portrait, 
-    right=1.0cm, 
-    left=1.0cm, 
-    top=1.5cm, 
-    bottom=1.5cm,
+    right=0.75cm, 
+    left=0.75cm, 
+    top=1.25cm, 
+    bottom=1cm,
     headsep=0.25cm,
     headheight=0.75cm,
     footskip=0.5cm,
@@ -80,6 +81,8 @@
 \usepackage{svg}
 \graphicspath{{./figures/}{./icons/}{./logos/}}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usetikzlibrary{shapes.geometric}    % for shapes
 \usetikzlibrary{arrows.meta}         % for arrows, Arrow tip library 
 \usetikzlibrary{positioning}         % for relative positioning
@@ -95,9 +98,11 @@
 % \usetikzlibrary{intersections}     % for calculating intersections of paths
 % \usetikzlibrary{mindmap}           % for mind maps
 \usetikzlibrary{matrix}            % for matrix drawings
+\usetikzlibrary{angles}           % for angle markings
+\usetikzlibrary{quotes}           % for quotes in angles
 % \usetikzlibrary{trees}             % for tree drawings
 % \usetikzlibrary{decorations.pathmorphing}  % for path decorations like zigzag lines
-% \usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
+\usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
 % \usetikzlibrary{decorations.markings}      % for markings along a path
 % \usetikzlibrary{decorations.shapes}        % for shape decorations
 % \usetikzlibrary{decorations.text}          % for text decorations along a path
@@ -106,6 +111,8 @@
 % \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
 
 \usepackage{adjustbox}          % for adjusting boxes
+
+\usepackage[labelfont=sf]{caption}  % for figure captions on non-floats
 
 \input{../shapes/flowchart_styles.tex}  % load flowchart styles
 
@@ -152,22 +159,30 @@
 
 % --- Helpers -----------------------------------------------------------------
 \usepackage{lipsum}
+\usepackage{multicol}
 
 
-
-% --- Default options ---------------------------------------------------------
+% --- Options ---------------------------------------------------------
 % \pagestyle{empty}
 % \setlength\parindent{0pt}
 % \setlength{\tabcolsep}{2pt}
 % \baselineskip=0pt
-% \setlength\columnsep{1.75mm}
+\setlength{\columnsep}{0.75cm}
 % \setlength{\parskip}{0.1\baselineskip}
 
+\setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
 
-\newcommand{\maincolor}{OliveGreen!80!White}
+\captionsetup{font=small,labelfont={bf,sf}}
+% \captionsetup[sub]{font=small,labelfont={bf,sf}}
+
+
+\newcommand{\maincolor}{LimeGreen!90!Gray}
 \newcommand{\maincolspan}{4}
 \newcommand{\graphscale}{0.9}
 
+\title{AI and Data Analytics for AI Beginners}
+\author{Bernhard Gerlach}
+\date{\today}
 
 % --- TColorbox Skins ----------------------------------------------------------
 
@@ -224,7 +239,7 @@
     left=0.2em,
     right=0.2em,
     arc=0.25mm,
-    colback=white,
+    colback=\maincolor!2!white,
     colframe=\maincolor!75!black,
     coltitle=\maincolor!10!black,
     colbacktitle=\maincolor!75!white,
@@ -233,8 +248,9 @@
     bottomtitle=0mm,
     fontupper=\sffamily\small,
     fontlower=\sffamily\small,
+    lower separated=false,
+    valign lower=center,
     halign=left,
-    frame empty,
     subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
         colback=\maincolor!50!\maincolor!20!white,
         colupper=\maincolor!50!gray,
@@ -277,6 +293,14 @@
 }
 
 
+\tcbsubskin{sectionraster}{sectionboxskin}{
+    raster columns=6,
+    raster equal height=rows,
+    raster row skip=0.25cm,
+    raster column skip=0.25cm,
+    skin=sectionboxskin,
+}
+
 
 
 
@@ -301,60 +325,48 @@
 
 \begin{document}
 
-\begin{tcbitemize}
-    [
-        raster columns=6,
-        raster equal height=rows,
-        raster row skip=0.5cm,
-        raster column skip=0.5cm,
-        skin=sectionboxskin,
+\begin{multicols}{2}[
+        \section{Introduction}
     ]
-    \tcbitem[title=Industry 4.0, raster multicolumn=6]
-    \begin{tcbitemize}[
-        raster columns=6, 
-        raster equal height=rows
-    ]
-        \tcbitem[blankest, raster multicolumn=6] Information is the oil of the 21st century and analytics is the combustion engine.
-        \tcbitem[blankest, raster multicolumn=3]
-            \begin{tcbitemize}[
-                skin=subsectionboxskin, 
-                raster columns=1
-            ]
-                \tcbitem[title=Information Management Cycle, halign=center]
-                    \adjustbox{scale=\graphscale}{
-                        \begin{tikzpicture}[node distance=1cm and 1cm]
+    \subsection{Industry 4.0}
 
-                            % place nodes
-                            \coordinate (center) at (0,0) {};
-                            \node [block, above=of center] (information-user) {INFORMATION USER} ;
-                            \node [block, right=of center] (data-sources) {DATA SOURCES} ;
-                            \node [block, below=of center] (information-ressources) {INFORMATION RESSOURCES} ;
-                            \node [block, left=of center] (information-product) {INFORMATION PRODUCT} ;
+    \begin{tcbitemize}[ skin=sectionraster, halign lower=center ]
+        \tcbitem[title=Information Management Cycle, raster multicolumn=6]
+        Information is the oil of the 21st century and analytics is the combustion engine.
+        \tcblower
+        \adjustbox{scale=\graphscale}{
+            \begin{tikzpicture}[node distance=1cm and 1cm]
 
-                            % draw edges
-                            \draw [line] (information-user) -| (data-sources) node[midway, above, xshift=5mm] {Requirement Analysis};
-                            \draw [line] (data-sources) |- (information-ressources) node[midway, below, xshift=5mm] {Integration};
-                            \draw [line] (information-ressources) -| (information-product) node[midway, below, xshift=-5mm] {Evaluation};
-                            \draw [line] (information-product) |- (information-user) node[midway, above, xshift=-5mm] {Deployment};
+                % place nodes
+                \coordinate (center) at (0,0) {};
+                \node [block, above=of center] (information-user) {INFORMATION USER} ;
+                \node [block, right=of center] (data-sources) {DATA SOURCES} ;
+                \node [block, below=of center] (information-ressources) {INFORMATION RESSOURCES} ;
+                \node [block, left=of center] (information-product) {INFORMATION PRODUCT} ;
 
-                        \end{tikzpicture}
-                    }
+                % draw edges
+                \draw [line] (information-user) -| (data-sources) node[midway, above, xshift=5mm] {Requirement Analysis};
+                \draw [line] (data-sources) |- (information-ressources) node[midway, below, xshift=5mm] {Integration};
+                \draw [line] (information-ressources) -| (information-product) node[midway, below, xshift=-5mm] {Evaluation};
+                \draw [line] (information-product) |- (information-user) node[midway, above, xshift=-5mm] {Deployment};
 
-                \tcbitem[title=Application Areas: Data Analytics\, Big Data\, AI]
-                    \begin{itemize}
-                        \item Optimize Quality Assurance
-                        \item Predictive Maintenance
-                        \item Reduce Process Runtimes
-                        \item Batch-size 1 Production
-                        \item Decision Support
-                        \item Minimize Ramp-up
-                        \item Minimize Process Error
-                    \end{itemize}
+            \end{tikzpicture}
+        }
 
+        \tcbitem[title={Data Analytics, Big Data and AI Application Areas}, raster multicolumn=6]
+        \begin{multicols}{2}
+        \begin{itemize}
+            \item Optimize Quality Assurance
+            \item Predictive Maintenance
+            \item Reduce Process Runtimes
+            \item Batch-size 1 Production
+            \item Decision Support
+            \item Minimize Ramp-up
+            \item Minimize Process Error
+        \end{itemize}
+        \end{multicols}
 
-            \end{tcbitemize}
-
-        \tcbitem[skin=subsectionboxskin, raster multicolumn=3, halign=center, title=Data Analytics Decision Making]
+        \tcbitem[title=Data Analytics Decision Making, raster multicolumn=6, halign upper=center]
             \adjustbox{scale=\graphscale}{
                 \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
 
@@ -414,10 +426,439 @@
                 \end{tcbitemize}
             }
 
+
+
     \end{tcbitemize}
+    
 
-    \tcbitem[title=Application Areas: Industry 4.0, raster multicolumn=6] First box
-    \tcbitem[title=Test, raster multicolumn=4]
-\end{tcbitemize}
 
+
+\end{multicols}
+
+\section{References}
+\printbibliography[heading=none]
 \end{document}
+
+
+
+
+
+% % User guides
+% % Latex: https://ftp.agdsn.de/pub/mirrors/latex/dante/macros/latex/base/usrguide.pdf
+% % Tabularray: https://mirror.physik.tu-berlin.de/pub/CTAN/macros/latex/contrib/tabularray/tabularray.pdf
+% % TColorbox: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+% % Posterbox Tutorial: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox-tutorial-poster.pdf#[0,{%22name%22:%22Fit%22}]
+% % Xcolor: https://mirror.clientvps.com/CTAN/macros/latex/contrib/xcolor/xcolor.pdf
+% % TikZ and PGFPlots: https://tikz.dev/ and https://tikz.dev/pgfplots/
+% %                    https://tug.ctan.org/info/visualtikz/VisualTikZ.pdf 
+% % SVG Package: https://ftp.agdsn.de/pub/mirrors/latex/dante/graphics/svg/doc/svg.pdf 
+% % Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
+% % fontspec: https://texdoc.org/serve/fontspec/0
+% % fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+% % biblatex: https://distrib-coffee.ipsl.jussieu.fr/pub/mirrors/ctan/macros/latex/contrib/biblatex/doc/biblatex.pdf
+% % amsmath: https://www.latex-project.org/help/documentation/amsldoc.pdf
+% % grapheur: https://ctan.tetaneutral.net/graphics/pgf/contrib/tkz-grapheur/doc/tkz-grapheur-doc-en.pdf
+% % enumitem: https://mirror.ibcp.fr/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
+
+% \documentclass[8pt]{extarticle}
+
+
+% % --- Hyphenation Rules --------------------------------------------------------
+% \usepackage[USenglish]{babel}
+
+% % --- Fonts --------------------------------------------------------------------
+
+% % Ensure proper font encoding
+% \usepackage[T1]{fontenc}
+
+% % Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
+% % to get a list of installed fonts: luaotfload-tool --list=format 
+% \usepackage{fontspec}
+% \setmainfont{FreeSans}[Scale=0.9]
+% \setsansfont{FreeSans}[Scale=0.9]
+% \setmonofont{FreeMono}[Scale=0.9]
+
+% % font for the words "AI & Data Analytics" in the header
+% \newfontfamily\headerfont{QTFuturePoster} 
+
+
+% % Emoji support
+% \usepackage{emoji}
+
+% % --- Page layout --------------------------------------------------------------
+% \usepackage[
+%     % showframe, 
+%     nomarginpar, 
+%     a4paper,
+%     portrait, 
+%     right=1.0cm, 
+%     left=1.0cm, 
+%     top=1.5cm, 
+%     bottom=1.5cm,
+%     headsep=0.25cm,
+%     headheight=0.75cm,
+%     footskip=0.5cm,
+% ]{geometry}
+
+
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
+
+
+% % --- TColorbox ---------------------------------------------------------------
+% \usepackage{tcolorbox}
+% \tcbuselibrary{skins,raster,listings,breakable,minted, poster}
+
+
+% % --- Tables -------------------------------------------------------------------
+% \usepackage{tabularray}
+
+% % --- Color Names -------------------------------------------------------------
+% \usepackage[dvipsnames]{xcolor}
+
+% % --- Graphics -----------------------------------------------------------------
+% \usepackage{graphicx}
+% \usepackage{svg}
+% \graphicspath{{./figures/}{./icons/}{./logos/}}
+% \usepackage{tikz}
+% \usetikzlibrary{shapes.geometric}    % for shapes
+% \usetikzlibrary{arrows.meta}         % for arrows, Arrow tip library 
+% \usetikzlibrary{positioning}         % for relative positioning
+% \usetikzlibrary{calc}                % for calculations to make complex coordinate calculations
+% %\usetikzlibrary{backgrounds}        % Background Library "defines background for pictures". To use this in a Tikzpicture, an option is passed, e.g. \begin{tikzpicture}[show background rectangle], with a background rectangle style defined before the picture. (e.g. \tikzset{background rectangle/.style={<define background rectangle style here>}}
+% % \usetikzlibrary{calendars}         % for calendar drawings
+% % \usetikzlibrary{fadings}           % for fading effects
+% % \usetikzlibrary{patterns}          % for patterns
+% % \usetikzlibrary{shadows}           % for shadow effects 
+% \usetikzlibrary{chains}            % for chain effects
+% \usetikzlibrary{fit}               % for fitting nodes together
+% % \usetikzlibrary{er}                % for entity relationship diagrams
+% % \usetikzlibrary{intersections}     % for calculating intersections of paths
+% % \usetikzlibrary{mindmap}           % for mind maps
+% \usetikzlibrary{matrix}            % for matrix drawings
+% % \usetikzlibrary{trees}             % for tree drawings
+% % \usetikzlibrary{decorations.pathmorphing}  % for path decorations like zigzag lines
+% % \usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
+% % \usetikzlibrary{decorations.markings}      % for markings along a path
+% % \usetikzlibrary{decorations.shapes}        % for shape decorations
+% % \usetikzlibrary{decorations.text}          % for text decorations along a path
+% % \usetikzlibrary{pgfplots.colorbrewer}      % for color maps
+
+% % \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
+
+% \usepackage{adjustbox}          % for adjusting boxes
+
+% \input{../shapes/flowchart_styles.tex}  % load flowchart styles
+
+
+% % --- URL and href -----------------------------------------------------------
+% \colorlet{citecolor}{black}
+% \colorlet{linkcolor}{black}
+% \colorlet{urlcolor}{black}
+% \usepackage[
+%   bookmarks=true,
+%   breaklinks=true,
+%   pdfborder={0 0 0},
+%   citecolor=citecolor,
+%   linkcolor=linkcolor,
+%   urlcolor=urlcolor,
+%   colorlinks=true,
+%   linktocpage=false,
+%   hyperindex=true,
+%   colorlinks=true,
+%   linktocpage=false,
+%   linkbordercolor=white]{hyperref}
+
+% % --- Math Environments --------------------------------------------------------
+% \usepackage{amsmath}
+% \usepackage{nicematrix}
+% \NiceMatrixOptions{cell-space-limits = 1pt}
+% \usepackage{siunitx}
+
+% % --- Bibliography -------------------------------------------------------------
+% \usepackage[autostyle=true]{csquotes} % recommended before biblatex
+% \usepackage[backend=biber,style=numeric,sorting=nyt]{biblatex}
+% \addbibresource{../bibliography/references.bib}
+
+% \renewcommand{\bibfont}{\normalfont\footnotesize}
+
+
+% % --- Enumerations -----------------------------------------------------------------
+% \usepackage{enumitem}
+
+% \setlist{noitemsep}
+% \setlist[1]{labelindent=\parindent} % < Usually a good idea
+% \setlist[itemize]{leftmargin=*}
+% \setlist[itemize,1]{label=-}
+
+% % --- Helpers -----------------------------------------------------------------
+% \usepackage{lipsum}
+
+
+
+% % --- Default options ---------------------------------------------------------
+% % \pagestyle{empty}
+% % \setlength\parindent{0pt}
+% % \setlength{\tabcolsep}{2pt}
+% % \baselineskip=0pt
+% % \setlength\columnsep{1.75mm}
+% % \setlength{\parskip}{0.1\baselineskip}
+
+
+% \newcommand{\maincolor}{OliveGreen!80!White}
+% \newcommand{\maincolspan}{4}
+% \newcommand{\graphscale}{0.9}
+
+
+% % --- TColorbox Skins ----------------------------------------------------------
+
+% % Colorbox skin for bash listings
+% \tcbsubskin{mintedbash}{empty}{
+%         size=minimal,
+%         listing engine=minted,
+%         listing only,
+%         minted style=friendly,
+%         minted language=bash,
+%         minted options={
+%             fontsize=\footnotesize,
+%             breaklines,
+%             autogobble,
+%         },
+%         colback=gray!10!white,
+%         colframe=gray!10!white,
+%         listing only,
+%         left=0em,
+%         enhanced,
+% }
+
+% % Colorbox skin for python listings
+% \tcbsubskin{mintedpython}{empty}{
+%         size=minimal,
+%         listing engine=minted,
+%         listing only,
+%         minted style=friendly,
+%         minted language=python,
+%         minted options={
+%             fontsize=\footnotesize,
+%             breaklines,
+%             autogobble,
+%         },
+%         colback=gray!10!white,
+%         colframe=gray!10!white,
+%         listing only,
+%         left=0em,
+%         enhanced,
+%         before skip=0.3\baselineskip,
+% }
+
+% % Skin for header box
+% \tcbsubskin{headerboxskin}{empty}{
+%         size=minimal,
+%         coltitle=black!10!black,
+% }
+
+
+
+% % Skin for orange-based section boxes
+% \tcbsubskin{sectionboxskin}{standard}{
+%     size=title, 
+%     left=0.2em,
+%     right=0.2em,
+%     arc=0.25mm,
+%     colback=white,
+%     colframe=\maincolor!75!black,
+%     coltitle=\maincolor!10!black,
+%     colbacktitle=\maincolor!75!white,
+%     fonttitle=\sffamily\bfseries,
+%     toptitle=0mm,
+%     bottomtitle=0mm,
+%     fontupper=\sffamily\small,
+%     fontlower=\sffamily\small,
+%     halign=left,
+%     frame empty,
+%     subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
+%         colback=\maincolor!50!\maincolor!20!white,
+%         colupper=\maincolor!50!gray,
+%         fontupper=\sffamily\bfseries\small,
+%         coltext=\maincolor!10!black,
+%         height=1.1\baselineskip,
+%       }, 
+% }
+
+
+% % Skin for sub-section boxes
+% \tcbsubskin{subsectionboxskin}{standard}{
+%     size=fbox, 
+%     top=0.4em,
+%     % left=0.2em,
+%     % right=0.2em,
+%     % arc=0.25mm,
+%     % top=0.4mm, 
+%     % bottom=0mm, 
+%     % boxrule=0.2pt, 
+%     % boxsep=0.1mm,
+%     frame empty,
+%     % colback=\maincolor!2!white,
+%     colback=white,
+%     colbacktitle=\maincolor!50!\maincolor!20!white,
+%     fonttitle=\sffamily\bfseries\small,
+%     coltitle=\maincolor!10!black,
+%     % height=1.1\baselineskip,    
+% }
+
+
+% % Skin for simple tables inside boxes
+% \tcbsubskin{boxtablesimple}{empty}{
+%     size=minimal,
+%     before skip=0.2\baselineskip,
+%     after skip=0.2\baselineskip,
+%     colback=white,
+%     colframe=gray,
+%     frame empty,
+% }
+
+
+
+
+
+
+% % ----------------------------------------------------------------------------------------------------------------------
+% % Header and Footer Settings
+% % ----------------------------------------------------------------------------------------------------------------------
+
+% \fancyhead[L]{
+%     \LARGE {\headerfont AI \& Data Analytics} \textcolor{\maincolor}{for AI beginners}
+% }
+% \fancyhead[C]{}
+% \fancyhead[R]{}
+% \fancyfoot[L]{}
+% \fancyfoot[C]{}
+% \fancyfoot[R]{\thepage}
+
+
+% % ----------------------------------------------------------------------------------------------------------------------
+% % Main Document
+% % ----------------------------------------------------------------------------------------------------------------------
+
+% \begin{document}
+
+% \begin{tcbitemize}
+%     [
+%         raster columns=6,
+%         raster equal height=rows,
+%         raster row skip=0.5cm,
+%         raster column skip=0.5cm,
+%         skin=sectionboxskin,
+%     ]
+%     \tcbitem[title=Industry 4.0, raster multicolumn=6]
+%     \begin{tcbitemize}[
+%         raster columns=6, 
+%         raster equal height=rows
+%     ]
+%         \tcbitem[blankest, raster multicolumn=6] Information is the oil of the 21st century and analytics is the combustion engine.
+%         \tcbitem[blankest, raster multicolumn=3]
+%             \begin{tcbitemize}[
+%                 skin=subsectionboxskin, 
+%                 raster columns=1
+%             ]
+%                 \tcbitem[title=Information Management Cycle, halign=center]
+%                     \adjustbox{scale=\graphscale}{
+%                         \begin{tikzpicture}[node distance=1cm and 1cm]
+
+%                             % place nodes
+%                             \coordinate (center) at (0,0) {};
+%                             \node [block, above=of center] (information-user) {INFORMATION USER} ;
+%                             \node [block, right=of center] (data-sources) {DATA SOURCES} ;
+%                             \node [block, below=of center] (information-ressources) {INFORMATION RESSOURCES} ;
+%                             \node [block, left=of center] (information-product) {INFORMATION PRODUCT} ;
+
+%                             % draw edges
+%                             \draw [line] (information-user) -| (data-sources) node[midway, above, xshift=5mm] {Requirement Analysis};
+%                             \draw [line] (data-sources) |- (information-ressources) node[midway, below, xshift=5mm] {Integration};
+%                             \draw [line] (information-ressources) -| (information-product) node[midway, below, xshift=-5mm] {Evaluation};
+%                             \draw [line] (information-product) |- (information-user) node[midway, above, xshift=-5mm] {Deployment};
+
+%                         \end{tikzpicture}
+%                     }
+
+%                 \tcbitem[title=Application Areas: Data Analytics\, Big Data\, AI]
+%                     \begin{itemize}
+%                         \item Optimize Quality Assurance
+%                         \item Predictive Maintenance
+%                         \item Reduce Process Runtimes
+%                         \item Batch-size 1 Production
+%                         \item Decision Support
+%                         \item Minimize Ramp-up
+%                         \item Minimize Process Error
+%                     \end{itemize}
+
+
+%             \end{tcbitemize}
+
+%         \tcbitem[skin=subsectionboxskin, raster multicolumn=3, halign=center, title=Data Analytics Decision Making]
+%             \adjustbox{scale=\graphscale}{
+%                 \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
+
+%                     \matrix[
+%                         matrix of nodes,
+%                         nodes={ circ, text width=1cm, minimum width=1cm },
+%                         column sep=1cm
+%                     ] (m1) {
+%                         |(big-data)| (BIG) DATA & |(smart-data)| SMART DATA & |(decisions)| DECISIONS \\
+%                     };
+
+%                     % draw arrows
+%                     \draw [line] (big-data) -- (smart-data);
+%                     \draw [line] (smart-data) -- (decisions);
+
+%                 \end{tikzpicture}
+%             }
+%             \vspace{2ex}
+
+%             \adjustbox{scale=0.95}{
+%                 \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
+%                     \tcbitem
+%                         detect, collect, determine, expand network
+%                         \begin{itemize}
+%                             \item simulations
+%                             \item sensors
+%                             \item databases
+%                             \item documentations
+%                             \item applications
+%                         \end{itemize}
+%                     \tcbitem
+%                         consolidate, reconstruct, model, verify, enrich, re-evaluate
+%                         \begin{itemize}
+%                             \item extract, transform, load (ETL)
+%                             \item streaming
+%                             \item descriptive analysis
+%                             \item semantic integration
+%                             \item enrichment
+%                         \end{itemize}
+%                     \tcbitem
+%                         sort, reorder, reproduce, reduce, compacting, validate
+%                         \begin{itemize}
+%                             \item predictive analysis
+%                             \item prescriptive analysis
+%                             \item data mining
+%                             \item data exploration
+%                             \item machine learning
+%                         \end{itemize}
+%                     \tcbitem
+%                         visualize, integrate, interpret, arrange, prioritize
+%                         \begin{itemize}
+%                             \item visual analytics
+%                             \item KPI
+%                             \item cockpits and reports
+%                             \item mental models
+%                         \end{itemize}
+%                 \end{tcbitemize}
+%             }
+
+%     \end{tcbitemize}
+
+%     \tcbitem[title=Application Areas: Industry 4.0, raster multicolumn=6] First box
+%     \tcbitem[title=Test, raster multicolumn=4]
+% \end{tcbitemize}
+
+% \end{document}
