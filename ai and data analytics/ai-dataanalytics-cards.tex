@@ -20,7 +20,7 @@
 % grapheur: https://ctan.tetaneutral.net/graphics/pgf/contrib/tkz-grapheur/doc/tkz-grapheur-doc-en.pdf
 % enumitem: https://mirror.ibcp.fr/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
 
-\documentclass[8pt]{extarticle}
+\documentclass[8pt]{extreport}
 
 
 % --- Hyphenation Rules --------------------------------------------------------
@@ -175,6 +175,8 @@
 \captionsetup{font=small,labelfont={bf,sf}}
 % \captionsetup[sub]{font=small,labelfont={bf,sf}}
 
+\setcounter{secnumdepth}{4}
+
 
 \newcommand{\maincolor}{LimeGreen!90!Gray}
 \newcommand{\maincolspan}{4}
@@ -323,12 +325,22 @@
 % Main Document
 % ----------------------------------------------------------------------------------------------------------------------
 
+
 \begin{document}
 
 \begin{multicols}{2}[
-        \section{Introduction}
     ]
-    \subsection{Industry 4.0}
+
+    \setcounter{tocdepth}{1} % Show sections
+    %\setcounter{tocdepth}{2} % + subsections
+    %\setcounter{tocdepth}{3} % + subsubsections
+    %\setcounter{tocdepth}{4} % + paragraphs
+    %\setcounter{tocdepth}{5} % + subparagraphs
+    \tableofcontents
+
+    % ==== Introduction =============================================================================
+    \chapter{Introduction to AI and Data Analytics}
+    \section{Industry 4.0}
 
     \begin{tcbitemize}[ skin=sectionraster, halign lower=center ]
         \tcbitem[title=Information Management Cycle, raster multicolumn=6]
@@ -355,510 +367,1700 @@
 
         \tcbitem[title={Data Analytics, Big Data and AI Application Areas}, raster multicolumn=6]
         \begin{multicols}{2}
-        \begin{itemize}
-            \item Optimize Quality Assurance
-            \item Predictive Maintenance
-            \item Reduce Process Runtimes
-            \item Batch-size 1 Production
-            \item Decision Support
-            \item Minimize Ramp-up
-            \item Minimize Process Error
-        \end{itemize}
+            \begin{itemize}
+                \item Optimize Quality Assurance
+                \item Predictive Maintenance
+                \item Reduce Process Runtimes
+                \item Batch-size 1 Production
+                \item Decision Support
+                \item Minimize Ramp-up
+                \item Minimize Process Error
+            \end{itemize}
         \end{multicols}
 
         \tcbitem[title=Data Analytics Decision Making, raster multicolumn=6, halign upper=center]
-            \adjustbox{scale=\graphscale}{
-                \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
+        \tcblower
+        \adjustbox{scale=\graphscale}{
+            \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
+                \matrix[
+                    matrix of nodes,
+                    nodes={ circ, text width=1cm, minimum width=1cm },
+                    column sep=1cm
+                ] (m1) {
+                    |(big-data)| (BIG) DATA & |(smart-data)| SMART DATA & |(decisions)| DECISIONS \\
+                };
 
-                    \matrix[
-                        matrix of nodes,
-                        nodes={ circ, text width=1cm, minimum width=1cm },
-                        column sep=1cm
-                    ] (m1) {
-                        |(big-data)| (BIG) DATA & |(smart-data)| SMART DATA & |(decisions)| DECISIONS \\
-                    };
+                % draw arrows
+                \draw [line] (big-data) -- (smart-data);
+                \draw [line] (smart-data) -- (decisions);
+            \end{tikzpicture}
+        }
 
-                    % draw arrows
-                    \draw [line] (big-data) -- (smart-data);
-                    \draw [line] (smart-data) -- (decisions);
+        \vspace{2ex}
 
-                \end{tikzpicture}
-            }
-            \vspace{2ex}
+        \adjustbox{scale=0.95}{
+            \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
+                \tcbitem
+                detect, collect, determine, expand network
+                \begin{itemize}
+                    \item simulations
+                    \item sensors
+                    \item databases
+                    \item documentations
+                    \item applications
+                \end{itemize}
+                \tcbitem
+                consolidate, reconstruct, model, verify, enrich, re-evaluate
+                \begin{itemize}
+                    \item extract, transform, load (ETL)
+                    \item streaming
+                    \item descriptive analysis
+                    \item semantic integration
+                    \item enrichment
+                \end{itemize}
+                \tcbitem
+                sort, reorder, reproduce, reduce, compacting, validate
+                \begin{itemize}
+                    \item predictive analysis
+                    \item prescriptive analysis
+                    \item data mining
+                    \item data exploration
+                    \item machine learning
+                \end{itemize}
+                \tcbitem
+                visualize, integrate, interpret, arrange, prioritize
+                \begin{itemize}
+                    \item visual analytics
+                    \item KPI
+                    \item cockpits and reports
+                    \item mental models
+                \end{itemize}
+            \end{tcbitemize}
+        }
 
-            \adjustbox{scale=0.95}{
-                \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
-                    \tcbitem
-                        detect, collect, determine, expand network
-                        \begin{itemize}
-                            \item simulations
-                            \item sensors
-                            \item databases
-                            \item documentations
-                            \item applications
-                        \end{itemize}
-                    \tcbitem
-                        consolidate, reconstruct, model, verify, enrich, re-evaluate
-                        \begin{itemize}
-                            \item extract, transform, load (ETL)
-                            \item streaming
-                            \item descriptive analysis
-                            \item semantic integration
-                            \item enrichment
-                        \end{itemize}
-                    \tcbitem
-                        sort, reorder, reproduce, reduce, compacting, validate
-                        \begin{itemize}
-                            \item predictive analysis
-                            \item prescriptive analysis
-                            \item data mining
-                            \item data exploration
-                            \item machine learning
-                        \end{itemize}
-                    \tcbitem
-                        visualize, integrate, interpret, arrange, prioritize
-                        \begin{itemize}
-                            \item visual analytics
-                            \item KPI
-                            \item cockpits and reports
-                            \item mental models
-                        \end{itemize}
-                \end{tcbitemize}
-            }
+    \end{tcbitemize}
 
+\section{History of AI}
+\subsection{Historical Developments}
+\subsection{AI Winter}
+\subsection{Notable Advances in AI}
+
+\section{Expert Systems}
+\subsection{Overview Over Expert Systems}
+\subsection{Introduction to Prolog}
+
+\section{Neuroscience}
+\subsection{The (Human) Brain}
+\subsection{Cognitive Processes}
+
+\section{Modern AI Systems}
+\subsection{Recent Developments in Hard- and Software}
+\subsection{Narrow vs General AI}
+\subsection{NLP and Computer Vision}
+
+\section{AI Application Areas}
+\subsection{Autonomous Vehicles \& Mobility}
+\subsection{Personalized Medicine}
+\subsection{FinTech}
+\subsection{Retail \& Industry}
+
+\section{Literature}
+\begin{itemize}
+    \item Chowdhary, K. R. (2020). Fundamentals of Artificial Intelligence. Springer India.
+    \item Russell, S., \& Norvig, P. (2022). Artificial intelligence. A modern approach (4th ed.). Pearson Education.
+    \item Ward, J. (2020). The student's guide to cognitive neuroscience (4th ed.). Taylor \& Francis Group.
+\end{itemize}
+
+    % ==== Mathematical Foundations =============================================================================
+    \chapter{Mathematical Foundations}
+        \section{Advanced Mathematics}
+    \subsection{Calculus}
+    \subsubsection{Differentiation}
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Gradient, raster multicolumn=6]
+        The gradient for any function $y = f(x)$ is defined as follows. The gradient is also called the first derivative. The three notations $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable\textsuperscript{\cite[][p89]{yangMathematicsCivilEngineers2018} and \cite[][p393]{bronsteinTaschenbuchMathematik2001}}.
+        \tcblower
+        \begin{equation}
+            f'(x) = \frac{dy}{dx} = \frac{df(x)}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+        \end{equation}
+
+        \vspace*{4ex}
+        \centering
+        \captionsetup{hypcap=false}
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=8cm,
+                height=6cm,
+                axis lines=middle,
+                axis line style={thick, -Stealth},
+                xlabel={$x$},
+                ylabel={$y = f(x)$},
+                xmin=0, xmax=3,
+                ymin=-0.5, ymax=5,
+                samples=100,
+                domain=0:2.2,
+                legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east},
+                clip=false,
+                ylabel style={at={(ticklabel cs:1.0)},anchor=south}, 
+                xlabel style={at={(1.0,0.1)},anchor=south}, 
+            ]
+            % Plot y = x^2
+            \addplot[thick, \maincolor!80!black, smooth] {x^2};
+            \addlegendentry{$y = x^2$}
+            
+            % Tangent at point P (x=1, y=1)
+            % Derivative: y' = 2x, at x=1: y'(1) = 2
+            % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
+            \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
+            \addlegendentry{Tangent at $P$}
+            
+            % Mark point P
+            \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
+            \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
+            
+            % Line M: vertical line from P down to x-axis (at x=1)
+            \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
+            \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
+            
+            % Line N: horizontal line from P to x=2 (parallel to x-axis)
+            \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
+            
+            % Vertical line at x=2 from x-axis up
+            % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
+            \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
+            
+            % Mark intersection points
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
+            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
+            
+            % Label dy: from N (y=1) to tangent (y=3) at x=2
+            \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
+            \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
+            
+            % Label delta y: from N (y=1) to curve (y=4) at x=2
+            \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
+            \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
+            
+            % Label x: from origin to where M hits x-axis (x=1)
+            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.45) -- (axis cs:1,-0.45);
+            \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.6) {$x$};
+            
+            % Label delta x = dx: from M (x=1) to x=2
+            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.45) -- (axis cs:2,-0.45);
+            \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.6) {$\Delta x = dx$};
+            
+            % Angle alpha where tangent crosses x-axis
+            % Tangent y=2x-1 crosses x-axis at x=0.5
+            % where A, B, and C are the vertices, and B is the apex
+            \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
+            % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
+            % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
+            
+            \end{axis}
+        \end{tikzpicture}
+        \captionof{figure}{Graph of example function $y = x^2$ with tangent line at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
+
+        
+    \end{tcbitemize}    
+    \begin{enumerate}[label*=\arabic*.]
+        \item ...
+        \item Integration
+        \item Partial Differentiation
+        \item Vector Analysis
+    \end{enumerate}
+
+    \subsection{Integral Transformations}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Convolution
+        \item Complex Numbers
+        \item Fourier Series
+        \item Fourier Transformation
+    \end{enumerate}
+
+    \subsection{Vector Algebra}
+    \subsubsection{Scalars and Vectors}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=N-Dimensional Vector, raster multicolumn=6]
+        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition\textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters.
+
+        \begin{equation}
+            \vec{v} =
+            \begin{pNiceMatrix}
+                a_1 \\ a_2 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+            \neq
+            \begin{pNiceMatrix}
+                \CodeBefore
+                \cellcolor[HTML]{FFFF88}{1-1,2-1}
+                \Body
+                a_2 \\ a_1 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+        \end{equation}
+
+        \tcbitem[title=Length (Magnitude), raster multicolumn=6]
+        Length (magnitude) of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+        \end{equation}
+
+        \tcbitem[title=Normalized vector (unit vector), raster multicolumn=6]
+        Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} =
+            \begin{pNiceMatrix}
+                \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
+            \end{pNiceMatrix}
+        \end{equation}
+
+    \end{tcbitemize}
+
+    \subsubsection{Addition and Subtraction of Vectors}
+    \subsubsection{Multiplication of Vectors, Vector Product, Scalar Product}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title=Scalar Product (dot product), raster multicolumn=6]
+        Scalar product (dot product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+        \tcblower
+        \begin{equation}
+            \vec{v} \cdot \vec{u} =
+            \begin{pNiceMatrix}
+                v_1 \\ v_2 \\ \vdots \\ v_n
+            \end{pNiceMatrix}
+            \cdot
+            \begin{pNiceMatrix}
+                u_1 \\ u_2 \\ \vdots \\ u_n
+            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
+        \end{equation}
+
+        \tcbitem[title=Angle and Cosine Similarity, raster multicolumn=6]
+        The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+
+        \begin{equation}
+            \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
+            \Rightarrow
+            \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
+            \Rightarrow
+            \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
+        \end{equation}
+
+        \vspace{2ex}
+        
+        Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
+        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
 
 
     \end{tcbitemize}
+
+    \subsection{Vector Calculus}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Differentiation of Vectors
+        \item Integration of Vectors
+        \item Scalar and Vector Fields
+        \item Vector Operators
+    \end{enumerate}
+
+    \subsection{Matrices and Vector Spaces}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Basic Matrix Algebra and Systems of Linear Equations
+        \item Transpose, Trace, Determinant, and Inverse of a Matrix
+        \item Eigenvalues, Eigenvectors, and Diagonalization
+        \item Tensors
+    \end{enumerate}
+
+    \subsection{Information Theory}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean Squared Error (MSE) and Simple Linear Regression
+        \item Area Under the ROC Curve and Gini Index
+        \item Entropy
+        \item Cross Entropy
+    \end{enumerate}
+
+    \section{Advanced Statistics}
+    \subsection{Introduction to Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Random Variables
+        \item Kolmogorov Axioms
+        \item Probability Distributions
+        \item Decomposing probability distributions
+        \item Expectation Values and Moments
+        \item Central Limit Theorem
+        \item Sufficient Statistics
+        \item Problems of Dimensionality
+        \item Component Analysis and Discriminants
+    \end{enumerate}
+    \subsection{Important Probability Distributions and their Applications}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Binomial Distribution
+        \item Gauss or Normal Distribution
+        \item Poisson and Gamma-Poisson Distribution
+        \item Weibull Distribution
+    \end{enumerate}
+    \subsection{Bayesian Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Bayes’ Rule
+        \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+        \item Conjugate Prior
+        \item Bayesian \& Frequentist Approach
+    \end{enumerate}
+    \subsection{Descriptive Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean, Median, Mode, Quantiles
+        \item Variance, Skewness, Kurtosis
+    \end{enumerate}
+    \subsection{Data Visualization}
+    \begin{enumerate}[label*=\arabic*.]
+        \item General Principles of Dataviz/Visual Communication
+        \item 1D, 2D Histograms
+        \item Box Plot, Violin Plot
+        \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+        \item Bar Chart
+    \end{enumerate}
+    \subsection{Parameter Estimation}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Maximum Likelihood
+        \item Ordinary Least Squares
+        \item Expectation Maximization (EM)
+        \item Lasso and Ridge Regularization
+        \item Propagation of Uncertainties
+    \end{enumerate}
+    \subsection{Hypothesis Test}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Error of 1st and 2nd Kind
+        \item Multiple Hypothesis Tests
+        \item p-Value
+    \end{enumerate}
+
+    \section{Literature}
+\begin{itemize}
+\item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
+\item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+\item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+\item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+\item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+\item Downey, A. (2014). Think stats. O’Reilley Publishing.
+\item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+\item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+\end{itemize}
+
+% ==== Programming Foundations =============================================================================
+\chapter{Programming Foundations}
+\section{Programming with Python}
+\subsection{Introduction to Python}
+\subsubsection{Data structures}
+\lipsum[1][1]
+\subsubsection{Functions}
+\subsubsection{Flow control}
+\lipsum[1][1]
+\subsubsection{Input / Output}
+\subsubsection{Modules and packages}
+\lipsum[1][1]
+
+\subsection{Classes and Inheritance}
+\subsubsection{Scopes and namespaces}
+\lipsum[1][1]
+\subsubsection{Classes and inheritance}
+\subsubsection{Iterators and generators}
+\lipsum[1][1]
+
+\subsection{Errors and Exceptions}
+\subsubsection{Syntax errors}
+\subsubsection{Handling and raising exceptions}
+\lipsum[1][1]
+\subsubsection{User-defined exceptions}
+
+\subsection{Important Libraries}
+\subsubsection{Standard Python library}
+\subsubsection{Scientific calculations}
+\lipsum[1][1]
+\subsubsection{Speeding up Python}
+\subsubsection{Visualization}
+\lipsum[1][1]
+\subsubsection{Accessing databases}
+
+\subsection{Working with Python}
+\subsubsection{Virtual environments}
+\lipsum[1][1]
+\subsubsection{Managing packages}
+\subsubsection{Unit and integration testing}
+\lipsum[1][1]
+\subsubsection{Documenting code}
+
+\subsection{Version Control}
+\subsubsection{Introduction to version control}
+\subsubsection{Version control with GIT}
+\lipsum[1][1]
+
+\section{NumPy and Pandas}
+\subsection{Introduction to NumPy}
+\subsubsection{NumPy arrays}
+\lipsum[1][1]
+\subsubsection{Array indexing and slicing}
+\subsubsection{Array operations}
+\lipsum[1][1]
+\subsubsection{Broadcasting}
+
+\subsection{Introduction to Pandas}
+\subsubsection{Series and DataFrames}
+\lipsum[1][1]
+\subsubsection{Data indexing and selection}
+\subsubsection{Data cleaning and preparation}
+\lipsum[1][1]
+\subsubsection{Data aggregation and grouping}
+
+\subsection{Data visualization with Pandas}
+\subsubsection{Plotting with Pandas}
+\lipsum[1][1]
+\subsubsection{Customizing plots}
+
+\subsection{Working with time series data}
+\subsubsection{Date and time handling}
+\subsubsection{Resampling and frequency conversion}
+
+\subsection{Advanced Pandas techniques}
+\subsubsection{Merging and joining DataFrames}
+\subsubsection{Pivot tables and cross-tabulations}
+
+\subsection{Performance optimization}
+\subsubsection{Efficient data manipulation}
+\subsubsection{Memory management}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Lutz, M. (2017). Learning Python (5th ed.). O'Reilly.
+        \item Mathes, E. (2019). Python Crash Course (2nd ed.). No Starch Press.
+\end{itemize}
+
+% ==== Data Analytics Foundations =============================================================================
+\chapter{Data Analytics Foundations}
+    \section{Data Preprocessing}
+    \subsection{Data Cleaning}
+    \lipsum[1][1-3]
+    \subsection{Data Integration}
+    \lipsum[2][1-3]
+    \subsection{Data Transformation}
+    \lipsum[3][1-3]
+    \subsection{Data Reduction}
+    \lipsum[4][1-3]
+    \section{Exploratory Data Analysis}
+    \subsection{Descriptive Statistics}
+    \lipsum[5][1-3]
+    \subsection{Data Visualization Techniques}
+    \lipsum[6][1-3]
+    \subsection{Correlation Analysis}
+    \lipsum[7][1-3]
+    \subsection{Dimensionality Reduction}
+    \lipsum[8][1-3]
+    \section{Literature}
+    \begin{itemize}
+        \item Han, J., Kamber, M., \& Pei, J. (2011). Data mining: Concepts and techniques (3rd ed.). Morgan Kaufmann.
+        \item Provost, F., \& Fawcett, T. (2013). Data science for business: What you need to know about data mining and data-analytic thinking. O'Reilly Media.
+        \item Tukey, J. W. (1977). Exploratory data analysis. Addison-Wesley.
+    \end{itemize}  
     
 
+    % ==== Machine Learning =============================================================================
+    \chapter{Machine Learning}
+    Test
+    \section{Introduction to Machine Learning}
+    \subsection{Regression \& Classification}
+    \lipsum[1][1-3]
+    \subsection{Supervised \& Unsupervised Learning}
+    \lipsum[2][1-3]
+    \subsection{Reinforcement Learning}
+    \section{Clustering}
+    \subsection{Introduction to clustering}
+    \lipsum[3][1-3]
+    \subsection{K-Means}
+    \lipsum[4][1-3]
+    \subsection{Expectation Maximization}
+    \subsection{DBScan}
+    \subsection{Hierarchical Clustering}
+    \section{Regression}
+    \subsection{Linear \& Non-linear Regression}
+    \subsection{Logistic Regression}
+    \subsection{Quantile Regression}
+    \subsection{Multivariate Regression}
+    \subsection{Lasso \& Ridge Regression}
+    \section{Support Vector Machines}
+    \subsection{Introduction to Support Vector Machines}
+    \subsection{SVM for Classification}
+    \subsection{SVM for Regression}
+    \section{Decision Trees}
+    \subsection{Introduction to Decision Trees}
+    \subsection{Decision Trees for Classification}
+    \subsection{Decision Trees for Regression}
+    \section{Genetic Algorithms}
+    \subsection{Introduction to Genetic Algorithms}
+    \subsection{Applications of Genetic Algorithms}
+    \section{Literature}
+    \begin{itemize}
+        \item Akerkar, R., \& Sajja, P. S. (2016). Intelligent techniques for data science. Springer International Publishing.
+        \item Hodeghatta, U. R., \& Nayak, U. (2017). Business analytics using R- A practical approach. Apress Publishing.
+        \item Lahoz-Beltra, R. (2016). SGA: Simple Genetic Algorithm (SGA) in Python.
+        \item Runkler, T. A. (2012). Data analytics: Models and algorithms for intelligent data analysis. Springer Vieweg Press.
+        \item Skiena, S. S (2017). The data science design manual. Springer International Publishing. Database: Springer eBook Package English Computer Science.
+    \end{itemize}
 
+    % ==== Deep Learning =============================================================================
+    \chapter{Deep Learning}
+    \section{Introduction to Neural Network and Deep Learning}
+    \subsection{The Biological Brain}
+    \subsection{Perceptron and Multi-Layer Perceptrons}
+    \section{Network Architectures}
+    \subsection{Feed-Forward Networks}
+    \lipsum[5][1-3]
+    \subsection{Convolutional Networks}
+    \lipsum[6][1-3]
+    \subsection{Recurrent Networks, Memory Cells and LSTMs}
+    \section{Neural Network Training}
+    \subsection{Weight Initialization and Transfer Function}
+    \lipsum[7][1-3]
+    \subsection{Backpropagation and Gradient Descent}
+    \lipsum[8][1-3]
+    \subsection{Regularization and Overtraining}
+    \section{Alternative Training Methods}
+    \subsection{Attention}
+    \subsection{Feedback Alignment}
+    \subsection{Synthetic Gradients}
+    \subsection{Decoupled Network Interfaces}
+    \section{Further Network Architectures}
+    \subsection{Generative Adversarial Networks}
+    \subsection{Autoencoders}
+    \subsection{Restricted Boltzmann Machines}
+    \subsection{Capsule Networks}
+    \subsection{Spiking Networks}
+    \section{Literature}
+    \begin{itemize}
+        \item Chollet, F. (2017). Deep learning with Python. Shelter Island, NY: Manning.
+        \item Efron, B., \& Hastie, T. (2016). Computer age statistical inference. Cambridge: Cambridge University Press.
+        \item Geron, A. (2017). Hands-on machine learning with Scikit-Learn and TensorFlow. Boston, MA: O’Reilly Publishing.
+        \item Goodfellow, I., Bengio, Y., \& Courville, A. (2016). Deep learning. Boston, MA: MIT Press.
+        \item Russel, S., \& Norvig, P. (2010). Artificial intelligence – A modern approach (3rd ed.). Essex: Pearson.
+    \end{itemize}
+
+    % ==== Reinforcement Learning =============================================================================
+    \chapter{Reinforcement Learning}
+    \section{Introduction to Reinforcement Learning}
+    \subsection{Understanding Reinforcement Learning}
+    \lipsum[9][1-3]
+    \subsection{Components of Reinforcement Learning Systems}
+    \lipsum[10][1-3]
+    \section{Markov Chains}
+    \subsection{Markov Decision Process \& Markov Property}
+    \lipsum[11][1-3]
+    \subsection{Value Functions and Discounted Value Functions}
+    \lipsum[12][1-3]
+    \subsection{General Utility Function}
+    \subsection{Actions \& Policy}
+    \subsection{Bellman's Equation}
+    \subsection{Value Iteration}
+    \subsection{Markov Chain Monte Carlo (MCMC)}
+    \section{Bandit}
+    \subsection{Single-Arm Bandit}
+    \subsection{Multi-Arm Bandit}
+    \section{Q-Learning}
+    \subsection{Time-difference Learning}
+    \subsection{Reinforcement Learning with Neural Networks \& Deep Q Learning}
+    \subsection{Experience Replay}
+    \subsection{Double Q-Learning}
+    \subsection{Delayed Sparse Rewards}
+    \subsection{Hierarchical Learning}
+    \subsection{Value- vs Policy-Based Learning}
+    \subsection{Actor-Critic Learning}
+    \section{Reinforcement Learning Approaches}
+    \subsection{Model-Free Learning}
+    \subsection{Model-Based Learning}
+    \subsection{Exploration vs Exploitation}
+
+    \section{Inference and Causality}
+
+    \subsection{Statistical Inference}
+    \subsubsection{Bayesian inference}
+    \lipsum[13][1-3]
+    \subsubsection{Bayesian networks}
+    \lipsum[14][1-3]
+    \subsubsection{Probabilistic modelling}
+    \lipsum[1][1]
+    \subsection{Introduction to Causality}
+    \subsubsection{Correlation vs causation}
+    \lipsum[15][1-3]
+    \subsubsection{Granger causality}
+    \lipsum[16][1-3]
+    \subsubsection{Directed Acyclic Graphs (DAG)}
+    \lipsum[1][1]
+    \subsubsection{Elements of causal graphs: collider, chain, fork}
+    \lipsum[1][1]
+    \subsubsection{D-separation}
+
+    \subsection{Interventions}
+    \subsubsection{Seeing vs doing}
+    \lipsum[1][1]
+    \subsubsection{Conditional independence}
+    \lipsum[1][1]
+    \subsubsection{Confounders \& counterfactuals}
+    \lipsum[1][1]
+    \subsubsection{Causal inference vs randomized controlled trials}
+    \lipsum[1][1]
+
+    \subsection{Do-calculus}
+    \subsubsection{Front- \& backdoor criterion}
+    \lipsum[1][1]
+    \subsubsection{Three rules of do-calculus}
+    \lipsum[1][1]
+
+    \subsection{Fallacies}
+    \subsubsection{Mediation fallacy}
+    \lipsum[1][1]
+    \subsubsection{Collider bias}
+    \lipsum[1][1]
+    \subsubsection{Simpson’s \& Berkson’s Paradox}
+    \lipsum[1][1]
+    \subsubsection{Imputing missing values: causal vs data-driven view}
+    \lipsum[1][1]
+
+    \section{Literature}
+    \begin{itemize}
+        \item Berzuini, C., Dawid, P., \& Bernardinelli, L. (2012). Causality: Statistical perspectives and applications. Wiley.
+        \item Hernan, M. A., \& Robins, J. M. (2020). Causal inference: What if. CRC Press.
+        \item Pearl, J. (2013). Causality: Models, reasoning and inference (2nd ed.). Cambridge University Press.
+        \item Pearl, J., \& Mackenzie, D. (2018). The book of why: The new science of cause and effect. Basic Books.
+        \item Pearl, J., Glymour, M., \& Jewell, N. P. (2016). Causal inference in statistics: A primer. Wiley.
+        \item Wakefield, J. (2013). Bayesian and frequentist regression methods. Springer.
+        \item Bertsekas, D. P. (2019). Reinforcement learning and optimal control. Athena Scientific.
+        \item Sutton, R. S., \& Barto, A. G. (1998). Reinforcement learning: An introduction. MIT Press.
+
+    \end{itemize}
+
+    % ==== Functional Security in AI Systems =============================================================================
+    \chapter{Functional Security in AI Systems}
+    \section{Introduction}
+    \subsection{Functional Security}
+    \subsection{Automotive Safety}
+    \subsection{Relevant Standards (ISO 26262, IEC 61508, ISO 27001, EU directive 2001/95/EG, ISO 25119)}
+    \section{Functional Safety Standard ISO 26262}
+    \subsection{Introduction}
+    \subsection{Automotive Safe Integrity Levels (ASIL)}
+    \subsection{Recommended Techniques}
+    \section{IT Security Standards}
+    \subsection{ISO 27001}
+    \subsection{ISO 15408}
+    \subsection{ISO 21434}
+    \subsection{SAE J3061}
+    \subsection{AECQ}
+    \section{Approaches}
+    \subsection{Safe Failure Fraction (SFF)}
+    \subsection{Diagnostic Coverage (DC)}
+    \subsection{Hazard Analysis and Risk Assessment (HARA)}
+    \subsection{Fault Tree Analysis (FTA)}
+    \subsection{Failure Modes, Effects \& (Diagnostic, Criticality) Analysis (FME[C,D]A)}
+    \section{Attacks and Defenses}
+    \subsection{Cyber Attacks}
+    \subsection{Physical Attacks}
+    \subsection{MISRA C/C++ Guidelines}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Smith D.J., Simpson K. (2016). The Safety Critical Systems Handbook. (4th ed.) Elsevier
+        \item Smith D.j. (2017). Reliability, Maintainability and Risk (9th ed.) Elsevier
+        \item Rausand, M. (2014). Reliability of Safety-Critical Systems: Theory and Applications Wiley.
+    \end{itemize}
+
+    % ==== Foundational Computer Vision =============================================================================
+    \chapter{Foundational Computer Vision}
+    \section{Image Processing and Low Level Vision}
+
+    \subsection{Image Acquisition}
+    \subsubsection{The Human Visual System}
+    \lipsum[17][1-3]
+    \subsubsection{Cameras and Sensors}
+    \lipsum[18][1-3]
+
+    \subsection{Single and Multi-View Geometry}
+    \subsubsection{Camera Geometry and Perspective Projection}
+    \lipsum[1][1]
+    \subsection{Stereopsis and Multiple Views}
+
+    \subsection{Image Representation and Morphology}
+    \subsubsection{Image Types}
+    \lipsum[1][1]
+    \subsubsection{Morphology of Binary and Greyscale Images}
+    \lipsum[1][1]
+
+    \subsection{Filtering}
+    \subsubsection{Filtering in the Spatial Domain}
+    \lipsum[1][1]
+    \subsubsection{Fourier Transformation and Filtering in the Frequency Domain}
+    \lipsum[1][1]
+
+    \subsection{Texture}
+    \subsubsection{Classical Texture Representations}
+    \lipsum[1][1]
+    \subsubsection{Bag of Words and Representation in CNNs}
+    \lipsum[1][1]
+
+    \section{Mid-Level Vision and Video}
+    \subsection{Mid-Level Image Features}
+    \subsubsection{Edges \& Lines}
+    \lipsum[19][1-3]
+    \subsubsection{Corners, Points of Interest, and Blobs}
+    \lipsum[20][1-3]
+    \subsubsection{Feature Based Alignment}
+    \lipsum[1][1]
+
+    \subsection{Segmentation}
+    \subsubsection{Region Based Segmentation}
+    \lipsum[1][1]
+    \subsubsection{Contour Based Segmentation}
+    \lipsum[1][1]
+
+    \subsection{Motion}
+    \subsubsection{Optical Flow}
+    \lipsum[1][1]
+    \subsubsection{Classical Approaches}
+    \lipsum[1][1]
+    \subsubsection{CNN Based Methods}
+
+    \subsection{Tracking}
+    \subsubsection{Kalman Filters}
+    \subsubsection{Particle Filters}
+    \subsubsection{Tracking Via Deep Networks}
+
+    \subsection{Shape}
+    \subsubsection{Shape from X}
+    \subsubsection{Geometric Methods}
+    \subsubsection{Radiometric Approaches}
+
+    \section{Computer Vision for Autonomous Systems}
+    \subsection{Image Formation \& Acquisition}
+    \subsubsection{Light}
+    \subsubsection{Color}
+    \subsubsection{Perspective Camera}
+    \subsubsection{Camera Calibration}
+    \subsubsection{Single and Multiple View Geometry}
+    \subsection{Sensors for Computer Vision}
+    \subsubsection{Camera \& Night Vision}
+    \lipsum[1][1]
+    \subsubsection{Lidar}
+    \subsubsection{Radar}
+    \subsubsection{Ultrasound}
+    \subsubsection{Trends}
+    \subsection{Image Processing}
+    \subsubsection{Operators}
+    \subsubsection{Filtering and Transforms}
+    \subsubsection{Geometric Transformations}
+    \subsection{Feature Detection}
+    \subsubsection{Points}
+    \subsubsection{Edges}
+    \subsubsection{Lines}
+    \subsubsection{Common Methods}
+    \subsection{Object Detection \& Tracking}
+    \subsubsection{Object Representation}
+    \subsubsection{Techniques for Object Detection}
+    \subsubsection{Network Architectures}
+    \subsection{Segmentation}
+    \subsubsection{Stuff and Things}
+    \subsubsection{Semantic Segmentation}
+    \subsubsection{Instance Segmentation}
+    \subsubsection{Segmentation in Videos and Feeds}
+    \subsubsection{MOTS: Multi-Object Tracking \& Segmentation}
+
+    \section{Cognitive Computer Vision}
+    \subsection{Classification}
+    \subsubsection{Classifying Image Content}
+    \subsubsection{Image Retrieval and Tagging}
+    \subsubsection{Scene Understanding}
+    \subsection{Recognition}
+    \subsubsection{Object Recognition}
+    \subsubsection{Semantic and Instance Segmentation}
+    \subsubsection{Face Recognition}
+    \subsection{Image Synthesis}
+    \subsubsection{Extrapolation}
+    \subsubsection{Synthesizing Images and Image Enhancement (Superresolution)}
+    \subsubsection{Artistic Style Transfer / Domain Transfer}
+    \subsection{Computer Vision and NLP}
+    \subsubsection{Scene Description}
+    \subsubsection{Visual Question Answering}
+    \subsubsection{Synthesizing Images from Descriptions}
+    \subsection{Current Challenges}
+    \subsubsection{Fairness and Explainability in Computer Vision}
+    \subsubsection{Self Supervised and Contrastive Learning}
+    \subsubsection{Robust Computer Vision}
+
+    \section{Advanced NLP and Computer Vision}
+    \subsection{Text Processing}
+    \subsubsection{Machine translation}
+    \subsubsection{Information extraction}
+    \subsection{Speech Signal Processing}
+    \subsubsection{Speech recognition}
+    \subsubsection{Speech synthesis}
+    \subsection{Geometry Reconstruction}
+    \subsubsection{3D reconstruction from 2D images/videos}
+    \subsubsection{Change of perspective}
+    \subsection{Semantic Image Analysis}
+    \subsubsection{Image retrieval}
+    \subsubsection{Semantic segmentation / object detection}
+    \subsubsection{Medical imaging analysis}
+    \subsubsection{Copyright violation, counterfeit and forgery detection}
+    \subsubsection{Face recognition and biometrics}
+    \subsection{Tracking}
+    \subsubsection{Challenges in tracking}
+    \subsubsection{Object representation}
+    \subsubsection{Single vs. multiple object tracking}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Forsyth, D., Ponce, J. (2012): Computer Vision - A Modern Approach, Prentice Hall.
+        \item Gonzalez, R.C., Woods, R.E. (2017): Digital Image Processing (4th edition), Prentice-Hall.
+        \item Hartley, R., Zisserman, A. (2004): Multiple View Geometry in Computer Vision, 2nd Edition, Cambridge University Press.
+        \item Klette, R. (2014): Concise Computer Vision: An Introduction into Theory and Algorithms, Springer.
+
+        \item Davies, E.R. (2012). Computer and Machine Vision. 4th edition. Academic Press. London, Oxford, Boston, New York and San Diego.
+        \item Szeliski, R. (2010): Computer Vision - Algorithms and Applications, Springer.
+        \item Ansari, S. (2020). Building Computer Vision Applications Using Artificial Neural Networks. Apress. https://doi.org/10.1007/978-1-4842-5887-3
+        \item Ayyadevara, V., \& Reddy, Y. (2020). Modern Computer Vision with PyTorch. Packt.
+        \item Distante, A., \& Distante, C. (2020). Handbook of image processing and computer vision: Volume 1: From energy to image. Springer International Publishing. https://doi.org/10.1007/978-3-030-38148-6
+        \item Peters, J. F. (2017). Foundations of Computer Vision (Vol. 124). Cham: Springer International Publishing. https://doi.org/10.1007/978-3-319-52483-2
+        \item Szelinski, R. (2020). Computer Vision: Algorithms and Applications. (2nd ed.). Springer Nature.
+        \item Goodfellow, I., Bengio, Y., \& Courville, A. (2016). Deep Learning. MIT Press. Cambridge, MA.
+        \item Dadhich, A. (2018). Practical Computer Vision. Pakt Publishing. Burmingham, UK.
+        \item Hornberg, A. (2017). Handbook of Machine and Computer Vision. 2nd edition. Wiley-VCH. Weinheim, Germany.
+        \item Shanmugamani, R. (2018). Deep Learning for Computer Vision. Pakt Publishing. Burmingham, UK.
+        \item Solem, J. E. (2012). Programming Computer Vision with Python. O'Reilly. Cambridge, MA.
+        \item Bengfort, B., Bilbro, R., \& Ojeda, T. (2018). Applied text analysis with Python: Enabling language-aware data products with machine learning. O'Reilly.
+        \item Clark, A., Fox, C., \& Lappin, S. (Eds.). (2010). The handbook of computational linguistics and natural language processing. Wiley-Blackwell.
+        \item Davies, E. R. (2017). Computer vision: Principles, algorithms, applications, learning (5th ed.). Academic Press.
+        \item Fisher, R. B., Breckon, T. P., Dawson-Howe, K., Fitzgibbon, A., Robertson, C., Trucco, E., \& Williams, C. K. I. (2016). Dictionary of computer vision and image processing (2nd ed.). Wiley.
+
+    \end{itemize}
+
+    % ==== Artificial Intelligence in FinTech =============================================================================
+    \chapter{Artificial Intelligence in FinTech}
+    \section{Concepts of FinTechs and Artificial Intelligence}
+    \subsection{Introduction of FinTechs and AI}
+    \subsubsection{Definition of FinTechs and AI}
+    \lipsum[21][1-3]
+    \subsubsection{FinTech Ecosystem}
+    \lipsum[22][1-3]
+    \subsubsection{Revolution in the Financial Services Industry}
+    \lipsum[1][1]
+    \subsubsection{Open Banking Regulation}
+
+    \subsection{Application of FinTechs in Banking and Finance}
+    \subsubsection{Retail Banking}
+    \subsubsection{Payment Transactions}
+    \subsubsection{Wealth Management}
+    \subsubsection{Financing}
+    \lipsum[1][1]
+    \subsubsection{Scope of FinTech in Financial Inclusion}
+    \lipsum[1][1]
+
+    \subsection{FinTech and AI Underlying Technologies}
+    \subsubsection{Contemporary Developments in Banking Technology}
+    \subsubsection{Cloud Banking}
+    \subsubsection{Blockchain, DLT and Smart Contracts}
+    \subsubsection{Machine and Deep Learning}
+    \subsubsection{Neuroscience in Finance}
+    \lipsum[1][1]
+    
+    \subsection{AI Application in the Financial Services Industry}
+    \subsubsection{AI in Deposits and Lending}
+    \subsubsection{Chatbots in Banking}
+    \subsubsection{AI Use in Developing Credit Scoring Models}
+    \subsubsection{AI in the Insurance Sector}
+    \subsubsection{KYC and AML}
+
+    \subsection{Trust and Ethical Issues Related to AI and FinTech}
+    \subsubsection{Bias and Algorithmic Discrimination}
+    \subsubsection{GDPR Directive in Europe}
+    \subsubsection{Contemporary Regulatory Landscapes in Other Jurisdictions}
+
+    \subsection{Future of FinTech and AI}
+    \subsubsection{Building Trust from Past Events}
+    \subsubsection{New Collaboration Opportunities}
+    \subsubsection{Future of Banking Technology}
+    \subsubsection{Role of FinTech and AI Start-ups in Sustainable and ESG Financing}
+    \subsubsection{Future of Banking, Cryptocurrencies and CBDCs}
+    test test
+    \lipsum[1][1]
+
+    \section{Fraud Detection FinTechs}
+    \subsection{Introduction of Fraud Detections FinTechs}
+    \subsubsection{The Exponential Growth of FinTechs}
+    \subsubsection{The Importance of Fraud Detection and Prevention in FinTechs}
+    \subsubsection{Wirecard FinTech Fraud in Germany}
+    \subsubsection{Examples of FinTech Companies Detecting Fraud}
+
+    \subsection{Insurance Fraud}
+    \subsubsection{Nature of Insurance Frauds}
+    \subsubsection{Application of Advanced Analytics for Fraud Detection}
+    \subsubsection{Case Studies such as the OneConnect Smart Insurance Platform}
+
+    \subsection{Money Laundering}
+    \subsubsection{Overview of Cross-board Payments}
+    \subsubsection{AI Use in Crypto-assets Fraud Detection}
+    \subsubsection{Regtech and Machine Learning for Fraud Detection}
+    \subsubsection{Regulatory Fines and Case Studies (HSBC, BNP Paribas)}
+
+    \subsection{Identity Fraud}
+    \subsubsection{Fraud of Personal Data}
+    \subsubsection{Fraud Detection in Account Opening Process}
+    \subsubsection{Accounts and Transaction Frauds}
+
+    \subsection{Key Application Areas of AI Anomaly Detection in Financial Institutions}
+    \subsubsection{Lending}
+    \subsubsection{Asset Management}
+    \subsubsection{Payments}
+    \subsubsection{AI and Predictive Analytics}
+
+    \subsection{Key Challenges of AI Use in Fraud Detection in Financial Institutions}
+    \subsubsection{Quality of Data}
+    \subsubsection{Lack of Qualified Staff}
+    \subsubsection{Regulatory Issues}
+    \subsubsection{Implementation of Technology such as Biometrics}
+    \subsubsection{Regulatory Fines and Case Studies (HSBC, BNP Paribas)}
+
+    \section{Robo Advisory}
+    \subsection{Introduction of Robo Advisory}
+    \subsubsection{Definition of Robo advisors}
+    \subsubsection{Importance of Wealth and Asset Management Sector}
+    \subsubsection{Issues of Traditional Asset Management Sector}
+    \subsubsection{Drivers, History and Rise of Robo-advisory and Current State of Financial Markets}
+    \subsection{Types of Robo-Advisors and their Business Models}
+    \subsubsection{Machine Learning Types and Use in Finance}
+    \subsubsection{Hybrid/Bionic Robo Advisors}
+    \subsubsection{Pure Robo Advisors}
+    \subsubsection{Issues of Supervised vs. Unsupervised}
+    \subsubsection{Case studies such as Charles Schwab, Vanguard, Wealthfront and Betterment}
+    \subsection{Selected Areas of Application}
+    \subsubsection{Non-life Insurance}
+    \subsubsection{Chatbots}
+    \subsubsection{Stock and Derivative Price Predictions}
+    \subsubsection{Automatic Rebalancing of Portfolios}
+    \subsubsection{Tax-loss Harvesting}
+    \subsection{Principles of Goal-Based Investing}
+    \subsubsection{Investors Preferences}
+    \subsubsection{Goal-based Investing Process}
+    \subsubsection{Portfolio Modeling}
+    \subsubsection{Risk Tolerance Framework}
+    \subsection{Robo Economicus and Quantitative Models}
+    \subsubsection{Home Bias}
+    \subsubsection{Behavioral Accounting}
+    \subsubsection{Quantitative Approaches in Robo-Advisory Models}
+    \subsubsection{Risk Targets}
+    \subsection{The Future Role of Robo-advisors and Asset Management Industry}
+    \subsubsection{Future of Digital Advice}
+    \subsubsection{Machine Learning Models in Python}
+    \subsubsection{Frauds in Robo Advisory}
+    \subsubsection{The Regulatory Landscape of Robo-Advisory in Germany and Europe}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Arjundwadkar, P.Y. (2018). FinTech: The technology driving disruption in the financial services industry. CRC Press (Taylor \& Francis Group), London.
+        \item Chishti, S., Bartoletti, I., Leslie, A. \& Millie, S.M. (2020). The AI Book: The Artificial Intelligence handbook for investors, entrepreneurs and FinTech visionaries. Wiley, West Sussex.
+        \item Lui, A. \& Ryder, N. (2021). FinTech, Artificial Intelligence and the Law: Regulation and Crime Prevention. Routledge, London.
+        \item Arslanian, H. \& Fischer, F. (2019). The Future of Finance: The impact of FinTech, AI, and crypto on financial services. Palgrave Macmillan, Cham.
+        \item Ashfaq, M. \& Randall, V.J. (2020). Wirecard: The Rise and Fall of a German FinTech. The Case Centre, UK.
+        \item Boobier, T. (2020). AI and the Future of Banking. John Wiley \& Sons Ltd, West Sussex.
+        \item Gough, L. (2021). The CON Men: A History of Financial Fraud and the Lessons You Can Learn. Pearson, Harlow.
+        \item Narang, R. (2009). Inside the black box: the simple truth about quantitative trading. John Wiley \& Sons Ltd, New Jersey.
+        \item Peter, S. (2021). Robo-Advisory: investing in the digital age. Palgrave Macmillan, Cham.
+        \item Sironi, P. (2016). FinTech innovation: from Robo-advisors to goal based investing and gamification. John Wiley \& Sons Ltd, West Sussex.
+        \item Tatsat, H., Puri, S., \& Lookbaugh, B. (2021). Machine learning and data science blueprints for finance: from building trading strategies to Robo-advisors using Python. O'Reilly, Boston.
+    \end{itemize}
+
+    % ==== AI in Healthcare and Medical Imaging =============================================================================
+    \chapter{AI in Healthcare and Medical Imaging}
+    \section{AI in Healthcare}
+    \subsection{Healthcare Stakeholders}
+    \subsubsection{Healthcare Management}
+    \lipsum[23][1-3]
+    \subsubsection{Insurance \& Intermediaries}
+    \lipsum[24][1-3]
+    \subsubsection{Pre-Clinical \& Clinical Care Providers}
+    \lipsum[1][1]
+    \subsubsection{GP \& Specialist Care}
+    \lipsum[1][1]
+    \subsubsection{Industry (Pharma / Medical Products)}
+    \lipsum[1][1]
+    \subsubsection{Patients \& Society}
+    \lipsum[1][1]
+    \subsection{Drug Discovery}
+    \subsubsection{Drug Discovery Approaches}
+    \subsubsection{AI in Drug Discovery}
+    \lipsum[1][1]
+    Test
+
+    \subsection{Personalized Care}
+    \subsubsection{Medication Monitoring}
+    \subsubsection{Virtual Nursing Assistants}
+
+    \subsection{Blockchain in Healthcare}
+    \subsubsection{Introduction to Blockchains \& Medical Blockchains}
+    \subsubsection{Blockchain in Organ Procurement}
+    \subsubsection{Blockchain for Electronic Health Records (EHR)}
+    \subsubsection{Blockchain for Pharma Supply Chain (forged drugs, etc.)}
+
+    \subsection{Fraud Detection}
+    \subsubsection{Introduction to Fraud Detection}
+    \subsubsection{ICD-10 Codes}
+    \subsubsection{Fraud Detection in Healthcare Management}
+
+    \subsection{Regulations and Ethics}
+    \subsubsection{Legal \& Regulatory Requirements}
+    \subsubsection{Data Protection Foundations, GDPR}
+    \subsubsection{Privacy in Machine Learning and AI}
+    \subsubsection{Bias \& Fairness in AI}
+    \subsubsection{Explainable AI}
+    Test
+
+    \section{AI in Medical Imaging and Diagnostics}
+    \subsection{Introduction to Medical Imaging and Diagnostics}
+    \subsubsection{History of Image-Based Diagnostics}
+    \subsubsection{Obtaining Ground-Truth Data}
+    \subsubsection{Domain Expertise \& Integration into Clinical Practice}
+    \subsubsection{Explainability \& Bias in Medical AI}
+
+    \subsection{Medical Imaging Techniques}
+    \subsubsection{X-Ray and Computer Aided Tomography (CT)}
+    \subsubsection{Magnetic Resonance Imaging (MRI)}
+    \subsubsection{Positron Emission Tomography (PET)}
+    \subsubsection{Ultrasound Imaging}
+
+    \subsection{Computer Vision Fundamentals}
+    \subsubsection{Low Level Computer Vision}
+    \subsubsection{Mid Level Computer Vision}
+    \subsubsection{High Level Computer Vision}
+    Test
+
+    \subsection{Computer Vision with Deep Learning}
+    \subsubsection{Image Classification}
+    \subsubsection{Object Detection}
+    \subsubsection{Image Segmentation}
+    \subsubsection{Further Topics}
+
+    \subsection{Applications of AI in Medical Imaging \& Case Studies}
+    \subsubsection{Disease Identification}
+    \subsubsection{Image Acquisition}
+    \subsubsection{Survival Prediction}
+
+    \section{Medical NLP}
+    \subsection{Introduction to NLP}
+    \subsubsection{Human Language and Meaning of Words}
+    \subsubsection{Challenges in NLP}
+    \subsubsection{Bias}
+    \subsubsection{Evaluation Metrics}
+    \subsection{Language Modeling and Word Representation}
+    \subsubsection{N-Grams}
+    \subsubsection{Bag of Words and Word Vectors}
+    \subsubsection{Word Embedding Models}
+    \subsection{NLP with Deep Learning}
+    \subsubsection{Recurrent Neural Network based Approaches}
+    \subsubsection{Transformer based Approaches}
+    \subsection{NLP Tasks}
+    \subsubsection{Named Entity Recognition}
+    \subsubsection{Sentiment Analysis}
+    \subsubsection{Text Summarization}
+    \subsubsection{Machine Translation}
+    \subsubsection{Speech Recognition \& Synthesis}
+    \subsubsection{Text Understanding \& Information Extraction}
+    \subsection{Application Scenarios \& Case Studies}
+    \subsubsection{Medical Text Analysis}
+    \subsubsection{Medical Chatbots}
+    \subsubsection{Diagnostics and Therapy}
+    \subsubsection{Drug Discovery}
+
+    \section{Medical Robotics and Devices}
+    \subsection{Internet of Medical Things}
+    \subsubsection{Medical Robots}
+    \lipsum[1][1]
+    \subsubsection{Data-Driven Medicine}
+    \subsubsection{Image Management}
+    \subsubsection{Cybersecurity}
+    \subsubsection{Current Legislation and Trends}
+    \subsection{Weareable and Implantable Medical Devices}
+    \subsubsection{Weareable Devices}
+    \subsubsection{Weareable Sensors for Monitoring}
+    \subsubsection{Implantable Devices}
+    \subsection{Fundamentals of Robotics: Kinematics}
+    \subsubsection{Kinematics}
+    \subsubsection{Position and Orientation of a Rigid Body}
+    \subsubsection{Joint Kinematics}
+    \subsubsection{Forward Kinematics}
+    \subsubsection{Inverse Kinematics}
+    \subsubsection{Differential Kinematics}
+    \subsection{Navigation and Registration}
+    \subsubsection{Digitally Reconstructed Radiographs}
+    \subsubsection{Points and Landmarks}
+    \subsubsection{Contour-Based Registration}
+    \subsubsection{Intensity-Based Registration}
+    \subsubsection{Image Deformation}
+    \subsubsection{Hand-Eye Calibration}
+    \subsection{Treatment Planning}
+    \subsubsection{Orthopedic Surgery}
+    \subsubsection{Radiosurgery}
+    \subsubsection{Four-Dimensional Planning}
+    \subsection{Design of Medical Robots}
+    \subsubsection{Kinematics and Dynamics}
+    \subsubsection{Design Methods}
+    \subsubsection{Actuators, Sensors, and Material}
+    \subsubsection{Security and Safety}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Alleyn, T. et al (eds) (2020): Target Discovery and Validation: Methods and Strategies for Drug Discovery, Wiley.
+        \item Antonopoulos, A. (2017): Mastering Bitcoin, 2nd ed. O’Reilley.
+        \item Blass, B. (2015). Basic Principles of Drug Discovery and Development, Academic Press.
+        \item Boccia, S. et al. (eds.) (2020): Personalised Health Care, Springer.
+        \item Brown, N. (2020): Artificial Intelligence in Drug Discovery, Royal Society of Chemistry.
+        \item Challen, R. et al. (2019). Artificial intelligence, bias and clinical safety. BMJ Quality \& Safety, 28(3), 231-237.
+        \item Costigliola, V. ed. (2012): Healthcare Overview: New Perspectives, Springer.
+        \item Denton, B. (2013): Handbook of Healthcare Operations Management: Methods and Applications, Springer.
+        \item Gupta, D. et al. (eds) (2020): Advanced Computational Intelligence Techniques for Virtual Reality in Healthcare, Springer.
+        \item Hall, R. (ed) (2012): Handbook of Healthcare System Scheduling, Springer.
+        \item IT Governance Privacy Team (2020): EU General Data Protection Regulation (GDPR) – An implementation and compliance guide, fourth edition, ITGP.
+        \item Lantz, L., Cawrey, D. (2020): Mastering Blockchain, O’Reilley.
+        \item Levine, A. et al. (eds) (2013) The Comprehensive Textbook of Healthcare Simulation, Springer.
+        \item McCradden, M. D. et al. (2020). Patient safety and quality improvement: Ethical principles for a regulatory approach to bias in healthcare machine learning. Journal of the American Medical Informatics Association, 27(12), 2024-2027.
+        \item Molnar, Ch. (2019), Interpretable Machine Learning, Lulu.
+        \item O’Donnell, J. et al (eds.) (2021): Drug Discovery and Development, 3rd ed., CRC Press.
+        \item Pinedo, M. (201): Scheduling: Theory, Algorithms, and Systems, 5th ed., Springer.
+        \item Vissers, J. (2005): Health Operations Management.
+        \item Banerjee, I. et al. (2021): Reading Race: AI Recognizes Patient’s Racial Identity In Medical Images, arXiv preprint https://arxiv.org/abs/2107.10356.
+        \item Bushberg, J. et al (2020): The Essential Physics of Medical Imaging, 4th ed. Wolters Kluwer Health.
+        \item Esteva, A. et al. Dermatologist-level classification of skin cancer with deep neural networks. Nature 542, 115–118 (2017). https://doi.org/10.1038/nature21056.
+        \item Feeman, T. (2015): The Mathematics of Medical Imaging, 2nd ed., Springer.
+        \item Forsyth, D., Ponce, J. (2012): Computer Vision - A Modern Approach, Prentice Hall.
+        \item Geron, A. (2019), Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow, 2nd ed., O’Reilley.
+        \item Goodfellow et al (2016): Deep Learning, MIT Press.
+        \item Oren, O., Gersh, B., Bhatt, D. (2020): Artificial intelligence in medical imaging: switching from radiographic pathological data to clinically meaningful endpoints, The Lancet, VOLUME 2, ISSUE 9, E486–E488, DOI: https://doi.org/10.1016/S2589-7500(20)30160-6.
+        \item Poldrack, R. et al (2011): Handbook of Functional MRI Data Analysis, Cambridge University Press.
+        \item Roberts, M., Driggs, D., Thorpe, M. et al. (2021) Common pitfalls and recommendations for using machine learning to detect and prognosticate for COVID-19 using chest radiographs and CT scans. Nat Mach Intell 3, 199–217. https://doi.org/10.1038/s42256-021-00307-0.
+        \item Smith, N., Webb, A. (2010): Introduction to Medical Imaging, Cambridge University Press.
+        \item Stippich, Ch. (ed) (2021): Clinical Functional MRI, Springer.
+        \item Szeliski, R. (2010): Computer Vision - Algorithms and Applications, Springer.
+        \item Wang, S. et al (2016): Accelerating magnetic resonance imaging via deep learning, 2016 IEEE 13th International Symposium on Biomedical Imaging (ISBI).
+        \item Wulczyn, E. et al (2021): Interpretable survival prediction for colorectal cancer using deep learning, npj Digit. Med. 4, 71, DOI: https://doi.org/10.1038/s41746-021-00427-2.
+        \item Wynants, L. et al (2020), Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal, BMJ 2020;369:m1328.
+        \item Clark, A., Fox, C., \& Lappin, S. (Eds.). (2010). Handbook of computational linguistics and natural language processing. Malden, MA: Wiley-Blackwell.
+        \item Devlin, J. et al (2018). Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805.
+        \item Ethayarajh, K. (2020). Is Your Classifier Actually Biased? Measuring Fairness under Uncertainty with Bernstein Bounds. Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics.
+        \item Fraser, K.C., Meltzer, J., \& Rudzicz, F. (2016). Linguistic Features Identify Alzheimer's Disease in Narrative Speech. Journal of Alzheimer's disease : JAD, 49(2), 407--422.
+        \item Garrido-Muñoz, I., et al. (2021). A Survey on Bias in Deep NLP. Applied Sciences, 11(7):3184. https://doi.org/10.3390/app11073184
+        \item Juhn, Y., \& Liu, H. (2020). Artificial intelligence approaches using natural language processing to advance EHR-based clinical research. Journal of Allergy and Clinical Immunology, 145(2), 463--469.
+        \item Kandpal, P., et al. (2020). Contextual Chatbot for Healthcare Purposes (using Deep Learning). Fourth World Conference on Smart Trends in Systems, Security and Sustainability (WorldS4), 2020, pp. 625--634. doi:10.1109/WorldS450073.2020.9210351
+        \item Martin, J., \& Jurafsky, D. (2020). Speech and Language Processing, 3rd ed., Prentice Hall.
+        \item Masrani, V., et al. (2017). Domain Adaptation for Detecting Mild Cognitive Impairment. Canadian Conference on AI.
+        \item Murray, G. (2018). Language-Based Automatic Assessment of Cognitive and Communicative Functions Related to Parkinson’s Disease.
+        \item Schick, T., Udupa, S., \& Schütze, H. (2021). Self-diagnosis and self-debiasing: A proposal for reducing corpus-based bias in NLP. arXiv preprint arXiv:2103.00453.
+        \item Sorin, V., et al. (2020). Deep Learning for Natural Language Processing in Radiology—Fundamentals and a Systematic Review. Journal of the American College of Radiology, 17(5), 639--648.
+        \item Sun, T., et al. (2019). Mitigating Gender Bias in Natural Language Processing: Literature Review. arXiv pre-print 1906.08976.
+        \item Tay, Y., et al. (2020). Efficient transformers: A survey. arXiv preprint arXiv:2009.06732.
+        \item Vaswani, A., et al. (2017). Attention is all you need. In Advances in Neural Information Processing Systems (pp. 5998--6008).
+        \item Zand, A., et al. (2020). An Exploration Into the Use of a Chatbot for Patients With Inflammatory Bowel Diseases: Retrospective Cohort Study. Journal of Medical Internet Research, 22(5), e15589. https://doi.org/10.2196/15589
+        \item Cardona, M., Solanki, V. K., \& Garcia Cena, C. E. (Eds.). (2021). Internet of Medical Things. Boca Raton: CRC Press.
+        \item Schweikard, A., \& Ernst, F. (2015). Medical Robotics. Springer International Publishing. https://doi.org/10.1007/978-3-319-22891-4
+        \item Troccaz, J. (Ed.). (2013). Medical Robotics. John Wiley and Sons. https://doi.org/10.1002/9781118562147
+    \end{itemize}
+
+    % ==== Natural Language Processing and Voice Assistants =============================================================================
+    \chapter{Natural Language Processing and Voice Assistants}
+    \section{Natural Language Processing}
+    \subsection{Introduction to NLP}
+    \subsubsection{What is NLP?}
+    \lipsum[25][1-3]
+    \subsubsection{Syntax, Semantics and Prosodics}
+    \lipsum[26][1-3]
+    \subsubsection{Phonetics and Speech}
+    \lipsum[1][1]
+    \subsubsection{Evaluation of NLP Systems}
+    \lipsum[1][1]
+    \subsection{Text Processing}
+    \subsubsection{Word Vectors and Word Embeddings}
+    \subsubsection{Regular Expressions}
+    \subsubsection{Statistical Approaches}
+    \subsubsection{Recurrent Neural Network based Approaches}
+    \subsubsection{Transformer based Approaches}
+    \subsection{Speech Processing}
+    \subsubsection{Statistical Speech Recognition and Synthesis}
+    \subsubsection{Speech Recognition and Synthesis with Deep Learning}
+    \subsection{Application Scenarios}
+    \subsubsection{Speech Recognition, Speech Synthesis and Machine Translation}
+    \subsubsection{Information Extraction and Text Understanding}
+    \subsubsection{Chatbots and Voice Assistants}
+    \subsubsection{NLP in Education}
+    \subsubsection{NLP with Python}
+    \subsection{Challenges in NLP}
+    \subsubsection{Data for NLP}
+    \subsubsection{Domain and Language Adaptation}
+    \subsubsection{Explainability}
+    \subsubsection{Bias}
+    \section{NLP in Education}
+    \section{NLP for Accessibility}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Bird, S., Klein, E., \& Loper, E. (2009). Natural Language Processing with Python. O'Reilly.
+        \item Jurafsky, D., \& Martin, J. H. (2020). Speech and Language Processing (3rd ed.). Prentice Hall. \url{https://web.stanford.edu/~jurafsky/slp3}
+        \item Kamath, U., Liu, J., \& Whitaker, J. (2019). Deep Learning for NLP and Speech Recognition: Practical NLP, Speech, and Deep Learning using Python-based Open Source Tools. Springer.
+        \item Bocklisch, T., Faulker, J., Pawlowski, N., \& Nichol, A. (2017). Rasa: Open Source Language Understanding and Dialogue Management. NIPS Workshop on Conversational AI.
+        \item Chen, L., Chen, P., \& Lin, Z. (2020): Artificial Intelligence in Education: A Review. IEEE Access 8 (2020), 75264--75278.
+        \item Heffernan, N. (2014): The ASSISTments Ecosystem: Building a Platform that Brings Scientists and Teachers Together for Minimally Invasive Research on Human Learning and Teaching. International Journal of Artificial Intelligence in Education 24 (12 2014).
+        \item Libbrecht, P., Declerck, T., Schlippe, T., Mandl, T., \& Schiffner, D. (2020): NLP for Student and Teacher: Concept for an AI based Information Literacy Tutoring System. In The 29th ACM International Conference on Information and Knowledge Management (CIKM2020). Galway, Ireland.
+        \item Schlippe, T., \& Sawatzki, J. (2021): AI-based Multilingual Interactive Exam Preparation. In The Learning Ideas Conference 2021 (14th annual conference). ALICE - Special Conference Track on Adaptive Learning via Interactive, Collaborative and Emotional Approaches. New York, USA.
+        \item Schlippe, T., \& Sawatzki, J. (2021): Cross-Lingual Automatic Short Answer Grading. In Proceedings of The 2nd International Conference on Artificial Intelligence in Education Technology (AIET 2021). Wuhan, China.
+        \item Al-Thanyyan, S. S., \& Azmi, A. (2021): Automated Text Simplification: A Survey. ACM Computing Surveys, Vol. 54, Issue 2, pp. 1--36.
+        \item Klaper, D., Ebling, S., \& Volk, M. (2013): Building a German/Simple German Parallel Corpus for Automatic Text Simplification. The Second Workshop on Predicting and Improving Text Readibility for Target Reader Populations.
+        \item Schlippe, T., Alessai, S., El-Taweel, G., Wölfel, M., \& Zaghouani, W. (2020): Visualizing Voice Characteristics with Type Design in Closed Captions for Arabic. Cyberworlds. Caen, France.
+    \end{itemize}
+
+    % ==== Industrial AI =============================================================================
+    \chapter{Industrial AI}
+    \section{AI in Production}
+    \subsection{Introduction: The Smart Factory}
+    \subsubsection{Goals of a Smart Factory}
+    \lipsum[27][1-3]
+    \subsubsection{Internet of Things}
+    \lipsum[28][1-3]
+    \subsubsection{Cyber-Physical Systems}
+    \subsubsection{Cyber-Physical Production Systems}
+    \lipsum[1][1]
+    \subsubsection{A New Paradigm for Automation}
+    \lipsum[1][1]
+    \subsection{Basics of a Smart Factory}
+    \subsubsection{Intelligent Products, Object Identification and Digital Object Memory}
+    \subsubsection{Formal Languages and Ontologies}
+    \subsubsection{Autonomous Cooperation}
+    \lipsum[1][1]
+    \subsubsection{Humans \& Machines}
+    \subsubsection{Order-Controller Production}
+    \lipsum[1][1]
+    \subsubsection{Smart Services}
+    \subsection{AI for Design}
+    \subsubsection{Generative Design}
+    \subsubsection{Methods}
+    \subsection{AI for Quality}
+    \subsubsection{Fault Detection \& Identification}
+    \subsubsection{Predictive and Prescriptive Maintenance}
+    \subsubsection{Defect Recognition}
+    \subsection{AI for Supply Chain}
+    \subsubsection{Demand Forecasting}
+    \subsubsection{Inventory Models}
+    \subsection{AI for Autonomous Planning and Scheduling}
+    \subsubsection{Introduction}
+    \subsubsection{Methods}
+
+    \section{Industrial Automation}
+    \subsection{Introduction to Production Systems}
+    \subsubsection{Basic concepts and definitions}
+    \subsubsection{Industrial supervision and control}
+    \subsubsection{Challenges}
+    \subsubsection{Trends}
+
+    \subsection{Automata}
+    \subsubsection{Preliminaries}
+    \subsubsection{Deterministic finite automata}
+    \subsubsection{Non-deterministic finite automata}
+    \subsubsection{Properties}
+
+    \subsection{Petri nets}
+    \subsubsection{Preliminaries}
+    \subsubsection{Modeling systems}
+    \subsubsection{Properties}
+    \subsubsection{Analysis methods}
+
+    \subsection{Timed models}
+    \subsubsection{Timed automata}
+    \subsubsection{Markov processes}
+    \subsubsection{Queuing theory}
+    \subsubsection{Timed Petri nets}
+
+    \subsection{Simulation of discrete event systems}
+    \subsubsection{Basic concepts}
+    \subsubsection{Working principles}
+    \subsubsection{Performance analysis}
+    \subsubsection{Software tools}
+
+    \subsection{Supervisory control}
+    \subsubsection{Basic concepts}
+    \subsubsection{Specifications}
+    \subsubsection{Synthesis}
+    \subsubsection{Performance analysis}
+    \subsubsection{Implementation}
+
+    \subsection{Applications}
+    \subsubsection{Production system supervision}
+    \subsubsection{Monitoring and diagnosis of faults}
+    \subsubsection{Distributed and de-centralized supervision}
+    \subsubsection{Model-based optimization of production systems}
+    \subsubsection{Adaptive supervisory control}
+
+    \section{Industrial and Mobile Robots}
+    \subsection{Introduction}
+    \subsubsection{Robots and manufacturing}
+    \subsubsection{Industrial robots}
+    \subsubsection{Mobile robots}
+    \subsubsection{Actuators for robotics}
+    \subsubsection{Trends in robotics}
+
+    \subsection{Kinematics}
+    \subsubsection{Position and orientation of a rigid body}
+    \subsubsection{Joint kinematics}
+    \subsubsection{Forward kinematics}
+    \subsubsection{Inverse kinematics}
+    \subsubsection{Differential kinematics}
+    \subsubsection{Kinematics of mobile robots}
+
+    \subsection{Trajectory Planning}
+    \subsubsection{Basic concepts}
+    \subsubsection{Trajectories in the joint space}
+    \subsubsection{Trajectories in the workspace}
+    \subsubsection{Trajectory planning for mobile robots}
+
+    \subsection{Sensing and Perception}
+    \subsubsection{Position}
+    \subsubsection{Velocity}
+    \subsubsection{Force}
+    \subsubsection{Distance}
+    \subsubsection{Visual}
+
+    \subsection{Fundamentals of Robot Dynamics}
+    \subsubsection{Rigid body dynamics}
+    \subsubsection{Lagrange formulation}
+    \subsubsection{Newton formulation}
+    \subsubsection{Direct and inverse dynamics}
+    \subsubsection{Dynamics of mobile robots}
+
+    \subsection{Control of Robots}
+    \subsubsection{Basic concepts}
+    \subsubsection{Decentralized motion control}
+    \subsubsection{Centralized motion control}
+    \subsubsection{Force control}
+
+    \subsection{Architecture of Robotic Systems}
+    \subsubsection{Architectural components}
+    \subsubsection{Open Robot Control Software (OROCOS)}
+    \subsubsection{Yet Another Robotic System Platform (YARP)}
+    \subsubsection{Robot Operating System (ROS)}
+    \subsubsection{Behavior-based robotics}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Dafflon, B. Moalla, N., \& Ouzrout, Y. (2021). The challenges, approaches, and used techniques of CPS for manufacturing in Industry 4.0: a literature review. The International Journal of Advanced Manufacturing Technology, 113(7), 2395--2412. https://doi.org/10.1007/s00170-020-06572-4
+        \item Mahmood, Z. (Ed.). (2019). The Internet of Things in the Industrial Sector. Cham: Springer International Publishing. https://doi.org/10.1007/978-3-030-24892-5
+        \item Manesis, S., \& Nikolakopoulos, G. (2020). Introduction to industrial automation. CRC Press, Taylor \& Francis Group.
+        \item Singh, K. K., Nayyar, A., Tanwar, S., \& Abouhawwash, M. (Eds.). (2021). Emergence of Cyber Physical System and IoT in Smart Automation and Robotics. Cham: Springer International Publishing. https://doi.org/10.1007/978-3-030-66222-6
+        \item Veneri, G., \& Capasso, A. (2018). Hands-On Industrial Internet of Things. Packt. Retrieved from https://www.packtpub.com/product/hands-on-industrial-internet-of-things/9781789537222
+        \item Cassandras, C. G., \& Lafortune, S. (2009). Introduction to discrete event systems. Springer.
+        \item Hooley, G., Nicoulaud, B., Rudd, J. M., \& Piercy, N. (2019). Marketing strategy and competitive positioning. Pearson.
+        \item Kaplan, R., Norton, D., \& Rugelsjoen, B. (2010). Managing alliances with the balanced scorecard. Harvard Business Review, 88(1/2), 114--120.
+        \item Linz, P. (2006). An introduction to formal languages and automata. Jones \& Bartlett Learning.
+        \item Reisig, W. (2013). Understanding Petri nets: Modeling techniques, analysis methods, case studies. Springer.
+        \item Stewart, J. B. (2013, October 14). The collapse: How a top legal firm destroyed itself. The New Yorker.
+        \item Ben-Ari, M., \& Mondada, F. (2017). Elements of robotics. Springer International Publishing.
+        \item Siciliano, B., Sciavicco, L., Villani, L., \& Oriolo, G. (2009). Robotics. Springer.
+        \item Siciliano, B., \& Khatib, O. (Eds.). (2016). Springer handbook of robotics (2nd ed.). Springer.
+    \end{itemize}
+
+    % ==== Artificial Intelligence in Supply Chain Management =============================================================================
+    \chapter{Artificial Intelligence in Supply Chain Management}
+    \section{Concepts of Artificial Intelligence in Supply Chain Management}
+    \subsection{Fundamentals of Supply Chain Management}
+    \subsubsection{Concept of Supply Chain and Supply Network}
+    \lipsum[29][1-3]
+    \subsubsection{End-to-End View of Supply Chain Management}
+    \lipsum[30][1-3]
+    \subsubsection{The Vision of Supply Chain 4.0}
+    \subsection{Conceptional and Mathematical Introduction to Key Artificial Intelligence Disciplines for Supply Chains}
+    \subsubsection{Conventional Techniques}
+    \subsubsection{Machine Learning Algorithms}
+    \subsubsection{Neural Networks}
+    \subsubsection{Robot Process Automation}
+    \subsubsection{Multi-Agent Systems}
+    \subsection{Models for improving transparency along Supply Chains}
+    \subsubsection{Customer and Churn Analytics}
+    \lipsum[41][1-3]
+    \subsubsection{Order Peak time Prediction}
+    \subsubsection{Risk and Fraud Detection}
+    \subsubsection{Spend Analytics}
+    \subsubsection{Defect Detection and Predictive Maintenance}
+    \subsection{Methods to Support Strategic and Tactical Decision-Making in Supply Chains}
+    \subsubsection{Supply Chain Network Planning}
+    \subsubsection{Supplier Selection}
+    \subsubsection{Replenishment Strategies}
+    \subsubsection{Route Optimization}
+    \subsubsection{Sales \& Operations Planning}
+    \subsection{AI Concepts in Supply Chain Operations}
+    \subsubsection{Supplier Communication and Purchasing}
+    \subsubsection{Autonomous Allocation of Orders to Production Resources}
+    \subsubsection{Dynamic Routing}
+    \subsubsection{Object Identification in Logistics}
+    \subsection{Challenges of applying AI in Supply Chains}
+    \subsubsection{The Challenge of Trust}
+    \subsubsection{The Challenges of Capability}
+    \subsubsection{The Challenges of Accountability}
+    \subsubsection{The Challenges of Accessibility}
+    \subsubsection{The Challenges of Organizational Transformation}
+
+    \section{Demand Forecast and Inventory Control}
+    \subsection{Newsvendor Model}
+    \subsubsection{Single Period Newsvendor (Classic, Cost Function)}
+    \subsubsection{Demand as a Stochastic Quantity}
+    \subsubsection{Demand Models}
+    \subsubsection{Handling Censored Data}
+    \subsubsection{Extensions}
+    \subsubsection{Multi-Period Newsvendor}
+    \lipsum[42][1-3]
+
+    \subsection{Traditional Methods of Demand Forecasting}
+    \subsubsection{Exponential Smoothing}
+    \subsubsection{ARIMA}
+    \subsubsection{State Space Models}
+    \subsubsection{(Bayesian) Structural Time Series Models}
+    \subsection{Data Driven Methods for Demand Forecasting}
+    \subsubsection{Recurrent Neural Networks}
+    \subsubsection{Supervised Learning}
+    \subsubsection{Effects of Correlation and Confounding}
+    \subsubsection{Big Data Newsvendor}
+    \subsection{Inventory Models}
+    \subsubsection{Economic Order Quantity}
+    \subsubsection{Inventory Models with Review}
+    \subsubsection{Inventory Models with Service Levels}
+    \subsection{Further Effects}
+    \subsubsection{Customer Heterogeneity}
+    \subsubsection{Finite Product Lifetime}
+    \subsubsection{Minimum Order Quantity}
+    \subsubsection{Delivery Schedules}
+    \subsubsection{Operational KPIs and Inventory Optimization}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Chopra, S. (2019): Supply chain management. Strategy, planning, and operation. Pearson.
+        \item Hwang, I. \& Jang, Y. J. (2020): Q($\lambda$) learning-based dynamic route guidance algorithm for overhead hoist transport systems in semiconductor fabs, International Journal of Production Research, 58:4, 1199-1221. DOI: 10.1080/00207543.2019.1614692
+        \item Masrour, T., Cherrafi, A., El Hassani, I. (2021): Artificial Intelligence and Industrial Applications: Smart Operation Management, Springer
+        \item Park, J.; Kim, M.-H.; Choi, D.-G. (2021): Correspondence Learning for Deep Multi-Modal Recognition and Fraud Detection. Electronics 2021, 10, 800. https://doi.org/10.3390/electronics10070800
+        \item Selvakanmani, S., Pranamita, N., Deepak, K., Kavi, B.A., Salmaan, A.K. (2020): Churn prediction using ensemble learning: an analytical CRM application. Int. J. Adv. Sci. Technol. Vol. 29, No. 5, p. 9192--9200
+        \item Triepels, R., Daniels, H., Feelders, A. (2019): Data-driven fraud detection in international shipping, Expert Systems With Applications 99, Elsevir, p.193-202.
+        \item Wang, C. \& Jiang, P (2019). Deep neural networks based order completion time prediction by using real-time job shop RFID data. Journal of Intelligent Manufacturing, Vol. 30, No. 3, p. 1303--1318.
+        \item Ban GY, Rudin C (2019) The big data newsvendor: Practical insights from machine learning. Oper Res 67(1):90--108
+        \item Bertsimas D, Kallus N (2020) From predictive to prescriptive analytics. Manag Sci 66(3):1025--1044
+        \item Bica I, Alaa A, Van Der Schaar M (2020) Time series deconfounder: Estimating treatment effects over time in the presence of hidden confounders. In: International Conference on Machine Learning. PMLR, pp 884--895
+        \item Brodersen KH, Gallusser F, Koehler J, Remy N, Scott SL (2015) Inferring causal impact using Bayesian structural time-series models. Ann Appl Stat 9:247--274
+        \item De Gooijer JG, Hyndman RJ (2006) 25 years of time series forecasting. Int J Forecast 22(3):443--473
+        \item Galliher, H. P., Morse, Philip M., Simond, M. (1959) Dynamics of two classes of continuous-review inventory systems. Operations Research, 7(3):362--384
+        \item Harris, F. (1990) How many parts to make at once. Operations Research, 38(6):947--950.
+        \item Hillier, F., Liebermann, G. (2020), ISE Introduction to Operations Research, McGraw-Hill
+        \item Huber J, M\"uller S, Fleischmann M, Stuckenschmidt H (2019) A data-driven newsvendor problem: From data to decision. Eur J Oper Res 278(3):904--915
+        \item Hyndman R, Koehler AB, Ord JK, Snyder RD (2008) Forecasting with exponential smoothing: the state space approach. Springer Science \& Business Media
+        \item Khouj, M (1999) The single-period (news-vendor) problem: literature review and suggestions for future research. Omega 27(5):537--553
+        \item L\"angkvist M, Karlsson L, Loutfi A (2014) A review of unsupervised feature learning and deep learning for time-series modeling. Pattern Recogn Lett 42:11--24
+        \item Lim B, Arik SO, Loeff N, Pfister T (2019) Temporal fusion transformers for interpretable multi-horizon time series forecasting. arXiv preprint arXiv:1912.09363
+        \item Malinsky D, Spirtes P (2018) Causal structure learning from multivariate time series in settings with unmeasured confounding. In: Proceedings of 2018 ACM SIGKDD Workshop on Causal Discovery, pp 23--47
+        \item Nahmias, S., Pierskalla, W. (1973) Optimal ordering policies for a product that perishes in two periods subject to stochastic demand. Naval Research Logistics Quarterly, 20(2):207--229, 1973.
+        \item Porteus, E. (1983) Inventory Policies for Periodic Review Systems. Research Papers 650, Stanford University, Graduate School of Business, June 1983.
+        \item Rasul K, Sheikh AS, Schuster I, Bergmann U, Vollgraf R (2020) Multi-variate probabilistic time series forecasting via conditioned normalizing flows. arXiv preprint arXiv:2002.06103
+        \item Runge J (2018) Causal network reconstruction from time series: From theoretical assumptions to practical estimation. Chaos Int J Nonlinear Sci 28(7):075310
+        \item Scarf, H. (1959) Bayes solutions of the statistical inventory problem. Ann. Math. Statist., 30(2):490--508, 06
+        \item Vandeput, N. (2020) Inventory Optimization: Models and Simulations, De Gruyter
+        \item Wick, F. et al. (2021) Demand Forecasting of Individual Probability Density Functions with Machine Learning. SN Oper. Res. Forum 2, 37. https://doi.org/10.1007/s43069-021-00079-8
+        \item Cavalcante, I. M., Frazzon, E. M., Forcellini, F. A., Ivanov, D. (2019): A supervised machine
+              learning approach to data-driven simulation of resilient supplier selection in digital
+              manufacturing, International Journal of Information Management, vol. 49, p. 86--97, \url{https://doi.org/10.1016/j.ijinfomgt.2019.03.004}.
+        \item Chopra, A. (2019): AI in Supply \& Procurement. Amity International Conference on Artificial
+              Intelligence (AICAI), February 2019: 308--316. \url{https://doi.org/10.1109/AICAI.2019.8701357}.
+        \item Krebs, K. D. (2020). How Can the DoD Adopt Commercial-Style Artificial Intelligence for
+              Procurement? Artificial-Intelligence Capabilities, NPS-CM-20-152, \url{https://dair.nps.edu/handle/123456789/4159}.
+        \item McGroarty, F., Booth, A., Gerding, E., \& Chinthalapati, V. L. R. (2019). High frequency trading
+              strategies, market fragility and price spikes: an agent based model perspective. Annals of
+              Operations Research, 282(1/2), 217--244. \url{https://doi-org.pxz.iubh.de:8443/10.1007/s10479-018-3019-4}.
+        \item Mitchell, B., \& Trebes, B. (2018). Procurement. In Managing Reality (3rd Edition) - Complete Set. ICE Publishing.
+        \item Marquis, P., Papini, O., \& Prade, H. (2020). A Guided Tour of Artificial Intelligence
+              Research: Volume II: AI Algorithms. Springer.
+        \item Sivakriskul, K., \& Phienthrakul, T. (2021): Product Category Recommendation System Using
+              Markov Model. In: Kaiser M.S., Xie J., Rathore V.S. (eds) Information and Communication
+              Technology for Competitive Strategies (ICTCS 2020). Lecture Notes in Networks and Systems,
+              vol. 190. Springer, Singapore. \url{https://doi-org.pxz.iubh.de:8443/10.1007/978-981-16-0882-7_60}.
+        \item Torres Berru, Y., López Batista, V. F., Torres-Carrión, P., Jimenez, M. G. (2020): Artificial Intelligence
+              Techniques to Detect and Prevent Corruption in Procurement: A Systematic Literature Review.
+              In: Botto-Tobar M., Zambrano Vizuete M., Torres-Carrión P., Montes León S., Pizarro Vásquez G.,
+              Durakovic B. (eds) Applied Technologies. ICAT 2019. Communications in Computer and
+              Information Science, vol. 1194. Springer, Cham. \url{https://doi-org.pxz.iubh.de:8443/10.1007/978-3-030-42520-3_21}.
+        \item Zhou, R., Pang, J., Wang, Z., Lui, J. C. S., \& Li, Z. (2021): A Truthful Procurement Auction for
+              Incentivizing Heterogeneous Clients in Federated Learning. 2021 IEEE 41st International
+              Conference on Distributed Computing Systems (ICDCS), 183--193. \url{https://doi-org.pxz.iubh.de:8443/10.1109/ICDCS51616.2021.00026}.
+    \end{itemize}
+
+    % ==== Multi-Agent Systems =============================================================================
+    \chapter{Multi-Agent Systems}
+    \section{Agent technology}
+    \subsection{Concept of Agents and Multi-Agent Systems}
+    \lipsum[31][1-3]
+    \subsection{Agent Applications}
+    \lipsum[32][1-3]
+    \subsection{Agents Oriented Design and Methodologies}
+    \section{Typology of Intelligent Agents}
+    \subsection{Reasoning Agents}
+    \subsection{Reactive Agents}
+    \subsection{Hybrid Agents}
+    \section{Agent Communication}
+    \subsection{Ontology}
+    \subsection{Communication Languages}
+    \section{Agent Cooperation}
+    \subsection{Distributed Problem Solving}
+    \subsection{Task and Result Sharing}
+    \subsection{Handling Inconsistency}
+    \subsection{Planning and Synchronization}
+    \section{Multi-Agent Decision-Making}
+    \subsection{Strategies}
+    \subsection{Group Decisions}
+    \subsection{Coalitions}
+    \subsection{Bargaining}
+    \subsection{Arguing}
+    \section{Reinforcement Learning-Multi-Agent}
+    \subsection{The Goal of Reinforcement Learning}
+    \subsection{Benefits and Challenge}
+    \subsection{Introducing Multi-Agent Reinforcement Learning Algorithms}
+    \section{Potentials of Multi-Agent Applications in Supply Chains}
+    \subsection{Multi-Agents Application for Strategic and Tactical Tasks}
+    \subsection{Multi-Agents Application in Operational Processes}
+    \subsection{Multi-Agents Embedded in Cyber-Physical Systems}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Bellifemine, F. L., Caire, G., Greenwood, D. (2007): Developing Multi-Agent Systems with JADE. Wiley.
+        \item Bordini, R. H., Dastani, M., Dix, J., El Fallah Seghrouchni, A. (2009): Multi-Agent Programming, Languages, Tools and Applications. Springer.
+        \item Bordini, R., H\"ubner, \& J. F., Wooldridge, M. (2007): Programming Multi-Agent Systems in AgentSpeak using Jason. Wiley.
+        \item Paolucci M, Sacile R (2016) Agent-based manufacturing and control systems: new agile manufacturing solutions for achieving peak performance. CRC Press.
+        \item Shoham, Y., \& Leyton-Brown, K. (2009): Multiagent Systems, Algorithmic, Game-Theoretic, and Logical Foundations. Cambridge University Press.
+        \item Uhrmacher, A. M., \& Weyns, D. (2009): Multi-Agent Systems, Simulation and Applications. CRC Press.
+        \item Weiss, G. (2013): Multiagent Systems, The MIT Press. Cambridge.
+    \end{itemize}
+
+    % ==== AI in E-Commerce, Marketing and Demand Forecasting =============================================================================
+    \chapter{AI in E-Commerce, Marketing and Demand Forecasting}
+    \section{Introduction to AI in E-Commerce and Marketing}
+    \subsection{Application Areas and Historical Review}
+    \subsubsection{Retail}
+    \lipsum[33][1-3]
+    \subsubsection{Entertainment}
+    \lipsum[34][1-3]
+    \subsubsection{Advertising}
+    \subsubsection{Internet of Things}
+    \subsection{Virtual Assistants}
+    \subsubsection{NLP Fundamentals}
+    \subsubsection{NLP with Deep Learning}
+    \subsubsection{Chatbots}
+    \subsubsection{Voice Search}
+    \subsection{Visual Search}
+    \subsubsection{Computer Vision Fundamentals}
+    \subsubsection{Computer Vision with Deep Learning}
+    \subsubsection{Visual Product Search}
+    \subsection{Dynamic Pricing}
+    \subsubsection{Pricing Theory}
+    \subsubsection{Measuring Price Elasticity}
+    \subsubsection{Bayesian Optimal Pricing}
+    \subsubsection{Dynamic Pricing}
+    \subsection{Regulatory Requirements \& Ethics}
+    \subsubsection{Data Protection and Data Privacy}
+    \subsubsection{Ethical Data Usage and Modeling}
+    \subsection{Case Studies}
+    \subsubsection{Retail}
+    \subsubsection{Entertainment}
+    \subsubsection{Advertisement}
+
+    \section{AI in Marketing and Analytics}
+    \subsection{Foundations and Introduction}
+    \subsubsection{Basic Building Blocks}
+    \subsubsection{Channels \& Strategies}
+
+    \subsection{Descriptive Methods}
+    \subsubsection{Business Intelligence}
+    \subsubsection{Brand Metrics and Value}
+    \subsubsection{Customer Segmentation, Journey and Acquisition Cost}
+    \subsubsection{Market Basket \& Assortment Analysis}
+    \subsubsection{Search Analytics}
+
+    \subsection{Predictive Methods}
+    \subsubsection{Customer Churn and Retention}
+    \subsubsection{Customer Lifetime Value (CLV) Estimation}
+    \subsubsection{Sales Forecasting and Budgeting}
+    \subsubsection{Search-Optimization}
+
+    \subsection{Prescriptive Methods}
+    \subsubsection{Pricing Strategies}
+    \subsubsection{Upselling \& Cross-selling}
+    \subsubsection{Marketing Campaign Analytics and Optimization}
+    \subsubsection{Targeting}
+    \subsubsection{Marketing Experiments, Tests \& Evaluation}
+
+    \subsection{Perspectives}
+    \subsubsection{Closed Loop vs.\ Human-in-the-Loop, Active Learning}
+    \subsubsection{Cross-Channel, Omnichannel and Subscriptions}
+
+    \section{Personalization and Recommender Systems}
+    \subsection{Foundation and Introduction}
+    \subsubsection{History and Application Domains of Recommender Systems}
+    \subsubsection{Basic Building Blocks:}
+    \subsubsection{Levels of Personalization \& Recommender Archetypes}
+    \subsubsection{Business Goals \& Evaluation Strategies}
+    \subsection{Collaborative Filtering}
+    \subsubsection{Neighborhood-Based Approaches:}
+    \subsubsection{Graph-Based Approaches}
+    \subsubsection{Latent Factor Models}
+    \subsubsection{Bayesian Personalized Ranking (BPR)}
+    \subsection{Content-based Filtering}
+    \subsubsection{Content Types \& Strategies across Domains}
+    \subsubsection{Factorization Machines \& Classification}
+    \subsection{Hybrid Recommender Systems}
+    \subsubsection{User- vs. Item-based Recommendations}
+    \subsubsection{Monolithic, Mixed Hybrid and Ensemble Recommenders}
+    \subsection{Large-Scale Recommender Systems}
+    \subsubsection{Information Retrieval Dichotomy}
+    \subsubsection{Approximate Nearest Neighbour Search}
+    \subsubsection{Serving Recommendations in Production}
+    \subsection{Perspectives}
+    \subsubsection{(Contextual) Multi-Armed Bandits}
+    \subsubsection{Deep Learning and Reinforcement Learning Based Approaches}
+    \subsubsection{Causality-Aware Approaches}
+    \subsubsection{Multi-Stakeholder and Multi-Objective Recommender Systems}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Chaffey, D. (2019): Digital Business and E-Commerce Management, 7th ed. Pearson.
+        \item Forsyth, D., Ponce, J. (2012): Computer Vision - A Modern Approach, Prentice Hall.
+        \item Friedman, D. (1986): Price Theory: An Intermediate Text, South-Western Publishing Co.
+        \item IT Governance Privacy Team (2020): EU General Data Protection Regulation (GDPR) -- An implementation and compliance guide, fourth edition, ITGP.
+        \item Landsburg, St. (2013): Price Theory and Applications, Cengage Learning; 9th edition.
+        \item Laudon, K./Traver, C. G. (2020): E-Commerce. Business. Technology. Society. 16. Auflage, Pearson.
+        \item Martin, J., Jurafsky, D. (2008): Speech and Language Processing, 2nd ed., Prentice Hall.
+        \item Rogers, D. L. (2016): The digital transformation playbook: Rethink your business for the digital age. Columbia Business School Publishing, New York.
+        \item Szeliski, R. (2010): Computer Vision - Algorithms and Applications, Springer, 2010.
+        \item Barker, M., Barker, D., Bormann, N. (2016): Social Media Marketing: A Strategic Approach 2nd Edition, Cengage Learning
+        \item Butow, E. et al. (2020): Ultimate Guide to Social Media Marketing. Entrepreneur Press, Irvine
+        \item Chandler, St. (2012): Own your niche, Authority Publishing
+        \item Chaters, B. (2011): Mastering Search Analytics, O’Reilley Publishing
+        \item Dib, A. (2018): The 1-Page Marketing Plan, Page Two
+        \item Enge, E., Spencer, St., Stricchiola, J. (2015): The Art of SEO, 3rd ed. O’Reilly Media
+        \item Grigsby, M.(2018): Marketing Analytics: A Practical Guide to Improving Consumer Insights Using Data Techniques, 2nd Edition, London
+        \item Kerin, R. , Hartley, St. (2019): Marketing: The Core, 8th ed., McGraw-Hill
+        \item McKinnon, B. (2019): What's Your Point?: The Brand Arrow - Define Your Point. Grow Your Brand, Grace and Down Publishing
+        \item Aggarwal, C. (2016): Recommender Systems, Springer.
+        \item Falk, K, (2019): Practical Recommender Systems, Manning Publications.
+        \item Jannach, D., Zanker, M., Felfernig, A, Friedrich, G. (2010): Recommender Systems: An Introduction, Cambridge University Press.
+        \item Moreira, G., Cunha, A. (2020): Deep Learning for News Recommender Systems, LAP LAMBERT Academic Publishing.
+        \item Pearl, J., Glymour, M., \& Jewell, N. P. (2016). Causal inference in statistics: A primer. Wiley.
+        \item RecSys '20: Fourteenth ACM Conference on Recommender Systems, Association for Computing Machinery, New York, NY, United States, ISBN 78-1-4503-7583-2
+        \item Sutton, R. S., \& Barto, A. G. (1998). Reinforcement learning: An introduction. MIT Press.
+
+    \end{itemize}
+
+    % ==== References =============================================================================
+    \chapter{References}
+    \printbibliography[heading=none]
 
 \end{multicols}
 
-\section{References}
-\printbibliography[heading=none]
 \end{document}
-
-
-
-
-
-% % User guides
-% % Latex: https://ftp.agdsn.de/pub/mirrors/latex/dante/macros/latex/base/usrguide.pdf
-% % Tabularray: https://mirror.physik.tu-berlin.de/pub/CTAN/macros/latex/contrib/tabularray/tabularray.pdf
-% % TColorbox: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
-% % Posterbox Tutorial: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox-tutorial-poster.pdf#[0,{%22name%22:%22Fit%22}]
-% % Xcolor: https://mirror.clientvps.com/CTAN/macros/latex/contrib/xcolor/xcolor.pdf
-% % TikZ and PGFPlots: https://tikz.dev/ and https://tikz.dev/pgfplots/
-% %                    https://tug.ctan.org/info/visualtikz/VisualTikZ.pdf 
-% % SVG Package: https://ftp.agdsn.de/pub/mirrors/latex/dante/graphics/svg/doc/svg.pdf 
-% % Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
-% % fontspec: https://texdoc.org/serve/fontspec/0
-% % fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
-% % biblatex: https://distrib-coffee.ipsl.jussieu.fr/pub/mirrors/ctan/macros/latex/contrib/biblatex/doc/biblatex.pdf
-% % amsmath: https://www.latex-project.org/help/documentation/amsldoc.pdf
-% % grapheur: https://ctan.tetaneutral.net/graphics/pgf/contrib/tkz-grapheur/doc/tkz-grapheur-doc-en.pdf
-% % enumitem: https://mirror.ibcp.fr/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
-
-% \documentclass[8pt]{extarticle}
-
-
-% % --- Hyphenation Rules --------------------------------------------------------
-% \usepackage[USenglish]{babel}
-
-% % --- Fonts --------------------------------------------------------------------
-
-% % Ensure proper font encoding
-% \usepackage[T1]{fontenc}
-
-% % Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
-% % to get a list of installed fonts: luaotfload-tool --list=format 
-% \usepackage{fontspec}
-% \setmainfont{FreeSans}[Scale=0.9]
-% \setsansfont{FreeSans}[Scale=0.9]
-% \setmonofont{FreeMono}[Scale=0.9]
-
-% % font for the words "AI & Data Analytics" in the header
-% \newfontfamily\headerfont{QTFuturePoster} 
-
-
-% % Emoji support
-% \usepackage{emoji}
-
-% % --- Page layout --------------------------------------------------------------
-% \usepackage[
-%     % showframe, 
-%     nomarginpar, 
-%     a4paper,
-%     portrait, 
-%     right=1.0cm, 
-%     left=1.0cm, 
-%     top=1.5cm, 
-%     bottom=1.5cm,
-%     headsep=0.25cm,
-%     headheight=0.75cm,
-%     footskip=0.5cm,
-% ]{geometry}
-
-
-% \usepackage{fancyhdr}
-% \pagestyle{fancy}
-
-
-% % --- TColorbox ---------------------------------------------------------------
-% \usepackage{tcolorbox}
-% \tcbuselibrary{skins,raster,listings,breakable,minted, poster}
-
-
-% % --- Tables -------------------------------------------------------------------
-% \usepackage{tabularray}
-
-% % --- Color Names -------------------------------------------------------------
-% \usepackage[dvipsnames]{xcolor}
-
-% % --- Graphics -----------------------------------------------------------------
-% \usepackage{graphicx}
-% \usepackage{svg}
-% \graphicspath{{./figures/}{./icons/}{./logos/}}
-% \usepackage{tikz}
-% \usetikzlibrary{shapes.geometric}    % for shapes
-% \usetikzlibrary{arrows.meta}         % for arrows, Arrow tip library 
-% \usetikzlibrary{positioning}         % for relative positioning
-% \usetikzlibrary{calc}                % for calculations to make complex coordinate calculations
-% %\usetikzlibrary{backgrounds}        % Background Library "defines background for pictures". To use this in a Tikzpicture, an option is passed, e.g. \begin{tikzpicture}[show background rectangle], with a background rectangle style defined before the picture. (e.g. \tikzset{background rectangle/.style={<define background rectangle style here>}}
-% % \usetikzlibrary{calendars}         % for calendar drawings
-% % \usetikzlibrary{fadings}           % for fading effects
-% % \usetikzlibrary{patterns}          % for patterns
-% % \usetikzlibrary{shadows}           % for shadow effects 
-% \usetikzlibrary{chains}            % for chain effects
-% \usetikzlibrary{fit}               % for fitting nodes together
-% % \usetikzlibrary{er}                % for entity relationship diagrams
-% % \usetikzlibrary{intersections}     % for calculating intersections of paths
-% % \usetikzlibrary{mindmap}           % for mind maps
-% \usetikzlibrary{matrix}            % for matrix drawings
-% % \usetikzlibrary{trees}             % for tree drawings
-% % \usetikzlibrary{decorations.pathmorphing}  % for path decorations like zigzag lines
-% % \usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
-% % \usetikzlibrary{decorations.markings}      % for markings along a path
-% % \usetikzlibrary{decorations.shapes}        % for shape decorations
-% % \usetikzlibrary{decorations.text}          % for text decorations along a path
-% % \usetikzlibrary{pgfplots.colorbrewer}      % for color maps
-
-% % \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
-
-% \usepackage{adjustbox}          % for adjusting boxes
-
-% \input{../shapes/flowchart_styles.tex}  % load flowchart styles
-
-
-% % --- URL and href -----------------------------------------------------------
-% \colorlet{citecolor}{black}
-% \colorlet{linkcolor}{black}
-% \colorlet{urlcolor}{black}
-% \usepackage[
-%   bookmarks=true,
-%   breaklinks=true,
-%   pdfborder={0 0 0},
-%   citecolor=citecolor,
-%   linkcolor=linkcolor,
-%   urlcolor=urlcolor,
-%   colorlinks=true,
-%   linktocpage=false,
-%   hyperindex=true,
-%   colorlinks=true,
-%   linktocpage=false,
-%   linkbordercolor=white]{hyperref}
-
-% % --- Math Environments --------------------------------------------------------
-% \usepackage{amsmath}
-% \usepackage{nicematrix}
-% \NiceMatrixOptions{cell-space-limits = 1pt}
-% \usepackage{siunitx}
-
-% % --- Bibliography -------------------------------------------------------------
-% \usepackage[autostyle=true]{csquotes} % recommended before biblatex
-% \usepackage[backend=biber,style=numeric,sorting=nyt]{biblatex}
-% \addbibresource{../bibliography/references.bib}
-
-% \renewcommand{\bibfont}{\normalfont\footnotesize}
-
-
-% % --- Enumerations -----------------------------------------------------------------
-% \usepackage{enumitem}
-
-% \setlist{noitemsep}
-% \setlist[1]{labelindent=\parindent} % < Usually a good idea
-% \setlist[itemize]{leftmargin=*}
-% \setlist[itemize,1]{label=-}
-
-% % --- Helpers -----------------------------------------------------------------
-% \usepackage{lipsum}
-
-
-
-% % --- Default options ---------------------------------------------------------
-% % \pagestyle{empty}
-% % \setlength\parindent{0pt}
-% % \setlength{\tabcolsep}{2pt}
-% % \baselineskip=0pt
-% % \setlength\columnsep{1.75mm}
-% % \setlength{\parskip}{0.1\baselineskip}
-
-
-% \newcommand{\maincolor}{OliveGreen!80!White}
-% \newcommand{\maincolspan}{4}
-% \newcommand{\graphscale}{0.9}
-
-
-% % --- TColorbox Skins ----------------------------------------------------------
-
-% % Colorbox skin for bash listings
-% \tcbsubskin{mintedbash}{empty}{
-%         size=minimal,
-%         listing engine=minted,
-%         listing only,
-%         minted style=friendly,
-%         minted language=bash,
-%         minted options={
-%             fontsize=\footnotesize,
-%             breaklines,
-%             autogobble,
-%         },
-%         colback=gray!10!white,
-%         colframe=gray!10!white,
-%         listing only,
-%         left=0em,
-%         enhanced,
-% }
-
-% % Colorbox skin for python listings
-% \tcbsubskin{mintedpython}{empty}{
-%         size=minimal,
-%         listing engine=minted,
-%         listing only,
-%         minted style=friendly,
-%         minted language=python,
-%         minted options={
-%             fontsize=\footnotesize,
-%             breaklines,
-%             autogobble,
-%         },
-%         colback=gray!10!white,
-%         colframe=gray!10!white,
-%         listing only,
-%         left=0em,
-%         enhanced,
-%         before skip=0.3\baselineskip,
-% }
-
-% % Skin for header box
-% \tcbsubskin{headerboxskin}{empty}{
-%         size=minimal,
-%         coltitle=black!10!black,
-% }
-
-
-
-% % Skin for orange-based section boxes
-% \tcbsubskin{sectionboxskin}{standard}{
-%     size=title, 
-%     left=0.2em,
-%     right=0.2em,
-%     arc=0.25mm,
-%     colback=white,
-%     colframe=\maincolor!75!black,
-%     coltitle=\maincolor!10!black,
-%     colbacktitle=\maincolor!75!white,
-%     fonttitle=\sffamily\bfseries,
-%     toptitle=0mm,
-%     bottomtitle=0mm,
-%     fontupper=\sffamily\small,
-%     fontlower=\sffamily\small,
-%     halign=left,
-%     frame empty,
-%     subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
-%         colback=\maincolor!50!\maincolor!20!white,
-%         colupper=\maincolor!50!gray,
-%         fontupper=\sffamily\bfseries\small,
-%         coltext=\maincolor!10!black,
-%         height=1.1\baselineskip,
-%       }, 
-% }
-
-
-% % Skin for sub-section boxes
-% \tcbsubskin{subsectionboxskin}{standard}{
-%     size=fbox, 
-%     top=0.4em,
-%     % left=0.2em,
-%     % right=0.2em,
-%     % arc=0.25mm,
-%     % top=0.4mm, 
-%     % bottom=0mm, 
-%     % boxrule=0.2pt, 
-%     % boxsep=0.1mm,
-%     frame empty,
-%     % colback=\maincolor!2!white,
-%     colback=white,
-%     colbacktitle=\maincolor!50!\maincolor!20!white,
-%     fonttitle=\sffamily\bfseries\small,
-%     coltitle=\maincolor!10!black,
-%     % height=1.1\baselineskip,    
-% }
-
-
-% % Skin for simple tables inside boxes
-% \tcbsubskin{boxtablesimple}{empty}{
-%     size=minimal,
-%     before skip=0.2\baselineskip,
-%     after skip=0.2\baselineskip,
-%     colback=white,
-%     colframe=gray,
-%     frame empty,
-% }
-
-
-
-
-
-
-% % ----------------------------------------------------------------------------------------------------------------------
-% % Header and Footer Settings
-% % ----------------------------------------------------------------------------------------------------------------------
-
-% \fancyhead[L]{
-%     \LARGE {\headerfont AI \& Data Analytics} \textcolor{\maincolor}{for AI beginners}
-% }
-% \fancyhead[C]{}
-% \fancyhead[R]{}
-% \fancyfoot[L]{}
-% \fancyfoot[C]{}
-% \fancyfoot[R]{\thepage}
-
-
-% % ----------------------------------------------------------------------------------------------------------------------
-% % Main Document
-% % ----------------------------------------------------------------------------------------------------------------------
-
-% \begin{document}
-
-% \begin{tcbitemize}
-%     [
-%         raster columns=6,
-%         raster equal height=rows,
-%         raster row skip=0.5cm,
-%         raster column skip=0.5cm,
-%         skin=sectionboxskin,
-%     ]
-%     \tcbitem[title=Industry 4.0, raster multicolumn=6]
-%     \begin{tcbitemize}[
-%         raster columns=6, 
-%         raster equal height=rows
-%     ]
-%         \tcbitem[blankest, raster multicolumn=6] Information is the oil of the 21st century and analytics is the combustion engine.
-%         \tcbitem[blankest, raster multicolumn=3]
-%             \begin{tcbitemize}[
-%                 skin=subsectionboxskin, 
-%                 raster columns=1
-%             ]
-%                 \tcbitem[title=Information Management Cycle, halign=center]
-%                     \adjustbox{scale=\graphscale}{
-%                         \begin{tikzpicture}[node distance=1cm and 1cm]
-
-%                             % place nodes
-%                             \coordinate (center) at (0,0) {};
-%                             \node [block, above=of center] (information-user) {INFORMATION USER} ;
-%                             \node [block, right=of center] (data-sources) {DATA SOURCES} ;
-%                             \node [block, below=of center] (information-ressources) {INFORMATION RESSOURCES} ;
-%                             \node [block, left=of center] (information-product) {INFORMATION PRODUCT} ;
-
-%                             % draw edges
-%                             \draw [line] (information-user) -| (data-sources) node[midway, above, xshift=5mm] {Requirement Analysis};
-%                             \draw [line] (data-sources) |- (information-ressources) node[midway, below, xshift=5mm] {Integration};
-%                             \draw [line] (information-ressources) -| (information-product) node[midway, below, xshift=-5mm] {Evaluation};
-%                             \draw [line] (information-product) |- (information-user) node[midway, above, xshift=-5mm] {Deployment};
-
-%                         \end{tikzpicture}
-%                     }
-
-%                 \tcbitem[title=Application Areas: Data Analytics\, Big Data\, AI]
-%                     \begin{itemize}
-%                         \item Optimize Quality Assurance
-%                         \item Predictive Maintenance
-%                         \item Reduce Process Runtimes
-%                         \item Batch-size 1 Production
-%                         \item Decision Support
-%                         \item Minimize Ramp-up
-%                         \item Minimize Process Error
-%                     \end{itemize}
-
-
-%             \end{tcbitemize}
-
-%         \tcbitem[skin=subsectionboxskin, raster multicolumn=3, halign=center, title=Data Analytics Decision Making]
-%             \adjustbox{scale=\graphscale}{
-%                 \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
-
-%                     \matrix[
-%                         matrix of nodes,
-%                         nodes={ circ, text width=1cm, minimum width=1cm },
-%                         column sep=1cm
-%                     ] (m1) {
-%                         |(big-data)| (BIG) DATA & |(smart-data)| SMART DATA & |(decisions)| DECISIONS \\
-%                     };
-
-%                     % draw arrows
-%                     \draw [line] (big-data) -- (smart-data);
-%                     \draw [line] (smart-data) -- (decisions);
-
-%                 \end{tikzpicture}
-%             }
-%             \vspace{2ex}
-
-%             \adjustbox{scale=0.95}{
-%                 \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
-%                     \tcbitem
-%                         detect, collect, determine, expand network
-%                         \begin{itemize}
-%                             \item simulations
-%                             \item sensors
-%                             \item databases
-%                             \item documentations
-%                             \item applications
-%                         \end{itemize}
-%                     \tcbitem
-%                         consolidate, reconstruct, model, verify, enrich, re-evaluate
-%                         \begin{itemize}
-%                             \item extract, transform, load (ETL)
-%                             \item streaming
-%                             \item descriptive analysis
-%                             \item semantic integration
-%                             \item enrichment
-%                         \end{itemize}
-%                     \tcbitem
-%                         sort, reorder, reproduce, reduce, compacting, validate
-%                         \begin{itemize}
-%                             \item predictive analysis
-%                             \item prescriptive analysis
-%                             \item data mining
-%                             \item data exploration
-%                             \item machine learning
-%                         \end{itemize}
-%                     \tcbitem
-%                         visualize, integrate, interpret, arrange, prioritize
-%                         \begin{itemize}
-%                             \item visual analytics
-%                             \item KPI
-%                             \item cockpits and reports
-%                             \item mental models
-%                         \end{itemize}
-%                 \end{tcbitemize}
-%             }
-
-%     \end{tcbitemize}
-
-%     \tcbitem[title=Application Areas: Industry 4.0, raster multicolumn=6] First box
-%     \tcbitem[title=Test, raster multicolumn=4]
-% \end{tcbitemize}
-
-% \end{document}
