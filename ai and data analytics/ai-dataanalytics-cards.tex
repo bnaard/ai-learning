@@ -440,40 +440,40 @@
 
     \end{tcbitemize}
 
-\section{History of AI}
-\subsection{Historical Developments}
-\subsection{AI Winter}
-\subsection{Notable Advances in AI}
+    \section{History of AI}
+    \subsection{Historical Developments}
+    \subsection{AI Winter}
+    \subsection{Notable Advances in AI}
 
-\section{Expert Systems}
-\subsection{Overview Over Expert Systems}
-\subsection{Introduction to Prolog}
+    \section{Expert Systems}
+    \subsection{Overview Over Expert Systems}
+    \subsection{Introduction to Prolog}
 
-\section{Neuroscience}
-\subsection{The (Human) Brain}
-\subsection{Cognitive Processes}
+    \section{Neuroscience}
+    \subsection{The (Human) Brain}
+    \subsection{Cognitive Processes}
 
-\section{Modern AI Systems}
-\subsection{Recent Developments in Hard- and Software}
-\subsection{Narrow vs General AI}
-\subsection{NLP and Computer Vision}
+    \section{Modern AI Systems}
+    \subsection{Recent Developments in Hard- and Software}
+    \subsection{Narrow vs General AI}
+    \subsection{NLP and Computer Vision}
 
-\section{AI Application Areas}
-\subsection{Autonomous Vehicles \& Mobility}
-\subsection{Personalized Medicine}
-\subsection{FinTech}
-\subsection{Retail \& Industry}
+    \section{AI Application Areas}
+    \subsection{Autonomous Vehicles \& Mobility}
+    \subsection{Personalized Medicine}
+    \subsection{FinTech}
+    \subsection{Retail \& Industry}
 
-\section{Literature}
-\begin{itemize}
-    \item Chowdhary, K. R. (2020). Fundamentals of Artificial Intelligence. Springer India.
-    \item Russell, S., \& Norvig, P. (2022). Artificial intelligence. A modern approach (4th ed.). Pearson Education.
-    \item Ward, J. (2020). The student's guide to cognitive neuroscience (4th ed.). Taylor \& Francis Group.
-\end{itemize}
+    \section{Literature}
+    \begin{itemize}
+        \item Chowdhary, K. R. (2020). Fundamentals of Artificial Intelligence. Springer India.
+        \item Russell, S., \& Norvig, P. (2022). Artificial intelligence. A modern approach (4th ed.). Pearson Education.
+        \item Ward, J. (2020). The student's guide to cognitive neuroscience (4th ed.). Taylor \& Francis Group.
+    \end{itemize}
 
     % ==== Mathematical Foundations =============================================================================
     \chapter{Mathematical Foundations}
-        \section{Advanced Mathematics}
+    \section{Advanced Mathematics}
     \subsection{Calculus}
     \subsubsection{Differentiation}
     \begin{tcbitemize}[ skin=sectionraster ]
@@ -489,80 +489,88 @@
         \captionsetup{hypcap=false}
         \begin{tikzpicture}
             \begin{axis}[
-                width=8cm,
-                height=6cm,
-                axis lines=middle,
-                axis line style={thick, -Stealth},
-                xlabel={$x$},
-                ylabel={$y = f(x)$},
-                xmin=0, xmax=3,
-                ymin=-0.5, ymax=5,
-                samples=100,
-                domain=0:2.2,
-                legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east},
-                clip=false,
-                ylabel style={at={(ticklabel cs:1.0)},anchor=south}, 
-                xlabel style={at={(1.0,0.1)},anchor=south}, 
-            ]
-            % Plot y = x^2
-            \addplot[thick, \maincolor!80!black, smooth] {x^2};
-            \addlegendentry{$y = x^2$}
-            
-            % Tangent at point P (x=1, y=1)
-            % Derivative: y' = 2x, at x=1: y'(1) = 2
-            % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
-            \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
-            \addlegendentry{Tangent at $P$}
-            
-            % Mark point P
-            \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
-            \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
-            
-            % Line M: vertical line from P down to x-axis (at x=1)
-            \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
-            \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
-            
-            % Line N: horizontal line from P to x=2 (parallel to x-axis)
-            \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
-            
-            % Vertical line at x=2 from x-axis up
-            % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
-            \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
-            
-            % Mark intersection points
-            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
-            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
-            \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
-            
-            % Label dy: from N (y=1) to tangent (y=3) at x=2
-            \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
-            \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
-            
-            % Label delta y: from N (y=1) to curve (y=4) at x=2
-            \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
-            \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
-            
-            % Label x: from origin to where M hits x-axis (x=1)
-            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.45) -- (axis cs:1,-0.45);
-            \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.6) {$x$};
-            
-            % Label delta x = dx: from M (x=1) to x=2
-            \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.45) -- (axis cs:2,-0.45);
-            \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.6) {$\Delta x = dx$};
-            
-            % Angle alpha where tangent crosses x-axis
-            % Tangent y=2x-1 crosses x-axis at x=0.5
-            % where A, B, and C are the vertices, and B is the apex
-            \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
-            % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
-            % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
-            
+                    width=8cm,
+                    height=6cm,
+                    axis lines=middle,
+                    axis line style={thick, -Stealth},
+                    xlabel={$x$},
+                    ylabel={$y = f(x)$},
+                    xmin=0, xmax=3,
+                    ymin=-0.5, ymax=5,
+                    enlarge y limits={upper=0.05},
+                    enlarge x limits={upper=0.05},
+                    samples=100,
+                    domain=0:2.2,
+                    legend cell align=left,
+                    legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east, cells={anchor=west}},
+                    clip=false,
+                    ylabel style={at={(ticklabel cs:1.0)},anchor=south},
+                    xlabel style={at={(1.0,0.1)},anchor=south},
+                    % ytick={0,1,2,3,4},
+                    ytick distance=1,
+                    minor y tick num=0,
+                    grid=both,
+                    major grid style={draw=gray!20, thin},
+                    minor grid style={draw=gray!10, very thin},
+                ]
+                % Plot y = x^2
+                \addplot[thick, \maincolor!80!black, smooth] {x^2};
+                \addlegendentry{$y = x^2$}
+
+                % Tangent at point P (x=1, y=1)
+                % Derivative: y' = 2x, at x=1: y'(1) = 2
+                % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
+                \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
+                \addlegendentry{Tangent $y = 2x - 1$ at $P$}
+
+                % Mark point P
+                \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
+                \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
+
+                % Line M: vertical line from P down to x-axis (at x=1)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
+                \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
+
+                % Line N: horizontal line from P to x=2 (parallel to x-axis)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
+
+                % Vertical line at x=2 from x-axis up
+                % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
+                \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
+
+                % Mark intersection points
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
+
+                % Label dy: from N (y=1) to tangent (y=3) at x=2
+                \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
+                \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
+
+                % Label delta y: from N (y=1) to curve (y=4) at x=2
+                \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
+                \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
+
+                % Label x: from origin to where M hits x-axis (x=1)
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.55) -- (axis cs:1,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.75) {$x$};
+
+                % Label delta x = dx: from M (x=1) to x=2
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.55) -- (axis cs:2,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.7) {$\Delta x = dx$};
+
+                % Angle alpha where tangent crosses x-axis
+                % Tangent y=2x-1 crosses x-axis at x=0.5
+                % where A, B, and C are the vertices, and B is the apex
+                \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
+                % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
+                % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
+
             \end{axis}
         \end{tikzpicture}
-        \captionof{figure}{Graph of example function $y = x^2$ with tangent line at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
+        \captionof{figure}{Graph of example function $f(x) = y = x^2$ with first derivative $f'(x) = 2x$, hence with tangent $y = mx + b = 2x - 1$ at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
 
-        
-    \end{tcbitemize}    
+    \end{tcbitemize}
     \begin{enumerate}[label*=\arabic*.]
         \item ...
         \item Integration
@@ -648,10 +656,9 @@
         \end{equation}
 
         \vspace{2ex}
-        
+
         Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
         the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
-
 
     \end{tcbitemize}
 
@@ -735,107 +742,110 @@
     \end{enumerate}
 
     \section{Literature}
-\begin{itemize}
-\item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
-\item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
-\item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
-\item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
-\item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
-\item Downey, A. (2014). Think stats. O’Reilley Publishing.
-\item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
-\item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
-\end{itemize}
+    \begin{itemize}
+        \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
+        \item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+        \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+        \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+        \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+        \item Downey, A. (2014). Think stats. O’Reilley Publishing.
+        \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+        \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+    \end{itemize}
 
-% ==== Programming Foundations =============================================================================
-\chapter{Programming Foundations}
-\section{Programming with Python}
-\subsection{Introduction to Python}
-\subsubsection{Data structures}
-\lipsum[1][1]
-\subsubsection{Functions}
-\subsubsection{Flow control}
-\lipsum[1][1]
-\subsubsection{Input / Output}
-\subsubsection{Modules and packages}
-\lipsum[1][1]
+    % ==== Programming Foundations =============================================================================
+    \chapter{Programming Foundations}
+    \section{Programming with Python}
+    \subsection{Introduction to Python}
+    \subsubsection{Data structures}
+    \lipsum[1][1]
+    \subsubsection{Functions}
+    \subsubsection{Flow control}
+    \lipsum[1][1]
+    \subsubsection{Input / Output}
+    \subsubsection{Modules and packages}
+    \lipsum[1][1]
 
-\subsection{Classes and Inheritance}
-\subsubsection{Scopes and namespaces}
-\lipsum[1][1]
-\subsubsection{Classes and inheritance}
-\subsubsection{Iterators and generators}
-\lipsum[1][1]
+    \subsection{Classes and Inheritance}
+    \subsubsection{Scopes and namespaces}
+    \lipsum[1][1]
+    \subsubsection{Classes and inheritance}
+    \subsubsection{Iterators and generators}
+    \lipsum[1][1]
 
-\subsection{Errors and Exceptions}
-\subsubsection{Syntax errors}
-\subsubsection{Handling and raising exceptions}
-\lipsum[1][1]
-\subsubsection{User-defined exceptions}
+    \subsection{Errors and Exceptions}
+    \subsubsection{Syntax errors}
+    \subsubsection{Handling and raising exceptions}
+    \lipsum[1][1]
+    \subsubsection{User-defined exceptions}
 
-\subsection{Important Libraries}
-\subsubsection{Standard Python library}
-\subsubsection{Scientific calculations}
-\lipsum[1][1]
-\subsubsection{Speeding up Python}
-\subsubsection{Visualization}
-\lipsum[1][1]
-\subsubsection{Accessing databases}
+    \subsection{Important Libraries}
+    \subsubsection{Standard Python library}
+    \subsubsection{Scientific calculations}
+    \lipsum[1][1]
+    \subsubsection{Speeding up Python}
+    \subsubsection{Visualization}
+    \lipsum[1][1]
+    \subsubsection{Accessing databases}
 
-\subsection{Working with Python}
-\subsubsection{Virtual environments}
-\lipsum[1][1]
-\subsubsection{Managing packages}
-\subsubsection{Unit and integration testing}
-\lipsum[1][1]
-\subsubsection{Documenting code}
+    \subsection{Working with Python}
+    \subsubsection{Virtual environments}
+    \lipsum[1][1]
+    \subsubsection{Managing packages}
+    \subsubsection{Unit and integration testing}
+    \lipsum[1][1]
+    \subsubsection{Documenting code}
 
-\subsection{Version Control}
-\subsubsection{Introduction to version control}
-\subsubsection{Version control with GIT}
-\lipsum[1][1]
+    \subsection{Version Control}
+    \subsubsection{Introduction to version control}
+    \subsubsection{Version control with GIT}
+    \lipsum[1][1]
 
-\section{NumPy and Pandas}
-\subsection{Introduction to NumPy}
-\subsubsection{NumPy arrays}
-\lipsum[1][1]
-\subsubsection{Array indexing and slicing}
-\subsubsection{Array operations}
-\lipsum[1][1]
-\subsubsection{Broadcasting}
+    \section{NumPy and Pandas}
+    \subsection{Introduction to NumPy}
+    \subsubsection{NumPy arrays}
+    \lipsum[1][1]
+    \subsubsection{Array indexing and slicing}
+    \subsubsection{Array operations}
+    \lipsum[1][1]
+    \subsubsection{Broadcasting}
 
-\subsection{Introduction to Pandas}
-\subsubsection{Series and DataFrames}
-\lipsum[1][1]
-\subsubsection{Data indexing and selection}
-\subsubsection{Data cleaning and preparation}
-\lipsum[1][1]
-\subsubsection{Data aggregation and grouping}
+    \subsection{Introduction to Pandas}
+    \subsubsection{Series and DataFrames}
+    \lipsum[1][1]
+    \subsubsection{Data indexing and selection}
+    \subsubsection{Data cleaning and preparation}
+    \lipsum[1][1]
+    \subsubsection{Data aggregation and grouping}
 
-\subsection{Data visualization with Pandas}
-\subsubsection{Plotting with Pandas}
-\lipsum[1][1]
-\subsubsection{Customizing plots}
+    \subsection{Data visualization with Pandas}
+    \subsubsection{Plotting with Pandas}
+    \lipsum[1][1]
+    \subsubsection{Customizing plots}
 
-\subsection{Working with time series data}
-\subsubsection{Date and time handling}
-\subsubsection{Resampling and frequency conversion}
+    \subsection{Working with time series data}
+    \subsubsection{Date and time handling}
+    \subsubsection{Resampling and frequency conversion}
 
-\subsection{Advanced Pandas techniques}
-\subsubsection{Merging and joining DataFrames}
-\subsubsection{Pivot tables and cross-tabulations}
+    \subsection{Advanced Pandas techniques}
+    \subsubsection{Merging and joining DataFrames}
+    \subsubsection{Pivot tables and cross-tabulations}
 
-\subsection{Performance optimization}
-\subsubsection{Efficient data manipulation}
-\subsubsection{Memory management}
+    \subsection{Performance optimization}
+    \subsubsection{Efficient data manipulation}
+    \subsubsection{Memory management}
+
+    \section{SciKit-Learn}
+    \section{PyTorch}
 
     \section{Literature}
     \begin{itemize}
         \item Lutz, M. (2017). Learning Python (5th ed.). O'Reilly.
         \item Mathes, E. (2019). Python Crash Course (2nd ed.). No Starch Press.
-\end{itemize}
+    \end{itemize}
 
-% ==== Data Analytics Foundations =============================================================================
-\chapter{Data Analytics Foundations}
+    % ==== Data Analytics Foundations =============================================================================
+    \chapter{Data Analytics Foundations}
     \section{Data Preprocessing}
     \subsection{Data Cleaning}
     \lipsum[1][1-3]
@@ -845,6 +855,35 @@
     \lipsum[3][1-3]
     \subsection{Data Reduction}
     \lipsum[4][1-3]
+
+    \subsection{Foundations of Data Systems}
+    \subsubsection{Reliability}
+    \subsubsection{Scalability}
+    \subsubsection{Maintainability}
+
+    \subsection{Data Processing at Scale}
+    \subsubsection{Batch Processing}
+    \subsubsection{Stream and Complex Event Processing}
+
+    \subsection{Microservices}
+    \subsubsection{Introduction to Microservices}
+    \subsubsection{Implementing Microservices}
+
+    \subsection{Governance \& Security}
+    \subsubsection{Data Protection}
+    \subsubsection{Data Security}
+    \subsubsection{Data Governance}
+
+    \subsection{Common Cloud Platforms \& Services}
+    \subsubsection{Amazon AWS}
+    \subsubsection{Google Cloud}
+    \subsubsection{Microsoft Azure}
+
+    \subsection{Data Ops}
+    \subsubsection{Defining Principles}
+    \subsubsection{Containerization}
+    \subsubsection{Building Data Pipelines}
+
     \section{Exploratory Data Analysis}
     \subsection{Descriptive Statistics}
     \lipsum[5][1-3]
@@ -859,13 +898,50 @@
         \item Han, J., Kamber, M., \& Pei, J. (2011). Data mining: Concepts and techniques (3rd ed.). Morgan Kaufmann.
         \item Provost, F., \& Fawcett, T. (2013). Data science for business: What you need to know about data mining and data-analytic thinking. O'Reilly Media.
         \item Tukey, J. W. (1977). Exploratory data analysis. Addison-Wesley.
-    \end{itemize}  
-    
+        \item Andrade, H., Gedik, B., \& Turaga, D. (2014). Fundamentals of stream processing: Application
+              design, systems, and analytics. Cambridge University Press.
+        \item Axelrod, C. W. (2013). Engineering safe and secure software systems. Artech House.
+        \item Kleppmann, M. (2017). Designing data-intensive applications: The big ideas behind reliable,
+              scalable, and maintainable systems. O'Reilly.
+        \item Newman, S. (2015). Building microservices: Designing fine-grained systems. O'Reilly.
+    \end{itemize}
 
     % ==== Machine Learning =============================================================================
     \chapter{Machine Learning}
     Test
     \section{Introduction to Machine Learning}
+    Clustering and classification both end up with “groups” of data, but they differ fundamentally in what is given as input, what is learned, and which question is being answered.
+
+    Supervised vs. Unsupervised
+    Classification is supervised learning: the training data already comes with known class labels (for example “spam”/“not spam”, “dog”/“cat”), and the model learns a mapping from features to these predefined labels.
+    Clustering is unsupervised learning: there are no labels; the algorithm is supposed to find “natural” groups in the data solely from the features, typically based on some notion of similarity or distance.
+
+    Different objectives
+
+    Classification answers the question: “To which of the known classes does this new object belong?” – it is a prediction task with a clearly defined output space.
+    Clustering answers something like: “How can these data points be partitioned into meaningful groups if only their features are known but no classes?” – it focuses on discovering structure, segmentation, and often also on exploration or complexity reduction.
+
+    Why separate algorithm families?
+
+    Classification algorithms (logistic regression, SVM, random forest, k-NN in its usual form) optimize a loss function with respect to known labels, for example misclassification rate or cross-entropy.
+    Clustering algorithms (k-means, hierarchical clustering, DBSCAN, Gaussian mixture models) typically optimize some measure of “within-cluster cohesion and between-cluster separation”, for example within-cluster variance or density criteria, without ever seeing any “right/wrong” label.
+
+    \begin{tblr}{|c|X|X|}
+        \hline
+        Aspect             & Classification                                & Clustering                                           \\
+        \hline
+        Learning type      & Supervised (with labels)                      & Unsupervised (without labels)                        \\
+        \hline
+        Main question      & ``Which known class does x belong to?''       & ``What structure / groups are present in the data?'' \\
+        \hline
+        Output             & Predefined class labels                       & Newly discovered clusters                            \\
+        \hline
+        Typical algorithms & Logistic regression, SVM, random forest, k-NN & k-means, DBSCAN, hierarchical clustering, GMM        \\
+        \hline
+        Evaluation         & Accuracy, F1, ROC-AUC                         & Silhouette, within-cluster variance, domain judgment \\
+        \hline
+    \end{tblr}
+
     \subsection{Regression \& Classification}
     \lipsum[1][1-3]
     \subsection{Supervised \& Unsupervised Learning}
@@ -1265,7 +1341,7 @@
     \subsubsection{Machine and Deep Learning}
     \subsubsection{Neuroscience in Finance}
     \lipsum[1][1]
-    
+
     \subsection{AI Application in the Financial Services Industry}
     \subsubsection{AI in Deposits and Lending}
     \subsubsection{Chatbots in Banking}
@@ -1592,11 +1668,15 @@
     \subsubsection{Information Extraction and Text Understanding}
     \subsubsection{Chatbots and Voice Assistants}
     \subsubsection{NLP in Education}
+    \lipsum[26][1-3]
+
     \subsubsection{NLP with Python}
     \subsection{Challenges in NLP}
     \subsubsection{Data for NLP}
     \subsubsection{Domain and Language Adaptation}
     \subsubsection{Explainability}
+    \lipsum[26][1-3]
+
     \subsubsection{Bias}
     \section{NLP in Education}
     \section{NLP for Accessibility}
@@ -1647,6 +1727,8 @@
     \subsubsection{Predictive and Prescriptive Maintenance}
     \subsubsection{Defect Recognition}
     \subsection{AI for Supply Chain}
+    \lipsum[26][1-3]
+
     \subsubsection{Demand Forecasting}
     \subsubsection{Inventory Models}
     \subsection{AI for Autonomous Planning and Scheduling}
@@ -1671,6 +1753,7 @@
     \subsubsection{Modeling systems}
     \subsubsection{Properties}
     \subsubsection{Analysis methods}
+    \lipsum[26][1-3]
 
     \subsection{Timed models}
     \subsubsection{Timed automata}
@@ -1683,6 +1766,7 @@
     \subsubsection{Working principles}
     \subsubsection{Performance analysis}
     \subsubsection{Software tools}
+    \lipsum[26][1-3]
 
     \subsection{Supervisory control}
     \subsubsection{Basic concepts}
@@ -1697,6 +1781,7 @@
     \subsubsection{Distributed and de-centralized supervision}
     \subsubsection{Model-based optimization of production systems}
     \subsubsection{Adaptive supervisory control}
+    \lipsum[26][1-3]
 
     \section{Industrial and Mobile Robots}
     \subsection{Introduction}
@@ -1713,6 +1798,7 @@
     \subsubsection{Inverse kinematics}
     \subsubsection{Differential kinematics}
     \subsubsection{Kinematics of mobile robots}
+    \lipsum[26][1-3]
 
     \subsection{Trajectory Planning}
     \subsubsection{Basic concepts}
@@ -1733,12 +1819,14 @@
     \subsubsection{Newton formulation}
     \subsubsection{Direct and inverse dynamics}
     \subsubsection{Dynamics of mobile robots}
+    \lipsum[26][1-3]
 
     \subsection{Control of Robots}
     \subsubsection{Basic concepts}
     \subsubsection{Decentralized motion control}
     \subsubsection{Centralized motion control}
     \subsubsection{Force control}
+    \lipsum[26][1-3]
 
     \subsection{Architecture of Robotic Systems}
     \subsubsection{Architectural components}
@@ -1793,6 +1881,8 @@
     \subsubsection{Replenishment Strategies}
     \subsubsection{Route Optimization}
     \subsubsection{Sales \& Operations Planning}
+    \lipsum[26][1-3]
+
     \subsection{AI Concepts in Supply Chain Operations}
     \subsubsection{Supplier Communication and Purchasing}
     \subsubsection{Autonomous Allocation of Orders to Production Resources}
@@ -1804,6 +1894,7 @@
     \subsubsection{The Challenges of Accountability}
     \subsubsection{The Challenges of Accessibility}
     \subsubsection{The Challenges of Organizational Transformation}
+    \lipsum[26][1-3]
 
     \section{Demand Forecast and Inventory Control}
     \subsection{Newsvendor Model}
@@ -1829,6 +1920,8 @@
     \subsubsection{Economic Order Quantity}
     \subsubsection{Inventory Models with Review}
     \subsubsection{Inventory Models with Service Levels}
+    \lipsum[26][1-3]
+
     \subsection{Further Effects}
     \subsubsection{Customer Heterogeneity}
     \subsubsection{Finite Product Lifetime}
@@ -1903,17 +1996,23 @@
     \subsection{Agents Oriented Design and Methodologies}
     \section{Typology of Intelligent Agents}
     \subsection{Reasoning Agents}
+    \lipsum[26][1-3]
+
     \subsection{Reactive Agents}
     \subsection{Hybrid Agents}
     \section{Agent Communication}
     \subsection{Ontology}
     \subsection{Communication Languages}
+    \lipsum[26][1-3]
+
     \section{Agent Cooperation}
     \subsection{Distributed Problem Solving}
     \subsection{Task and Result Sharing}
     \subsection{Handling Inconsistency}
     \subsection{Planning and Synchronization}
     \section{Multi-Agent Decision-Making}
+    \lipsum[26][1-3]
+
     \subsection{Strategies}
     \subsection{Group Decisions}
     \subsection{Coalitions}
@@ -1921,6 +2020,8 @@
     \subsection{Arguing}
     \section{Reinforcement Learning-Multi-Agent}
     \subsection{The Goal of Reinforcement Learning}
+    \lipsum[26][1-3]
+
     \subsection{Benefits and Challenge}
     \subsection{Introducing Multi-Agent Reinforcement Learning Algorithms}
     \section{Potentials of Multi-Agent Applications in Supply Chains}
@@ -1959,6 +2060,8 @@
     \subsubsection{Computer Vision with Deep Learning}
     \subsubsection{Visual Product Search}
     \subsection{Dynamic Pricing}
+    \lipsum[26][1-3]
+
     \subsubsection{Pricing Theory}
     \subsubsection{Measuring Price Elasticity}
     \subsubsection{Bayesian Optimal Pricing}
@@ -1969,6 +2072,8 @@
     \subsection{Case Studies}
     \subsubsection{Retail}
     \subsubsection{Entertainment}
+    \lipsum[26][1-3]
+
     \subsubsection{Advertisement}
 
     \section{AI in Marketing and Analytics}
@@ -1982,12 +2087,14 @@
     \subsubsection{Customer Segmentation, Journey and Acquisition Cost}
     \subsubsection{Market Basket \& Assortment Analysis}
     \subsubsection{Search Analytics}
+    \lipsum[26][1-3]
 
     \subsection{Predictive Methods}
     \subsubsection{Customer Churn and Retention}
     \subsubsection{Customer Lifetime Value (CLV) Estimation}
     \subsubsection{Sales Forecasting and Budgeting}
     \subsubsection{Search-Optimization}
+    \lipsum[26][1-3]
 
     \subsection{Prescriptive Methods}
     \subsubsection{Pricing Strategies}
@@ -2015,6 +2122,8 @@
     \subsubsection{Content Types \& Strategies across Domains}
     \subsubsection{Factorization Machines \& Classification}
     \subsection{Hybrid Recommender Systems}
+    \lipsum[26][1-3]
+
     \subsubsection{User- vs. Item-based Recommendations}
     \subsubsection{Monolithic, Mixed Hybrid and Ensemble Recommenders}
     \subsection{Large-Scale Recommender Systems}
@@ -2026,6 +2135,7 @@
     \subsubsection{Deep Learning and Reinforcement Learning Based Approaches}
     \subsubsection{Causality-Aware Approaches}
     \subsubsection{Multi-Stakeholder and Multi-Objective Recommender Systems}
+    \lipsum[26][1-3]
 
     \section{Literature}
     \begin{itemize}
@@ -2055,6 +2165,109 @@
         \item RecSys '20: Fourteenth ACM Conference on Recommender Systems, Association for Computing Machinery, New York, NY, United States, ISBN 78-1-4503-7583-2
         \item Sutton, R. S., \& Barto, A. G. (1998). Reinforcement learning: An introduction. MIT Press.
 
+    \end{itemize}
+
+    % ==== International IT Law =============================================================================
+    \chapter{International IT Law}
+    \subsection{Introduction}
+    \subsubsection{General Concepts of Law}
+    \subsubsection{Areas of Law}
+    \subsubsection{International, Transnational and EU Law}
+    \subsubsection{Definition and Scope of IT Law}
+    \subsubsection{International, Transnational and European IT Law}
+    \subsubsection{Law in Cross-Border Systems}
+
+    \subsection{E-Business and E-Commerce}
+    \subsubsection{General Terms and Conditions of Business}
+    \subsubsection{Electronic Commerce}
+    \subsubsection{IT Contracts}
+    \subsubsection{Intermediaries and Platforms}
+    \subsubsection{Antitrust Law and IT}
+    \lipsum[26][1-3]
+
+    \subsection{Intellectual Property}
+    \subsubsection{Basic Concepts of Intellectual Property}
+    \subsubsection{Copyright}
+    \subsubsection{Software Copyright and Software Licensing}
+    \subsubsection{Free and Open Licensing}
+    \subsubsection{Patenting of Software}
+    \lipsum[26][1-3]
+
+    \subsection{Privacy and Data Protection}
+    \subsubsection{Basic Concepts of Privacy and Data Protection}
+    \subsubsection{European General Data Protection Regulation (GDPR)}
+    \subsubsection{Implementation Approaches of the GDPR}
+    \subsubsection{International Data Transfer}
+
+    \subsection{Information Security and Computer Crime}
+    \subsubsection{Information Security Law}
+    \subsubsection{Electronic Signatures and Digital Identities}
+    \subsubsection{Cybercrime}
+    \lipsum[26][1-3]
+
+    \subsection{Online Media and Telecommunication}
+    \subsubsection{Basics of Online Media Law}
+    \subsubsection{Social Media and Freedom of Expression}
+    \subsubsection{Fundamentals of Telecommunications Law}
+    \subsubsection{Internet and Domain Law}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Lloyd, I. (2020): Information Technology Law. Oxford University Press.
+        \item Lutzi, T. (2020): Private International Law Online: Internet Regulation and Civil Liability in the EU. Oxford University Press.
+        \item Nirmal, B. C. \& Singh, R. K. (ed.) (2018): Contemporary Issues in International Law. Environment, International Trade, Information Technology and Legal Education. Springer.
+        \item Savin, A. (2017): EU Internet Law. Edward Elgar Publishing.
+        \item Siems, M. (2018): Comparative law. Cambridge University Press.
+        \item Thirlway, H. (2019): The sources of international law. Oxford University Press.
+    \end{itemize}
+
+    % ==== Start-up =============================================================================
+    \chapter{Start-up}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Blank, S., Dorf, B. (2020): The Startup Owner's Manual: The Step-By-Step Guide for Building a Great Company. Wiley.
+        \item Ries, E. (2011): The Lean Startup: How Today's Entrepreneurs Use Continuous Innovation to Create Radically Successful Businesses. Crown Business.
+        \item Maurya, A. (2012): Running Lean: Iterate from Plan A to a Plan That Works. O'Reilly Media.
+        \item Osterwalder, A., Pigneur, Y. (2010): Business Model Generation: A Handbook for Visionaries, Game Changers, and Challengers. Wiley.
+        \item Kawasaki, G. (2015): The Art of the Start 2.0: The Time-Tested, Battle-Hardened Guide for Anyone Starting Anything. Portfolio.
+        \item Bessant, J. \& Tidd, J. (2015). Innovation and Entrepreneurship. 3rd edition, John Wiley \& Sons.
+        \item Grant, A. (2016). Originals: How Non-Conformists Move the World. Viking.
+        \item Grant, W. (2020). How to Write a Winning Business Plan: A Step-by-Step Guide to Build a Solid Foundation, Attract Investors \& Achieve Success. Walter Grant.
+        \item Hoffman, S. (2021). Surviving a Startup: Practical Strategies for Starting a Business, Overcoming Obstacles, and Coming Out on Top. Harper Collins.
+        \item Osterwalder, A., Pigneur, Y., Bernarda, G. \& Smith, A. (2010). Value Proposition Design: How to Create Products and Services Customers Want. John Wiley \& Sons.
+    \end{itemize}
+
+    % ==== Visualization =============================================================================
+    \chapter{Visualization}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Few, S. (2009). Now you see it: Simple visualization techniques for quantitative analysis. Analytics Press.
+        \item Kirk, A. (2016). Data visualization: a successful design process. Packt Publishing Ltd.
+        \item McCandless, D. (2010). Information is beautiful. HarperCollins Publishers.
+        \item Munzner, T. (2014). Visualization analysis and design. CRC Press.
+        \item Yau, N. (2013). Data points: visualization that means something. Wiley.
+        \item Few, S. (2013). Information dashboard design: Displaying data for at-a-glance monitoring (2nd ed.). Analytics Press.
+        \item Gilliland, M., Tashman, L., \& Sglavo, U. (2016). Business forecasting: Practical problems and solutions. John Wiley \& Sons.
+        \item Hyndman, R. (2018). Forecasting: Principles and practice (2nd ed.). OTexts.
+        \item Kahneman, D. (2012). Thinking, fast and slow. Penguin Books.
+        \item Osterwalder, A., \& Pigneur, Y. (2010). Business model generation. Wiley.
+        \item Parmenter, D. (2015). Key performance indicators: Developing, implementing, and using winning KPIs. John Wiley \& Sons.
+    \end{itemize}
+
+    % ==== Scientific Writing =============================================================================
+    \chapter{Scientific Writing}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Alley, M. (1996). The craft of scientific writing (3rd ed.). Springer.
+        \item Day, R. A., \& Gastel, B. (2012). How to write and publish a scientific paper (7th ed.). Cambridge University Press.
+        \item Hofmann, A. H. (2014). Scientific writing and communication: Papers, proposals, and presentations (2nd ed.). Oxford University Press.
+        \item Sword, H. (2012). Stylish academic writing. Harvard University Press.
+        \item Weissberg, R., \& Buker, S. (1990). Writing up research: Experimental research reports. Prentice Hall.
+        \item Turabian, K. L. (2013). A Manual for Writers of Research Papers, Theses, and Dissertations (8th ed.). University of Chicago Press.
+        \item Renz, K.-C. (2016). The 1 x 1 of the presentation. For school, study and work. (2nd ed.). Springer Gabler.
     \end{itemize}
 
     % ==== References =============================================================================
