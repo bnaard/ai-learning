@@ -1,3 +1,5 @@
+.nvim
+
 # LaTeX intermediate and output files
 *.aux
 *.bbl
