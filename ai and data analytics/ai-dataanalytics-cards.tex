@@ -110,7 +110,7 @@
 
 % \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
 
-\usepackage{adjustbox}          % for adjusting boxes
+% \usepackage{adjustbox}          % for adjusting boxes
 
 \usepackage[labelfont=sf]{caption}  % for figure captions on non-floats
 
@@ -346,7 +346,7 @@
         \tcbitem[title=Information Management Cycle, raster multicolumn=6]
         Information is the oil of the 21st century and analytics is the combustion engine.
         \tcblower
-        \adjustbox{scale=\graphscale}{
+        \scalebox{\graphscale}{
             \begin{tikzpicture}[node distance=1cm and 1cm]
 
                 % place nodes
@@ -380,8 +380,7 @@
 
         \tcbitem[title=Data Analytics Decision Making, raster multicolumn=6, halign upper=center]
         \tcblower
-        \adjustbox{scale=\graphscale}{
-            \begin{tikzpicture}[node distance=0.5cm and 0.5cm]
+        \begin{tikzpicture}[node distance=0.5cm and 0.5cm, scale=\graphscale, transform shape]
                 \matrix[
                     matrix of nodes,
                     nodes={ circ, text width=1cm, minimum width=1cm },
@@ -394,11 +393,10 @@
                 \draw [line] (big-data) -- (smart-data);
                 \draw [line] (smart-data) -- (decisions);
             \end{tikzpicture}
-        }
 
         \vspace{2ex}
 
-        \adjustbox{scale=0.95}{
+        \scalebox{0.95}{
             \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
                 \tcbitem
                 detect, collect, determine, expand network

@@ -1,38 +1,43 @@
-.nvim
+# =============================================================================
+# Project specific
+# =============================================================================
+tmp/
+out/
+.root/
 
-# LaTeX intermediate and output files
+
+# =============================================================================
+# LaTeX build artifacts
+# =============================================================================
 *.aux
 *.bbl
 *.blg
 *.brf
+*.log
+*.out
+*.toc
+*.lof
+*.lot
 *.fls
 *.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
 *.glo
 *.gls
 *.idx
 *.ilg
 *.ind
 *.ist
-*.lof
-*.log
-*.lot
 *.maf
 *.mtc*
-*.out
-*.pdf
-*.ps
-*.synctex.gz
-*.toc
 *.xdv
-*.nav
-*.snm
-*.vrb
 *.acn
 *.acr
 *.alg
 *.glg
 *.glsdefs
-*.dvi
 *.run.xml
 *.bcf
 *.thm
@@ -41,6 +46,11 @@
 *.pygstyle
 *.listing
 *tcbtemp
+
+# PDFs and other generated documents
+*.pdf
+*.ps
+*.dvi
 
 # minted package output
 _minted-*
@@ -51,9 +61,16 @@ latexmkrc
 
 # Build folders
 build/
+_build/
 output/
 
-# macOS system files
+# Claude Code local settings (personal, not shared)
+.claude/settings.local.json
+
+# Editor/project files
+.idea/
+*.swp
+*~
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -67,8 +84,17 @@ cheatsheet/svg-inkscape/
 # Thumbnails
 ._*
 
-# Files that might appear on network shares
+
+# =============================================================================
+# OS Generated Files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
 .Spotlight-V100
 .Trashes
+ehthumbs.db
+Thumbs.db
+
 .DocumentRevisions-V100
 .fseventsd
