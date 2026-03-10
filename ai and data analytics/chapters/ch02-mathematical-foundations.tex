@@ -1,0 +1,282 @@
+    % ==== Mathematical Foundations =============================================================================
+    \chapter{Mathematical Foundations}
+    \section{Advanced Mathematics}
+    \subsection{Calculus}
+    \subsubsection{Differentiation}
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Gradient, raster multicolumn=6]
+        The gradient for any function $y = f(x)$ is defined as follows. The gradient is also called the first derivative. The three notations $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable\textsuperscript{\cite[][p89]{yangMathematicsCivilEngineers2018} and \cite[][p393]{bronsteinTaschenbuchMathematik2001}}.
+        \tcblower
+        \begin{equation}
+            f'(x) = \frac{dy}{dx} = \frac{df(x)}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+        \end{equation}
+
+        \vspace*{4ex}
+        \centering
+        \captionsetup{hypcap=false}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    width=8cm,
+                    height=6cm,
+                    axis lines=middle,
+                    axis line style={thick, -Stealth},
+                    xlabel={$x$},
+                    ylabel={$y = f(x)$},
+                    xmin=0, xmax=3,
+                    ymin=-0.5, ymax=5,
+                    enlarge y limits={upper=0.05},
+                    enlarge x limits={upper=0.05},
+                    samples=100,
+                    domain=0:2.2,
+                    legend cell align=left,
+                    legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east, cells={anchor=west}},
+                    clip=false,
+                    ylabel style={at={(ticklabel cs:1.0)},anchor=south},
+                    xlabel style={at={(1.0,0.1)},anchor=south},
+                    % ytick={0,1,2,3,4},
+                    ytick distance=1,
+                    minor y tick num=0,
+                    grid=both,
+                    major grid style={draw=gray!20, thin},
+                    minor grid style={draw=gray!10, very thin},
+                ]
+                % Plot y = x^2
+                \addplot[thick, \maincolor!80!black, smooth] {x^2};
+                \addlegendentry{$y = x^2$}
+
+                % Tangent at point P (x=1, y=1)
+                % Derivative: y' = 2x, at x=1: y'(1) = 2
+                % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
+                \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
+                \addlegendentry{Tangent $y = 2x - 1$ at $P$}
+
+                % Mark point P
+                \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
+                \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
+
+                % Line M: vertical line from P down to x-axis (at x=1)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
+                \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
+
+                % Line N: horizontal line from P to x=2 (parallel to x-axis)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
+
+                % Vertical line at x=2 from x-axis up
+                % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
+                \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
+
+                % Mark intersection points
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
+
+                % Label dy: from N (y=1) to tangent (y=3) at x=2
+                \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
+                \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
+
+                % Label delta y: from N (y=1) to curve (y=4) at x=2
+                \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
+                \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
+
+                % Label x: from origin to where M hits x-axis (x=1)
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.55) -- (axis cs:1,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.75) {$x$};
+
+                % Label delta x = dx: from M (x=1) to x=2
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.55) -- (axis cs:2,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.7) {$\Delta x = dx$};
+
+                % Angle alpha where tangent crosses x-axis
+                % Tangent y=2x-1 crosses x-axis at x=0.5
+                % where A, B, and C are the vertices, and B is the apex
+                \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
+                % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
+                % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
+
+            \end{axis}
+        \end{tikzpicture}
+        \captionof{figure}{Graph of example function $f(x) = y = x^2$ with first derivative $f'(x) = 2x$, hence with tangent $y = mx + b = 2x - 1$ at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
+
+    \end{tcbitemize}
+    \begin{enumerate}[label*=\arabic*.]
+        \item ...
+        \item Integration
+        \item Partial Differentiation
+        \item Vector Analysis
+    \end{enumerate}
+
+    \subsection{Integral Transformations}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Convolution
+        \item Complex Numbers
+        \item Fourier Series
+        \item Fourier Transformation
+    \end{enumerate}
+
+    \subsection{Vector Algebra}
+    \subsubsection{Scalars and Vectors}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=N-Dimensional Vector, raster multicolumn=6]
+        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition\textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters.
+
+        \begin{equation}
+            \vec{v} =
+            \begin{pNiceMatrix}
+                a_1 \\ a_2 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+            \neq
+            \begin{pNiceMatrix}
+                \CodeBefore
+                \cellcolor[HTML]{FFFF88}{1-1,2-1}
+                \Body
+                a_2 \\ a_1 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+        \end{equation}
+
+        \tcbitem[title=Length (Magnitude), raster multicolumn=6]
+        Length (magnitude) of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+        \end{equation}
+
+        \tcbitem[title=Normalized vector (unit vector), raster multicolumn=6]
+        Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
+        \tcblower
+        \begin{equation}
+            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} =
+            \begin{pNiceMatrix}
+                \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
+            \end{pNiceMatrix}
+        \end{equation}
+
+    \end{tcbitemize}
+
+    \subsubsection{Addition and Subtraction of Vectors}
+    \subsubsection{Multiplication of Vectors, Vector Product, Scalar Product}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title=Scalar Product (dot product), raster multicolumn=6]
+        Scalar product (dot product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+        \tcblower
+        \begin{equation}
+            \vec{v} \cdot \vec{u} =
+            \begin{pNiceMatrix}
+                v_1 \\ v_2 \\ \vdots \\ v_n
+            \end{pNiceMatrix}
+            \cdot
+            \begin{pNiceMatrix}
+                u_1 \\ u_2 \\ \vdots \\ u_n
+            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
+        \end{equation}
+
+        \tcbitem[title=Angle and Cosine Similarity, raster multicolumn=6]
+        The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+
+        \begin{equation}
+            \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
+            \Rightarrow
+            \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
+            \Rightarrow
+            \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
+        \end{equation}
+
+        \vspace{2ex}
+
+        Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
+        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
+
+    \end{tcbitemize}
+
+    \subsection{Vector Calculus}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Differentiation of Vectors
+        \item Integration of Vectors
+        \item Scalar and Vector Fields
+        \item Vector Operators
+    \end{enumerate}
+
+    \subsection{Matrices and Vector Spaces}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Basic Matrix Algebra and Systems of Linear Equations
+        \item Transpose, Trace, Determinant, and Inverse of a Matrix
+        \item Eigenvalues, Eigenvectors, and Diagonalization
+        \item Tensors
+    \end{enumerate}
+
+    \subsection{Information Theory}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean Squared Error (MSE) and Simple Linear Regression
+        \item Area Under the ROC Curve and Gini Index
+        \item Entropy
+        \item Cross Entropy
+    \end{enumerate}
+
+    \section{Advanced Statistics}
+    \subsection{Introduction to Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Random Variables
+        \item Kolmogorov Axioms
+        \item Probability Distributions
+        \item Decomposing probability distributions
+        \item Expectation Values and Moments
+        \item Central Limit Theorem
+        \item Sufficient Statistics
+        \item Problems of Dimensionality
+        \item Component Analysis and Discriminants
+    \end{enumerate}
+    \subsection{Important Probability Distributions and their Applications}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Binomial Distribution
+        \item Gauss or Normal Distribution
+        \item Poisson and Gamma-Poisson Distribution
+        \item Weibull Distribution
+    \end{enumerate}
+    \subsection{Bayesian Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Bayes’ Rule
+        \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
+        \item Conjugate Prior
+        \item Bayesian \& Frequentist Approach
+    \end{enumerate}
+    \subsection{Descriptive Statistics}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Mean, Median, Mode, Quantiles
+        \item Variance, Skewness, Kurtosis
+    \end{enumerate}
+    \subsection{Data Visualization}
+    \begin{enumerate}[label*=\arabic*.]
+        \item General Principles of Dataviz/Visual Communication
+        \item 1D, 2D Histograms
+        \item Box Plot, Violin Plot
+        \item Scatter Plot, Scatter Plot Matrix, Profile Plot
+        \item Bar Chart
+    \end{enumerate}
+    \subsection{Parameter Estimation}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Maximum Likelihood
+        \item Ordinary Least Squares
+        \item Expectation Maximization (EM)
+        \item Lasso and Ridge Regularization
+        \item Propagation of Uncertainties
+    \end{enumerate}
+    \subsection{Hypothesis Test}
+    \begin{enumerate}[label*=\arabic*.]
+        \item Error of 1st and 2nd Kind
+        \item Multiple Hypothesis Tests
+        \item p-Value
+    \end{enumerate}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
+        \item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+        \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+        \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+        \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+        \item Downey, A. (2014). Think stats. O’Reilley Publishing.
+        \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+        \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+    \end{itemize}
+

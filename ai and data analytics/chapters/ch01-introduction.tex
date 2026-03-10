@@ -1,0 +1,130 @@
+    % ==== Introduction =============================================================================
+    \chapter{Introduction to AI and Data Analytics}
+    \section{Industry 4.0}
+
+    \begin{tcbitemize}[ skin=sectionraster, halign lower=center ]
+        \tcbitem[title=Information Management Cycle, raster multicolumn=6]
+        Information is the oil of the 21st century and analytics is the combustion engine.
+        \tcblower
+        \scalebox{\graphscale}{
+            \begin{tikzpicture}[node distance=1cm and 1cm]
+
+                % place nodes
+                \coordinate (center) at (0,0) {};
+                \node [block, above=of center] (information-user) {INFORMATION USER} ;
+                \node [block, right=of center] (data-sources) {DATA SOURCES} ;
+                \node [block, below=of center] (information-ressources) {INFORMATION RESSOURCES} ;
+                \node [block, left=of center] (information-product) {INFORMATION PRODUCT} ;
+
+                % draw edges
+                \draw [line] (information-user) -| (data-sources) node[midway, above, xshift=5mm] {Requirement Analysis};
+                \draw [line] (data-sources) |- (information-ressources) node[midway, below, xshift=5mm] {Integration};
+                \draw [line] (information-ressources) -| (information-product) node[midway, below, xshift=-5mm] {Evaluation};
+                \draw [line] (information-product) |- (information-user) node[midway, above, xshift=-5mm] {Deployment};
+
+            \end{tikzpicture}
+        }
+
+        \tcbitem[title={Data Analytics, Big Data and AI Application Areas}, raster multicolumn=6]
+        \begin{multicols}{2}
+            \begin{itemize}
+                \item Optimize Quality Assurance
+                \item Predictive Maintenance
+                \item Reduce Process Runtimes
+                \item Batch-size 1 Production
+                \item Decision Support
+                \item Minimize Ramp-up
+                \item Minimize Process Error
+            \end{itemize}
+        \end{multicols}
+
+        \tcbitem[title=Data Analytics Decision Making, raster multicolumn=6, halign upper=center]
+        \tcblower
+        \begin{tikzpicture}[node distance=0.5cm and 0.5cm, scale=\graphscale, transform shape]
+                \matrix[
+                    matrix of nodes,
+                    nodes={ circ, text width=1cm, minimum width=1cm },
+                    column sep=1cm
+                ] (m1) {
+                    |(big-data)| (BIG) DATA & |(smart-data)| SMART DATA & |(decisions)| DECISIONS \\
+                };
+
+                % draw arrows
+                \draw [line] (big-data) -- (smart-data);
+                \draw [line] (smart-data) -- (decisions);
+            \end{tikzpicture}
+
+        \vspace{2ex}
+
+        \scalebox{0.95}{
+            \begin{tcbitemize}[raster columns=4, raster equal height=rows, raster column skip=0.25cm, size=small, top=2mm, bottom=2mm, arc=3mm, boxrule=0.75pt, colframe=\maincolor!80!White]
+                \tcbitem
+                detect, collect, determine, expand network
+                \begin{itemize}
+                    \item simulations
+                    \item sensors
+                    \item databases
+                    \item documentations
+                    \item applications
+                \end{itemize}
+                \tcbitem
+                consolidate, reconstruct, model, verify, enrich, re-evaluate
+                \begin{itemize}
+                    \item extract, transform, load (ETL)
+                    \item streaming
+                    \item descriptive analysis
+                    \item semantic integration
+                    \item enrichment
+                \end{itemize}
+                \tcbitem
+                sort, reorder, reproduce, reduce, compacting, validate
+                \begin{itemize}
+                    \item predictive analysis
+                    \item prescriptive analysis
+                    \item data mining
+                    \item data exploration
+                    \item machine learning
+                \end{itemize}
+                \tcbitem
+                visualize, integrate, interpret, arrange, prioritize
+                \begin{itemize}
+                    \item visual analytics
+                    \item KPI
+                    \item cockpits and reports
+                    \item mental models
+                \end{itemize}
+            \end{tcbitemize}
+        }
+
+    \end{tcbitemize}
+
+    \section{History of AI}
+    \subsection{Historical Developments}
+    \subsection{AI Winter}
+    \subsection{Notable Advances in AI}
+
+    \section{Expert Systems}
+    \subsection{Overview Over Expert Systems}
+    \subsection{Introduction to Prolog}
+
+    \section{Neuroscience}
+    \subsection{The (Human) Brain}
+    \subsection{Cognitive Processes}
+
+    \section{Modern AI Systems}
+    \subsection{Recent Developments in Hard- and Software}
+    \subsection{Narrow vs General AI}
+    \subsection{NLP and Computer Vision}
+
+    \section{AI Application Areas}
+    \subsection{Autonomous Vehicles \& Mobility}
+    \subsection{Personalized Medicine}
+    \subsection{FinTech}
+    \subsection{Retail \& Industry}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Chowdhary, K. R. (2020). Fundamentals of Artificial Intelligence. Springer India.
+        \item Russell, S., \& Norvig, P. (2022). Artificial intelligence. A modern approach (4th ed.). Pearson Education.
+        \item Ward, J. (2020). The student's guide to cognitive neuroscience (4th ed.). Taylor \& Francis Group.
+    \end{itemize}

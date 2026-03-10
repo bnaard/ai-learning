@@ -1,11 +1,11 @@
 # Project Progress Tracker
 
-## Last Updated: 2026-03-10 - Analysis Phase Complete
+## Last Updated: 2026-03-10 - Ch5 Machine Learning COMPLETE
 
-## Current Phase: Analysis & Planning → AWAITING AUTHOR FEEDBACK
+## Current Phase: Phase 2 — Content Production (Ch6 Deep Learning next)
 
 ### Document Analysis Summary
-The document has ~2277 lines across 15 chapters. Content completeness varies widely:
+The document has 20 chapter files. Content completeness:
 
 | Chapter | Status | Completeness |
 |---------|--------|-------------|
@@ -13,7 +13,7 @@ The document has ~2277 lines across 15 chapters. Content completeness varies wid
 | 2. Mathematical Foundations | Partial | ~25% (Calculus partial, Vectors done, rest stubs) |
 | 3. Programming Foundations | Stub | ~5% (outline only) |
 | 4. Data Analytics Foundations | Stub | ~5% (outline only) |
-| 5. Machine Learning | Partial | ~15% (intro table done, rest lipsum/stubs) |
+| **5. Machine Learning** | **DONE** | **~95% (52 cards, 8 sections, 8 TikZ diagrams, Further Reading)** |
 | 6. Deep Learning | Stub | ~5% (lipsum placeholders) |
 | 7. Reinforcement Learning | Stub | ~5% (lipsum placeholders) |
 | 8. Functional Security | Stub | ~0% (outline only) |
@@ -23,35 +23,42 @@ The document has ~2277 lines across 15 chapters. Content completeness varies wid
 | 12. NLP & Generative AI | Stub | ~5% (outline only) |
 | 13. AI in Business | Stub | ~5% (outline only) |
 | 14. International IT Law | Stub | ~0% (outline only) |
-| 15. Startup/Viz/SciWriting | Empty | ~0% |
+| 15-20. Various | Empty/Stub | ~0% |
+
+### Ch5 Machine Learning — Completed Structure
+- 5.1 Introduction to ML (5 subsections, 9 cards)
+  - What is ML?, Supervised/Unsupervised, Regression/Classification, RL overview, Model Eval & Overfitting
+- 5.2 Clustering (5 subsections, 17 cards)
+  - Intro, K-Means, EM/GMM, DBSCAN, Hierarchical
+- 5.3 Regression (5 subsections, 7 cards)
+  - Linear/Nonlinear, Logistic, Quantile, Multivariate, Lasso/Ridge
+- 5.4 Support Vector Machines (3 subsections, 5 cards)
+  - Intro (margin, soft-margin), Classification (kernel trick), Regression (SVR)
+- 5.5 Decision Trees & Ensemble Methods (5 subsections, 7 cards)
+  - Intro, Classification, Regression, Random Forests, Gradient Boosting
+- 5.6 Nearest Neighbor Methods (2 subsections, 3 cards)
+  - k-NN, Distance Metrics
+- 5.7 Genetic Algorithms (2 subsections, 4 cards)
+  - Intro (terminology, lifecycle, operators), Applications
+- 5.8 Further Reading (1 card with \fullcite references)
 
 ### Task Queue
 
-#### Phase 1: Analysis & Planning (IN PROGRESS)
-- [x] Read and analyze document structure
-- [x] Identify all chapters and their completeness
-- [x] Set up CLAUDE.md and PROGRESS.md
-- [x] Research agent: Catalog knowledge sources and map to chapters → `context/research-knowledge-catalog.md`
-- [x] Research agent: Identify bibtex keys for knowledge books (28/31 found)
-- [x] Coordinator: Produce completion proposal with prioritized roadmap → `context/COMPLETION-PROPOSAL.md`
-- [ ] BLOCKED: Awaiting author feedback on 7 questions in proposal
+#### Phase 1: Analysis & Planning (COMPLETE)
+- [x] All planning tasks completed (see previous sessions)
+- [x] Ch5 structure revision approved
+- [x] Ch2/Ch6/Ch12 structural additions: APPROVED by author
 
-#### Phase 2: Core Content (PLANNED)
-Priority order (foundational → applied):
-1. Ch 5: Machine Learning (most structured outline, core topic)
-2. Ch 6: Deep Learning (builds on ML)
-3. Ch 2: Mathematical Foundations (supports ML/DL understanding)
-4. Ch 7: Reinforcement Learning (extends ML)
-5. Ch 4: Data Analytics Foundations
-6. Ch 3: Programming Foundations (Python/NumPy/Pandas)
-7. Ch 12: NLP & Generative AI (hot topic, high value)
-8. Ch 1: Introduction (context-setting)
-9. Ch 9: Computer Vision
-10. Ch 10-11: Domain applications (FinTech, Healthcare)
-11. Ch 13: AI in Business
-12. Ch 8: Functional Security
-13. Ch 14: IT Law
-14. Ch 15: Startup/Viz/SciWriting
+#### Phase 2: Core Content (IN PROGRESS)
+- [x] Ch 5: Machine Learning — COMPLETE (52 cards, 8 sections, 25 subsections)
+- [ ] Ch 6: Deep Learning — NEXT (needs structural additions: activation functions, forward pass, loss functions, training loop, transformer architecture)
+- [ ] Ch 2: Mathematical Foundations (needs chain rule, partial derivatives, matrix multiplication)
+- [ ] Ch 7: Reinforcement Learning
+- [ ] Ch 4: Data Analytics Foundations
+- [ ] Ch 3: Programming Foundations
+- [ ] Ch 12: NLP & Generative AI (needs BERT, GPT, tokenization, pre-training/fine-tuning, prompt engineering)
+- [ ] Ch 1: Introduction
+- [ ] Ch 9-16: Domain applications
 
 #### Phase 3: Integration & Polish (PLANNED)
 - Cross-reference consistency
@@ -61,9 +68,20 @@ Priority order (foundational → applied):
 ### Active Assignments
 | Agent | Task | Status | Started |
 |-------|------|--------|---------|
-| Coordinator | Document analysis & planning | DONE | Session start |
-| Research | Catalog knowledge sources | DONE | Session start |
-| Writer | - | Idle | - |
+| Coordinator | Ch5 complete, planning Ch6 | READY | Now |
+| Research | Ch6 DL content research needed | PENDING | — |
+| Writer | Ch6 DL content writing needed | PENDING | — |
+
+### Author Decisions Log
+- Priority: Tier 1-4 approved as proposed
+- Depth: "One thing to grasp per box", denser only where it makes sense
+- TikZ: Only where they significantly aid understanding
+- Literature: Merge inline lists → one big bib section; add "Further Reading" per chapter
+- Excluded: IT Law, Startup, Scientific Writing. Visualization KEPT.
+- Language: Use all sources; content always in English
+- Structure changes: Must be proposed and confirmed by author
+- Ch5 revised structure: APPROVED and IMPLEMENTED
+- Ch2/Ch6/Ch12 structural additions for NN-from-scratch & LLM paths: APPROVED
 
 ### Key Decisions
 - Content depth: Core concepts + key formulas, not full derivations

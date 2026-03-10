@@ -29,12 +29,15 @@ A comprehensive LaTeX document (`ai and data analytics/ai-dataanalytics-cards.te
 
 ## Content Style Guidelines
 - Each section uses `\begin{tcbitemize}[skin=sectionraster]` with `\tcbitem[title=..., raster multicolumn=6]`
+- **"One thing to grasp per box"** — each card teaches ONE concept. Can be denser only where it truly makes sense.
 - Content is concise, educational, with key formulas in `equation` environments
 - Citations use `\textsuperscript{\cite[][p.XX]{bibtexkey}}` format
-- Diagrams use TikZ with predefined flowchart styles
+- TikZ diagrams: **only where they significantly aid understanding**, not in every section
 - Stub sections use either `\lipsum` placeholders or enumerated topic outlines
 - Tables use `tblr` (tabularray) environment
 - Tone: Scientific but accessible, "deep enough for background, not all formulas derived"
+- **Section structure changes**: Must be proposed and confirmed by author before implementation
+- **All content in English**, even when sources are in German or other languages
 
 ## Way of Working
 
@@ -60,16 +63,36 @@ A comprehensive LaTeX document (`ai and data analytics/ai-dataanalytics-cards.te
 - **Resilience**: Document progress every 3-4 minutes or after each subtask in context/PROGRESS.md
 - **Priority**: Start with chapters that have the most structure (outlines) already defined
 
+## Literature Handling
+- **Inline chapter literature lists** are reminders only — merge into one big bibliography at end, structured by topic
+- Each chapter gets a **"Further Reading"** section with references to most relevant books
+- For chapters with no knowledge sources, advise which books would help (author may acquire them)
+- All references must use bibtex keys from `bibliography/references.bib`
+- New references: Add to references.bib if not already present
+
 ## Knowledge Sources
 - Primary: Books in `./knowledge/Knowledge ML and AI/` and `./knowledge/Knowledge Data Mining/`
 - Secondary: Internet research
 - Bibliography: `bibliography/references.bib` (large Zotero export, ~400+ entries)
 
+## Excluded Chapters (per author decision)
+- Ch 17: International IT Law — excluded from effort
+- Ch 18a: Start-up — excluded from effort
+- Ch 18c: Scientific Writing — excluded from effort
+- Ch 18b: Visualization — KEPT (essential for ML development and use)
+
 ## File Paths
-- Main doc: `ai and data analytics/ai-dataanalytics-cards.tex`
+- Main doc (preamble only): `ai and data analytics/ai-dataanalytics-cards.tex` (369 lines)
+- Chapter files: `ai and data analytics/chapters/ch{01-20}-*.tex` (20 files)
 - Bibliography: `bibliography/references.bib`
 - Flowchart styles: `shapes/flowchart_styles.tex`
 - Config: `config/textwrap.yaml`
 - Progress tracking: `context/PROGRESS.md`
 - Research notes: `context/research-*.md`
 - Writing notes: `context/writing-*.md`
+
+## Document Split (2026-03-10)
+Document was split into 20 chapter files under `ai and data analytics/chapters/`.
+Main file contains preamble + `\input{chapters/chXX-name}` commands + References chapter.
+Each chapter file is standalone content (no preamble, no \begin{document}).
+When editing a chapter, edit the corresponding file in `chapters/` directory.
