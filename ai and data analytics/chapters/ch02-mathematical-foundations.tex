@@ -98,20 +98,56 @@
         \captionof{figure}{Graph of example function $f(x) = y = x^2$ with first derivative $f'(x) = 2x$, hence with tangent $y = mx + b = 2x - 1$ at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
 
     \end{tcbitemize}
-    \begin{enumerate}[label*=\arabic*.]
-        \item ...
-        \item Integration
-        \item Partial Differentiation
-        \item Vector Analysis
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title=Integration, raster multicolumn=6]
+        The \emph{indefinite integral} is the anti-derivative: if $F'(x) = f(x)$, then $\int f(x)\,dx = F(x) + C$, where $C$ is an arbitrary constant. The \emph{definite integral} over $[a,b]$ gives the signed area under the curve\textsuperscript{\cite{yangMathematicsCivilEngineers2018}}.
+        \tcblower
+        \begin{equation}
+            \int_a^b f(x)\,dx = F(b) - F(a)
+        \end{equation}
+        The \textbf{Fundamental Theorem of Calculus} links differentiation and integration: $\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$. Common rules: $\int x^n\,dx = \frac{x^{n+1}}{n+1} + C$ (power rule); $\int e^x\,dx = e^x + C$.
+
+        \tcbitem[title={Partial Differentiation}, raster multicolumn=6]
+        For a function $f(x_1, x_2, \ldots, x_n)$ of several variables, the \emph{partial derivative} $\frac{\partial f}{\partial x_i}$ measures the rate of change with respect to $x_i$ while all other variables are held constant\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
+        \tcblower
+        \begin{equation}
+            \frac{\partial f}{\partial x_i} = \lim_{\Delta x_i \to 0} \frac{f(\ldots, x_i + \Delta x_i, \ldots) - f(\ldots, x_i, \ldots)}{\Delta x_i}
+        \end{equation}
+        The \textbf{gradient vector} collects all partial derivatives: $\nabla f = \left(\frac{\partial f}{\partial x_1}, \ldots, \frac{\partial f}{\partial x_n}\right)^\top$. In ML, the \textbf{chain rule} is essential for backpropagation: $\frac{\partial \ell}{\partial w} = \frac{\partial \ell}{\partial a}\cdot\frac{\partial a}{\partial z}\cdot\frac{\partial z}{\partial w}$.
+
+        \tcbitem[title={Vector Analysis: div, curl, Laplacian}, raster multicolumn=6]
+        Three key differential operators act on scalar and vector fields\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The \textbf{divergence} of a vector field $\vec{F}$ measures net outward flux at a point. The \textbf{curl} measures rotation. The \textbf{Laplacian} $\Delta f$ generalises the second derivative to multiple dimensions and appears in diffusion processes and regularisation.
+        \tcblower
+        \begin{equation}
+            \operatorname{div}\vec{F} = \nabla \cdot \vec{F} = \sum_i \frac{\partial F_i}{\partial x_i}, \quad
+            \operatorname{curl}\vec{F} = \nabla \times \vec{F}, \quad
+            \Delta f = \nabla^2 f = \sum_i \frac{\partial^2 f}{\partial x_i^2}
+        \end{equation}
+
+    \end{tcbitemize}
 
     \subsection{Integral Transformations}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Convolution
-        \item Complex Numbers
-        \item Fourier Series
-        \item Fourier Transformation
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title=Convolution, raster multicolumn=6]
+        Convolution $(f * g)(t)$ blends two functions by sliding one over the other and integrating their pointwise product\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. Intuitively: each output value is a weighted sum of past input values. In CNNs, learnable filters are convolved with input feature maps to detect local patterns such as edges or textures.
+        \tcblower
+        \begin{equation}
+            (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau
+        \end{equation}
+        Discrete convolution (used in practice): $(f * g)[n] = \sum_{k} f[k]\, g[n-k]$.
+
+        \tcbitem[title={Fourier Transformation}, raster multicolumn=6]
+        The Fourier Transform decomposes a signal $f(t)$ into its constituent frequencies, transforming from the time domain into the frequency domain\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The inverse transform reconstructs the original signal. In deep learning, the convolution theorem states that convolution in the time domain equals pointwise multiplication in the frequency domain, enabling fast computation via FFT.
+        \tcblower
+        \begin{equation}
+            \hat{f}(\xi) = \int_{-\infty}^{\infty} f(t)\, e^{-2\pi i \xi t}\, dt, \qquad
+            f(t) = \int_{-\infty}^{\infty} \hat{f}(\xi)\, e^{2\pi i \xi t}\, d\xi
+        \end{equation}
+        The \textbf{Discrete Fourier Transform (DFT)}: $X_k = \sum_{n=0}^{N-1} x_n\, e^{-2\pi i kn/N}$.
+
+    \end{tcbitemize}
 
     \subsection{Vector Algebra}
     \subsubsection{Scalars and Vectors}
@@ -190,83 +226,295 @@
     \end{tcbitemize}
 
     \subsection{Vector Calculus}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Differentiation of Vectors
-        \item Integration of Vectors
-        \item Scalar and Vector Fields
-        \item Vector Operators
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Jacobian Matrix}, raster multicolumn=6]
+        When a vector-valued function $\vec{f}: \mathbb{R}^n \to \mathbb{R}^m$ is differentiated, the result is the \textbf{Jacobian matrix} $\mathbf{J}$, whose entry $J_{ij} = \frac{\partial f_i}{\partial x_j}$ gives the partial derivative of the $i$-th output with respect to the $j$-th input\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The Jacobian generalises the scalar derivative and the gradient. In backpropagation, Jacobians describe how errors propagate through layer transformations.
+        \tcblower
+        \begin{equation}
+            \mathbf{J} =
+            \begin{pNiceMatrix}
+                \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+                \vdots & \ddots & \vdots \\
+                \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n}
+            \end{pNiceMatrix}
+        \end{equation}
+
+        \tcbitem[title={Scalar and Vector Fields}, raster multicolumn=6]
+        A \textbf{scalar field} assigns a single number to every point in space, e.g.\ temperature $T(x,y,z)$. A \textbf{vector field} assigns a vector to every point, e.g.\ wind velocity $\vec{v}(x,y,z)$. The \textbf{gradient} of a scalar field $\nabla f$ is itself a vector field pointing in the direction of steepest ascent — exactly what gradient descent follows (in the negative direction)\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
+        \tcblower
+        \begin{equation}
+            \nabla f(x_1, \ldots, x_n) =
+            \begin{pNiceMatrix}
+                \frac{\partial f}{\partial x_1} \\ \vdots \\ \frac{\partial f}{\partial x_n}
+            \end{pNiceMatrix}
+        \end{equation}
+        Gradient descent update: $\vec{x} \leftarrow \vec{x} - \eta\, \nabla_{\vec{x}} \mathcal{L}$.
+
+    \end{tcbitemize}
 
     \subsection{Matrices and Vector Spaces}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Basic Matrix Algebra and Systems of Linear Equations
-        \item Transpose, Trace, Determinant, and Inverse of a Matrix
-        \item Eigenvalues, Eigenvectors, and Diagonalization
-        \item Tensors
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Basic Matrix Algebra}, raster multicolumn=6]
+        A matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ has $m$ rows and $n$ columns. Matrix multiplication $\mathbf{C} = \mathbf{AB}$ is defined when $\mathbf{A} \in \mathbb{R}^{m \times k}$ and $\mathbf{B} \in \mathbb{R}^{k \times n}$; entry $C_{ij} = \sum_{l=1}^k A_{il} B_{lj}$\textsuperscript{\cite{cherneyLinearAlgebra2013}}. A system of linear equations $\mathbf{Ax} = \mathbf{b}$ is the backbone of linear regression, neural network layers, and many optimisation problems.
+        \tcblower
+        \begin{equation}
+            \mathbf{A}\mathbf{x} = \mathbf{b}
+            \quad \Longleftrightarrow \quad
+            \begin{pNiceMatrix}
+                a_{11} & \cdots & a_{1n} \\
+                \vdots & \ddots & \vdots \\
+                a_{m1} & \cdots & a_{mn}
+            \end{pNiceMatrix}
+            \begin{pNiceMatrix} x_1 \\ \vdots \\ x_n \end{pNiceMatrix}
+            =
+            \begin{pNiceMatrix} b_1 \\ \vdots \\ b_m \end{pNiceMatrix}
+        \end{equation}
+
+        \tcbitem[title={Transpose, Trace, Determinant, Inverse}, raster multicolumn=6]
+        Four fundamental matrix properties\textsuperscript{\cite{cherneyLinearAlgebra2013}}:
+        \begin{itemize}
+            \item \textbf{Transpose} $\mathbf{A}^\top$: rows become columns; $(\mathbf{AB})^\top = \mathbf{B}^\top\mathbf{A}^\top$.
+            \item \textbf{Trace} $\operatorname{tr}(\mathbf{A}) = \sum_i A_{ii}$: sum of diagonal elements; equals sum of eigenvalues.
+            \item \textbf{Determinant} $\det(\mathbf{A})$: scalar measuring volume scaling; $\det(\mathbf{A}) = 0$ iff $\mathbf{A}$ is singular.
+            \item \textbf{Inverse} $\mathbf{A}^{-1}$: exists iff $\det(\mathbf{A}) \neq 0$; satisfies $\mathbf{A}\mathbf{A}^{-1} = \mathbf{I}$.
+        \end{itemize}
+        \tcblower
+        \begin{equation}
+            \text{For } \mathbf{A} = \begin{pNiceMatrix} a & b \\ c & d \end{pNiceMatrix}:
+            \quad \det(\mathbf{A}) = ad - bc, \quad
+            \mathbf{A}^{-1} = \frac{1}{ad-bc}\begin{pNiceMatrix} d & -b \\ -c & a \end{pNiceMatrix}
+        \end{equation}
+
+        \tcbitem[title={Eigenvalues and Eigenvectors}, raster multicolumn=6]
+        A non-zero vector $\vec{v}$ is an \textbf{eigenvector} of $\mathbf{A}$ with \textbf{eigenvalue} $\lambda$ if it satisfies $\mathbf{A}\vec{v} = \lambda\vec{v}$ — the matrix only scales $\vec{v}$, it does not rotate it\textsuperscript{\cite{cherneyLinearAlgebra2013}}. Eigenvalues are found by solving $\det(\mathbf{A} - \lambda\mathbf{I}) = 0$. In \textbf{PCA}, the eigenvectors of the covariance matrix are the principal components; eigenvalues encode the explained variance along each direction.
+        \tcblower
+        \begin{equation}
+            \mathbf{A}\vec{v} = \lambda\vec{v}
+            \quad \Longrightarrow \quad
+            (\mathbf{A} - \lambda\mathbf{I})\vec{v} = \vec{0}
+            \quad \Longrightarrow \quad
+            \det(\mathbf{A} - \lambda\mathbf{I}) = 0
+        \end{equation}
+        Geometric meaning: eigenvectors define the invariant axes of the linear transformation; eigenvalues give the stretch factor along each axis.
+
+    \end{tcbitemize}
 
     \subsection{Information Theory}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Mean Squared Error (MSE) and Simple Linear Regression
-        \item Area Under the ROC Curve and Gini Index
-        \item Entropy
-        \item Cross Entropy
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={MSE and Linear Regression}, raster multicolumn=6]
+        \textbf{Mean Squared Error (MSE)} is the most common regression loss function. For predictions $\hat{y}_i$ and targets $y_i$, it penalises large errors quadratically. \textbf{Simple linear regression} $\hat{y} = w_0 + w_1 x$ minimises MSE to find the best-fit line\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}.
+        \tcblower
+        \begin{equation}
+            \operatorname{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2
+        \end{equation}
+        Optimal coefficients via \textbf{Normal Equations}: $\hat{\mathbf{w}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}$, requiring $\mathbf{X}^\top\mathbf{X}$ to be invertible.
+
+        \tcbitem[title={Shannon Entropy}, raster multicolumn=6]
+        \textbf{Entropy} $H(X)$ quantifies the average uncertainty or information content of a random variable $X$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. A uniform distribution has maximum entropy; a deterministic outcome has zero entropy. The unit is \emph{bits} (base-2 logarithm) or \emph{nats} (natural logarithm). Entropy is a foundational quantity for decision trees (information gain) and compression.
+        \tcblower
+        \begin{equation}
+            H(X) = -\sum_{x} p(x) \log_2 p(x)
+        \end{equation}
+        Example: a fair coin has $H = -2 \times 0.5 \log_2 0.5 = 1$ bit. A biased coin ($p=0.9$) has $H \approx 0.47$ bits — less uncertainty.
+
+        \tcbitem[title={Cross-Entropy Loss}, raster multicolumn=6]
+        \textbf{Cross-entropy} $H(p, q)$ measures how many bits are needed to encode samples from the true distribution $p$ using an estimated distribution $q$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. Minimising cross-entropy is equivalent to maximising log-likelihood. It is the standard loss function for classification in deep learning.
+        \tcblower
+        \begin{equation}
+            H(p, q) = -\sum_{x} p(x) \log q(x)
+        \end{equation}
+        For binary classification: $\mathcal{L} = -\left[y \log \hat{y} + (1-y) \log(1 - \hat{y})\right]$. Note: $H(p,q) = H(p) + D_{\mathrm{KL}}(p\,\|\,q)$, where $D_{\mathrm{KL}} \geq 0$ is the Kullback–Leibler divergence.
+
+    \end{tcbitemize}
 
     \section{Advanced Statistics}
     \subsection{Introduction to Statistics}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Random Variables
-        \item Kolmogorov Axioms
-        \item Probability Distributions
-        \item Decomposing probability distributions
-        \item Expectation Values and Moments
-        \item Central Limit Theorem
-        \item Sufficient Statistics
-        \item Problems of Dimensionality
-        \item Component Analysis and Discriminants
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Random Variables}, raster multicolumn=6]
+        A \textbf{random variable} $X$ is a function mapping outcomes of a random experiment to real numbers\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. \textbf{Discrete} random variables take countable values (e.g.\ number of heads in $n$ coin flips); \textbf{continuous} random variables take values in an uncountable range (e.g.\ height of a person). The three Kolmogorov axioms define a valid probability measure: (1) $P(A) \geq 0$; (2) $P(\Omega) = 1$; (3) $P(A \cup B) = P(A) + P(B)$ for disjoint $A, B$.
+
+        \tcbitem[title={Probability Distributions}, raster multicolumn=6]
+        A \textbf{PMF} (probability mass function) gives $P(X = x)$ for discrete $X$. A \textbf{PDF} (probability density function) $f(x)$ satisfies $P(a \leq X \leq b) = \int_a^b f(x)\,dx$ for continuous $X$; note $f(x) \geq 0$ and $\int_{-\infty}^{\infty} f(x)\,dx = 1$. The \textbf{CDF} (cumulative distribution function) $F(x) = P(X \leq x)$ is monotonically non-decreasing and applies to both discrete and continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
+        \tcblower
+        \begin{equation}
+            F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt
+        \end{equation}
+
+        \tcbitem[title={Expectation Values and Moments}, raster multicolumn=6]
+        The \textbf{expected value} (mean) $\mu = \mathbb{E}[X]$ is the probability-weighted average. The \textbf{variance} $\operatorname{Var}(X) = \mathbb{E}[(X-\mu)^2]$ measures spread; its square root is the standard deviation $\sigma$. Higher moments characterise shape: \textbf{skewness} (asymmetry) and \textbf{kurtosis} (tail heaviness)\textsuperscript{\cite{downeyThinkStatsExploratory2015}}.
+        \tcblower
+        \begin{equation}
+            \mathbb{E}[X] = \sum_x x\,P(X=x), \quad
+            \operatorname{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2
+        \end{equation}
+
+        \tcbitem[title={Central Limit Theorem}, raster multicolumn=6]
+        The \textbf{Central Limit Theorem (CLT)} states that the sum (or mean) of $n$ independent, identically distributed random variables with finite mean $\mu$ and variance $\sigma^2$ converges in distribution to a Normal distribution as $n \to \infty$\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. This justifies the widespread use of Gaussian models and parametric tests even when individual observations are not normally distributed.
+        \tcblower
+        \begin{equation}
+            \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \;\xrightarrow{d}\; \mathcal{N}\!\left(\mu,\, \frac{\sigma^2}{n}\right) \quad \text{as } n \to \infty
+        \end{equation}
+        Practical implication: standard error of the mean $= \sigma / \sqrt{n}$ shrinks with sample size.
+
+        \tcbitem[title={Bayes’ Theorem}, raster multicolumn=6]
+        \textbf{Bayes’ Theorem} relates the conditional and marginal probabilities of events, allowing one to update beliefs given new evidence\textsuperscript{\cite{downeyThinkBayes2016}}. $P(H)$ is the \emph{prior} (belief before evidence), $P(D|H)$ is the \emph{likelihood} (how probable the data is under hypothesis $H$), $P(D)$ is the \emph{marginal likelihood} (normalisation constant), and $P(H|D)$ is the \emph{posterior}.
+        \tcblower
+        \begin{equation}
+            P(H \mid D) = \frac{P(D \mid H)\, P(H)}{P(D)}
+        \end{equation}
+        Verbal form: \emph{posterior} $\propto$ \emph{likelihood} $\times$ \emph{prior}.
+
+    \end{tcbitemize}
+
     \subsection{Important Probability Distributions and their Applications}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Binomial Distribution
-        \item Gauss or Normal Distribution
-        \item Poisson and Gamma-Poisson Distribution
-        \item Weibull Distribution
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Normal (Gaussian) Distribution}, raster multicolumn=6]
+        The \textbf{Normal distribution} $\mathcal{N}(\mu, \sigma^2)$ is the most important continuous distribution in statistics and ML. Its bell-shaped PDF is symmetric about the mean $\mu$; the standard deviation $\sigma$ controls the width\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{68-95-99.7 rule}: approximately 68\%, 95\%, and 99.7\% of values lie within 1, 2, and 3 standard deviations of the mean, respectively.
+        \tcblower
+        \begin{equation}
+            f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+        \end{equation}
+        The standard Normal $\mathcal{N}(0,1)$ has $\mu=0$, $\sigma=1$. Standardisation: $z = (x - \mu)/\sigma$.
+
+        \tcbitem[title={Binomial Distribution}, raster multicolumn=6]
+        The \textbf{Binomial distribution} $B(n, p)$ models the number of successes $k$ in $n$ independent Bernoulli trials each with success probability $p$\textsuperscript{\cite{downeyThinkBayes2016}}. Use when: fixed number of trials, each trial has exactly two outcomes, trials are independent, and $p$ is constant.
+        \tcblower
+        \begin{equation}
+            P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \ldots, n
+        \end{equation}
+        Mean $\mu = np$; variance $\sigma^2 = np(1-p)$. For large $n$: approximated by $\mathcal{N}(np,\, np(1-p))$ (CLT).
+
+    \end{tcbitemize}
+
     \subsection{Bayesian Statistics}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Bayes’ Rule
-        \item Estimating the Prior, Benford’s Law, Jeffry’s Rule
-        \item Conjugate Prior
-        \item Bayesian \& Frequentist Approach
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Bayes’ Rule in Practice}, raster multicolumn=6]
+        Bayesian inference updates a prior distribution $P(\theta)$ over model parameters $\theta$ using observed data $D$ to obtain the posterior $P(\theta \mid D)$\textsuperscript{\cite{downeyThinkBayes2016}}. The likelihood $P(D \mid \theta)$ encodes how well the model explains the data. Unlike point estimates, the posterior is a full distribution capturing remaining uncertainty.
+        \tcblower
+        \begin{equation}
+            P(\theta \mid D) = \frac{P(D \mid \theta)\,P(\theta)}{P(D)}, \qquad P(D) = \int P(D \mid \theta)\,P(\theta)\,d\theta
+        \end{equation}
+        In practice, $P(D)$ is often intractable; methods such as MCMC or variational inference are used to approximate the posterior.
+
+        \tcbitem[title={Bayesian vs.\ Frequentist Approach}, raster multicolumn=6]
+        Two fundamentally different philosophies of probability\textsuperscript{\cite[][p.~9]{barberBayesianReasoningMachine2012}}:
+        \tcblower
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+        }
+            Aspect & Frequentist & Bayesian \\
+            Probability & Long-run frequency of events & Degree of belief / plausibility \\
+            Parameters & Fixed but unknown constants & Random variables with prior \\
+            Inference & Confidence intervals, $p$-values & Posterior distributions \\
+            Data use & Repeat-experiment model & Condition on observed data \\
+            Prior & Not used & Explicitly encoded \\
+        \end{tblr}
+
+    \end{tcbitemize}
+
     \subsection{Descriptive Statistics}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Mean, Median, Mode, Quantiles
-        \item Variance, Skewness, Kurtosis
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Central Tendency}, raster multicolumn=6]
+        Measures of \textbf{central tendency} summarise a dataset with a single representative value\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{mean} $\bar{x} = \frac{1}{n}\sum x_i$ is sensitive to outliers. The \textbf{median} is the middle value after sorting; robust to outliers. The \textbf{mode} is the most frequent value; useful for categorical data. For symmetric distributions, mean = median = mode; for right-skewed data, mean $>$ median.
+        \tcblower
+        \begin{equation}
+            \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i, \qquad
+            \tilde{x} = \begin{cases} x_{(m+1)} & n = 2m+1 \\ \frac{x_{(m)} + x_{(m+1)}}{2} & n = 2m \end{cases}
+        \end{equation}
+
+        \tcbitem[title={Spread}, raster multicolumn=6]
+        Measures of \textbf{spread} quantify variability around the centre\textsuperscript{\cite{brucePracticalStatisticsData2017}}. \textbf{Variance} $s^2$ and \textbf{standard deviation} $s$ are scale-dependent. The \textbf{Interquartile Range (IQR)} $= Q_3 - Q_1$ is robust to outliers; it spans the middle 50\% of data and forms the basis for box plots.
+        \tcblower
+        \begin{equation}
+            s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2, \quad
+            s = \sqrt{s^2}, \quad
+            \mathrm{IQR} = Q_3 - Q_1
+        \end{equation}
+        Outlier rule of thumb: observations beyond $Q_1 - 1.5\,\mathrm{IQR}$ or $Q_3 + 1.5\,\mathrm{IQR}$ are flagged as potential outliers.
+
+    \end{tcbitemize}
+
     \subsection{Data Visualization}
-    \begin{enumerate}[label*=\arabic*.]
-        \item General Principles of Dataviz/Visual Communication
-        \item 1D, 2D Histograms
-        \item Box Plot, Violin Plot
-        \item Scatter Plot, Scatter Plot Matrix, Profile Plot
-        \item Bar Chart
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Chart Types Overview}, raster multicolumn=6]
+        Choosing the right chart type is key to clear visual communication\textsuperscript{\cite{brucePracticalStatisticsData2017}}:
+        \tcblower
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+        }
+            Chart & Purpose & Key features \\
+            Histogram & Distribution of one continuous variable & Bin width critical; reveals shape, skew, outliers \\
+            Box plot & Summarise distribution; compare groups & Shows median, IQR, whiskers, outliers \\
+            Scatter plot & Relationship between two continuous variables & Reveals correlation, clusters, non-linearity \\
+            Bar chart & Compare discrete categories & Heights encode quantity; grouped or stacked \\
+            Heat map & 2D matrix of values & Colour encodes magnitude; useful for correlation matrices \\
+        \end{tblr}
+
+    \end{tcbitemize}
+
     \subsection{Parameter Estimation}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Maximum Likelihood
-        \item Ordinary Least Squares
-        \item Expectation Maximization (EM)
-        \item Lasso and Ridge Regularization
-        \item Propagation of Uncertainties
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Maximum Likelihood Estimation}, raster multicolumn=6]
+        \textbf{Maximum Likelihood Estimation (MLE)} finds the parameter values $\hat{\theta}$ that make the observed data $\mathcal{D}$ most probable under the model\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}. In practice, the \textbf{log-likelihood} $\ell(\theta)$ is maximised (log turns products into sums and is monotone). MLE is the foundation for training most supervised models.
+        \tcblower
+        \begin{equation}
+            \hat{\theta}_{\mathrm{MLE}} = \operatorname*{arg\,max}_\theta \prod_{i=1}^n p(x_i \mid \theta)
+            = \operatorname*{arg\,max}_\theta \sum_{i=1}^n \log p(x_i \mid \theta)
+        \end{equation}
+        Example: MLE for a Gaussian gives $\hat{\mu} = \bar{x}$ and $\hat{\sigma}^2 = \frac{1}{n}\sum(x_i - \bar{x})^2$.
+
+        \tcbitem[title={Ordinary Least Squares}, raster multicolumn=6]
+        \textbf{Ordinary Least Squares (OLS)} estimates linear regression coefficients $\hat{\mathbf{w}}$ by minimising the sum of squared residuals\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}. Geometrically, OLS projects the response vector $\mathbf{y}$ onto the column space of $\mathbf{X}$; the fitted values $\hat{\mathbf{y}} = \mathbf{H}\mathbf{y}$ with hat matrix $\mathbf{H} = \mathbf{X}(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top$.
+        \tcblower
+        \begin{equation}
+            \hat{\mathbf{w}} = \operatorname*{arg\,min}_{\mathbf{w}} \|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2_2
+            = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
+        \end{equation}
+        OLS is BLUE (Best Linear Unbiased Estimator) under Gauss-Markov conditions. When $\mathbf{X}^\top\mathbf{X}$ is ill-conditioned, Ridge regression adds $\lambda\mathbf{I}$ to stabilise the inverse.
+
+    \end{tcbitemize}
+
     \subsection{Hypothesis Test}
-    \begin{enumerate}[label*=\arabic*.]
-        \item Error of 1st and 2nd Kind
-        \item Multiple Hypothesis Tests
-        \item p-Value
-    \end{enumerate}
+    \begin{tcbitemize}[ skin=sectionraster ]
+
+        \tcbitem[title={Type I and Type II Errors}, raster multicolumn=6]
+        Statistical hypothesis tests can make two kinds of errors\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. The \textbf{significance level} $\alpha$ controls the Type I error rate; common choice $\alpha = 0.05$. \textbf{Statistical power} $1 - \beta$ is the probability of correctly detecting a true effect; increasing sample size raises power.
+        \tcblower
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+            column{1} = {font=\bfseries},
+        }
+            & $H_0$ true & $H_0$ false \\
+            Reject $H_0$ & Type I error ($\alpha$, false positive) & Correct (power $= 1-\beta$) \\
+            Fail to reject $H_0$ & Correct (true negative) & Type II error ($\beta$, false negative) \\
+        \end{tblr}
+
+        \tcbitem[title={p-Value}, raster multicolumn=6]
+        The \textbf{p-value} is the probability of observing a test statistic at least as extreme as the one computed, \emph{assuming the null hypothesis $H_0$ is true}\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. A small $p$-value (typically $< 0.05$) means the observed data would be rare under $H_0$, providing evidence against it. Common thresholds: $p < 0.05$ (significant), $p < 0.01$ (highly significant), $p < 0.001$ (very highly significant).
+
+        \textbf{Common misinterpretations:} The $p$-value is \emph{not} the probability that $H_0$ is true, nor the probability that the result is due to chance. It also does not measure effect size or practical significance — a very large sample can yield $p < 0.05$ for a negligible effect.
+        \tcblower
+        \begin{equation}
+            p = P\!\left(T \geq t_{\mathrm{obs}} \mid H_0\right)
+        \end{equation}
+        If $p < \alpha$: reject $H_0$. Statistical significance $\neq$ practical significance.
+
+    \end{tcbitemize}
 
     \section{Literature}
     \begin{itemize}

@@ -3,8 +3,8 @@
     \section{Industry 4.0}
 
     \begin{tcbitemize}[ skin=sectionraster, halign lower=center ]
-        \tcbitem[title=Information Management Cycle, raster multicolumn=6]
-        Information is the oil of the 21st century and analytics is the combustion engine.
+        \tcbitem[title=Information Management Cycle, raster multicolumn=3]
+        The \emph{Information Management Cycle} describes how organisations systematically turn raw data into actionable knowledge: requirements are gathered from users, data is collected and integrated from various sources, evaluated and refined into information products, and finally deployed back to the users who initiated the need\textsuperscript{\cite{adjaouteAI2024}}.
         \tcblower
         \scalebox{\graphscale}{
             \begin{tikzpicture}[node distance=1cm and 1cm]
@@ -25,7 +25,7 @@
             \end{tikzpicture}
         }
 
-        \tcbitem[title={Data Analytics, Big Data and AI Application Areas}, raster multicolumn=6]
+        \tcbitem[title={Data Analytics, Big Data and AI Application Areas}, raster multicolumn=3]
         \begin{multicols}{2}
             \begin{itemize}
                 \item Optimize Quality Assurance
@@ -100,27 +100,306 @@
 
     \section{History of AI}
     \subsection{Historical Developments}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Key Milestones in AI History, raster multicolumn=3]
+        The history of AI spans over seven decades of ambition, breakthroughs, and setbacks\textsuperscript{\cite[][p.~6]{hurbansGrokkingArtificialIntelligence2020}}.
+        \begin{itemize}
+            \item \textbf{1950 -- Turing Test:} Alan Turing proposes the imitation game as a criterion for machine intelligence.
+            \item \textbf{1956 -- Dartmouth Conference:} John McCarthy coins the term \emph{Artificial Intelligence}.
+            \item \textbf{1958 -- Perceptron:} Frank Rosenblatt introduces the Perceptron, the first trainable single-layer neural network.
+            \item \textbf{1966 -- ELIZA:} Weizenbaum (MIT) creates ELIZA, simulating a psychotherapist.
+            \item \textbf{1969 -- Minsky \& Papert:} \emph{Perceptrons} demonstrates the XOR limitation.
+        \end{itemize}
+
+        \tcbitem[title={The Perceptron and the XOR Problem}, raster multicolumn=3]
+        The \textbf{Perceptron} (Rosenblatt, 1958) is a single-layer neural network: it computes a weighted sum of inputs, adds a bias, and applies a step function\textsuperscript{\cite[][p.~13]{Kriesel2007NeuralNetworks}}.
+        \begin{equation}
+            y = \begin{cases} 1 & \text{if } \sum_{i} w_i x_i + b \geq 0 \\ 0 & \text{otherwise} \end{cases}
+        \end{equation}
+        A single perceptron can learn AND and OR (linearly separable), but \textbf{not XOR}. XOR requires a non-linear decision boundary --- no single line can separate the classes:
+        \tcblower
+        \centering
+        \begin{tikzpicture}[scale=1.2]
+            \draw[->] (-0.3,0) -- (1.5,0) node[right] {$x_1$};
+            \draw[->] (0,-0.3) -- (0,1.5) node[above] {$x_2$};
+            % XOR points
+            \node[circle, fill=\maincolor!80!black, inner sep=2pt, label={below left:\footnotesize 0}] at (0,0) {};
+            \node[circle, fill=red!80!black, inner sep=2pt, label={below right:\footnotesize 1}] at (1,0) {};
+            \node[circle, fill=red!80!black, inner sep=2pt, label={above left:\footnotesize 1}] at (0,1) {};
+            \node[circle, fill=\maincolor!80!black, inner sep=2pt, label={above right:\footnotesize 0}] at (1,1) {};
+            % Show no single line works
+            \draw[dashed, gray, thick] (-0.2,1.3) -- (1.3,-0.2) node[right, font=\tiny] {?};
+        \end{tikzpicture}
+        \captionof{figure}{XOR: no single line separates 0s from 1s. A \emph{multi-layer} network (hidden layer) solves this.}
+    \end{tcbitemize}
+
     \subsection{AI Winter}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={AI Winter: Boom, Bust, and Revival}, raster multicolumn=6]
+        The term \emph{AI Winter} refers to periods of reduced funding and interest following waves of over-optimism.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \begin{description}
+            \item[First Winter (1974--1980)] The Lighthill Report\textsuperscript{\cite{lighthillArtificialIntelligenceSurvey1973}} criticised AI progress in the UK. DARPA cut funding after early machine-translation projects failed to deliver. Hardware was insufficient for the combinatorial demands of symbolic search.
+            \item[Second Winter (1987--1993)] The expert-system boom of the 1980s collapsed when maintenance costs soared and the \emph{Lisp machine} hardware market evaporated. The British and US governments scaled back funding again.
+        \end{description}
+
+        \textbf{What ended them:}
+        \begin{itemize}
+            \item Faster CPUs and cheaper memory made previously intractable computations feasible.
+            \item The revival of connectionism (backpropagation, Rumelhart \& Hinton 1986)\textsuperscript{\cite{rumelhartLearningRepresentationsBackpropagating1986}}.
+            \item Commercial applications in niche domains (speech recognition, scheduling) proved ROI.
+            \item The internet produced large labelled datasets at low cost.
+        \end{itemize}
+    \end{tcbitemize}
+
     \subsection{Notable Advances in AI}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Landmark Achievements (1997--present), raster multicolumn=6]
+        A series of high-profile results demonstrated that AI could surpass human experts in well-defined domains\textsuperscript{\cite{adjaouteAI2024}}.
+        \tcblower
+        \begin{tblr}{
+            colspec = {c X[2,l] X[5,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+            rowsep = 1pt,
+        }
+            Year & Name & Description \\
+            1997 & Deep Blue & IBM's chess computer defeats Garry Kasparov using alpha-beta search with hand-crafted evaluation functions --- a milestone for symbolic AI. \\
+            2012 & AlexNet & Krizhevsky, Sutskever, and Hinton win ImageNet with a deep CNN on GPUs, reducing error by ${\approx}10$ pp and triggering the deep-learning era. \\
+            2016 & AlphaGo & DeepMind defeats Go champion Lee Sedol using deep RL and Monte Carlo tree search. Go's ${\approx}10^{170}$ positions made brute force impossible. \\
+            2017 & Transformer & Vaswani et al.\ introduce \emph{Attention is All You Need}, replacing recurrence with self-attention and enabling massively parallel training. \\
+            2022 & ChatGPT & OpenAI releases a dialogue-optimised LLM (GPT-3.5), reaching 100M users in two months and bringing generative AI into mainstream discourse. \\
+        \end{tblr}
+    \end{tcbitemize}
 
     \section{Expert Systems}
     \subsection{Overview Over Expert Systems}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Expert Systems Architecture, raster multicolumn=6]
+        An \emph{expert system} is a computer program that uses a knowledge base of human expertise to solve problems within a specific domain. Expert systems were the dominant commercial AI technology of the 1980s and represent a key milestone in the practical application of AI\textsuperscript{\cite{hurbansGrokkingArtificialIntelligence2020}}.
+
+        \tcbsubtitle{Core Components}
+        \begin{enumerate}
+            \item \textbf{Knowledge Base:} A structured collection of domain facts (\emph{assertions}) and IF--THEN production rules, typically authored by a knowledge engineer working with domain experts.
+            \item \textbf{Inference Engine:} The reasoning mechanism that applies rules to the knowledge base. Two main strategies:
+            \begin{itemize}
+                \item \textbf{Forward Chaining} (data-driven): Start from known facts and fire applicable rules until a goal is reached.
+                \item \textbf{Backward Chaining} (goal-driven): Start from the desired conclusion and work backwards to find supporting facts.
+            \end{itemize}
+        \end{enumerate}
+
+        \tcbsubtitle{Historical Examples}
+        \begin{itemize}
+            \item \textbf{MYCIN} (Stanford, 1972): Diagnoses bacterial infections and recommends antibiotics.
+            \item \textbf{DENDRAL} (Stanford, 1965): Identifies chemical structures from mass-spectrometry data.
+        \end{itemize}
+
+        \tcbsubtitle{Limitations}
+        Knowledge acquisition bottleneck, poor handling of uncertainty, brittle outside domain scope, high maintenance cost.
+    \end{tcbitemize}
+
     \subsection{Introduction to Prolog}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={Prolog: Logic Programming Basics}, raster multicolumn=6]
+        \textbf{Prolog} (PROgramming in LOGic) is a declarative language based on first-order predicate logic, closely associated with expert systems and symbolic AI.
+
+        A Prolog program consists of three building blocks:
+        \begin{description}
+            \item[Facts] Unconditional assertions about the world:\\
+                \texttt{parent(tom, bob).} \quad \texttt{parent(bob, ann).}
+            \item[Rules] Conditional derivations:\\
+                \texttt{grandparent(X, Z) :- parent(X, Y), parent(Y, Z).}
+            \item[Queries] Questions posed to the engine:\\
+                \texttt{?- grandparent(tom, ann).} \; $\Rightarrow$ \texttt{true.}
+        \end{description}
+
+        The inference engine uses \emph{SLD resolution} (unification + backtracking) to search for proofs. Variables (uppercase) are unified with constants during resolution.
+
+        \textbf{Relevance to AI:} Prolog underpinned early natural-language parsers, knowledge representation, and the Japanese Fifth Generation Computer project (1982). Modern applications include constraint solving and ontology reasoning.
+    \end{tcbitemize}
 
     \section{Neuroscience}
     \subsection{The (Human) Brain}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={The Human Brain: Structure and Scale}, raster multicolumn=6]
+        Biological neural networks remain the primary inspiration for artificial ones\textsuperscript{\cite[][p.~13]{Kriesel2007NeuralNetworks}}
+
+        \textbf{Key facts:}
+        \begin{itemize}
+            \item The human brain contains $\approx$86 billion neurons, each connected to $\approx$7{,}000 synapses on average, yielding $\approx 10^{14}$--$10^{15}$ synaptic connections.
+            \item \textbf{Neuron:} The fundamental processing unit. Receives electrochemical signals via \emph{dendrites}, integrates them in the \emph{soma}, and fires an action potential along the \emph{axon} if the threshold is exceeded.
+            \item \textbf{Synapse:} The junction between two neurons. Neurotransmitters cross the synaptic cleft, either exciting or inhibiting the post-synaptic neuron.
+            \item \textbf{Plasticity:} Synaptic strength changes with activity (\emph{Hebbian learning}: ``neurons that fire together, wire together''), the biological basis for learning and memory.
+        \end{itemize}
+
+        \textbf{Architecture:} The cortex is organised into specialised regions (visual cortex, motor cortex, prefrontal cortex for executive function). Massive parallelism enables real-time perception far exceeding sequential digital computation at low power ($\approx$20 W).
+    \end{tcbitemize}
+
     \subsection{Cognitive Processes}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={Cognitive Processes and AI Analogies}, raster multicolumn=6]
+        Cognitive neuroscience studies how the brain implements perception, attention, memory, and learning -- all of which have inspired AI architectures\textsuperscript{\cite[][p.~13]{Kriesel2007NeuralNetworks}}
+
+        \begin{description}
+            \item[Perception] Hierarchical feature extraction in sensory cortices (edges $\to$ shapes $\to$ objects) inspired deep convolutional networks.
+            \item[Attention] The brain selectively amplifies relevant signals and suppresses irrelevant ones. Transformer \emph{self-attention} mechanisms were directly inspired by this selective focus.
+            \item[Memory] Two key systems:
+                \begin{itemize}
+                    \item \emph{Working memory} (short-term, $\approx$7 items): analogous to RNN hidden states or context windows in LLMs.
+                    \item \emph{Long-term memory} (declarative / procedural): analogous to trained model weights.
+                \end{itemize}
+            \item[Learning] Reinforcement via reward (dopaminergic pathways) directly inspired temporal difference learning and reinforcement learning algorithms.
+        \end{description}
+
+        \textbf{Key caveat:} Biological and artificial neural networks share \emph{inspiration}, not mechanism. Biological neurons are far more complex than McCulloch--Pitts units; analogies should be used cautiously.
+    \end{tcbitemize}
 
     \section{Modern AI Systems}
     \subsection{Recent Developments in Hard- and Software}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={Enablers of Modern AI: Hardware and Software}, raster multicolumn=6]
+        The deep-learning revolution was enabled by the convergence of three trends: massive compute, large datasets, and open-source frameworks.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \textbf{Hardware:}
+        \begin{itemize}
+            \item \textbf{GPUs:} Originally designed for graphics, GPUs contain thousands of small cores suited to the massively parallel matrix operations in neural network training. NVIDIA CUDA (2007) made them programmable for general AI.
+            \item \textbf{TPUs:} Google's Tensor Processing Units are ASICs optimised for 8-bit matrix multiplication, offering higher throughput per watt than GPUs for inference.
+            \item \textbf{Cloud Computing:} AWS, GCP, and Azure provide on-demand access to GPU/TPU clusters, removing the capital barrier to large-scale model training.
+        \end{itemize}
+
+        \textbf{Software and Data:}
+        \begin{itemize}
+            \item \textbf{TensorFlow} (Google, 2015) and \textbf{PyTorch} (Meta, 2016) are the dominant open-source deep-learning frameworks, providing automatic differentiation and GPU abstraction.
+            \item \textbf{Hugging Face} (2016+) democratised transformer models via a shared model hub and the \texttt{transformers} library.
+            \item \textbf{Big Data:} The internet produced labelled datasets at unprecedented scale (ImageNet: 14M images; Common Crawl: petabytes of text), making data-hungry models viable.
+        \end{itemize}
+    \end{tcbitemize}
+
     \subsection{Narrow vs General AI}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={ANI vs AGI vs ASI}, raster multicolumn=6]
+        A fundamental taxonomy in AI distinguishes systems by the breadth of their capabilities.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \begin{description}
+            \item[Artificial Narrow Intelligence (ANI)] Systems that excel at a single, well-defined task (image classification, chess, speech recognition). Every deployed AI system today is ANI. Performance can exceed humans \emph{within} the domain but collapses outside it.
+            \item[Artificial General Intelligence (AGI)] A hypothetical system with human-level cognitive flexibility across arbitrary tasks -- able to learn new domains, reason by analogy, and transfer knowledge. No consensus on a timeline or even a precise definition exists.
+            \item[Artificial Superintelligence (ASI)] A hypothetical system surpassing human intelligence across \emph{all} cognitive dimensions. Subject of long-term safety research (Bostrom's \emph{Superintelligence}, 2014) but speculative.
+        \end{description}
+
+        \textbf{Current state:} Large language models (GPT-4, Gemini) exhibit surprising breadth but still fail on systematic reasoning and physical-world grounding. The debate whether scaling ANI converges to AGI is unresolved.
+    \end{tcbitemize}
+
     \subsection{NLP and Computer Vision}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title=Natural Language Processing, raster multicolumn=3]
+        \textbf{NLP} enables machines to understand and generate human language.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \textbf{Core tasks:}
+        \begin{itemize}
+            \item Tokenisation, POS tagging, parsing
+            \item Named Entity Recognition (NER)
+            \item Machine Translation
+            \item Sentiment Analysis
+            \item Question Answering, Summarisation
+            \item Text Generation (LLMs)
+        \end{itemize}
+
+        \textbf{Key models:} Word2Vec (2013), BERT (2018), GPT series (2018--), T5, LLaMA.
+
+        \tcbitem[title=Computer Vision, raster multicolumn=3]
+        \textbf{Computer Vision} enables machines to interpret visual information from images and video.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \textbf{Core tasks:}
+        \begin{itemize}
+            \item Image classification
+            \item Object detection (YOLO, Faster R-CNN)
+            \item Semantic / instance segmentation
+            \item Face recognition
+            \item Optical Character Recognition (OCR)
+            \item Video analysis, pose estimation
+        \end{itemize}
+
+        \textbf{Key models:} AlexNet, VGG, ResNet, Vision Transformer (ViT), SAM (Segment Anything).
+    \end{tcbitemize}
 
     \section{AI Application Areas}
     \subsection{Autonomous Vehicles \& Mobility}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={Autonomous Vehicles: SAE Levels and Technology}, raster multicolumn=6]
+        Autonomous driving is one of the most visible applications of AI, combining perception, planning, and control.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \textbf{SAE Autonomy Levels (J3016):}
+        \begin{center}
+        \begin{tblr}{colspec={cl}, hline{1,2,8}={solid}, rowsep=1pt}
+            \textbf{Level} & \textbf{Description} \\
+            0 & No automation -- driver controls everything \\
+            1 & Driver assistance (e.g., adaptive cruise) \\
+            2 & Partial automation (Tesla Autopilot) \\
+            3 & Conditional automation -- driver on standby \\
+            4 & High automation in defined geographic area \\
+            5 & Full automation -- no human needed \\
+        \end{tblr}
+        \end{center}
+
+        \textbf{Sensor Fusion:} Autonomous vehicles combine data from LiDAR (3D point clouds), cameras (texture/colour), radar (velocity in adverse weather), and GPS/HD maps. Deep neural networks fuse these streams into a unified scene representation.
+
+        \textbf{Challenges:} Edge cases (rare scenarios), adversarial weather, regulatory frameworks, liability, and the ``safety validation gap'' (billions of test miles required).
+    \end{tcbitemize}
+
     \subsection{Personalized Medicine}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={AI in Personalized Medicine}, raster multicolumn=6]
+        Personalized (precision) medicine tailors treatment to individual patients using their genetic, environmental, and lifestyle data.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \begin{description}
+            \item[Genomics] ML models identify disease-linked variants in whole-genome sequences. AlphaFold 2 (DeepMind, 2021) predicts 3D protein structure from amino-acid sequence with near-experimental accuracy, transforming drug target discovery.
+            \item[Drug Discovery] Graph neural networks model molecular interactions; generative models propose novel drug candidates. Reduces early-stage discovery time from years to months.
+            \item[Diagnostic AI] Convolutional networks match radiologists in detecting cancers in mammograms, skin lesions, and retinal scans. FDA-cleared AI diagnostic tools exceed 500 (as of 2023).
+            \item[Clinical Decision Support] NLP extracts structured information from electronic health records (EHRs); predictive models flag deteriorating patients in ICUs.
+        \end{description}
+
+        \textbf{Challenges:} Data privacy (GDPR/HIPAA), dataset bias (underrepresented populations), regulatory approval pathways, and interpretability requirements in clinical settings.
+    \end{tcbitemize}
+
     \subsection{FinTech}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={AI in Financial Technology}, raster multicolumn=6]
+        Financial services generate high-dimensional time-series data at high velocity -- a natural domain for machine learning.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \begin{description}
+            \item[Algorithmic Trading] Statistical arbitrage, momentum strategies, and reinforcement-learning agents execute trades at millisecond latency. High-frequency trading accounts for $\approx$50\% of US equity volume.
+            \item[Fraud Detection] Anomaly detection models (isolation forests, autoencoders, GNNs for transaction graphs) flag suspicious patterns in real time. Key challenge: class imbalance (fraud $\approx$0.1\% of transactions).
+            \item[Credit Scoring] Gradient-boosted trees (XGBoost, LightGBM) supplement or replace traditional FICO scores using alternative data (payment history, behavioural signals). Raises fairness and explainability concerns.
+            \item[Robo-Advisors] Automated portfolio management services (Betterment, Wealthfront) use mean-variance optimisation combined with ML risk models to provide low-cost investment advice at scale.
+        \end{description}
+    \end{tcbitemize}
+
     \subsection{Retail \& Industry}
+
+    \begin{tcbitemize}[ skin=sectionraster ]
+        \tcbitem[title={AI in Retail and Industrial Operations}, raster multicolumn=6]
+        Retail and manufacturing were among the first sectors to realise commercial value from machine learning at scale.\textsuperscript{\cite{adjaouteAI2024}}
+
+        \begin{description}
+            \item[Recommendation Systems] Collaborative filtering and deep neural networks power product recommendations (Amazon, Netflix). Amazon attributes $\approx$35\% of revenue to its recommender. Matrix factorisation and two-tower retrieval models are standard approaches.
+            \item[Supply Chain Optimisation] Demand forecasting (LSTM, Prophet), inventory optimisation, and logistics routing reduce stockouts and overstock. ML scheduling cut Google's data centre cooling costs by 40\%.
+            \item[Quality Control] Computer vision systems inspect products on production lines at speeds and resolutions impossible for humans. Defect detection rates $>$99\% are achievable for well-defined defect classes.
+            \item[Predictive Maintenance] Sensor data (vibration, temperature, current) fed to anomaly-detection models predicts machine failures before they occur, shifting from scheduled to condition-based maintenance and reducing downtime by 20--50\%.
+        \end{description}
+    \end{tcbitemize}
 
     \section{Literature}
     \begin{itemize}

@@ -1,91 +1,1114 @@
-    % ==== Programming Foundations =============================================================================
-    \chapter{Programming Foundations}
-    \section{Programming with Python}
-    \subsection{Introduction to Python}
-    \subsubsection{Data structures}
-    \lipsum[1][1]
-    \subsubsection{Functions}
-    \subsubsection{Flow control}
-    \lipsum[1][1]
-    \subsubsection{Input / Output}
-    \subsubsection{Modules and packages}
-    \lipsum[1][1]
+% ==== Programming Foundations =============================================================================
+\chapter{Programming Foundations}
+\section{Programming with Python}
+\subsection{Introduction to Python}
 
-    \subsection{Classes and Inheritance}
-    \subsubsection{Scopes and namespaces}
-    \lipsum[1][1]
-    \subsubsection{Classes and inheritance}
-    \subsubsection{Iterators and generators}
-    \lipsum[1][1]
+% ---- 3.1.1 Data structures ----------------------------------------------------------------------
+\subsubsection{Data structures}
 
-    \subsection{Errors and Exceptions}
-    \subsubsection{Syntax errors}
-    \subsubsection{Handling and raising exceptions}
-    \lipsum[1][1]
-    \subsubsection{User-defined exceptions}
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Data Structures: Lists, Tuples, Dicts, Sets}, raster multicolumn=6]
+    Python provides four built-in collection types that differ in mutability, ordering, and uniqueness\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    Choosing the right type matters for both correctness and performance.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2cm]|Q[c,m]|Q[c,m]|X|}
+        \hline
+        \textbf{Type} & \textbf{Ordered} & \textbf{Mutable} & \textbf{Notes / Use-case} \\
+        \hline
+        \texttt{list}  & yes & yes & General-purpose sequence; \texttt{[1, 2, 3]} \\
+        \hline
+        \texttt{tuple} & yes & no  & Immutable record; unpacking; function return values \\
+        \hline
+        \texttt{dict}  & yes (3.7+) & yes & Key $\to$ value mapping; $O(1)$ lookup \\
+        \hline
+        \texttt{set}   & no  & yes & Unique elements; fast membership tests; set algebra \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
 
-    \subsection{Important Libraries}
-    \subsubsection{Standard Python library}
-    \subsubsection{Scientific calculations}
-    \lipsum[1][1]
-    \subsubsection{Speeding up Python}
-    \subsubsection{Visualization}
-    \lipsum[1][1]
-    \subsubsection{Accessing databases}
+% ---- 3.1.2 Functions ----------------------------------------------------------------------------
+\subsubsection{Functions}
 
-    \subsection{Working with Python}
-    \subsubsection{Virtual environments}
-    \lipsum[1][1]
-    \subsubsection{Managing packages}
-    \subsubsection{Unit and integration testing}
-    \lipsum[1][1]
-    \subsubsection{Documenting code}
-
-    \subsection{Version Control}
-    \subsubsection{Introduction to version control}
-    \subsubsection{Version control with GIT}
-    \lipsum[1][1]
-
-    \section{NumPy and Pandas}
-    \subsection{Introduction to NumPy}
-    \subsubsection{NumPy arrays}
-    \lipsum[1][1]
-    \subsubsection{Array indexing and slicing}
-    \subsubsection{Array operations}
-    \lipsum[1][1]
-    \subsubsection{Broadcasting}
-
-    \subsection{Introduction to Pandas}
-    \subsubsection{Series and DataFrames}
-    \lipsum[1][1]
-    \subsubsection{Data indexing and selection}
-    \subsubsection{Data cleaning and preparation}
-    \lipsum[1][1]
-    \subsubsection{Data aggregation and grouping}
-
-    \subsection{Data visualization with Pandas}
-    \subsubsection{Plotting with Pandas}
-    \lipsum[1][1]
-    \subsubsection{Customizing plots}
-
-    \subsection{Working with time series data}
-    \subsubsection{Date and time handling}
-    \subsubsection{Resampling and frequency conversion}
-
-    \subsection{Advanced Pandas techniques}
-    \subsubsection{Merging and joining DataFrames}
-    \subsubsection{Pivot tables and cross-tabulations}
-
-    \subsection{Performance optimization}
-    \subsubsection{Efficient data manipulation}
-    \subsubsection{Memory management}
-
-    \section{SciKit-Learn}
-    \section{PyTorch}
-
-    \section{Literature}
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Defining Functions}, raster multicolumn=3]
+    Functions are first-class objects in Python\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    They are defined with \texttt{def}, accept positional and keyword arguments, and always return a value (\texttt{None} if no \texttt{return} statement).
+    \tcblower
     \begin{itemize}
-        \item Lutz, M. (2017). Learning Python (5th ed.). O'Reilly.
-        \item Mathes, E. (2019). Python Crash Course (2nd ed.). No Starch Press.
+        \item \texttt{def f(x, y=0):} --- positional + default argument
+        \item \texttt{*args} --- collects extra positionals as a tuple
+        \item \texttt{**kwargs} --- collects extra keywords as a dict
+        \item \texttt{lambda x: x**2} --- anonymous single-expression function
+        \item Multiple return values via tuple: \texttt{return a, b}
     \end{itemize}
 
+    \tcbitem[title={Higher-Order Functions}, raster multicolumn=3]
+    Because functions are objects, they can be passed as arguments, returned from other functions, and stored in data structures.
+    The built-ins \texttt{map()}, \texttt{filter()}, and \texttt{sorted(key=...)} are the most common higher-order functions in practice\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{map(fn, iterable)} --- apply \texttt{fn} to each element
+        \item \texttt{filter(pred, iterable)} --- keep elements where \texttt{pred} is true
+        \item \texttt{sorted(lst, key=lambda x: x[1])} --- sort by key
+        \item Closures: inner function captures enclosing variable
+        \item \texttt{functools.partial} --- fix arguments of a function
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.1.3 Flow control -------------------------------------------------------------------------
+\subsubsection{Flow control}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Flow Control and Comprehensions}, raster multicolumn=6]
+    Python's control flow is concise: \texttt{if}/\texttt{elif}/\texttt{else} for branching, \texttt{for} over any iterable, \texttt{while} for condition-driven loops\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    List, dict, and set comprehensions replace many explicit loops with readable one-liners.
+    \tcblower
+    \begin{tblr}{|X[2]|X[3]|}
+        \hline
+        \textbf{Construct} & \textbf{Example} \\
+        \hline
+        Conditional      & \texttt{x = "yes" if n > 0 else "no"} \\
+        \hline
+        for-loop         & \texttt{for i, v in enumerate(lst):} \\
+        \hline
+        while-loop       & \texttt{while q: q.pop()} \\
+        \hline
+        List comp.       & \texttt{[x**2 for x in range(10) if x\%2==0]} \\
+        \hline
+        Dict comp.       & \texttt{\{k: v for k, v in pairs\}} \\
+        \hline
+        Generator expr.  & \texttt{sum(x**2 for x in data)} --- lazy evaluation \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.1.4 Input / Output -----------------------------------------------------------------------
+\subsubsection{Input / Output}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={File Handling and I/O}, raster multicolumn=6]
+    Python's \texttt{open()} built-in and the \texttt{with} context manager handle file I/O safely: the file is closed automatically when the block exits, even on exceptions\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+        \hline
+        \textbf{Pattern} & \textbf{Description} \\
+        \hline
+        \texttt{with open(path, "r") as f:} & Read text file; auto-close on exit \\
+        \hline
+        \texttt{f.read()} / \texttt{f.readlines()} & Read entire content or list of lines \\
+        \hline
+        \texttt{open(path, "w")} & Write (truncates); \texttt{"a"} to append \\
+        \hline
+        \texttt{open(path, "rb")} & Binary mode for images, serialised objects, etc. \\
+        \hline
+        \texttt{print(x, file=sys.stderr)} & Write to standard error stream \\
+        \hline
+        \texttt{json.dump} / \texttt{json.load} & Serialize Python objects to/from JSON \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.1.5 Modules and packages -----------------------------------------------------------------
+\subsubsection{Modules and packages}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Modules and the Import System}, raster multicolumn=3]
+    A \emph{module} is a \texttt{.py} file; a \emph{package} is a directory containing an \texttt{\_\_init\_\_.py} file.
+    Python resolves imports by searching \texttt{sys.path}: the script's directory, environment packages, and standard library\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{import numpy as np} --- import with alias
+        \item \texttt{from pathlib import Path} --- selective import
+        \item \texttt{\_\_init\_\_.py} --- marks directory as package; runs on import
+        \item \texttt{if \_\_name\_\_ == "\_\_main\_\_":} --- guard for runnable modules
+        \item Circular imports: break by restructuring or lazy imports
+    \end{itemize}
+
+    \tcbitem[title={Package Management with pip}, raster multicolumn=3]
+    Third-party packages are installed from PyPI using \texttt{pip}\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    Reproducible environments are specified via \texttt{requirements.txt} or the modern \texttt{pyproject.toml}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{pip install numpy==1.26.0} --- install pinned version
+        \item \texttt{pip freeze > requirements.txt} --- capture current environment
+        \item \texttt{pip install -r requirements.txt} --- recreate environment
+        \item \texttt{pyproject.toml} --- modern standard (PEP 517/518) for project metadata and deps
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.2 Classes and Inheritance ----------------------------------------------------------------
+\subsection{Classes and Inheritance}
+
+% ---- 3.2.1 Scopes and namespaces ----------------------------------------------------------------
+\subsubsection{Scopes and namespaces}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={The LEGB Rule}, raster multicolumn=6]
+    Python resolves names by searching scopes in order: \textbf{L}ocal $\to$ \textbf{E}nclosing $\to$ \textbf{G}lobal $\to$ \textbf{B}uilt-in (LEGB)\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    Assignment in a scope creates a local binding; \texttt{global} and \texttt{nonlocal} keywords break out of the default rule.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2cm]|X|}
+        \hline
+        \textbf{Scope} & \textbf{Where it lives} \\
+        \hline
+        Local (L)     & Inside the current function call \\
+        \hline
+        Enclosing (E) & Surrounding function(s) --- relevant for closures \\
+        \hline
+        Global (G)    & Module-level namespace (\texttt{global x} to write) \\
+        \hline
+        Built-in (B)  & Python's built-in names (\texttt{len}, \texttt{range}, \ldots) \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.2.2 Classes and inheritance --------------------------------------------------------------
+\subsubsection{Classes and inheritance}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Classes and Inheritance}, raster multicolumn=6]
+    Python uses \emph{class-based} OOP.
+    \texttt{\_\_init\_\_} is the constructor; \texttt{self} is the explicit reference to the instance.
+    Single and multiple inheritance are supported; method resolution follows the \emph{C3 linearization} (MRO)\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Concept} & \textbf{Description} \\
+        \hline
+        \texttt{class Dog(Animal):}         & Inherit from \texttt{Animal} \\
+        \hline
+        \texttt{def \_\_init\_\_(self, ...):} & Constructor; initialise instance attributes \\
+        \hline
+        \texttt{super().\_\_init\_\_(...)}    & Delegate to parent constructor \\
+        \hline
+        \texttt{Dog.\_\_mro\_\_}              & Tuple of classes in method resolution order \\
+        \hline
+        \texttt{@classmethod} / \texttt{@staticmethod} & Alternate constructor or utility method \\
+        \hline
+        \texttt{@property}                  & Getter/setter without explicit call parentheses \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.2.3 Iterators and generators -------------------------------------------------------------
+\subsubsection{Iterators and generators}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Iterators and Generators}, raster multicolumn=3]
+    Any object implementing \texttt{\_\_iter\_\_} and \texttt{\_\_next\_\_} is an \emph{iterator}.
+    A \emph{generator function} uses \texttt{yield} to produce values lazily, suspending execution between calls\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    Generators avoid loading entire sequences into memory --- essential for large datasets.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{iter(obj)} / \texttt{next(obj)} --- protocol entry points
+        \item Generator function: \texttt{def gen(): yield x}
+        \item Generator expression: \texttt{(x**2 for x in data)}
+        \item \texttt{itertools} module: \texttt{chain}, \texttt{islice}, \texttt{product}, \ldots
+    \end{itemize}
+
+    \tcbitem[title={Protocol Dunder Methods}, raster multicolumn=3]
+    Python's data model exposes behaviour through special (``dunder'') methods\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    Implementing them makes custom objects behave like built-in types.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Method} & \textbf{Triggered by} \\
+        \hline
+        \texttt{\_\_len\_\_}    & \texttt{len(obj)} \\
+        \hline
+        \texttt{\_\_getitem\_\_} & \texttt{obj[key]}, slicing, iteration \\
+        \hline
+        \texttt{\_\_contains\_\_} & \texttt{x in obj} \\
+        \hline
+        \texttt{\_\_repr\_\_} / \texttt{\_\_str\_\_} & \texttt{repr(obj)} / \texttt{str(obj)} \\
+        \hline
+        \texttt{\_\_enter\_\_} / \texttt{\_\_exit\_\_} & \texttt{with} statement \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.3 Errors and Exceptions ------------------------------------------------------------------
+\subsection{Errors and Exceptions}
+
+% ---- 3.3.1 Syntax errors ------------------------------------------------------------------------
+\subsubsection{Syntax errors}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Syntax vs.\ Runtime Errors}, raster multicolumn=6]
+    Python distinguishes errors that prevent parsing (\emph{SyntaxError}) from errors raised during execution (\emph{exceptions})\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Error type} & \textbf{Cause} \\
+        \hline
+        \texttt{SyntaxError}    & Invalid Python grammar, e.g.\ missing colon, mismatched bracket \\
+        \hline
+        \texttt{IndentationError} & Wrong indentation level (subset of \texttt{SyntaxError}) \\
+        \hline
+        \texttt{NameError}      & Using a name before it is defined \\
+        \hline
+        \texttt{TypeError}      & Operation on incompatible types \\
+        \hline
+        \texttt{ValueError}     & Right type, wrong value, e.g.\ \texttt{int("abc")} \\
+        \hline
+        \texttt{IndexError} / \texttt{KeyError} & Access beyond sequence / absent dict key \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.3.2 Handling and raising exceptions ------------------------------------------------------
+\subsubsection{Handling and raising exceptions}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={try / except / finally}, raster multicolumn=3]
+    The \texttt{try} block wraps code that may fail; \texttt{except} catches specific exceptions; \texttt{else} runs when no exception occurred; \texttt{finally} always runs (clean-up)\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{except ValueError as e:} --- bind exception to name
+        \item \texttt{except (TypeError, KeyError):} --- catch multiple types
+        \item \texttt{raise} --- re-raise current exception
+        \item \texttt{raise ValueError("bad input")} --- raise with message
+        \item \texttt{finally:} --- cleanup regardless of outcome (close files, release locks)
+    \end{itemize}
+
+    \tcbitem[title={Context Managers as Error Guards}, raster multicolumn=3]
+    The \texttt{with} statement uses \texttt{\_\_enter\_\_} / \texttt{\_\_exit\_\_} to guarantee resource release, even when exceptions occur\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \texttt{contextlib.contextmanager} lets you write a generator-based context manager.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{with open(f) as fh:} --- file closed on any exit
+        \item \texttt{with contextlib.suppress(OSError):} --- silently skip errors
+        \item \texttt{@contextlib.contextmanager} decorator: \texttt{yield} separates enter from exit logic
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.3.3 User-defined exceptions --------------------------------------------------------------
+\subsubsection{User-defined exceptions}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Custom Exception Classes}, raster multicolumn=6]
+    User-defined exceptions inherit from \texttt{Exception} (or a more specific base class).
+    Custom exceptions improve code clarity and allow callers to catch domain-specific errors without catching everything\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,4cm]|X|}
+        \hline
+        \textbf{Pattern} & \textbf{Notes} \\
+        \hline
+        \texttt{class DataError(Exception): pass}       & Minimal custom exception \\
+        \hline
+        \texttt{class DataError(ValueError): ...}       & Specialise a standard exception \\
+        \hline
+        Add \texttt{\_\_init\_\_} to store attributes   & e.g.\ \texttt{self.column = column} for context \\
+        \hline
+        Application hierarchy                           & \texttt{AppError} $\to$ \texttt{DBError}, \texttt{NetworkError} \\
+        \hline
+    \end{tblr}
+    Catch the base class to handle the whole hierarchy; catch subclasses for fine-grained handling.
+\end{tcbitemize}
+
+% ---- 3.4 Important Libraries --------------------------------------------------------------------
+\subsection{Important Libraries}
+
+% ---- 3.4.1 Standard Python library --------------------------------------------------------------
+\subsubsection{Standard Python library}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Python Standard Library Highlights}, raster multicolumn=6]
+    The standard library ships with CPython and covers a huge range of tasks without third-party dependencies\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+        \hline
+        \textbf{Module} & \textbf{Key functionality} \\
+        \hline
+        \texttt{os} / \texttt{os.path} & OS interface: env vars, paths, processes \\
+        \hline
+        \texttt{pathlib}     & Object-oriented path handling (\texttt{Path("data") / "file.csv"}) \\
+        \hline
+        \texttt{sys}         & Interpreter state: \texttt{sys.argv}, \texttt{sys.path}, \texttt{sys.exit()} \\
+        \hline
+        \texttt{json}        & Serialize/deserialize JSON data \\
+        \hline
+        \texttt{datetime}    & Date, time, timedelta arithmetic \\
+        \hline
+        \texttt{collections} & \texttt{Counter}, \texttt{defaultdict}, \texttt{namedtuple}, \texttt{deque} \\
+        \hline
+        \texttt{itertools}   & Efficient iterators: \texttt{chain}, \texttt{product}, \texttt{groupby} \\
+        \hline
+        \texttt{re}          & Regular expressions \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.4.2 Scientific calculations --------------------------------------------------------------
+\subsubsection{Scientific calculations}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={NumPy and SciPy}, raster multicolumn=3]
+    \textbf{NumPy} provides the \texttt{ndarray}: a fast, homogeneously-typed N-dimensional array with vectorised operations and broadcasting\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \textbf{SciPy} builds on NumPy and adds algorithms for linear algebra, optimization, integration, signal processing, and statistics.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{numpy.linalg}: matrix factorisation, eigenvalues, solve
+        \item \texttt{scipy.optimize}: minimize, root-finding, curve fitting
+        \item \texttt{scipy.stats}: probability distributions, hypothesis tests
+        \item \texttt{scipy.sparse}: sparse matrix formats and solvers
+        \item \texttt{scipy.signal}: convolution, filtering, spectral analysis
+    \end{itemize}
+
+    \tcbitem[title={Performance: Memory Layout and ufuncs}, raster multicolumn=3]
+    NumPy arrays are stored in contiguous memory (C-order by default), enabling SIMD vectorisation\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \emph{Universal functions} (\texttt{ufuncs}) apply element-wise operations over arrays without Python loops.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{np.dot(A, B)} --- BLAS-backed matrix multiplication
+        \item \texttt{np.sum}, \texttt{np.mean}, \texttt{np.std} --- reduction ufuncs
+        \item \texttt{dtype} selection: \texttt{float32} vs.\ \texttt{float64} trades precision for memory
+        \item \texttt{np.einsum("ij,jk->ik", A, B)} --- Einstein summation notation
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.4.3 Speeding up Python -------------------------------------------------------------------
+\subsubsection{Speeding up Python}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Accelerating Python Code}, raster multicolumn=6]
+    Pure Python loops are slow due to interpreter overhead.
+    Several tools compile or parallelize Python to approach C/Fortran speeds\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+        \hline
+        \textbf{Tool} & \textbf{Approach and notes} \\
+        \hline
+        \textbf{NumPy}          & Vectorise: replace Python loops with array operations \\
+        \hline
+        \textbf{Numba}          & JIT-compile with \texttt{@numba.jit}; no code rewrite required \\
+        \hline
+        \textbf{Cython}         & Annotate Python with C types; compiled to C extension \\
+        \hline
+        \textbf{multiprocessing} & True parallelism bypassing the GIL; \texttt{Pool.map()} \\
+        \hline
+        \textbf{concurrent.futures} & \texttt{ProcessPoolExecutor} for CPU; \texttt{ThreadPoolExecutor} for I/O \\
+        \hline
+        \textbf{Dask}           & Lazy parallel arrays/dataframes; scales to cluster \\
+        \hline
+    \end{tblr}
+    Rule of thumb: profile first (\texttt{cProfile}, \texttt{line\_profiler}), then optimise the bottleneck.
+\end{tcbitemize}
+
+% ---- 3.4.4 Visualization ------------------------------------------------------------------------
+\subsubsection{Visualization}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Python Visualization Ecosystem}, raster multicolumn=6]
+    Python offers a layered visualization stack from low-level to high-level APIs\textsuperscript{\cite{navlaniPythonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+        \hline
+        \textbf{Library} & \textbf{Description} \\
+        \hline
+        \textbf{Matplotlib} & Foundation: fine-grained control; \texttt{fig, ax = plt.subplots()} \\
+        \hline
+        \textbf{Seaborn}    & Statistical plots on top of Matplotlib; tidy-data API \\
+        \hline
+        \textbf{Plotly}     & Interactive HTML charts; integrates with Dash for dashboards \\
+        \hline
+        \textbf{Bokeh}      & Browser-based interactive plots; streaming data support \\
+        \hline
+        \textbf{Altair}     & Declarative API based on Vega-Lite; grammar of graphics \\
+        \hline
+    \end{tblr}
+    Matplotlib is the default for publication figures; Plotly/Bokeh/Altair for interactive exploration.
+\end{tcbitemize}
+
+% ---- 3.4.5 Accessing databases ------------------------------------------------------------------
+\subsubsection{Accessing databases}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Database Access in Python}, raster multicolumn=6]
+    Python accesses databases via the DB-API 2.0 standard (\texttt{sqlite3}, \texttt{psycopg2}, \texttt{pymysql}) or the ORM layer SQLAlchemy\textsuperscript{\cite{navlaniPythonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Tool} & \textbf{Notes} \\
+        \hline
+        \texttt{sqlite3}        & Stdlib; file-based SQL; good for prototyping \\
+        \hline
+        \texttt{psycopg2}       & PostgreSQL adapter; DB-API 2.0 compliant \\
+        \hline
+        \textbf{SQLAlchemy Core} & SQL expression language; database-agnostic \\
+        \hline
+        \textbf{SQLAlchemy ORM}  & Map Python classes to tables; session-based transactions \\
+        \hline
+        \textbf{Pandas}          & \texttt{pd.read\_sql(query, con)} --- query result directly to DataFrame \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.5 Working with Python --------------------------------------------------------------------
+\subsection{Working with Python}
+
+% ---- 3.5.1 Virtual environments -----------------------------------------------------------------
+\subsubsection{Virtual environments}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Virtual Environments}, raster multicolumn=6]
+    A virtual environment is an isolated Python installation that keeps project dependencies separate, avoiding conflicts between projects\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Tool} & \textbf{Commands / Notes} \\
+        \hline
+        \texttt{venv} (stdlib)   & \texttt{python -m venv .venv}; activate with \texttt{source .venv/bin/activate} \\
+        \hline
+        \texttt{conda}           & \texttt{conda create -n myenv python=3.11}; manages non-Python deps too \\
+        \hline
+        \texttt{poetry}          & Dependency resolution + virtual env + publishing in one tool \\
+        \hline
+        \texttt{uv}              & Ultra-fast Rust-based pip/venv replacement \\
+        \hline
+    \end{tblr}
+    Best practice: one virtual environment per project; never install into the system Python.
+\end{tcbitemize}
+
+% ---- 3.5.2 Managing packages --------------------------------------------------------------------
+\subsubsection{Managing packages}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Reproducible Package Management}, raster multicolumn=6]
+    Pinning dependency versions ensures reproducible builds across machines and CI/CD pipelines\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{File / Tool} & \textbf{Purpose} \\
+        \hline
+        \texttt{requirements.txt}   & Simple pinned list; \texttt{pip freeze > requirements.txt} \\
+        \hline
+        \texttt{pyproject.toml}     & Modern standard (PEP 517/518/621); replaces \texttt{setup.py} \\
+        \hline
+        \texttt{pip-compile}        & Lock transitive deps to \texttt{requirements.txt} from \texttt{.in} spec \\
+        \hline
+        \texttt{conda env export}   & Export conda environment including non-Python packages \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.5.3 Unit and integration testing ---------------------------------------------------------
+\subsubsection{Unit and integration testing}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Testing with pytest}, raster multicolumn=3]
+    \texttt{pytest} is the de-facto Python testing framework: plain \texttt{assert} statements, powerful fixtures, parametrize, and a rich plugin ecosystem\textsuperscript{\cite{anayaCleanCodePython2021}}.
+    \tcblower
+    \begin{itemize}
+        \item Test files named \texttt{test\_*.py}; functions named \texttt{test\_*}
+        \item \texttt{@pytest.fixture} --- reusable setup/teardown
+        \item \texttt{@pytest.mark.parametrize} --- run one test with multiple inputs
+        \item \texttt{pytest.raises(ValueError)} --- assert exception is raised
+        \item \texttt{pytest --cov} (pytest-cov) --- measure code coverage
+    \end{itemize}
+
+    \tcbitem[title={Test Design Principles}, raster multicolumn=3]
+    Good tests are fast, isolated, repeatable, and self-validating\textsuperscript{\cite{anayaCleanCodePython2021}}.
+    The \emph{Arrange-Act-Assert} (AAA) pattern structures each test clearly.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2cm]|X|}
+        \hline
+        \textbf{Layer} & \textbf{Scope} \\
+        \hline
+        Unit test       & Single function / class; mock external deps \\
+        \hline
+        Integration     & Several components together; real DB or filesystem \\
+        \hline
+        End-to-end      & Full system from API to DB and back \\
+        \hline
+        Property test   & \texttt{hypothesis} library generates random inputs \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.5.4 Documenting code ---------------------------------------------------------------------
+\subsubsection{Documenting code}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Docstrings and Type Hints}, raster multicolumn=6]
+    Python supports inline documentation through \emph{docstrings} (PEP 257) and static type annotations (PEP 484)\textsuperscript{\cite{anayaCleanCodePython2021}}.
+    Tools such as \texttt{Sphinx} generate HTML/PDF API docs from docstrings; \texttt{mypy} and \texttt{pyright} perform static type checking.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Convention} & \textbf{Notes} \\
+        \hline
+        Google style        & Sections: Args, Returns, Raises; readable prose \\
+        \hline
+        NumPy style         & Parameters / Returns with type + description lines \\
+        \hline
+        \texttt{def f(x: int) -> float:} & Type hint syntax; checked by \texttt{mypy} \\
+        \hline
+        \texttt{dataclasses.dataclass}   & Auto-generates \texttt{\_\_init\_\_}, \texttt{\_\_repr\_\_} from annotated fields \\
+        \hline
+        \texttt{sphinx-autodoc}          & Extracts docstrings to build HTML reference docs \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.6 Version Control ------------------------------------------------------------------------
+\subsection{Version Control}
+
+% ---- 3.6.1 Introduction to version control ------------------------------------------------------
+\subsubsection{Introduction to version control}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Why Version Control?}, raster multicolumn=6]
+    A \emph{version control system} (VCS) records changes to files over time, enabling rollback, parallel development, and collaboration\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X[2]|X[2]|}
+        \hline
+        \textbf{Property} & \textbf{Centralized (SVN)} & \textbf{Distributed (Git)} \\
+        \hline
+        Repository      & Single server copy       & Full history on every machine \\
+        \hline
+        Offline work    & Limited                  & Full history available offline \\
+        \hline
+        Branching       & Expensive                & Cheap (just a pointer) \\
+        \hline
+        Fault tolerance & Single point of failure  & Any clone can restore the repo \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.6.2 Version control with GIT -------------------------------------------------------------
+\subsubsection{Version control with GIT}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Core Git Concepts}, raster multicolumn=3]
+    Git stores snapshots (not diffs) as a directed acyclic graph (DAG) of \emph{commits}\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    A \emph{branch} is a movable pointer to a commit; \emph{HEAD} is the currently checked-out commit.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+        \hline
+        \textbf{Command} & \textbf{Effect} \\
+        \hline
+        \texttt{git init}          & Create empty repository \\
+        \hline
+        \texttt{git add -p}        & Stage changes interactively \\
+        \hline
+        \texttt{git commit -m "..."} & Record snapshot with message \\
+        \hline
+        \texttt{git branch feat}   & Create branch pointer \\
+        \hline
+        \texttt{git merge feat}    & Integrate branch into current \\
+        \hline
+        \texttt{git rebase main}   & Replay commits on top of main \\
+        \hline
+    \end{tblr}
+
+    \tcbitem[title={Collaboration Workflow}, raster multicolumn=3]
+    Remote repositories on GitHub/GitLab enable team collaboration.
+    The \emph{feature-branch workflow} is the most common: work on a branch, open a pull request, review, then merge\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3cm]|X|}
+        \hline
+        \textbf{Command} & \textbf{Effect} \\
+        \hline
+        \texttt{git remote add origin URL} & Link to remote \\
+        \hline
+        \texttt{git push -u origin feat}   & Push branch, set upstream \\
+        \hline
+        \texttt{git pull --rebase}         & Fetch + rebase local commits \\
+        \hline
+        \texttt{git stash}                 & Temporarily shelve dirty state \\
+        \hline
+        \texttt{git log --oneline --graph} & Visual commit DAG \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ==================================================================================================
+\section{NumPy and Pandas}
+\subsection{Introduction to NumPy}
+
+% ---- 3.7.1 NumPy arrays -------------------------------------------------------------------------
+\subsubsection{NumPy arrays}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={The NumPy ndarray}, raster multicolumn=3]
+    The \texttt{ndarray} is NumPy's central data structure: a contiguous block of typed memory with a shape, dtype, and strides\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    All elements share the same \texttt{dtype}, enabling SIMD acceleration.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{np.array([1, 2, 3], dtype=np.float32)}
+        \item \texttt{np.zeros((3, 4))}, \texttt{np.ones(10)}, \texttt{np.eye(4)}
+        \item \texttt{np.arange(0, 1, 0.1)}, \texttt{np.linspace(0, 1, 100)}
+        \item \texttt{arr.shape}, \texttt{arr.ndim}, \texttt{arr.dtype}, \texttt{arr.nbytes}
+        \item \texttt{arr.reshape(2, -1)} --- reshape without copying data
+    \end{itemize}
+
+    \tcbitem[title={Array dtypes}, raster multicolumn=3]
+    Choosing the right \texttt{dtype} balances precision against memory footprint, which matters at scale\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|Q[c,m]|X|}
+        \hline
+        \textbf{dtype} & \textbf{Bytes} & \textbf{Use-case} \\
+        \hline
+        \texttt{float64} & 8 & Default; double precision \\
+        \hline
+        \texttt{float32} & 4 & Deep learning; halves memory \\
+        \hline
+        \texttt{int64}   & 8 & Large integer counts/indices \\
+        \hline
+        \texttt{int32}   & 4 & Compact integer arrays \\
+        \hline
+        \texttt{bool}    & 1 & Masks, logical operations \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.7.2 Array indexing and slicing -----------------------------------------------------------
+\subsubsection{Array indexing and slicing}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Indexing and Slicing}, raster multicolumn=6]
+    NumPy supports basic, fancy, and boolean indexing; slices return \emph{views} (no copy), fancy and boolean indexing return copies\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Syntax} & \textbf{Meaning} \\
+        \hline
+        \texttt{a[2, 1]}            & Element at row 2, col 1 \\
+        \hline
+        \texttt{a[1:4, ::2]}        & Rows 1--3, every other column (view) \\
+        \hline
+        \texttt{a[[0, 2], :]}       & Rows 0 and 2 (fancy indexing, copy) \\
+        \hline
+        \texttt{a[a > 0]}           & All elements $> 0$ (boolean mask, copy) \\
+        \hline
+        \texttt{a[np.newaxis, :]}   & Add axis: shape $(n,) \to (1, n)$ \\
+        \hline
+        \texttt{a[..., 0]}          & Last axis = 0 for any number of leading axes \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.7.3 Array operations ---------------------------------------------------------------------
+\subsubsection{Array operations}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Vectorised Operations and ufuncs}, raster multicolumn=6]
+    NumPy operations are \emph{element-wise} by default; matrix products require \texttt{np.dot} or \texttt{@}.
+    Reduction ufuncs (sum, max, etc.) accept an \texttt{axis} argument\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Operation} & \textbf{Notes} \\
+        \hline
+        \texttt{a + b}, \texttt{a * b}       & Element-wise; broadcasting applies \\
+        \hline
+        \texttt{A @ B}                        & Matrix product (\texttt{np.matmul}) \\
+        \hline
+        \texttt{np.sum(a, axis=0)}            & Column-wise sum \\
+        \hline
+        \texttt{np.linalg.norm(v)}            & Euclidean norm \\
+        \hline
+        \texttt{np.sort(a, axis=-1)}          & Sort along last axis \\
+        \hline
+        \texttt{np.clip(a, 0, 1)}             & Clamp values to $[0, 1]$ \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.7.4 Broadcasting -------------------------------------------------------------------------
+\subsubsection{Broadcasting}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Broadcasting Rules}, raster multicolumn=6]
+    Broadcasting allows NumPy to operate on arrays with different shapes by implicitly expanding dimensions, without copying data\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
+    \tcblower
+    Two arrays are compatible if, for each trailing dimension, either the sizes match, or one of them is 1.
+    \begin{equation}
+        \textbf{A} \in \mathbb{R}^{m \times 1},\quad
+        \textbf{b} \in \mathbb{R}^{1 \times n}
+        \;\Longrightarrow\;
+        \textbf{A} + \textbf{b} \in \mathbb{R}^{m \times n}
+    \end{equation}
+    Example: \texttt{X - X.mean(axis=0)} subtracts a per-column mean from a matrix --- shape $(N, d) - (d,)$ is valid by broadcasting.
+    A dimension of size 1 is \emph{stretched} (not copied) to match the other dimension.
+\end{tcbitemize}
+
+% ---- 3.8 Introduction to Pandas -----------------------------------------------------------------
+\subsection{Introduction to Pandas}
+
+% ---- 3.8.1 Series and DataFrames ----------------------------------------------------------------
+\subsubsection{Series and DataFrames}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Series and DataFrames}, raster multicolumn=3]
+    Pandas provides two primary data structures: \texttt{Series} (1-D labelled array) and \texttt{DataFrame} (2-D labelled table)\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    Both are backed by NumPy arrays and share an index.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{pd.Series([1, 2, 3], index=["a","b","c"])}
+        \item \texttt{pd.DataFrame(\{"col1": [...], "col2": [...]\})}
+        \item \texttt{df.shape}, \texttt{df.dtypes}, \texttt{df.head()}, \texttt{df.info()}
+        \item \texttt{df.describe()} --- summary statistics
+        \item \texttt{df["col"]} returns a Series; \texttt{df[["col1","col2"]]} returns a DataFrame
+    \end{itemize}
+
+    \tcbitem[title={Reading and Writing Data}, raster multicolumn=3]
+    Pandas reads many formats natively; the resulting DataFrame is the entry point for all subsequent analysis\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Function} & \textbf{Format} \\
+        \hline
+        \texttt{pd.read\_csv(path)}    & CSV / TSV \\
+        \hline
+        \texttt{pd.read\_parquet(path)} & Columnar Parquet \\
+        \hline
+        \texttt{pd.read\_excel(path)}  & Excel \texttt{.xlsx} \\
+        \hline
+        \texttt{pd.read\_sql(q, con)}  & SQL query result \\
+        \hline
+        \texttt{df.to\_csv(path)}      & Write CSV \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.8.2 Data indexing and selection ----------------------------------------------------------
+\subsubsection{Data indexing and selection}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={loc, iloc, and Boolean Indexing}, raster multicolumn=6]
+    Pandas provides three main selection mechanisms\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,2.5cm]|X[2]|X[2]|}
+        \hline
+        \textbf{Accessor} & \textbf{Selects by} & \textbf{Example} \\
+        \hline
+        \texttt{df.loc}  & Label (index value or column name) & \texttt{df.loc["2020":"2022", "price"]} \\
+        \hline
+        \texttt{df.iloc} & Integer position & \texttt{df.iloc[0:5, 2:4]} \\
+        \hline
+        Boolean mask     & Condition evaluated element-wise & \texttt{df[df["age"] > 30]} \\
+        \hline
+        \texttt{df.query} & String expression (efficient) & \texttt{df.query("age > 30 and city == 'Berlin'")} \\
+        \hline
+    \end{tblr}
+    Chained indexing (\texttt{df["a"]["b"]}) can cause \texttt{SettingWithCopyWarning}; prefer \texttt{.loc} for assignments.
+\end{tcbitemize}
+
+% ---- 3.8.3 Data cleaning and preparation --------------------------------------------------------
+\subsubsection{Data cleaning and preparation}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Handling Missing Data}, raster multicolumn=3]
+    Pandas represents missing values as \texttt{NaN} (float) or \texttt{pd.NA}\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{df.isna().sum()} --- count missing per column
+        \item \texttt{df.dropna(subset=["col"])} --- drop rows with NaN in col
+        \item \texttt{df.fillna(0)} --- replace NaN with constant
+        \item \texttt{df["col"].fillna(df["col"].median())} --- impute with median
+        \item \texttt{df.interpolate(method="time")} --- time-series interpolation
+    \end{itemize}
+
+    \tcbitem[title={Type Conversion and Duplicates}, raster multicolumn=3]
+    Correct dtypes reduce memory and prevent silent bugs; duplicates inflate counts and bias models\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{df["col"].astype("float32")} --- cast dtype
+        \item \texttt{pd.to\_datetime(df["date"])} --- parse date strings
+        \item \texttt{df["cat"].astype("category")} --- efficient categoricals
+        \item \texttt{df.duplicated().sum()} --- count duplicate rows
+        \item \texttt{df.drop\_duplicates(subset=["id"])} --- deduplicate on key
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.8.4 Data aggregation and grouping --------------------------------------------------------
+\subsubsection{Data aggregation and grouping}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={GroupBy and Aggregation}, raster multicolumn=6]
+    The \texttt{groupby} / \texttt{agg} / \texttt{transform} pattern implements the \emph{split-apply-combine} strategy\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,4.5cm]|X|}
+        \hline
+        \textbf{Pattern} & \textbf{Result} \\
+        \hline
+        \texttt{df.groupby("region").mean()} & Per-group means as new DataFrame \\
+        \hline
+        \texttt{df.groupby("region").agg(\{"sales": "sum", "profit": "mean"\})} & Multiple agg functions per column \\
+        \hline
+        \texttt{df.groupby("region")["sales"].transform("mean")} & Broadcast group mean back to original index \\
+        \hline
+        \texttt{df.pivot\_table(values="sales", index="region", columns="year", aggfunc="sum")} & Pivot for cross-tabulation \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.9 Data visualization with Pandas ---------------------------------------------------------
+\subsection{Data visualization with Pandas}
+
+% ---- 3.9.1 Plotting with Pandas -----------------------------------------------------------------
+\subsubsection{Plotting with Pandas}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Plotting with Pandas}, raster multicolumn=3]
+    Pandas wraps Matplotlib's API via \texttt{DataFrame.plot}, enabling fast exploratory plots directly from a DataFrame without explicit Matplotlib calls\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{df.plot(kind="line")} --- line chart
+        \item \texttt{df["col"].plot(kind="hist", bins=30)} --- histogram
+        \item \texttt{df.plot(kind="scatter", x="a", y="b")} --- scatter plot
+        \item \texttt{df.plot(kind="box")} --- box plots per column
+        \item \texttt{df.corr().style.background\_gradient()} --- annotated correlation heatmap
+    \end{itemize}
+
+    \tcbitem[title={Customizing Plots}, raster multicolumn=3]
+    Every Pandas plot returns a Matplotlib \texttt{Axes} object, so all Matplotlib customisation applies\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{ax.set\_title("...")}, \texttt{ax.set\_xlabel("...")}
+        \item \texttt{ax.legend(loc="upper right")}
+        \item \texttt{fig.tight\_layout()} --- prevent label clipping
+        \item \texttt{fig.savefig("plot.pdf", dpi=300)} --- publication-quality export
+        \item \texttt{plt.style.use("seaborn-v0\_8")} --- apply aesthetic theme
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.10 Working with time series data ---------------------------------------------------------
+\subsection{Working with time series data}
+
+% ---- 3.10.1 Date and time handling --------------------------------------------------------------
+\subsubsection{Date and time handling}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Date and Time in Pandas}, raster multicolumn=3]
+    Pandas provides a \texttt{DatetimeIndex} with nanosecond precision, enabling fast label-based time lookups and resampling\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{pd.to\_datetime(series)} --- parse from strings
+        \item \texttt{pd.date\_range("2020-01", periods=12, freq="M")} --- generate range
+        \item \texttt{df.set\_index("date")} --- use datetime column as index
+        \item \texttt{df.loc["2021":"2022"]} --- partial-string slicing on DatetimeIndex
+        \item \texttt{ts.dt.year}, \texttt{ts.dt.dayofweek} --- accessor properties
+    \end{itemize}
+
+    \tcbitem[title={Resampling and Frequency Conversion}, raster multicolumn=3]
+    \texttt{resample} aggregates time series to a coarser frequency; \texttt{asfreq} pads or forward-fills to a finer frequency\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{df.resample("W").mean()} --- weekly mean
+        \item \texttt{df.resample("Q").agg(\{"vol":"sum","price":"last"\})} --- quarterly
+        \item \texttt{df.asfreq("D", method="ffill")} --- forward-fill daily
+        \item \texttt{df.rolling(window=30).mean()} --- rolling 30-day average
+        \item \texttt{df.ewm(span=10).mean()} --- exponentially weighted mean
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 3.11 Advanced Pandas techniques ------------------------------------------------------------
+\subsection{Advanced Pandas techniques}
+
+% ---- 3.11.1 Merging and joining DataFrames ------------------------------------------------------
+\subsubsection{Merging and joining DataFrames}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Merging and Joining DataFrames}, raster multicolumn=6]
+    Pandas mirrors SQL joins via \texttt{pd.merge}; \texttt{pd.concat} stacks DataFrames along an axis\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,4cm]|X|}
+        \hline
+        \textbf{Function / arg} & \textbf{Behaviour} \\
+        \hline
+        \texttt{pd.merge(A, B, on="id")}           & Inner join on column \texttt{id} \\
+        \hline
+        \texttt{pd.merge(A, B, how="left")}        & Left join; keeps all rows of A \\
+        \hline
+        \texttt{pd.merge(A, B, left\_on="a\_id", right\_on="b\_id")} & Join on differently-named keys \\
+        \hline
+        \texttt{pd.concat([df1, df2], axis=0)}     & Stack rows (append) \\
+        \hline
+        \texttt{pd.concat([df1, df2], axis=1)}     & Stack columns side-by-side \\
+        \hline
+        \texttt{df.join(other, on="key")}          & Join on index by default \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.11.2 Pivot tables and cross-tabulations --------------------------------------------------
+\subsubsection{Pivot tables and cross-tabulations}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Pivot Tables and Cross-Tabulations}, raster multicolumn=6]
+    Pivot tables reshape data from long (tidy) to wide format, aggregating values at the intersection of two categorical dimensions\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,4.5cm]|X|}
+        \hline
+        \textbf{Function} & \textbf{Notes} \\
+        \hline
+        \texttt{df.pivot\_table(values, index, columns, aggfunc)} & Generalised pivot with aggregation \\
+        \hline
+        \texttt{pd.crosstab(a, b)}                               & Frequency table of two categorical Series \\
+        \hline
+        \texttt{pd.crosstab(a, b, normalize="index")}            & Row-normalised proportions \\
+        \hline
+        \texttt{df.melt(id\_vars, value\_vars)}                   & Wide $\to$ long (tidy) format \\
+        \hline
+        \texttt{df.stack()} / \texttt{df.unstack()}              & Rotate innermost column/row level \\
+        \hline
+    \end{tblr}
+\end{tcbitemize}
+
+% ---- 3.12 Performance optimization --------------------------------------------------------------
+\subsection{Performance optimization}
+
+% ---- 3.12.1 Efficient data manipulation ---------------------------------------------------------
+\subsubsection{Efficient data manipulation}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Efficient Pandas Operations}, raster multicolumn=3]
+    Vectorised Pandas operations are typically $10\times$--$100\times$ faster than row-by-row Python loops\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item Prefer \texttt{df["col"].str.contains()} over looping
+        \item \texttt{df.apply(fn, axis=1)} --- row-wise; use \texttt{np.where} or vectorised ops when possible
+        \item \texttt{pd.cut} / \texttt{pd.qcut} --- vectorised binning
+        \item Use categoricals for low-cardinality string columns: saves memory and speeds up groupby
+        \item \texttt{df.pipe(fn)} --- chain multiple transformations cleanly
+    \end{itemize}
+
+    \tcbitem[title={Memory Management}, raster multicolumn=3]
+    DataFrames can consume far more memory than their CSV source due to dtype widening\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{df.memory\_usage(deep=True).sum()} --- total memory footprint
+        \item Downcast integers: \texttt{pd.to\_numeric(s, downcast="integer")}
+        \item Use \texttt{float32} instead of \texttt{float64} where precision allows
+        \item Read large files in chunks: \texttt{pd.read\_csv(path, chunksize=10\_000)}
+        \item \texttt{del df} and \texttt{gc.collect()} --- release memory explicitly
+    \end{itemize}
+\end{tcbitemize}
+
+% ==================================================================================================
+\section{SciKit-Learn}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Scikit-learn: Estimator API}, raster multicolumn=3]
+    Scikit-learn implements a uniform \emph{Estimator API}: every model exposes \texttt{fit}, \texttt{predict} (or \texttt{transform}), and \texttt{score}\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    This uniformity enables drop-in model swapping and automatic pipeline composition.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{model.fit(X\_train, y\_train)} --- learn parameters
+        \item \texttt{model.predict(X\_test)} --- apply learned model
+        \item \texttt{model.score(X\_test, y\_test)} --- default metric (accuracy / $R^2$)
+        \item \texttt{transformer.fit\_transform(X)} --- fit and apply in one step
+        \item Hyperparameter tuning via \texttt{GridSearchCV} / \texttt{RandomizedSearchCV}
+    \end{itemize}
+
+    \tcbitem[title={Scikit-learn: Key Modules}, raster multicolumn=3]
+    Scikit-learn organises its functionality into sub-modules that cover the full ML workflow\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Module} & \textbf{Contents} \\
+        \hline
+        \texttt{sklearn.linear\_model}   & LR, Ridge, Lasso, SGD \\
+        \hline
+        \texttt{sklearn.tree}            & Decision trees \\
+        \hline
+        \texttt{sklearn.ensemble}        & Random forest, gradient boosting \\
+        \hline
+        \texttt{sklearn.svm}             & Support vector machines \\
+        \hline
+        \texttt{sklearn.preprocessing}   & StandardScaler, OneHotEncoder, LabelEncoder \\
+        \hline
+        \texttt{sklearn.pipeline}        & \texttt{Pipeline}, \texttt{ColumnTransformer} \\
+        \hline
+        \texttt{sklearn.model\_selection} & Cross-validation, search \\
+        \hline
+        \texttt{sklearn.metrics}         & Accuracy, F1, ROC-AUC, MSE, \ldots \\
+        \hline
+    \end{tblr}
+
+    \tcbitem[title={Scikit-learn Pipeline}, raster multicolumn=6]
+    A \texttt{Pipeline} chains preprocessing and model steps; \texttt{fit} on training data, \texttt{predict} on test data --- no data leakage\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    \tcblower
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.3cm,
+        every node/.style={draw, rounded corners, minimum height=0.65cm, minimum width=1.8cm, font=\sffamily\footnotesize, align=center},
+        arr/.style={-{Stealth[length=2mm]}, thick}
+    ]
+        \node (imp)   {Imputer};
+        \node (scl)   [right=of imp]  {Scaler};
+        \node (enc)   [right=of scl]  {Encoder};
+        \node (feat)  [right=of enc]  {Feature\\Selection};
+        \node (model) [right=of feat] {Estimator};
+        \draw[arr] (imp) -- (scl);
+        \draw[arr] (scl) -- (enc);
+        \draw[arr] (enc) -- (feat);
+        \draw[arr] (feat) -- (model);
+    \end{tikzpicture}
+    \end{center}
+    \texttt{ColumnTransformer} applies different transformers to different feature subsets in parallel before feeding results to the final estimator.
+\end{tcbitemize}
+
+% ==================================================================================================
+\section{PyTorch}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={PyTorch Tensors}, raster multicolumn=3]
+    PyTorch's core data structure is the \texttt{Tensor}: a multi-dimensional array that lives on CPU or GPU and records operations for automatic differentiation\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    \tcblower
+    \begin{itemize}
+        \item \texttt{torch.tensor([1.0, 2.0], dtype=torch.float32)}
+        \item \texttt{t.to("cuda")} --- move to GPU; \texttt{t.cpu()} --- move back
+        \item \texttt{t.shape}, \texttt{t.dtype}, \texttt{t.device}
+        \item \texttt{t.numpy()} --- zero-copy view as NumPy array (CPU only)
+        \item \texttt{torch.zeros}, \texttt{torch.randn}, \texttt{torch.arange}
+    \end{itemize}
+
+    \tcbitem[title={Autograd and the Computation Graph}, raster multicolumn=3]
+    Setting \texttt{requires\_grad=True} on a tensor tells PyTorch to track all operations on it, building a \emph{computation graph} from which gradients are derived via reverse-mode automatic differentiation\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    \tcblower
+    \begin{equation}
+        \frac{\partial \mathcal{L}}{\partial \mathbf{w}} = \text{backprop through graph}
+    \end{equation}
+    \begin{itemize}
+        \item \texttt{loss.backward()} --- compute all gradients
+        \item \texttt{w.grad} --- accumulated gradient $\partial\mathcal{L}/\partial w$
+        \item \texttt{optimizer.zero\_grad()} --- reset before each step
+        \item \texttt{torch.no\_grad():} --- disable graph for inference
+    \end{itemize}
+
+    \tcbitem[title={nn.Module and the Training Loop}, raster multicolumn=6]
+    All neural network models subclass \texttt{torch.nn.Module}, implementing \texttt{forward()}\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
+    The standard training loop is explicit: forward pass $\to$ loss $\to$ backward pass $\to$ optimizer step.
+    \tcblower
+    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+        \hline
+        \textbf{Step} & \textbf{Code} \\
+        \hline
+        Define model    & \texttt{class Net(nn.Module): def forward(self, x): ...} \\
+        \hline
+        Loss function   & \texttt{criterion = nn.CrossEntropyLoss()} \\
+        \hline
+        Optimizer       & \texttt{optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)} \\
+        \hline
+        Forward pass    & \texttt{output = model(x\_batch)} \\
+        \hline
+        Compute loss    & \texttt{loss = criterion(output, y\_batch)} \\
+        \hline
+        Backward pass   & \texttt{optimizer.zero\_grad(); loss.backward()} \\
+        \hline
+        Update weights  & \texttt{optimizer.step()} \\
+        \hline
+    \end{tblr}
+    \texttt{torch.utils.data.DataLoader} wraps any \texttt{Dataset} and handles batching, shuffling, and parallel loading.
+\end{tcbitemize}
+
+% ==================================================================================================
+\section{Literature}
+\begin{itemize}
+    \item Lutz, M. (2017). Learning Python (5th ed.). O'Reilly.
+    \item Mathes, E. (2019). Python Crash Course (2nd ed.). No Starch Press.
+\end{itemize}
