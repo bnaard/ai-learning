@@ -1,133 +1,474 @@
-    % ==== Artificial Intelligence in Supply Chain Management =============================================================================
-    \chapter{Artificial Intelligence in Supply Chain Management}
-    \section{Concepts of Artificial Intelligence in Supply Chain Management}
-    \subsection{Fundamentals of Supply Chain Management}
-    \subsubsection{Concept of Supply Chain and Supply Network}
-    \lipsum[29][1-3]
-    \subsubsection{End-to-End View of Supply Chain Management}
-    \lipsum[30][1-3]
-    \subsubsection{The Vision of Supply Chain 4.0}
-    \subsection{Conceptional and Mathematical Introduction to Key Artificial Intelligence Disciplines for Supply Chains}
-    \subsubsection{Conventional Techniques}
-    \subsubsection{Machine Learning Algorithms}
-    \subsubsection{Neural Networks}
-    \subsubsection{Robot Process Automation}
-    \subsubsection{Multi-Agent Systems}
-    \subsection{Models for improving transparency along Supply Chains}
-    \subsubsection{Customer and Churn Analytics}
-    \lipsum[41][1-3]
-    \subsubsection{Order Peak time Prediction}
-    \subsubsection{Risk and Fraud Detection}
-    \subsubsection{Spend Analytics}
-    \subsubsection{Defect Detection and Predictive Maintenance}
-    \subsection{Methods to Support Strategic and Tactical Decision-Making in Supply Chains}
-    \subsubsection{Supply Chain Network Planning}
-    \subsubsection{Supplier Selection}
-    \subsubsection{Replenishment Strategies}
-    \subsubsection{Route Optimization}
-    \subsubsection{Sales \& Operations Planning}
-    \lipsum[26][1-3]
+% ==== Artificial Intelligence in Supply Chain Management =============================================================================
+\chapter{Artificial Intelligence in Supply Chain Management}
 
-    \subsection{AI Concepts in Supply Chain Operations}
-    \subsubsection{Supplier Communication and Purchasing}
-    \subsubsection{Autonomous Allocation of Orders to Production Resources}
-    \subsubsection{Dynamic Routing}
-    \subsubsection{Object Identification in Logistics}
-    \subsection{Challenges of applying AI in Supply Chains}
-    \subsubsection{The Challenge of Trust}
-    \subsubsection{The Challenges of Capability}
-    \subsubsection{The Challenges of Accountability}
-    \subsubsection{The Challenges of Accessibility}
-    \subsubsection{The Challenges of Organizational Transformation}
-    \lipsum[26][1-3]
+% ==== Section 1: Supply Chain Management Fundamentals ===============================================================
+\section{Supply Chain Management Fundamentals}
 
-    \section{Demand Forecast and Inventory Control}
-    \subsection{Newsvendor Model}
-    \subsubsection{Single Period Newsvendor (Classic, Cost Function)}
-    \subsubsection{Demand as a Stochastic Quantity}
-    \subsubsection{Demand Models}
-    \subsubsection{Handling Censored Data}
-    \subsubsection{Extensions}
-    \subsubsection{Multi-Period Newsvendor}
-    \lipsum[42][1-3]
+% ---- 14.1.1 Supply Chain Concepts -----------------------------------------------------------------------
+\subsection{Supply Chain Concepts}
 
-    \subsection{Traditional Methods of Demand Forecasting}
-    \subsubsection{Exponential Smoothing}
-    \subsubsection{ARIMA}
-    \subsubsection{State Space Models}
-    \subsubsection{(Bayesian) Structural Time Series Models}
-    \subsection{Data Driven Methods for Demand Forecasting}
-    \subsubsection{Recurrent Neural Networks}
-    \subsubsection{Supervised Learning}
-    \subsubsection{Effects of Correlation and Confounding}
-    \subsubsection{Big Data Newsvendor}
-    \subsection{Inventory Models}
-    \subsubsection{Economic Order Quantity}
-    \subsubsection{Inventory Models with Review}
-    \subsubsection{Inventory Models with Service Levels}
-    \lipsum[26][1-3]
+\begin{tcbitemize}[ skin=sectionraster ]
 
-    \subsection{Further Effects}
-    \subsubsection{Customer Heterogeneity}
-    \subsubsection{Finite Product Lifetime}
-    \subsubsection{Minimum Order Quantity}
-    \subsubsection{Delivery Schedules}
-    \subsubsection{Operational KPIs and Inventory Optimization}
+    \tcbitem[title=Supply Chain vs.\ Supply Network, raster multicolumn=3]
+    A \textbf{supply chain} is the sequence of stages from raw material through production to end customer\textsuperscript{\cite[][pp.~1--4]{chopraSupplyChainManagement2019}}.
+    In practice, a firm is embedded in a \textbf{supply network}: multiple upstream tiers (Tier-1, Tier-2, \ldots suppliers) and multiple downstream channels (distributors, retailers, end consumers).
+    Supply Chain Management (SCM) coordinates flows of \emph{material}, \emph{information}, and \emph{finance} across this network to maximise total value created.
 
-    \section{Literature}
+    \tcbitem[title=SCOR Reference Model, raster multicolumn=3]
+    The \textbf{Supply Chain Operations Reference (SCOR)} model defines five cross-functional process domains\textsuperscript{\cite[][pp.~5--6]{chopraSupplyChainManagement2019}}:
     \begin{itemize}
-        \item Chopra, S. (2019): Supply chain management. Strategy, planning, and operation. Pearson.
-        \item Hwang, I. \& Jang, Y. J. (2020): Q($\lambda$) learning-based dynamic route guidance algorithm for overhead hoist transport systems in semiconductor fabs, International Journal of Production Research, 58:4, 1199-1221. DOI: 10.1080/00207543.2019.1614692
-        \item Masrour, T., Cherrafi, A., El Hassani, I. (2021): Artificial Intelligence and Industrial Applications: Smart Operation Management, Springer
-        \item Park, J.; Kim, M.-H.; Choi, D.-G. (2021): Correspondence Learning for Deep Multi-Modal Recognition and Fraud Detection. Electronics 2021, 10, 800. https://doi.org/10.3390/electronics10070800
-        \item Selvakanmani, S., Pranamita, N., Deepak, K., Kavi, B.A., Salmaan, A.K. (2020): Churn prediction using ensemble learning: an analytical CRM application. Int. J. Adv. Sci. Technol. Vol. 29, No. 5, p. 9192--9200
-        \item Triepels, R., Daniels, H., Feelders, A. (2019): Data-driven fraud detection in international shipping, Expert Systems With Applications 99, Elsevir, p.193-202.
-        \item Wang, C. \& Jiang, P (2019). Deep neural networks based order completion time prediction by using real-time job shop RFID data. Journal of Intelligent Manufacturing, Vol. 30, No. 3, p. 1303--1318.
-        \item Ban GY, Rudin C (2019) The big data newsvendor: Practical insights from machine learning. Oper Res 67(1):90--108
-        \item Bertsimas D, Kallus N (2020) From predictive to prescriptive analytics. Manag Sci 66(3):1025--1044
-        \item Bica I, Alaa A, Van Der Schaar M (2020) Time series deconfounder: Estimating treatment effects over time in the presence of hidden confounders. In: International Conference on Machine Learning. PMLR, pp 884--895
-        \item Brodersen KH, Gallusser F, Koehler J, Remy N, Scott SL (2015) Inferring causal impact using Bayesian structural time-series models. Ann Appl Stat 9:247--274
-        \item De Gooijer JG, Hyndman RJ (2006) 25 years of time series forecasting. Int J Forecast 22(3):443--473
-        \item Galliher, H. P., Morse, Philip M., Simond, M. (1959) Dynamics of two classes of continuous-review inventory systems. Operations Research, 7(3):362--384
-        \item Harris, F. (1990) How many parts to make at once. Operations Research, 38(6):947--950.
-        \item Hillier, F., Liebermann, G. (2020), ISE Introduction to Operations Research, McGraw-Hill
-        \item Huber J, M\"uller S, Fleischmann M, Stuckenschmidt H (2019) A data-driven newsvendor problem: From data to decision. Eur J Oper Res 278(3):904--915
-        \item Hyndman R, Koehler AB, Ord JK, Snyder RD (2008) Forecasting with exponential smoothing: the state space approach. Springer Science \& Business Media
-        \item Khouj, M (1999) The single-period (news-vendor) problem: literature review and suggestions for future research. Omega 27(5):537--553
-        \item L\"angkvist M, Karlsson L, Loutfi A (2014) A review of unsupervised feature learning and deep learning for time-series modeling. Pattern Recogn Lett 42:11--24
-        \item Lim B, Arik SO, Loeff N, Pfister T (2019) Temporal fusion transformers for interpretable multi-horizon time series forecasting. arXiv preprint arXiv:1912.09363
-        \item Malinsky D, Spirtes P (2018) Causal structure learning from multivariate time series in settings with unmeasured confounding. In: Proceedings of 2018 ACM SIGKDD Workshop on Causal Discovery, pp 23--47
-        \item Nahmias, S., Pierskalla, W. (1973) Optimal ordering policies for a product that perishes in two periods subject to stochastic demand. Naval Research Logistics Quarterly, 20(2):207--229, 1973.
-        \item Porteus, E. (1983) Inventory Policies for Periodic Review Systems. Research Papers 650, Stanford University, Graduate School of Business, June 1983.
-        \item Rasul K, Sheikh AS, Schuster I, Bergmann U, Vollgraf R (2020) Multi-variate probabilistic time series forecasting via conditioned normalizing flows. arXiv preprint arXiv:2002.06103
-        \item Runge J (2018) Causal network reconstruction from time series: From theoretical assumptions to practical estimation. Chaos Int J Nonlinear Sci 28(7):075310
-        \item Scarf, H. (1959) Bayes solutions of the statistical inventory problem. Ann. Math. Statist., 30(2):490--508, 06
-        \item Vandeput, N. (2020) Inventory Optimization: Models and Simulations, De Gruyter
-        \item Wick, F. et al. (2021) Demand Forecasting of Individual Probability Density Functions with Machine Learning. SN Oper. Res. Forum 2, 37. https://doi.org/10.1007/s43069-021-00079-8
-        \item Cavalcante, I. M., Frazzon, E. M., Forcellini, F. A., Ivanov, D. (2019): A supervised machine
-              learning approach to data-driven simulation of resilient supplier selection in digital
-              manufacturing, International Journal of Information Management, vol. 49, p. 86--97, \url{https://doi.org/10.1016/j.ijinfomgt.2019.03.004}.
-        \item Chopra, A. (2019): AI in Supply \& Procurement. Amity International Conference on Artificial
-              Intelligence (AICAI), February 2019: 308--316. \url{https://doi.org/10.1109/AICAI.2019.8701357}.
-        \item Krebs, K. D. (2020). How Can the DoD Adopt Commercial-Style Artificial Intelligence for
-              Procurement? Artificial-Intelligence Capabilities, NPS-CM-20-152, \url{https://dair.nps.edu/handle/123456789/4159}.
-        \item McGroarty, F., Booth, A., Gerding, E., \& Chinthalapati, V. L. R. (2019). High frequency trading
-              strategies, market fragility and price spikes: an agent based model perspective. Annals of
-              Operations Research, 282(1/2), 217--244. \url{https://doi-org.pxz.iubh.de:8443/10.1007/s10479-018-3019-4}.
-        \item Mitchell, B., \& Trebes, B. (2018). Procurement. In Managing Reality (3rd Edition) - Complete Set. ICE Publishing.
-        \item Marquis, P., Papini, O., \& Prade, H. (2020). A Guided Tour of Artificial Intelligence
-              Research: Volume II: AI Algorithms. Springer.
-        \item Sivakriskul, K., \& Phienthrakul, T. (2021): Product Category Recommendation System Using
-              Markov Model. In: Kaiser M.S., Xie J., Rathore V.S. (eds) Information and Communication
-              Technology for Competitive Strategies (ICTCS 2020). Lecture Notes in Networks and Systems,
-              vol. 190. Springer, Singapore. \url{https://doi-org.pxz.iubh.de:8443/10.1007/978-981-16-0882-7_60}.
-        \item Torres Berru, Y., López Batista, V. F., Torres-Carrión, P., Jimenez, M. G. (2020): Artificial Intelligence
-              Techniques to Detect and Prevent Corruption in Procurement: A Systematic Literature Review.
-              In: Botto-Tobar M., Zambrano Vizuete M., Torres-Carrión P., Montes León S., Pizarro Vásquez G.,
-              Durakovic B. (eds) Applied Technologies. ICAT 2019. Communications in Computer and
-              Information Science, vol. 1194. Springer, Cham. \url{https://doi-org.pxz.iubh.de:8443/10.1007/978-3-030-42520-3_21}.
-        \item Zhou, R., Pang, J., Wang, Z., Lui, J. C. S., \& Li, Z. (2021): A Truthful Procurement Auction for
-              Incentivizing Heterogeneous Clients in Federated Learning. 2021 IEEE 41st International
-              Conference on Distributed Computing Systems (ICDCS), 183--193. \url{https://doi-org.pxz.iubh.de:8443/10.1109/ICDCS51616.2021.00026}.
+        \item \textbf{Plan} --- aggregate demand/supply balancing, network design
+        \item \textbf{Source} --- supplier selection, procurement, inbound logistics
+        \item \textbf{Make} --- production scheduling, quality, maintenance
+        \item \textbf{Deliver} --- order management, warehousing, outbound logistics
+        \item \textbf{Return} --- reverse logistics, warranty, recycling
     \end{itemize}
 
+    \tcbitem[title=The Bullwhip Effect, raster multicolumn=6]
+    The \textbf{bullwhip effect} (Lee et al., 1997) describes how small fluctuations in end-consumer demand amplify progressively as they propagate upstream\textsuperscript{\cite[][pp.~490--493]{chopraSupplyChainManagement2019}}.
+    A retailer orders slightly more to be safe; the wholesaler amplifies this; the manufacturer sees enormous swings.
+    Root causes include: demand forecast updating, order batching, price fluctuations, and rationing/shortage gaming.
+    \tcblower
+    \textbf{AI mitigation}: sharing point-of-sale data across tiers (information sharing), ML-based collaborative forecasting, and automated replenishment systems reduce information delays and amplification at each stage.
+
+\end{tcbitemize}
+
+% ---- 14.1.2 Supply Chain 4.0 ---------------------------------------------------------------------------
+\subsection{Supply Chain 4.0}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title={Supply Chain 4.0: Digital Transformation}, raster multicolumn=3]
+    Supply Chain 4.0 applies the technologies of Industry 4.0 to logistics and operations\textsuperscript{\cite[][pp.~17--22]{chopraSupplyChainManagement2019}}:
+    \begin{itemize}
+        \item \textbf{IoT and RFID} for real-time asset and inventory tracking
+        \item \textbf{Big data} analytics for demand sensing and supplier scoring
+        \item \textbf{AI/ML} for forecasting, routing, and anomaly detection
+        \item \textbf{Cloud platforms} for cross-enterprise data sharing
+        \item \textbf{Autonomous robots} (AGVs, drones) in warehouses
+    \end{itemize}
+
+    \tcbitem[title=Blockchain for Traceability, raster multicolumn=3]
+    A \textbf{blockchain} is an append-only distributed ledger where transactions are grouped in cryptographically linked blocks\textsuperscript{\cite[][pp.~8--9]{chopraSupplyChainManagement2019}}.
+    In supply chains, every handoff (harvest, processing, shipment, customs) is recorded immutably.
+    Benefits: anti-counterfeiting, provenance verification (food safety, pharmaceuticals), automated payment via smart contracts, and reduced reconciliation overhead between trade partners.
+
+    \tcbitem[title=Digital Twins in Supply Chains, raster multicolumn=6]
+    A \textbf{digital twin} is a real-time virtual replica of a physical system: a warehouse, a production line, or an entire network\textsuperscript{\cite[][pp.~2403--2405]{bocewiczDigitalTwinManufacturing2021}}.
+    Sensor data continuously updates the model; changes can be tested \emph{in silico} before physical implementation.
+    Supply chain use cases: capacity planning under disruption scenarios, predictive maintenance of transport assets, optimisation of warehouse slotting, and network redesign after geopolitical events.
+    \tcblower
+    \textbf{Workflow}: Physical assets $\xrightarrow{\text{IoT sensors}}$ Digital replica $\xrightarrow{\text{simulation/ML}}$ Decision recommendations $\xrightarrow{\text{feedback}}$ Physical assets.
+
+\end{tcbitemize}
+
+% ---- 14.1.3 AI Techniques for Supply Chains ------------------------------------------------------------
+\subsection{AI Techniques for Supply Chains}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=AI Technique Overview, raster multicolumn=6]
+    \begin{tblr}{|Q[l,m,3cm]|X|X|}
+        \hline
+        \textbf{Technique}           & \textbf{Core idea}                                    & \textbf{SC Application}                           \\
+        \hline
+        ML / Statistical             & Learn patterns from historical data                   & Demand forecasting, quality prediction             \\
+        \hline
+        Optimisation (LP/MIP)        & Minimise/maximise objective subject to constraints    & Network design, inventory, routing                 \\
+        \hline
+        Reinforcement Learning       & Policy learned via environment interaction            & Dynamic routing, replenishment, scheduling         \\
+        \hline
+        RPA                          & Automate rule-based digital workflows                 & Purchase order creation, invoice processing        \\
+        \hline
+        Multi-Agent Systems          & Distributed agents coordinate autonomously            & Decentralised supplier negotiation, fleet dispatch \\
+        \hline
+    \end{tblr}
+
+\end{tcbitemize}
+
+% ==== Section 2: Demand Forecasting ===========================================================================
+\section{Demand Forecasting}
+
+% ---- 14.2.1 Traditional Methods -------------------------------------------------------------------------
+\subsection{Traditional Methods}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Exponential Smoothing (SES), raster multicolumn=3]
+    \textbf{Simple Exponential Smoothing} weights recent observations more heavily via smoothing parameter $\alpha \in (0,1)$\textsuperscript{\cite[][pp.~75--77]{hyndmanForecastingPrinciples2021}}:
+    \begin{equation}
+        \hat{y}_{t+1} = \alpha\, y_t + (1-\alpha)\,\hat{y}_t
+    \end{equation}
+    Equivalently, $\hat{y}_{t+1} = \alpha \sum_{j=0}^{\infty}(1-\alpha)^j y_{t-j}$ --- an exponentially decaying weighted average.
+    Suitable for data with no trend or seasonality. A large $\alpha$ makes the forecast react quickly but noisily; a small $\alpha$ produces smooth but slow-to-adapt forecasts.
+
+    \tcbitem[title=Holt-Winters / ETS, raster multicolumn=3]
+    \textbf{Holt's linear method} adds a trend component $b_t$; \textbf{Holt-Winters} further adds seasonality $s_t$\textsuperscript{\cite[][pp.~82--95]{hyndmanForecastingPrinciples2021}}:
+    \begin{equation}
+        \hat{y}_{t+h} = \ell_t + h\,b_t + s_{t+h-m}
+    \end{equation}
+    where $\ell_t$ is level, $b_t$ trend, $s_t$ seasonal index, $m$ seasonal period.
+    The \textbf{ETS} (Error--Trend--Seasonality) framework unifies exponential smoothing models through state-space representations, enabling likelihood-based parameter estimation and model selection via AIC.
+
+    \tcbitem[title=ARIMA Models, raster multicolumn=3]
+    An \textbf{ARIMA}$(p,d,q)$ model combines three components\textsuperscript{\cite[][pp.~233--257]{hyndmanForecastingPrinciples2021}}:
+    \begin{itemize}
+        \item \textbf{AR}$(p)$: $y_t = \phi_1 y_{t-1}+\cdots+\phi_p y_{t-p} + \varepsilon_t$
+        \item \textbf{I}$(d)$: $d$-th order differencing to achieve stationarity
+        \item \textbf{MA}$(q)$: $y_t = \varepsilon_t + \theta_1\varepsilon_{t-1}+\cdots+\theta_q\varepsilon_{t-q}$
+    \end{itemize}
+    Model order is selected with ACF/PACF plots or auto-ARIMA (AIC/BIC minimisation).
+    SARIMA$((p,d,q)(P,D,Q)_m)$ extends this to seasonal data.
+
+    \tcbitem[title=State-Space and Bayesian Structural Time Series, raster multicolumn=3]
+    \textbf{State-space models} represent time series via a latent state vector $\boldsymbol{\alpha}_t$ evolving according to a transition equation, with observations linked via a measurement equation\textsuperscript{\cite[][pp.~293--310]{hyndmanForecastingPrinciples2021}}.
+    The Kalman filter provides optimal linear prediction.
+    \textbf{Bayesian Structural Time Series (BSTS)} add spike-and-slab priors to select relevant covariates and decompose series into interpretable components (trend, seasonality, regression), quantifying forecast uncertainty through the posterior distribution.
+
+\end{tcbitemize}
+
+% ---- 14.2.2 ML-Based Forecasting ------------------------------------------------------------------------
+\subsection{ML-Based Forecasting}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=LSTMs for Time Series, raster multicolumn=3]
+    \textbf{Long Short-Term Memory (LSTM)} networks address the vanishing gradient problem of plain RNNs through gated memory cells\textsuperscript{\cite[][pp.~1748--1751]{limTemporalFusionTransformers2021}}:
+    \begin{itemize}
+        \item \textbf{Forget gate} $f_t$: discard irrelevant past state
+        \item \textbf{Input gate} $i_t$: add new information to cell state $c_t$
+        \item \textbf{Output gate} $o_t$: expose cell state as hidden state $h_t$
+    \end{itemize}
+    LSTMs capture long-range temporal dependencies and are effective for univariate and multivariate demand forecasting, outperforming ARIMA when series exhibit complex nonlinear patterns.
+
+    \tcbitem[title=Gradient Boosting for Forecasting, raster multicolumn=3]
+    Tree-based gradient boosting methods (\textbf{XGBoost}, \textbf{LightGBM}) have become the workhorse for tabular demand forecasting in retail and supply chain competitions\textsuperscript{\cite[][p.~905]{huberDataDrivenNewsvendor2019}}.
+    Key advantages: handle large feature sets (calendar effects, price, promotions, product attributes), fast training, interpretable feature importance, and no assumption of stationarity.
+    The model is a sum of regression trees: $\hat{y}_t = \sum_{k=1}^K f_k(\mathbf{x}_t)$, trained with additive stage-wise optimisation.
+
+    \tcbitem[title=Temporal Fusion Transformer (TFT), raster multicolumn=3]
+    The \textbf{Temporal Fusion Transformer} combines recurrent layers, multi-head attention, and variable selection networks for interpretable multi-horizon forecasting\textsuperscript{\cite[][pp.~1748--1764]{limTemporalFusionTransformers2021}}:
+    \begin{itemize}
+        \item \textbf{Variable Selection Network}: gates out irrelevant covariates
+        \item \textbf{LSTM encoder-decoder}: encodes observed + future known inputs
+        \item \textbf{Temporal self-attention}: identifies salient past time steps
+        \item \textbf{Quantile regression}: outputs prediction intervals
+    \end{itemize}
+    TFT achieves state-of-the-art accuracy on multiple benchmark datasets.
+
+    \tcbitem[title=Probabilistic Forecasting, raster multicolumn=3]
+    Point forecasts alone are insufficient for inventory decisions --- we need the \textbf{full demand distribution}\textsuperscript{\cite[][p.~37]{wickDemandForecastingIndividual2021}}.
+    Probabilistic forecasting methods:
+    \begin{itemize}
+        \item Quantile regression: model arbitrary quantiles of $P(y_{t+h} \le q)$
+        \item Normalising flows: learn flexible joint distributions over multivariate series\textsuperscript{\cite{rasulMultivariateProbabilisticTime2021}}
+        \item Conformal prediction: distribution-free coverage guarantees
+        \item Bayesian neural networks: posterior predictive intervals
+    \end{itemize}
+    The output is used directly in inventory optimisation (e.g.\ to compute safety stock or order-up-to levels at a given service level).
+
+\end{tcbitemize}
+
+% ---- 14.2.3 The Newsvendor Problem -----------------------------------------------------------------------
+\subsection{The Newsvendor Problem}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Classic Single-Period Newsvendor, raster multicolumn=3]
+    The \textbf{newsvendor problem} is a canonical single-period inventory model under stochastic demand $D$\textsuperscript{\cite[][pp.~537--541]{hillierIntroductionOperationsResearch2020}}.
+    Order quantity $Q$ must be committed before demand is realised.
+    The cost function (with unit overage cost $c_o = c - s$ and underage cost $c_u = p - c$) is:
+    \begin{equation}
+        \mathbb{E}[C(Q)] = c_o\,\mathbb{E}[(Q-D)^+] + c_u\,\mathbb{E}[(D-Q)^+]
+    \end{equation}
+    The optimal order quantity satisfies the \textbf{critical ratio} condition:
+    \begin{equation}
+        F(Q^*) = \frac{c_u}{c_u + c_o} = \text{CR}
+    \end{equation}
+    i.e.\ $Q^*$ equals the $\text{CR}$-th quantile of the demand distribution $F$.
+
+    \tcbitem[title=Demand Models and Censoring, raster multicolumn=3]
+    Demand is modelled as a random variable $D \sim F_\theta$. Common parametric families: Normal $\mathcal{N}(\mu,\sigma^2)$, Poisson for count data, Negative Binomial for overdispersed counts, and log-normal for positive skewed demand\textsuperscript{\cite[][p.~540]{hillierIntroductionOperationsResearch2020}}.
+    \textbf{Censored demand}: when stock-outs occur, actual demand exceeds sales data. The EM algorithm or maximum likelihood with censoring adjustments recovers true demand parameters\textsuperscript{\cite[][pp.~490--495]{porteusFundamentationsStochasticInventory2002}}.
+    Ignoring censoring \emph{systematically underestimates} mean demand.
+
+    \tcbitem[title=Data-Driven Newsvendor (Ban \& Rudin), raster multicolumn=6]
+    \textbf{Ban and Rudin (2019)} replace distributional assumptions with a direct data-driven approach: given feature vector $\mathbf{x}_t$ (price, calendar, promotions) and past demand observations $\{(\mathbf{x}_i, d_i)\}$, choose $Q$ to minimise empirical expected cost using sample-average approximation with regularisation\textsuperscript{\cite[][pp.~90--108]{banBigDataNewsvendor2019}}.
+    Key insight: the optimal policy $Q^*(\mathbf{x})$ can be estimated via \textbf{weighted empirical quantile regression} --- nonparametrically consistent under mild conditions.
+    \textbf{Bertsimas and Kallus (2020)} extend this ``predict-then-optimise'' to general stochastic programs via \emph{prescriptive analytics}\textsuperscript{\cite[][pp.~1025--1044]{bertsimasPredictivePrescriptiveAnalytics2020}}.
+
+\end{tcbitemize}
+
+% ==== Section 3: Inventory Management ===========================================================================
+\section{Inventory Management}
+
+% ---- 14.3.1 Economic Order Quantity -------------------------------------------------------------------------
+\subsection{Economic Order Quantity (EOQ)}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Harris EOQ Formula, raster multicolumn=3]
+    The \textbf{Economic Order Quantity} model (Harris, 1913) minimises the sum of ordering and holding costs for a single item with constant demand rate $\lambda$\textsuperscript{\cite{harrisHowManyParts1913}}:
+    \begin{equation}
+        TC(Q) = \frac{\lambda}{Q}\,K + \frac{Q}{2}\,h
+    \end{equation}
+    where $K$ = fixed order cost, $h = ic$ = unit holding cost ($i$ = inventory carrying rate, $c$ = unit purchase cost).
+    Setting $\frac{d\,TC}{dQ}=0$ yields:
+    \begin{equation}
+        Q^* = \sqrt{\frac{2\lambda K}{h}}
+    \end{equation}
+    The EOQ is remarkably robust: a 30\% error in $K$ or $h$ leads to only a $\sim$14\% error in $Q^*$ (``square root rule'').
+
+    \tcbitem[title=EOQ Assumptions and Extensions, raster multicolumn=3]
+    The classic EOQ assumes\textsuperscript{\cite[][pp.~936--942]{hillierIntroductionOperationsResearch2020}}:
+    \begin{itemize}
+        \item Constant, deterministic demand rate $\lambda$
+        \item Instantaneous replenishment (no lead time)
+        \item No shortages allowed
+        \item Single item, no quantity discounts
+    \end{itemize}
+    \textbf{Extensions}: EOQ with quantity discounts, EOQ with backordering, production order quantity (POQ) for finite production rate, joint replenishment for multiple items with shared ordering costs, and stochastic demand extensions leading to $(s,Q)$ policies.
+
+\end{tcbitemize}
+
+% ---- 14.3.2 Inventory Policies -------------------------------------------------------------------------------
+\subsection{Inventory Policies and Service Levels}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title={Continuous Review $(s{,}Q)$ Policy}, raster multicolumn=3]
+    Under \textbf{continuous review}, inventory position is monitored continuously\textsuperscript{\cite[][pp.~362--384]{galliherDynamicsContinuousReview1959}}.
+    The $(s,Q)$ (reorder point, order quantity) policy: when inventory position drops to reorder point $s$, order a fixed quantity $Q$.
+    The reorder point protects against demand during lead time $L$:
+    \begin{equation}
+        s = \mu_L + z_\alpha \sigma_L
+    \end{equation}
+    where $\mu_L = \lambda L$ is mean lead-time demand, $\sigma_L = \sigma\sqrt{L}$ its standard deviation, and $z_\alpha$ is the standard normal quantile corresponding to desired service level.
+
+    \tcbitem[title={Periodic Review $(s{,}S)$ Policy}, raster multicolumn=3]
+    In the \textbf{periodic review} setting, inventory is checked every $T$ periods\textsuperscript{\cite[][p.~2]{porteusFundamentationsStochasticInventory2002}}.
+    The $(s,S)$ policy: if inventory falls below $s$, order up to $S$ (``order-up-to'' level).
+    Optimal under fixed ordering costs (Scarf, 1959\textsuperscript{\cite{scarfBayesSolutionsStatistical1959}}).
+    The gap $S - s$ balances setup cost $K$ against holding and shortage costs.
+
+    \tcbitem[title=Service Levels and Safety Stock, raster multicolumn=6]
+    Two common service level definitions\textsuperscript{\cite[][pp.~300--305]{vandeputInventoryOptimization2020}}:
+    \begin{tblr}{|Q[l,m,3cm]|X|X|}
+        \hline
+        \textbf{Metric}       & \textbf{Definition}                                        & \textbf{Typical target} \\
+        \hline
+        Cycle service level (\textbf{Type~I})   & $P(\text{no stockout per cycle}) = F(s)$      & 90--99\% \\
+        \hline
+        Fill rate (\textbf{Type~II})             & Fraction of demand satisfied from stock       & 95--99.5\% \\
+        \hline
+    \end{tblr}
+    \textbf{Safety stock} (SS) is the buffer held against demand and lead-time variability:
+    $\text{SS} = z_\alpha \sqrt{L \sigma_d^2 + \mu_d^2 \sigma_L^2}$
+    where $\sigma_d$ = demand std.\ dev., $\sigma_L$ = lead-time std.\ dev.
+
+\end{tcbitemize}
+
+% ---- 14.3.3 Advanced Inventory Topics -----------------------------------------------------------------------
+\subsection{Advanced Inventory Topics}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Perishable Inventory, raster multicolumn=3]
+    For products that expire after a fixed lifetime (food, pharmaceuticals, blood), classical models must be extended\textsuperscript{\cite{nahmiasOptimalOrderingPolicies1973}}.
+    Key challenges: first-in-first-out (FIFO) or last-in-first-out (LIFO) issuing policies affect freshness and waste; outdating costs must be balanced against shortage costs.
+    ML approaches train neural policies that incorporate remaining shelf-life as state variable, outperforming static order-up-to policies in simulation studies.
+
+    \tcbitem[title=Minimum Order Quantities and Multi-Echelon, raster multicolumn=3]
+    \textbf{Minimum order quantities (MOQ)} imposed by suppliers create discrete, non-convex feasible sets, invalidating the standard EOQ formula.
+    Heuristic approaches: round-up to the nearest MOQ multiple, simulate total cost sensitivity, or solve as an integer programming problem\textsuperscript{\cite[][pp.~210--215]{vandeputInventoryOptimization2020}}.
+    \textbf{Multi-echelon inventory} coordinates stock across distribution centres, regional warehouses, and retail outlets; Clark and Scarf (1960) showed that echelon stock formulations decompose the problem across echelons for serial systems, reducing computational complexity.
+
+\end{tcbitemize}
+
+% ==== Section 4: Strategic and Operational AI Applications ==============================================
+\section{Strategic and Operational AI Applications}
+
+% ---- 14.4.1 Supply Chain Network Design -------------------------------------------------------------------
+\subsection{Supply Chain Network Design}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Facility Location Problem, raster multicolumn=3]
+    Network design determines the number, location, and capacity of facilities (plants, DCs, warehouses) to minimise total cost (fixed + variable operating + transportation)\textsuperscript{\cite[][pp.~146--160]{chopraSupplyChainManagement2019}}.
+    The \textbf{uncapacitated facility location} integer program:
+    \begin{equation}
+        \min \sum_j f_j y_j + \sum_{i,j} c_{ij} x_{ij}
+        \quad \text{s.t.}\ \sum_j x_{ij}=1,\ x_{ij}\le y_j,\ y_j\in\{0,1\}
+    \end{equation}
+    where $y_j$ = open/close binary, $x_{ij}$ = fraction of customer $i$ served by facility $j$.
+    Solved with branch-and-bound (MIP solvers) or Benders decomposition for large instances.
+
+    \tcbitem[title=Scenario Planning and Resilience, raster multicolumn=3]
+    Deterministic network designs can fail under disruptions (natural disasters, geopolitical risk, pandemics)\textsuperscript{\cite[][pp.~600--605]{chopraSupplyChainManagement2019}}.
+    \textbf{Robust optimisation} designs networks that perform well under worst-case demand/disruption scenarios; \textbf{stochastic programming} incorporates scenario trees with probabilities.
+    ML enhances resilience by: predicting supplier failure probabilities from financial and ESG signals, flagging concentration risk (geographic or single-source), and recommending diversification.
+
+\end{tcbitemize}
+
+% ---- 14.4.2 Supplier Selection and Procurement -----------------------------------------------------------
+\subsection{Supplier Selection and Procurement}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Multi-Criteria Supplier Scoring, raster multicolumn=3]
+    Supplier selection integrates quantitative (price, quality, delivery reliability, lead time) and qualitative (sustainability, financial stability, geographic risk) criteria\textsuperscript{\cite[][pp.~308--314]{chopraSupplyChainManagement2019}}.
+    Classical methods: Analytic Hierarchy Process (AHP) for pairwise criteria weighting, TOPSIS for ranking alternatives.
+    ML approaches: gradient boosted trees trained on historical supplier performance and quality control data, producing a real-time supplier risk score.
+    Feature engineering: on-time delivery rate, defect rate, capacity utilisation, ESG ratings, financial ratios.
+
+    \tcbitem[title=Spend Analytics, raster multicolumn=3]
+    \textbf{Spend analytics} aggregates and classifies procurement transactions to identify savings opportunities and consolidate the supplier base\textsuperscript{\cite[][pp.~316--320]{chopraSupplyChainManagement2019}}.
+    Key ML tasks: natural language classification of invoice descriptions into UNSPSC/eCl@ss taxonomy (typically fine-tuned BERT or logistic regression on TF-IDF features); duplicate vendor detection (entity resolution); price benchmarking against market indices.
+    Pareto analysis (80\% of spend in 20\% of categories) directs strategic sourcing effort.
+
+\end{tcbitemize}
+
+% ---- 14.4.3 Route Optimisation -------------------------------------------------------------------------------
+\subsection{Route Optimisation}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title={Vehicle Routing Problem (VRP)}, raster multicolumn=3]
+    The \textbf{Capacitated VRP} seeks minimum-cost routes for a fleet of vehicles, each with capacity $C$, to serve customers with demands $d_i$ from a depot\textsuperscript{\cite[][pp.~420--440]{hillierIntroductionOperationsResearch2020}}.
+    It generalises the \textbf{Travelling Salesman Problem (TSP)}, which is NP-hard.
+    Solution approaches: Clarke-Wright savings heuristic, LKH meta-heuristic for TSP, branch-price-and-cut exact MIP solvers, and \textbf{attention-based neural combinatorial optimisation} (pointer networks, transformer-based).
+
+    \tcbitem[title=Dynamic Routing with Reinforcement Learning, raster multicolumn=3]
+    Real-world routing involves stochastic, time-varying conditions (traffic, dynamic orders, vehicle breakdowns)\textsuperscript{\cite[][pp.~1--3]{panJobShopSchedulingRL2021}}.
+    \textbf{Deep RL (DRL)} learns routing policies directly from environment interaction, representing state (vehicle positions, remaining deliveries, time windows) and actions (next customer to visit).
+    Actor-Critic architectures (PPO, A3C) outperform static VRP heuristics in simulations of dynamic last-mile delivery, adapting in real time without re-solving an NP-hard combinatorial problem.
+
+    \tcbitem[title=Last-Mile Delivery, raster multicolumn=6]
+    Last-mile delivery accounts for 40--60\% of total logistics cost\textsuperscript{\cite[][pp.~444--448]{chopraSupplyChainManagement2019}}.
+    AI applications:
+    \begin{itemize}
+        \item \textbf{Delivery time prediction}: regression models (gradient boosting) on driver, route, and parcel features for ETA estimation
+        \item \textbf{Stop sequencing}: real-time reoptimisation with learned heuristics
+        \item \textbf{Drone/autonomous vehicle routing}: energy-constrained routing with RL
+        \item \textbf{Crowdsourced delivery}: matching demand (parcels) to supply (couriers) via two-sided marketplace algorithms
+        \item \textbf{Micro-fulfillment centres}: ML-driven slotting to minimise pick travel distance
+    \end{itemize}
+
+\end{tcbitemize}
+
+% ---- 14.4.4 Sales and Operations Planning ---------------------------------------------------------------
+\subsection{Sales and Operations Planning (S\&OP)}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=The S\&OP Process, raster multicolumn=3]
+    \textbf{Sales and Operations Planning} is the monthly cross-functional process that aligns demand forecasts with supply capacity to achieve business targets\textsuperscript{\cite[][pp.~188--196]{chopraSupplyChainManagement2019}}.
+    The five-step process:
+    \begin{enumerate}
+        \item Product review (new/discontinued items)
+        \item Demand review (statistical baseline + commercial adjustments)
+        \item Supply review (capacity and constraints)
+        \item Pre-S\&OP (gap analysis, scenario options)
+        \item Executive S\&OP (decision and sign-off)
+    \end{enumerate}
+
+    \tcbitem[title=AI in S\&OP, raster multicolumn=3]
+    ML transforms the S\&OP process from a backward-looking spreadsheet exercise to a forward-looking decision-support system\textsuperscript{\cite[][pp.~196--201]{chopraSupplyChainManagement2019}}:
+    \begin{itemize}
+        \item \textbf{Consensus forecasting}: hierarchical time-series models reconcile forecasts across product/geography hierarchies (top-down, bottom-up, middle-out)
+        \item \textbf{What-if simulation}: digital twin evaluates supply plans under demand scenarios
+        \item \textbf{Automated alerts}: ML flags gaps between demand plan and constrained supply before the S\&OP meeting
+        \item \textbf{Bias detection}: statistical tests identify systematic forecast over- or under-bias by planner, region, or product family
+    \end{itemize}
+
+\end{tcbitemize}
+
+% ==== Section 5: Transparency and Risk ======================================================================
+\section{Transparency and Risk}
+
+% ---- 14.5.1 Supply Chain Visibility -----------------------------------------------------------------------
+\subsection{Supply Chain Visibility}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Real-Time Tracking and Order Prediction, raster multicolumn=3]
+    \textbf{End-to-end visibility} requires integrating data from ERP systems, carrier APIs, IoT sensors, and partner portals into a unified tracking platform\textsuperscript{\cite[][pp.~72--80]{chopraSupplyChainManagement2019}}.
+    ML applications:
+    \begin{itemize}
+        \item \textbf{Predictive ETA}: gradient boosting on shipment history, weather, carrier performance
+        \item \textbf{Order peak prediction}: LSTM or Prophet models for order volume spikes (promotional events, seasonality)
+        \item \textbf{Exception management}: anomaly detection to flag shipments at risk of delay before they miss SLA
+    \end{itemize}
+
+    \tcbitem[title=Customer and Churn Analytics, raster multicolumn=3]
+    \textbf{Churn prediction} identifies B2B customers at risk of reducing order volume or switching suppliers\textsuperscript{\cite[][p.~85]{chopraSupplyChainManagement2019}}.
+    Features: order frequency decline, invoice dispute rate, NPS scores, service failures, competitor pricing.
+    Model: gradient boosted classifier or survival model (time-to-churn); SHAP values explain predictions to account managers.
+    \textbf{Customer segmentation} via RFM (Recency, Frequency, Monetary value) analysis guides differentiated service levels and inventory positioning.
+
+\end{tcbitemize}
+
+% ---- 14.5.2 Fraud and Risk Detection -----------------------------------------------------------------------
+\subsection{Fraud and Risk Detection}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Anomaly Detection in Procurement, raster multicolumn=3]
+    Procurement fraud includes fictitious vendors, split invoices (under approval thresholds), and price collusion.
+    ML approaches\textsuperscript{\cite[][pp.~8--10]{chopraSupplyChainManagement2019}}:
+    \begin{itemize}
+        \item \textbf{Isolation Forest} and \textbf{Autoencoder}: unsupervised detection of unusual transaction patterns
+        \item \textbf{Network analysis}: graph-based detection of vendor-employee relationships (conflicts of interest)
+        \item \textbf{Benford's Law}: distribution of first digits in legitimate financial data follows a specific law; deviations signal manipulation
+        \item \textbf{NLP}: detect suspicious text in contracts, vendor names, and purchase descriptions
+    \end{itemize}
+
+    \tcbitem[title=Counterfeit Detection and Supply Chain Security, raster multicolumn=3]
+    Counterfeit components are a critical risk in electronics, pharmaceuticals, and aerospace supply chains.
+    Computer vision (CNN-based classifiers) inspects product markings, holograms, and packaging for deviations from authentic reference images\textsuperscript{\cite{laviollaCNNDefectDetection2019}}.
+    Blockchain-anchored digital product passports link physical items (via QR/RFID) to immutable provenance records, making counterfeiting economically infeasible.
+    Serialisation and track-and-trace mandates (EU Falsified Medicines Directive, US DSCSA) drive adoption.
+
+\end{tcbitemize}
+
+% ---- 14.5.3 Challenges --------------------------------------------------------------------------------------
+\subsection{Challenges of Applying AI in Supply Chains}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+
+    \tcbitem[title=Data Quality and Organisational Challenges, raster multicolumn=3]
+    The primary barrier to AI adoption in supply chains is data quality rather than algorithmic sophistication\textsuperscript{\cite[][pp.~620--625]{chopraSupplyChainManagement2019}}:
+    \begin{itemize}
+        \item \textbf{Data silos}: ERP, WMS, TMS, supplier portals use incompatible schemas; data integration requires significant engineering effort
+        \item \textbf{Missing and censored data}: stockouts censor demand; unrecorded returns bias historical data
+        \item \textbf{Organisational inertia}: planners distrust black-box AI recommendations; change management and explainability are critical
+        \item \textbf{Short history}: new products have little sales history; cold-start forecasting relies on attribute-based (similar item) approaches
+    \end{itemize}
+
+    \tcbitem[title={Trust, Accountability, and Accessibility}, raster multicolumn=3]
+    AI deployment in supply chains raises governance questions\textsuperscript{\cite[][pp.~625--630]{chopraSupplyChainManagement2019}}:
+    \begin{itemize}
+        \item \textbf{Trust}: planners need to understand and override AI recommendations; human-in-the-loop designs maintain planner authority while reducing manual work
+        \item \textbf{Accountability}: when an AI-driven procurement decision causes a shortage, responsibility is diffuse; audit trails and decision logging are essential
+        \item \textbf{Accessibility}: small and medium enterprises lack the data science talent and IT infrastructure for advanced ML; cloud-based SaaS SCM tools (e.g.\ o9, Kinaxis, Blue Yonder) are democratising access
+        \item \textbf{Algorithmic bias}: models trained on pre-COVID data failed during the pandemic; continual monitoring and retraining protocols are mandatory
+    \end{itemize}
+
+\end{tcbitemize}
+
+% ==== Section 6: Further Reading ===========================================================================
+\section{Further Reading}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title=Recommended Sources for AI in Supply Chain Management, raster multicolumn=6]
+    \begin{itemize}
+        \item \fullcite{chopraSupplyChainManagement2019} --- The standard reference for supply chain strategy, planning, and operations. Covers network design, demand management, inventory, transportation, and coordination across all planning horizons.
+        \item \fullcite{vandeputInventoryOptimization2020} --- Practical, Python-based guide to inventory models and simulation: EOQ extensions, safety stock, service levels, and data-driven approaches. Essential for practitioners.
+        \item \fullcite{hyndmanForecastingPrinciples2021} --- Comprehensive, freely available textbook on statistical and ML forecasting: ETS, ARIMA, dynamic regression, hierarchical forecasting, and neural network methods with R examples.
+        \item \fullcite{hillierIntroductionOperationsResearch2020} --- Encyclopedic OR textbook covering linear programming, integer programming, network flows, inventory models, and queuing theory --- the mathematical backbone of supply chain optimisation.
+        \item \fullcite{banBigDataNewsvendor2019} --- Seminal paper showing how machine learning can directly optimise newsvendor decisions from data, bypassing the estimate-then-optimise paradigm.
+        \item \fullcite{bertsimasPredictivePrescriptiveAnalytics2020} --- Extends the data-driven optimisation framework to general stochastic programs: a unifying treatment of predictive and prescriptive analytics.
+        \item \fullcite{limTemporalFusionTransformers2021} --- Introduces the Temporal Fusion Transformer for interpretable multi-horizon forecasting; state-of-the-art on multiple benchmark datasets with attention-based explanations.
+        \item \fullcite{peixeiroTimeSeriesForecasting2026} --- Modern guide to foundation models for time series: TimeGPT, Chronos, and fine-tuning strategies for demand forecasting without large training datasets.
+    \end{itemize}
+\end{tcbitemize}
