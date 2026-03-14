@@ -1,156 +1,440 @@
-    % ==== Industrial AI =============================================================================
-    \chapter{Industrial AI}
-    \section{AI in Production}
-    \subsection{Introduction: The Smart Factory}
-    \subsubsection{Goals of a Smart Factory}
-    \lipsum[27][1-3]
-    \subsubsection{Internet of Things}
-    \lipsum[28][1-3]
-    \subsubsection{Cyber-Physical Systems}
-    \subsubsection{Cyber-Physical Production Systems}
-    \lipsum[1][1]
-    \subsubsection{A New Paradigm for Automation}
-    \lipsum[1][1]
-    \subsection{Basics of a Smart Factory}
-    \subsubsection{Intelligent Products, Object Identification and Digital Object Memory}
-    \subsubsection{Formal Languages and Ontologies}
-    \subsubsection{Autonomous Cooperation}
-    \lipsum[1][1]
-    \subsubsection{Humans \& Machines}
-    \subsubsection{Order-Controller Production}
-    \lipsum[1][1]
-    \subsubsection{Smart Services}
-    \subsection{AI for Design}
-    \subsubsection{Generative Design}
-    \subsubsection{Methods}
-    \subsection{AI for Quality}
-    \subsubsection{Fault Detection \& Identification}
-    \subsubsection{Predictive and Prescriptive Maintenance}
-    \subsubsection{Defect Recognition}
-    \subsection{AI for Supply Chain}
-    \lipsum[26][1-3]
+% ==== Industrial AI =============================================================================
+\chapter{Industrial AI}
 
-    \subsubsection{Demand Forecasting}
-    \subsubsection{Inventory Models}
-    \subsection{AI for Autonomous Planning and Scheduling}
-    \subsubsection{Introduction}
-    \subsubsection{Methods}
+% ==== Section 1: The Smart Factory and Industry 4.0 ==========================================
+\section{The Smart Factory and Industry 4.0}
 
-    \section{Industrial Automation}
-    \subsection{Introduction to Production Systems}
-    \subsubsection{Basic concepts and definitions}
-    \subsubsection{Industrial supervision and control}
-    \subsubsection{Challenges}
-    \subsubsection{Trends}
+% ---- 13.1.1 Industry 4.0 and the Smart Factory ---------------------------------------------
+\subsection{Industry 4.0 and the Smart Factory}
 
-    \subsection{Automata}
-    \subsubsection{Preliminaries}
-    \subsubsection{Deterministic finite automata}
-    \subsubsection{Non-deterministic finite automata}
-    \subsubsection{Properties}
-
-    \subsection{Petri nets}
-    \subsubsection{Preliminaries}
-    \subsubsection{Modeling systems}
-    \subsubsection{Properties}
-    \subsubsection{Analysis methods}
-    \lipsum[26][1-3]
-
-    \subsection{Timed models}
-    \subsubsection{Timed automata}
-    \subsubsection{Markov processes}
-    \subsubsection{Queuing theory}
-    \subsubsection{Timed Petri nets}
-
-    \subsection{Simulation of discrete event systems}
-    \subsubsection{Basic concepts}
-    \subsubsection{Working principles}
-    \subsubsection{Performance analysis}
-    \subsubsection{Software tools}
-    \lipsum[26][1-3]
-
-    \subsection{Supervisory control}
-    \subsubsection{Basic concepts}
-    \subsubsection{Specifications}
-    \subsubsection{Synthesis}
-    \subsubsection{Performance analysis}
-    \subsubsection{Implementation}
-
-    \subsection{Applications}
-    \subsubsection{Production system supervision}
-    \subsubsection{Monitoring and diagnosis of faults}
-    \subsubsection{Distributed and de-centralized supervision}
-    \subsubsection{Model-based optimization of production systems}
-    \subsubsection{Adaptive supervisory control}
-    \lipsum[26][1-3]
-
-    \section{Industrial and Mobile Robots}
-    \subsection{Introduction}
-    \subsubsection{Robots and manufacturing}
-    \subsubsection{Industrial robots}
-    \subsubsection{Mobile robots}
-    \subsubsection{Actuators for robotics}
-    \subsubsection{Trends in robotics}
-
-    \subsection{Kinematics}
-    \subsubsection{Position and orientation of a rigid body}
-    \subsubsection{Joint kinematics}
-    \subsubsection{Forward kinematics}
-    \subsubsection{Inverse kinematics}
-    \subsubsection{Differential kinematics}
-    \subsubsection{Kinematics of mobile robots}
-    \lipsum[26][1-3]
-
-    \subsection{Trajectory Planning}
-    \subsubsection{Basic concepts}
-    \subsubsection{Trajectories in the joint space}
-    \subsubsection{Trajectories in the workspace}
-    \subsubsection{Trajectory planning for mobile robots}
-
-    \subsection{Sensing and Perception}
-    \subsubsection{Position}
-    \subsubsection{Velocity}
-    \subsubsection{Force}
-    \subsubsection{Distance}
-    \subsubsection{Visual}
-
-    \subsection{Fundamentals of Robot Dynamics}
-    \subsubsection{Rigid body dynamics}
-    \subsubsection{Lagrange formulation}
-    \subsubsection{Newton formulation}
-    \subsubsection{Direct and inverse dynamics}
-    \subsubsection{Dynamics of mobile robots}
-    \lipsum[26][1-3]
-
-    \subsection{Control of Robots}
-    \subsubsection{Basic concepts}
-    \subsubsection{Decentralized motion control}
-    \subsubsection{Centralized motion control}
-    \subsubsection{Force control}
-    \lipsum[26][1-3]
-
-    \subsection{Architecture of Robotic Systems}
-    \subsubsection{Architectural components}
-    \subsubsection{Open Robot Control Software (OROCOS)}
-    \subsubsection{Yet Another Robotic System Platform (YARP)}
-    \subsubsection{Robot Operating System (ROS)}
-    \subsubsection{Behavior-based robotics}
-
-    \section{Literature}
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={The Fourth Industrial Revolution}, raster multicolumn=3]
+    \textbf{Industry 4.0} describes the integration of digital technologies into manufacturing, following steam power (1.0), electrification (2.0), and computerised automation (3.0)\textsuperscript{\cite[][pp.~1--10]{dafflonChallengesApproachesCPS2021}}.
+    Its three strategic goals are:
     \begin{itemize}
-        \item Dafflon, B. Moalla, N., \& Ouzrout, Y. (2021). The challenges, approaches, and used techniques of CPS for manufacturing in Industry 4.0: a literature review. The International Journal of Advanced Manufacturing Technology, 113(7), 2395--2412. https://doi.org/10.1007/s00170-020-06572-4
-        \item Mahmood, Z. (Ed.). (2019). The Internet of Things in the Industrial Sector. Cham: Springer International Publishing. https://doi.org/10.1007/978-3-030-24892-5
-        \item Manesis, S., \& Nikolakopoulos, G. (2020). Introduction to industrial automation. CRC Press, Taylor \& Francis Group.
-        \item Singh, K. K., Nayyar, A., Tanwar, S., \& Abouhawwash, M. (Eds.). (2021). Emergence of Cyber Physical System and IoT in Smart Automation and Robotics. Cham: Springer International Publishing. https://doi.org/10.1007/978-3-030-66222-6
-        \item Veneri, G., \& Capasso, A. (2018). Hands-On Industrial Internet of Things. Packt. Retrieved from https://www.packtpub.com/product/hands-on-industrial-internet-of-things/9781789537222
-        \item Cassandras, C. G., \& Lafortune, S. (2009). Introduction to discrete event systems. Springer.
-        \item Hooley, G., Nicoulaud, B., Rudd, J. M., \& Piercy, N. (2019). Marketing strategy and competitive positioning. Pearson.
-        \item Kaplan, R., Norton, D., \& Rugelsjoen, B. (2010). Managing alliances with the balanced scorecard. Harvard Business Review, 88(1/2), 114--120.
-        \item Linz, P. (2006). An introduction to formal languages and automata. Jones \& Bartlett Learning.
-        \item Reisig, W. (2013). Understanding Petri nets: Modeling techniques, analysis methods, case studies. Springer.
-        \item Stewart, J. B. (2013, October 14). The collapse: How a top legal firm destroyed itself. The New Yorker.
-        \item Ben-Ari, M., \& Mondada, F. (2017). Elements of robotics. Springer International Publishing.
-        \item Siciliano, B., Sciavicco, L., Villani, L., \& Oriolo, G. (2009). Robotics. Springer.
-        \item Siciliano, B., \& Khatib, O. (Eds.). (2016). Springer handbook of robotics (2nd ed.). Springer.
+        \item \textbf{Flexibility}: rapid product changeovers without retooling
+        \item \textbf{Efficiency}: minimise energy, material, and time waste
+        \item \textbf{Mass customisation}: produce lot-size-one at near-mass-production cost
     \end{itemize}
 
+    \tcbitem[title={Cyber-Physical Systems}, raster multicolumn=3]
+    A \textbf{Cyber-Physical System (CPS)} tightly couples physical processes with computation and networking\textsuperscript{\cite[][pp.~3--8]{singhEmergenceCyberPhysical2021}}.
+    In manufacturing the physical layer (machines, conveyors, sensors) is mirrored in a \emph{cyber layer} that monitors, predicts, and actuates in real time.
+    \begin{itemize}
+        \item \textbf{Sensing layer}: acquires raw data (vibration, temperature, vision)
+        \item \textbf{Network layer}: transmits data via OPC UA, MQTT, or 5G
+        \item \textbf{Cognitive layer}: applies AI/ML for decisions
+        \item \textbf{Actuating layer}: closes the control loop
+    \end{itemize}
+
+    \tcbitem[title={Digital Twins}, raster multicolumn=3]
+    A \textbf{digital twin} is a live, data-synchronised virtual replica of a physical asset\textsuperscript{\cite[][pp.~2405--2406]{bocewiczDigitalTwinManufacturing2021}}.
+    Three maturity levels:
+    \begin{enumerate}
+        \item \textbf{Digital model}: static geometry/parameters, no live link
+        \item \textbf{Digital shadow}: one-way sensor feed to the model
+        \item \textbf{Digital twin}: bidirectional: model can command the physical asset
+    \end{enumerate}
+    Applications: predictive maintenance, process optimisation, virtual commissioning.
+
+    \tcbitem[title={IoT and IIoT}, raster multicolumn=3]
+    The \textbf{Industrial Internet of Things (IIoT)} connects factory floor devices (PLCs, sensors, robots) to cloud/edge infrastructure\textsuperscript{\cite[][pp.~1--15]{mahmoodInternetThingsIndustrial2019}}.
+    Key characteristics vs.\ consumer IoT:
+    \begin{itemize}
+        \item \textbf{Deterministic latency}: real-time process control requires $<$1\,ms cycle times
+        \item \textbf{Reliability}: 99.999\% uptime expectations
+        \item \textbf{Security}: air-gapped or zero-trust network architectures
+        \item \textbf{Scale}: millions of data points per second across a facility
+    \end{itemize}
+
+    \tcbitem[title=OPC UA: The Industrial Lingua Franca, raster multicolumn=3]
+    \textbf{OPC Unified Architecture (OPC UA)} is an open, platform-independent communication standard for industrial automation\textsuperscript{\cite[][pp.~45--60]{veneriHandsOnIndustrialInternet2018}}.
+    It combines a \emph{service-oriented architecture} (publish/subscribe, client-server) with a rich \textbf{information model} (nodes, references, type hierarchies).
+    Key advantages: vendor-neutrality, built-in security (TLS, X.509), semantic data descriptions that machines can interpret without human mediation.
+
+    \tcbitem[title={Formal Ontologies for Manufacturing}, raster multicolumn=3]
+    Manufacturing ontologies (e.g.\ \textbf{ISO 15926}, \textbf{MASON}) provide formal vocabularies for describing processes, products, and resources in a machine-interpretable way\textsuperscript{\cite[][pp.~8--12]{dafflonChallengesApproachesCPS2021}}.
+    Benefits:
+    \begin{itemize}
+        \item Enable semantic interoperability across heterogeneous systems
+        \item Support automated reasoning (e.g.\ inferring maintenance needs from process state)
+        \item Foundation for \textbf{autonomous cooperation}: agents negotiate resource allocation using shared ontology
+    \end{itemize}
+\end{tcbitemize}
+
+% ==== Section 2: AI for Manufacturing ========================================================
+\section{AI for Manufacturing}
+
+% ---- 13.2.1 Predictive Maintenance ----------------------------------------------------------
+\subsection{Predictive Maintenance}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Maintenance Strategies}, raster multicolumn=3]
+    Three paradigms, in increasing sophistication\textsuperscript{\cite[][pp.~1--3]{leeSurveyPredictiveMaintenance2019}}:
+    \begin{enumerate}
+        \item \textbf{Reactive}: repair after failure — lowest cost upfront, highest downtime risk
+        \item \textbf{Preventive}: fixed-schedule maintenance — avoids failures but may be premature
+        \item \textbf{Predictive (PdM)}: condition-based monitoring triggers maintenance \emph{only when needed}, reducing cost and unplanned stops by up to 30\%
+    \end{enumerate}
+
+    \tcbitem[title={Condition Monitoring and Fault Detection}, raster multicolumn=3]
+    \textbf{Condition monitoring} acquires continuous signals (vibration, temperature, current, oil debris) to detect deviations from healthy baselines\textsuperscript{\cite[][pp.~213--215]{zhaoDeepLearningFault2019}}.
+    ML approaches:
+    \begin{itemize}
+        \item \textbf{Threshold-based}: simple but brittle; misses gradual drift
+        \item \textbf{Statistical}: PCA/Hotelling $T^2$ chart; detects multivariate anomalies
+        \item \textbf{Deep learning}: CNNs applied to spectrogram images of vibration; LSTMs for temporal sequences
+    \end{itemize}
+
+    \tcbitem[title={Remaining Useful Life (RUL) Estimation}, raster multicolumn=6]
+    \textbf{RUL} is the time (or cycles) remaining before a component requires replacement\textsuperscript{\cite[][pp.~215--220]{zhaoDeepLearningFault2019}}.
+    The core modelling challenge:
+    \begin{equation}
+        \hat{RUL}(t) = f\!\left(\mathbf{x}_{1:t}\right) \approx T_{\text{fail}} - t
+    \end{equation}
+    where $\mathbf{x}_{1:t}$ is the sensor history up to time $t$ and $T_{\text{fail}}$ is the predicted failure time.
+    Regression approaches: \textbf{LSTM networks} (temporal dependencies), \textbf{Temporal Convolutional Networks (TCN)}, and \textbf{Gaussian Process regression} (provides uncertainty estimates).
+    The NASA C-MAPSS turbofan dataset is the standard benchmark.
+\end{tcbitemize}
+
+% ---- 13.2.2 Quality Control -----------------------------------------------------------------
+\subsection{Quality Control}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Statistical Process Control (SPC)}, raster multicolumn=3]
+    \textbf{SPC} monitors production processes using control charts (Shewhart, CUSUM, EWMA) to distinguish \emph{common-cause} variability from \emph{special-cause} deviations requiring intervention\textsuperscript{\cite[][pp.~5--10]{leeSurveyPredictiveMaintenance2019}}.
+    A process is \emph{in control} if all observations fall within $\mu \pm 3\sigma$.
+    \textbf{Process capability} indices $C_p$ and $C_{pk}$ quantify how well the process distribution fits within specification limits.
+
+    \tcbitem[title={Automated Optical Inspection (AOI)}, raster multicolumn=3]
+    \textbf{AOI} systems use cameras and structured lighting to inspect PCBs, welds, or surfaces at production speeds\textsuperscript{\cite[][pp.~108--110]{laviollaCNNDefectDetection2019}}.
+    Deep learning pipeline:
+    \begin{enumerate}
+        \item \textbf{Image acquisition}: high-resolution line-scan or area cameras
+        \item \textbf{Pre-processing}: normalisation, background subtraction, augmentation
+        \item \textbf{CNN defect classifier}: ResNet or EfficientNet fine-tuned on defect classes
+        \item \textbf{Decision}: pass / fail / review — with confidence threshold calibration
+    \end{enumerate}
+    Typical defect classes: scratches, voids, misalignments, cracks, foreign objects.
+
+    \tcbitem[title={CNN-Based Visual Inspection}, raster multicolumn=3]
+    Pre-trained CNNs transfer well to industrial inspection where labelled defect images are scarce\textsuperscript{\cite[][pp.~112--115]{laviollaCNNDefectDetection2019}}.
+    Practical adaptations:
+    \begin{itemize}
+        \item \textbf{Few-shot learning}: learn new defect classes from 5--20 examples
+        \item \textbf{Anomaly detection}: train only on ``good'' samples; flag novelties at test time (e.g.\ PatchCore, PADIM)
+        \item \textbf{Explainability}: Grad-CAM heatmaps show defect localisation to operators
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 13.2.3 Generative Design ---------------------------------------------------------------
+\subsection{Generative Design}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Topology Optimisation}, raster multicolumn=3]
+    \textbf{Topology optimisation} finds the optimal material distribution within a design domain subject to loads and boundary conditions\textsuperscript{\cite[][pp.~1549--1551]{sigristTopologyOptimizationReview2021}}.
+    The SIMP (Solid Isotropic Material with Penalisation) formulation:
+    \begin{equation}
+        \min_{\boldsymbol{\rho}} \;\; \mathbf{f}^\top \mathbf{u} \quad \text{s.t.} \quad \mathbf{K}(\boldsymbol{\rho})\,\mathbf{u} = \mathbf{f},\;\; V(\boldsymbol{\rho}) \leq V^*
+    \end{equation}
+    where $\boldsymbol{\rho} \in [0,1]^n$ is the density field and $V^*$ is the volume constraint.
+    Produces organic, lattice-like structures optimally matched to load paths.
+
+    \tcbitem[title={AI-Driven Design Exploration}, raster multicolumn=3]
+    Beyond classical topology optimisation, \textbf{generative design} tools (Autodesk Fusion 360, nTopology) couple optimisation with AI to\textsuperscript{\cite[][pp.~1560--1565]{sigristTopologyOptimizationReview2021}}:
+    \begin{itemize}
+        \item Explore thousands of design alternatives simultaneously
+        \item Incorporate \textbf{manufacturing constraints} (printability, mould direction, minimum feature size)
+        \item Use \textbf{surrogate models} (neural networks trained on FEA results) for fast evaluation
+        \item Enable multi-objective trade-offs (mass vs.\ stiffness vs.\ cost)
+    \end{itemize}
+    Enables designs not achievable by human intuition alone, especially for additive manufacturing.
+\end{tcbitemize}
+
+% ---- 13.2.4 Autonomous Planning and Scheduling ----------------------------------------------
+\subsection{Autonomous Planning and Scheduling}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Job-Shop Scheduling (JSS)}, raster multicolumn=3]
+    The \textbf{Job-Shop Scheduling Problem} allocates $n$ jobs to $m$ machines, where each job has a fixed sequence of operations, to minimise makespan $C_{\max}$\textsuperscript{\cite[][pp.~1--5]{panJobShopSchedulingRL2021}}.
+    JSS is NP-hard ($n \geq 2$, $m \geq 3$).
+    Classical approaches: priority dispatch rules (SPT, EDD), branch-and-bound, metaheuristics (genetic algorithms, simulated annealing).
+    \textbf{Challenge}: real factories face dynamic disruptions (machine breakdowns, rush orders) that invalidate static schedules within minutes.
+
+    \tcbitem[title={RL for Dynamic Scheduling}, raster multicolumn=3]
+    \textbf{Deep Reinforcement Learning (DRL)} treats scheduling as a Markov Decision Process\textsuperscript{\cite[][pp.~3--6]{panJobShopSchedulingRL2021}}:
+    \begin{itemize}
+        \item \textbf{State}: queue lengths, machine utilisation, job priorities, due dates
+        \item \textbf{Action}: select next job-machine assignment
+        \item \textbf{Reward}: $-C_{\max}$ or tardiness penalty
+    \end{itemize}
+    Graph Neural Networks encode the job-machine bipartite graph as the state representation, enabling generalisation across problem instances.
+    DRL agents outperform dispatching rules on dynamic JSS benchmarks.
+\end{tcbitemize}
+
+% ==== Section 3: Industrial Automation =======================================================
+\section{Industrial Automation}
+
+% ---- 13.3.1 Discrete Event Systems ----------------------------------------------------------
+\subsection{Discrete Event Systems}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Discrete Event Systems (DES)}, raster multicolumn=3]
+    A \textbf{Discrete Event System} evolves through a countable sequence of \emph{events} at irregular time points rather than by continuous differential equations\textsuperscript{\cite[][pp.~1--20]{cassandrasIntroductionDiscreteEvent2009}}.
+    Examples: manufacturing cells (machine on/off, part arrival), communication networks (packet send/receive), traffic systems.
+    The system state changes only when an event occurs; between events the state is constant.
+
+    \tcbitem[title={Finite Automata (DFA)}, raster multicolumn=3]
+    A \textbf{Deterministic Finite Automaton} is a 5-tuple $G = (Q, \Sigma, \delta, q_0, Q_m)$\textsuperscript{\cite[][pp.~23--35]{linzIntroductionFormalLanguages2006}}:
+    \begin{itemize}
+        \item $Q$: finite set of states
+        \item $\Sigma$: finite event (input) alphabet
+        \item $\delta: Q \times \Sigma \to Q$: (partial) transition function
+        \item $q_0 \in Q$: initial state
+        \item $Q_m \subseteq Q$: marked (accepting) states
+    \end{itemize}
+    The \textbf{generated language} $\mathcal{L}(G)$ is the set of all event strings from $q_0$; the \textbf{marked language} $\mathcal{L}_m(G)$ contains strings reaching $Q_m$.
+
+    \tcbitem[title={Non-deterministic Automata and Equivalence}, raster multicolumn=3]
+    An \textbf{NFA} allows multiple transitions on the same event and $\varepsilon$-transitions (spontaneous moves)\textsuperscript{\cite[][pp.~50--70]{linzIntroductionFormalLanguages2006}}.
+    \textbf{Rabin's theorem}: every NFA can be converted to an equivalent DFA (subset construction) — exponential blowup in worst case.
+    In manufacturing, NFAs model concurrent, non-deterministic resource contention; conversion to DFA yields a supervisory controller.
+
+    \tcbitem[title={Petri Nets}, raster multicolumn=3]
+    A \textbf{Petri net} is a bipartite directed graph $N = (P, T, F, W, M_0)$\textsuperscript{\cite[][pp.~1--30]{reisigUnderstandingPetriNets2013}}:
+    \begin{itemize}
+        \item $P$: \textbf{places} (circles) — represent conditions/resources/buffers
+        \item $T$: \textbf{transitions} (rectangles) — represent events/activities
+        \item $F \subseteq (P \times T) \cup (T \times P)$: arcs
+        \item $W: F \to \mathbb{N}^+$: arc weights
+        \item $M_0: P \to \mathbb{N}$: initial \textbf{marking} (token distribution)
+    \end{itemize}
+    A transition $t$ is \textbf{enabled} if every input place $p$ holds $\geq W(p,t)$ tokens; firing moves tokens according to arc weights.
+
+    \tcbitem[title={Petri Net Properties and Analysis}, raster multicolumn=3]
+    Key structural and behavioural properties\textsuperscript{\cite[][pp.~40--80]{reisigUnderstandingPetriNets2013}}:
+    \begin{itemize}
+        \item \textbf{Reachability}: can marking $M$ be reached from $M_0$? (decidable but EXPSPACE-hard in general)
+        \item \textbf{Boundedness}: is $M(p) \leq k$ for all reachable markings? Prevents buffer overflow
+        \item \textbf{Liveness}: can every transition eventually fire? Absence of deadlocks
+        \item \textbf{Conservativeness}: total token count is invariant (weighted)
+    \end{itemize}
+    Analysis via \textbf{reachability graph} (explicit) or \textbf{place/transition invariants} (structural, polynomial).
+
+    \tcbitem[title={Timed and Stochastic Models}, raster multicolumn=3]
+    Extending DES models with time\textsuperscript{\cite[][pp.~250--280]{cassandrasIntroductionDiscreteEvent2009}}:
+    \begin{itemize}
+        \item \textbf{Timed automata}: each transition has a real-valued clock guard $g \leq t \leq h$; reachability becomes decidable via region graphs
+        \item \textbf{Timed Petri nets}: firing durations assigned to transitions; used for throughput analysis
+        \item \textbf{Stochastic Petri nets}: exponential firing rates $\lambda$ yield an embedded CTMC; steady-state throughput solvable analytically
+        \item \textbf{Markov chains / queuing theory}: $M/M/1$ queue gives mean wait $W = \frac{1}{\mu - \lambda}$
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 13.3.2 Simulation and Control ----------------------------------------------------------
+\subsection{Simulation and Control}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Discrete-Event Simulation (DES)}, raster multicolumn=3]
+    \textbf{Discrete-event simulation} executes a model of a DES forward in (simulated) time to estimate performance metrics (throughput, utilisation, lead time)\textsuperscript{\cite[][pp.~360--400]{cassandrasIntroductionDiscreteEvent2009}}.
+    The \textbf{event-scheduling} paradigm maintains a future event list (FEL) sorted by time; the simulation clock jumps to the next scheduled event.
+    Tools: AnyLogic, Siemens Plant Simulation, Arena.
+    Key output: steady-state vs.\ transient statistics; confidence intervals via independent replications.
+
+    \tcbitem[title={Supervisory Control Theory (SCT)}, raster multicolumn=3]
+    \textbf{Ramadge--Wonham SCT} (1987) synthesises a \emph{supervisor} $S$ that restricts the plant $G$ so that the closed-loop behaviour satisfies a specification $K$\textsuperscript{\cite[][pp.~250--256]{liuSupervisoryControlTheory2019}}.
+    Events are partitioned into \textbf{controllable} $\Sigma_c$ (supervisor can disable) and \textbf{uncontrollable} $\Sigma_u$ (cannot be prevented).
+    The \textbf{supremal controllable sublanguage} $\sup\mathcal{C}(K \cap \mathcal{L}(G))$ is the most permissive safe behaviour; it is computed via the \emph{TCT} or \emph{SUPREMICA} tools.
+
+    \tcbitem[title={SCADA and PLC Systems}, raster multicolumn=3]
+    Industrial control hierarchy\textsuperscript{\cite[][pp.~60--80]{manesissIntroductionIndustrialAutomation2020}}:
+    \begin{itemize}
+        \item \textbf{PLC (Programmable Logic Controller)}: executes ladder logic or structured text in deterministic scan cycles ($<$10\,ms); interfaces with field devices
+        \item \textbf{DCS (Distributed Control System)}: coordinates multiple PLCs; handles continuous processes (temperature, pressure loops)
+        \item \textbf{SCADA (Supervisory Control and Data Acquisition)}: provides operator HMI, historical data logging, and remote monitoring across large geographic areas (pipelines, power grids)
+        \item \textbf{MES (Manufacturing Execution System)}: production tracking between ERP and SCADA/PLC layers
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 13.3.3 Applications --------------------------------------------------------------------
+\subsection{Applications}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Fault Diagnosis in Production}, raster multicolumn=3]
+    \textbf{Model-based fault diagnosis} compares observed event sequences with the nominal model; deviations reveal fault signatures\textsuperscript{\cite[][pp.~420--450]{cassandrasIntroductionDiscreteEvent2009}}.
+    \textbf{Diagnoser automaton}: augments the plant model with fault labels; checks whether any fault is \emph{diagnosable} (detectable within a finite number of steps).
+    Data-driven alternative: train a classifier on labeled sensor time series to map signatures to fault classes.
+
+    \tcbitem[title={Distributed and Decentralised Supervision}, raster multicolumn=3]
+    Large plants decompose into \textbf{local supervisors} coordinated via communication\textsuperscript{\cite[][pp.~460--490]{cassandrasIntroductionDiscreteEvent2009}}.
+    \textbf{Modular SCT}: synthesise local supervisors independently; prove that their parallel composition is still nonblocking.
+    \textbf{Decentralised diagnosis}: each local diagnoser observes a subset of events; a \emph{coordinator} fuses local verdicts.
+    Challenge: communication delays and observation partitions can make global diagnosability impossible.
+\end{tcbitemize}
+
+% ==== Section 4: Industrial and Mobile Robotics ==============================================
+\section{Industrial and Mobile Robotics}
+
+% ---- 13.4.1 Robot Types and Applications ----------------------------------------------------
+\subsection{Robot Types and Applications}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Industrial Robot Taxonomy}, raster multicolumn=3]
+    Main mechanical architectures\textsuperscript{\cite[][pp.~1--20]{sicilianoRobotics2009}}:
+    \begin{itemize}
+        \item \textbf{Articulated (6-DOF)}: serial chain of revolute joints; largest workspace; used for welding, painting, assembly
+        \item \textbf{SCARA}: 4-DOF; fast horizontal pick-and-place; high rigidity in vertical direction
+        \item \textbf{Delta/parallel}: three arms from fixed base to moving platform; very high speed (up to 150 picks/min); food/pharma packaging
+        \item \textbf{Cartesian/gantry}: linear axes; high accuracy; CNC machining
+    \end{itemize}
+
+    \tcbitem[title={Cobots and Mobile Robots}, raster multicolumn=3]
+    \textbf{Collaborative robots (cobots)} operate alongside humans without safety fencing, using force/torque sensing and compliant control\textsuperscript{\cite[][pp.~15--25]{benariElementsRobotics2017}}.
+    ISO/TS 15066 defines safety modes: speed-and-separation monitoring, hand-guiding, power-and-force limiting.
+    \textbf{Mobile robots}:
+    \begin{itemize}
+        \item \textbf{AGV (Automated Guided Vehicle)}: follows fixed magnetic/optical tracks; predictable routing
+        \item \textbf{AMR (Autonomous Mobile Robot)}: builds maps and navigates dynamically; flexible for unstructured environments
+    \end{itemize}
+\end{tcbitemize}
+
+% ---- 13.4.2 Kinematics and Motion Planning --------------------------------------------------
+\subsection{Kinematics and Motion Planning}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Denavit-Hartenberg (DH) Parameters}, raster multicolumn=3]
+    The \textbf{DH convention} assigns four parameters to each joint $i$ of a serial manipulator to describe the relative pose of consecutive frames\textsuperscript{\cite[][pp.~45--70]{sicilianoRobotics2009}}:
+    \begin{itemize}
+        \item $a_i$: link length (distance along $\hat{x}_{i-1}$)
+        \item $\alpha_i$: link twist (rotation about $\hat{x}_{i-1}$)
+        \item $d_i$: joint offset (distance along $\hat{z}_{i-1}$)
+        \item $\theta_i$: joint angle (rotation about $\hat{z}_{i-1}$)
+    \end{itemize}
+    Each homogeneous transformation:
+    \begin{equation}
+        {}^{i-1}T_i = R_z(\theta_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i)
+    \end{equation}
+
+    \tcbitem[title={Forward and Inverse Kinematics}, raster multicolumn=3]
+    \textbf{Forward kinematics} maps joint variables $\mathbf{q} \in \mathbb{R}^n$ to end-effector pose $\mathbf{x} \in SE(3)$\textsuperscript{\cite[][pp.~80--100]{sicilianoRobotics2009}}:
+    \begin{equation}
+        \mathbf{x} = f(\mathbf{q}), \quad {}^0T_n = \prod_{i=1}^{n} {}^{i-1}T_i
+    \end{equation}
+    \textbf{Inverse kinematics} solves for $\mathbf{q}$ given $\mathbf{x}$; generally non-linear with multiple solutions (elbow up/down, wrist configurations).
+    \emph{Closed-form} solutions exist for specific architectures (e.g.\ 6-DOF with spherical wrist via decoupling); otherwise iterative Jacobian methods are used:
+    \begin{equation}
+        \dot{\mathbf{q}} = J^+(\mathbf{q})\,\dot{\mathbf{x}}, \quad J^+ = J^\top(J J^\top)^{-1}
+    \end{equation}
+    where $J^+$ is the Moore-Penrose pseudoinverse of the Jacobian.
+
+    \tcbitem[title={Path and Trajectory Planning}, raster multicolumn=3]
+    \textbf{Path planning} finds a collision-free geometric path; \textbf{trajectory planning} assigns timing (velocities, accelerations) to that path\textsuperscript{\cite[][pp.~170--200]{sicilianoRobotics2009}}.
+    \begin{itemize}
+        \item \textbf{Joint-space interpolation}: cubic/quintic splines between waypoints $\mathbf{q}(t)$ — smooth, no Cartesian singularity issues
+        \item \textbf{Cartesian-space interpolation}: linear/circular segments in task space — intuitive for operators, requires IK at each step
+    \end{itemize}
+    For \textbf{obstacle avoidance}: configuration space ($\mathcal{C}$-space) planning; obstacles become $\mathcal{C}$-obstacles.
+
+    \tcbitem[title={Sampling-Based Planning: RRT and A*}, raster multicolumn=3]
+    \textbf{Rapidly-Exploring Random Trees (RRT)}\textsuperscript{\cite[][pp.~293--300]{karrasRRTPathPlanning2020}}: probabilistically samples $\mathcal{C}$-space and grows a tree toward the goal.
+    \begin{enumerate}
+        \item Sample random $\mathbf{q}_{\text{rand}}$
+        \item Find nearest tree node $\mathbf{q}_{\text{near}}$
+        \item Extend by step $\Delta q$ toward $\mathbf{q}_{\text{rand}}$
+        \item Add if collision-free; terminate when goal reached
+    \end{enumerate}
+    RRT* adds rewiring for asymptotic optimality.
+    \textbf{A*}\textsuperscript{\cite[][pp.~100--107]{astarPathPlanning1968}} searches a discretised graph with $f(n) = g(n) + h(n)$ (cost-so-far + admissible heuristic); optimal and complete when $h$ is consistent.
+\end{tcbitemize}
+
+% ---- 13.4.3 Robot Architectures -------------------------------------------------------------
+\subsection{Robot Architectures}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Robot Operating System (ROS)}, raster multicolumn=3]
+    \textbf{ROS} is an open-source robotics middleware providing communication infrastructure, tools, and libraries\textsuperscript{\cite[][pp.~1309--1322]{sicilianoSpringerHandbookRobotics2016}}.
+    Core abstractions:
+    \begin{itemize}
+        \item \textbf{Nodes}: processes that perform computation; each has a single responsibility
+        \item \textbf{Topics}: asynchronous publish/subscribe channels (sensor data, commands)
+        \item \textbf{Services}: synchronous request/response (e.g.\ IK solver)
+        \item \textbf{Actions}: long-running goals with feedback and preemption (e.g.\ navigation)
+    \end{itemize}
+    \textbf{ROS 2} adds DDS (Data Distribution Service) for real-time, distributed, and safety-critical applications.
+
+    \tcbitem[title={Sensor Fusion for Navigation}, raster multicolumn=3]
+    Mobile robots fuse heterogeneous sensors to estimate pose and map the environment\textsuperscript{\cite[][pp.~80--100]{benariElementsRobotics2017}}:
+    \begin{itemize}
+        \item \textbf{Wheel odometry}: integrates encoder counts — fast but drifts unboundedly
+        \item \textbf{IMU}: accelerometer + gyroscope; high rate, drifts in yaw
+        \item \textbf{LiDAR}: 2D/3D point clouds; accurate range, affected by reflective surfaces
+        \item \textbf{Camera}: rich texture; ego-motion via visual odometry (VO) or SLAM
+    \end{itemize}
+    \textbf{Extended Kalman Filter (EKF)} or \textbf{particle filter} fuses these modalities.
+    \textbf{SLAM} (Simultaneous Localisation And Mapping) builds a map while estimating robot pose --- solved as a factor graph optimisation (g2o, GTSAM).
+
+    \tcbitem[title={Behavior-Based Robotics}, raster multicolumn=3]
+    \textbf{Reactive / behavior-based} architectures (Brooks, 1986) replace deliberative planning with layered reactive behaviors directly coupling perception to action\textsuperscript{\cite[][pp.~120--130]{benariElementsRobotics2017}}:
+    \begin{itemize}
+        \item \textbf{Subsumption architecture}: lower layers handle obstacle avoidance; higher layers add goal-directedness; higher-priority layers \emph{subsume} lower ones
+        \item Advantages: real-time performance, robustness to uncertainty, no world model required
+        \item Limitations: complex goal-directed behavior hard to engineer; no explicit state representation
+    \end{itemize}
+    Modern robots use \textbf{Behavior Trees (BT)} as a hierarchical composition of behaviors that is modular, reactive, and easier to reason about than finite-state machines.
+\end{tcbitemize}
+
+% ==== Section 5: Supply Chain Integration ====================================================
+\section{Supply Chain Integration}
+
+\subsection{AI for Supply Chain}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title={Demand Forecasting}, raster multicolumn=3]
+    Accurate demand forecasts drive inventory sizing, production scheduling, and procurement\textsuperscript{\cite[][pp.~1--5]{mahmoodInternetThingsIndustrial2019}}.
+    Methods:
+    \begin{itemize}
+        \item \textbf{Classical}: ARIMA, Holt-Winters exponential smoothing
+        \item \textbf{ML}: Gradient-boosted trees (LightGBM) with lag features, calendar features, and promotional dummies
+        \item \textbf{Deep learning}: Temporal Fusion Transformer (TFT) captures multi-horizon dependencies and covariate effects with interpretable attention
+    \end{itemize}
+    Key metric: Mean Absolute Percentage Error (\textbf{MAPE}) and weighted quantile loss for probabilistic forecasts.
+
+    \tcbitem[title={Inventory Optimisation}, raster multicolumn=3]
+    The \textbf{Economic Order Quantity (EOQ)} model gives the order size $Q^*$ minimising total cost\textsuperscript{\cite[][pp.~8--12]{mahmoodInternetThingsIndustrial2019}}:
+    \begin{equation}
+        Q^* = \sqrt{\frac{2\,D\,S}{H}}
+    \end{equation}
+    where $D$ = annual demand, $S$ = order cost, $H$ = holding cost per unit per year.
+    Extensions: \textbf{newsvendor model} for stochastic demand, \textbf{RL-based inventory policies} for multi-echelon supply chains with non-stationary demand.
+
+    \tcbitem[title={Route Optimisation}, raster multicolumn=3]
+    \textbf{Vehicle Routing Problems (VRP)} generalise the Travelling Salesman Problem: assign routes to a fleet minimising total distance subject to capacity and time-window constraints\textsuperscript{\cite[][pp.~12--18]{mahmoodInternetThingsIndustrial2019}}.
+    Approaches:
+    \begin{itemize}
+        \item \textbf{Exact}: branch-and-price (feasible for $<$100 stops)
+        \item \textbf{Metaheuristics}: Large Neighbourhood Search (LNS), Ant Colony Optimisation
+        \item \textbf{Deep RL}: Pointer Networks and Attention Models learn routing heuristics end-to-end, achieving near-optimal solutions in milliseconds
+    \end{itemize}
+    Real-time variants incorporate live traffic and order updates (dynamic VRP).
+\end{tcbitemize}
+
+% ==== Section 6: Further Reading =============================================================
+\section{Further Reading}
+
+\begin{tcbitemize}[ skin=sectionraster ]
+    \tcbitem[title=Recommended Sources for Industrial AI, raster multicolumn=6]
+    \begin{itemize}
+        \item \fullcite{manesissIntroductionIndustrialAutomation2020} --- Comprehensive textbook on industrial automation: PLCs, SCADA, motion control, and CPS foundations.
+        \item \fullcite{cassandrasIntroductionDiscreteEvent2009} --- The standard reference for discrete-event systems: automata, Petri nets, simulation, supervisory control, and performance optimisation.
+        \item \fullcite{linzIntroductionFormalLanguages2006} --- Accessible introduction to formal languages, DFA, NFA, and computability theory underpinning DES models.
+        \item \fullcite{reisigUnderstandingPetriNets2013} --- Definitive treatment of Petri net theory: modeling, structural analysis, invariants, and industrial case studies.
+        \item \fullcite{sicilianoRobotics2009} --- Complete robotics textbook: kinematics, dynamics, trajectory planning, and control of serial manipulators.
+        \item \fullcite{sicilianoSpringerHandbookRobotics2016} --- Encyclopaedic handbook covering all robotics sub-fields including mobile robots, ROS, and human-robot interaction.
+        \item \fullcite{benariElementsRobotics2017} --- Introductory robotics with clear treatment of sensors, actuators, navigation, SLAM, and behavior-based control.
+        \item \fullcite{mahmoodInternetThingsIndustrial2019} --- IIoT architectures, protocols, and industrial applications from sensors to cloud analytics.
+        \item \fullcite{veneriHandsOnIndustrialInternet2018} --- Practical IIoT implementation: OPC UA, MQTT, edge computing, and industrial data pipelines.
+        \item \fullcite{dafflonChallengesApproachesCPS2021} --- Literature review of CPS approaches for manufacturing: challenges, ontologies, and Industry 4.0 integration.
+        \item \fullcite{singhEmergenceCyberPhysical2021} --- CPS and IoT in smart automation and robotics: architectures, security, and emerging applications.
+        \item \fullcite{schweikardMedicalRobotics2015} --- Medical robotics with strong coverage of kinematics, image guidance, and safety-critical robot control applicable beyond healthcare.
+    \end{itemize}
+\end{tcbitemize}
