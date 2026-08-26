@@ -67,9 +67,9 @@ cache_dir = ".latex-cache"  # Project-local TEXMFVAR/TEXMFCONFIG root; keep this
 options = []  # Extra engine/latexmk arguments applied to every document.
 
 [[latex.documents]]
-name = "ai-dataanalytics-cards"  # CLI name and preview URL slug.
-source = "ai and data analytics/ai-dataanalytics-cards.tex"  # Main TeX file, relative to the project root.
-output_dir = "ai and data analytics/out"  # PDF, log, and auxiliary output directory.
+name = "ai-almanach"  # CLI name and preview URL slug.
+source = "ai almanach/ai-almanach.tex"  # Main TeX file, relative to the project root.
+output_dir = "ai almanach/out"  # PDF, log, and auxiliary output directory.
 
 [latex.preview]
 # `aibox apply` generates a dedicated Compose sidecar and port mapping. The

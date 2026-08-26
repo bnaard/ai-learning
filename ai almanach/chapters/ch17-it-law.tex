@@ -6,6 +6,8 @@
     It maps the regulatory landscape you will encounter when building, training, or deploying AI systems,
     and points you to the right regulations and references.
     When legal questions become concrete, consult qualified legal counsel.
+    Regulatory status in this chapter was checked on 26 August 2026; always
+    recheck the official text, application date, jurisdiction, and guidance.
 \end{tcolorbox}
 
 % ---- 17.1 Legal Foundations for AI Practitioners ------------------------------------------------
@@ -32,6 +34,8 @@
         Product Liability & Liability for defective products / AI & AI causing harm to individuals or property \\
         \hline
     \end{tblr}
+\captionof{table}{Key Areas of IT Law: IT Law: Areas and AI Relevance.}
+\label{tab:ch17-it-law-inline-01}
     \textsuperscript{\cite[][pp.~1--25]{lloydInformationTechnologyLaw2020}}
 
     \tcbitem[title={International vs.\ EU Law}, raster multicolumn=3]
@@ -53,6 +57,8 @@
         FTC (US) & Enforces against unfair/deceptive AI practices in the US \\
         \hline
     \end{tblr}
+\captionof{table}{Key Areas of IT Law: Regulatory Bodies.}
+\label{tab:ch17-it-law-inline-02}
 \end{tcbitemize}
 
 % ---- 17.2 Data Protection and Privacy ----------------------------------------------------------
@@ -93,11 +99,15 @@
         Legitimate interests & Balance test; cannot override data subject rights \\
         \hline
     \end{tblr}
+\captionof{table}{GDPR Essentials: Legal Bases for Processing (Art.\ 6).}
+\label{tab:ch17-it-law-inline-03}
     For ML: \emph{legitimate interests} or \emph{consent} are most common, but each has risks.
 
     \tcbitem[title={Data Subject Rights}, raster multicolumn=6]
-    GDPR grants individuals enforceable rights that AI systems must support\textsuperscript{\cite[][pp.~80--120]{itgovernanceprivacyteamEUGDPR2020}}:
-    \begin{tblr}{|X[2]|X[4]|X[4]|}
+    GDPR grants individuals enforceable rights that AI systems must
+    support\textsuperscript{\cite[][pp.~80--120]{itgovernanceprivacyteamEUGDPR2020}}:
+    \par\smallskip\noindent
+    \begin{tblr}{width=\linewidth,colspec={X[2]X[4]X[4]},hlines,vlines}
         \hline
         \textbf{Right} & \textbf{Meaning} & \textbf{AI Implication} \\
         \hline
@@ -112,6 +122,8 @@
         Object (Art.\ 21) & Opt out of processing & Must honour objections to profiling \\
         \hline
     \end{tblr}
+\captionof{table}{GDPR Essentials: Data Subject Rights.}
+\label{tab:ch17-it-law-inline-04}
 \end{tcbitemize}
 
 \subsection{GDPR for AI/ML}
@@ -146,6 +158,8 @@
         Challenge & True anonymisation is technically hard (re-identification attacks) & Key management is a critical security requirement \\
         \hline
     \end{tblr}
+\captionof{table}{GDPR for AI/ML: Anonymisation vs.\ Pseudonymisation.}
+\label{tab:ch17-it-law-inline-05}
     Re-identification of ``anonymised'' datasets via auxiliary information is a well-documented ML attack vector\textsuperscript{\cite[][pp.~1--15]{voightGDPRPracticalGuide2017}}.
 \end{tcbitemize}
 
@@ -167,6 +181,8 @@
         Derogations (Art.\ 49) & Explicit consent, vital interests, public interest; narrow scope \\
         \hline
     \end{tblr}
+\captionof{table}{International Data Transfers: Transferring Data Outside the EEA.}
+\label{tab:ch17-it-law-inline-06}
     \textbf{Schrems II (2020)}: The ECJ invalidated the EU-US Privacy Shield, requiring additional safeguards even when using SCCs.
     The EU-US Data Privacy Framework (2023) replaced it, but faces ongoing legal challenges.
     Cloud-based ML training that sends EU personal data to US servers must address this.
@@ -179,21 +195,32 @@
 
 \begin{tcbitemize}[ skin=sectionraster ]
     \tcbitem[title={EU AI Act: Risk-Based Classification}, raster multicolumn=6]
-    The \textbf{EU Artificial Intelligence Act} (Regulation 2024/1689, in force August 2024) is the world's first comprehensive horizontal AI law.
+    The \textbf{EU Artificial Intelligence Act} (Regulation 2024/1689) is a
+    broad horizontal AI law with staged application dates.
+    Prohibitions and AI-literacy duties began applying in February 2025;
+    GPAI duties began in August 2025; enforcement and specified transparency
+    rules began in August 2026. Under the 2026 timeline, Annex III high-risk
+    rules apply from December 2027 and product-embedded high-risk rules from
+    August 2028\textsuperscript{\cite{europeanCommissionAIAct2026}}.
     It classifies AI systems by risk level:
     \begin{tblr}{|X[2]|X[4]|X[4]|}
         \hline
         \textbf{Risk Level} & \textbf{Examples} & \textbf{Requirements} \\
         \hline
-        \SetCell[r=1]{c} Unacceptable & Social scoring by governments; real-time biometric surveillance in public spaces; subliminal manipulation & \textbf{Prohibited} — cannot be placed on the EU market \\
+        \SetCell[r=1]{c} Unacceptable & Certain manipulative, exploitative,
+        social-scoring, biometric, and predictive-policing practices &
+        \textbf{Prohibited}, subject to the Act's definitions and exceptions \\
         \hline
         High Risk & HR/recruitment tools, credit scoring, medical devices, critical infrastructure, law enforcement, education assessment & Conformity assessment, human oversight, transparency, data governance, logging, incident reporting \\
         \hline
-        Limited Risk & Chatbots, deepfake generation & Transparency obligation: users must be informed they interact with AI \\
+        Transparency Risk & Interactive AI and specified synthetic content &
+        Disclosure or marking duties where Article 50 applies \\
         \hline
         Minimal Risk & Spam filters, AI-assisted games & No specific obligations; voluntary codes encouraged \\
         \hline
     \end{tblr}
+\captionof{table}{EU AI Act: EU AI Act: Risk-Based Classification.}
+\label{tab:ch17-it-law-inline-07}
 
     \tcbitem[title={High-Risk AI: Key Obligations}, raster multicolumn=3]
     Providers of high-risk AI systems must\textsuperscript{[EU AI Act, Arts.\ 9--17]}:
@@ -214,7 +241,9 @@
     \tcblower
     \begin{itemize}
         \item All GPAI providers: technical documentation, copyright compliance, training data summary
-        \item GPAI with \textbf{systemic risk} (threshold: $\geq 10^{25}$ FLOPs training compute): additional adversarial testing, incident reporting to EU AI Office, cybersecurity obligations
+        \item GPAI with \textbf{systemic risk}: $10^{25}$ training FLOPs creates
+              a statutory presumption, while other models can be designated;
+              additional evaluation, incident, and cybersecurity duties apply
         \item Applies to models made available in the EU, regardless of where trained
         \item Open-source models have partial exemptions (transparency obligations remain)
     \end{itemize}
@@ -228,15 +257,22 @@
         \hline
         \textbf{Jurisdiction} & \textbf{Approach} \\
         \hline
-        \textbf{United States} & Sector-specific regulation (FDA for medical AI, CFPB for credit, EEOC for hiring AI). Biden Executive Order (Oct.\ 2023) mandated safety testing for frontier models. No comprehensive federal AI law as of 2024; state laws emerging (e.g.\ Colorado, Illinois). \\
+        \textbf{United States} & Federal sector and cross-cutting authorities
+        coexist with state law. Executive Order 14179 revoked Executive Order
+        14110 in January 2025 and directed a new federal AI policy review and
+        action plan\textsuperscript{\cite{whiteHouseRemovingBarriersAI2025}}. \\
         \hline
         \textbf{China} & Multiple specific regulations: Deep Synthesis Provisions (deepfakes, 2022), Generative AI Regulation (2023), Algorithm Recommendation Regulation (2022). Focus on security, content control, data localisation. \\
         \hline
         \textbf{United Kingdom} & ``Pro-innovation'' approach: no single AI law; sector regulators (ICO, FCA, CMA) apply existing frameworks. AI Safety Institute established 2023. May diverge from EU. \\
         \hline
-        \textbf{Brazil / Canada} & Brazil LGPD mirrors GDPR. Canada's AIDA (Artificial Intelligence and Data Act) proposed — not yet law as of 2024. \\
+        \textbf{Brazil / Canada} & Privacy, consumer, sector, and evolving
+        AI-specific proposals differ by jurisdiction; verify enacted text and
+        effective dates before relying on a comparison. \\
         \hline
     \end{tblr}
+\captionof{table}{Other Jurisdictions: Global AI Regulatory Landscape.}
+\label{tab:ch17-it-law-inline-08}
 \end{tcbitemize}
 
 % ---- 17.4 Intellectual Property and AI ---------------------------------------------------------
@@ -288,6 +324,8 @@
         Llama Community Licence & Proprietary & Usage restrictions above certain user thresholds; not OSI-approved \\
         \hline
     \end{tblr}
+\captionof{table}{Software and Open Source Licensing: Open-Source Licences for AI Models.}
+\label{tab:ch17-it-law-inline-09}
     \textsuperscript{\cite[][pp.~210--240]{lloydInformationTechnologyLaw2020}} Always check: (1) model licence, (2) training data licence, (3) code licence — they are independent.
 \end{tcbitemize}
 
@@ -321,6 +359,8 @@
         Qualified electronic signature (QES) & Equivalent to handwritten signature; highest assurance \\
         \hline
     \end{tblr}
+\captionof{table}{Information Security Law: eIDAS and Electronic Signatures.}
+\label{tab:ch17-it-law-inline-10}
     Relevant for AI systems that automate contract execution or identity verification.
 \end{tcbitemize}
 
@@ -343,6 +383,8 @@
         Evolving systems & Models that update post-deployment may differ from what was tested \\
         \hline
     \end{tblr}
+\captionof{table}{AI Liability: Liability Gaps in AI Systems.}
+\label{tab:ch17-it-law-inline-11}
     \textbf{EU AI Liability Directive (proposed, 2022)}: Would introduce a rebuttable \emph{presumption of causality} — if a claimant can show an AI system violated a legal duty and caused harm, the burden shifts to the provider to disprove causation.
     Combined with the AI Act's obligations, non-compliant high-risk AI faces both regulatory fines \emph{and} civil liability exposure.
 \end{tcbitemize}

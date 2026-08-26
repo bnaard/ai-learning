@@ -24,6 +24,8 @@
         \texttt{set}   & no  & yes & Unique elements; fast membership tests; set algebra \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Python: Data Structures: Lists, Tuples, Dicts, Sets.}
+\label{tab:ch03-programming-foundations-inline-01}
 \end{tcbitemize}
 
 % ---- 3.1.2 Functions ----------------------------------------------------------------------------
@@ -80,6 +82,8 @@
         Generator expr.  & \texttt{sum(x**2 for x in data)} --- lazy evaluation \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Python: Flow Control and Comprehensions.}
+\label{tab:ch03-programming-foundations-inline-02}
 \end{tcbitemize}
 
 % ---- 3.1.4 Input / Output -----------------------------------------------------------------------
@@ -106,6 +110,8 @@
         \texttt{json.dump} / \texttt{json.load} & Serialize Python objects to/from JSON \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Python: File Handling and I/O.}
+\label{tab:ch03-programming-foundations-inline-03}
 \end{tcbitemize}
 
 % ---- 3.1.5 Modules and packages -----------------------------------------------------------------
@@ -160,6 +166,8 @@
         Built-in (B)  & Python's built-in names (\texttt{len}, \texttt{range}, \ldots) \\
         \hline
     \end{tblr}
+\captionof{table}{Classes and Inheritance: The LEGB Rule.}
+\label{tab:ch03-programming-foundations-inline-04}
 \end{tcbitemize}
 
 % ---- 3.2.2 Classes and inheritance --------------------------------------------------------------
@@ -188,6 +196,8 @@
         \texttt{@property}                  & Getter/setter without explicit call parentheses \\
         \hline
     \end{tblr}
+\captionof{table}{Classes and Inheritance: Classes and Inheritance.}
+\label{tab:ch03-programming-foundations-inline-05}
 \end{tcbitemize}
 
 % ---- 3.2.3 Iterators and generators -------------------------------------------------------------
@@ -210,7 +220,8 @@
     Python's data model exposes behaviour through special (``dunder'') methods\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     Implementing them makes custom objects behave like built-in types.
     \tcblower
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \noindent\begin{tblr}{width=\linewidth,colspec={Q[l,m,3cm]X},
+                           hlines,vlines}
         \hline
         \textbf{Method} & \textbf{Triggered by} \\
         \hline
@@ -225,6 +236,8 @@
         \texttt{\_\_enter\_\_} / \texttt{\_\_exit\_\_} & \texttt{with} statement \\
         \hline
     \end{tblr}
+\captionof{table}{Classes and Inheritance: Protocol Dunder Methods.}
+\label{tab:ch03-programming-foundations-inline-06}
 \end{tcbitemize}
 
 % ---- 3.3 Errors and Exceptions ------------------------------------------------------------------
@@ -237,7 +250,8 @@
     \tcbitem[title={Syntax vs.\ Runtime Errors}, raster multicolumn=6]
     Python distinguishes errors that prevent parsing (\emph{SyntaxError}) from errors raised during execution (\emph{exceptions})\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     \tcblower
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \noindent\begin{tblr}{width=\linewidth,
+                           colspec={Q[l,m,3.2cm]X},hlines,vlines}
         \hline
         \textbf{Error type} & \textbf{Cause} \\
         \hline
@@ -254,6 +268,8 @@
         \texttt{IndexError} / \texttt{KeyError} & Access beyond sequence / absent dict key \\
         \hline
     \end{tblr}
+\captionof{table}{Errors and Exceptions: Syntax vs.\ Runtime Errors.}
+\label{tab:ch03-programming-foundations-inline-07}
 \end{tcbitemize}
 
 % ---- 3.3.2 Handling and raising exceptions ------------------------------------------------------
@@ -303,6 +319,8 @@
         Application hierarchy                           & \texttt{AppError} $\to$ \texttt{DBError}, \texttt{NetworkError} \\
         \hline
     \end{tblr}
+\captionof{table}{Errors and Exceptions: Custom Exception Classes.}
+\label{tab:ch03-programming-foundations-inline-08}
     Catch the base class to handle the whole hierarchy; catch subclasses for fine-grained handling.
 \end{tcbitemize}
 
@@ -337,6 +355,8 @@
         \texttt{re}          & Regular expressions \\
         \hline
     \end{tblr}
+\captionof{table}{Important Libraries: Python Standard Library Highlights.}
+\label{tab:ch03-programming-foundations-inline-09}
 \end{tcbitemize}
 
 % ---- 3.4.2 Scientific calculations --------------------------------------------------------------
@@ -392,6 +412,8 @@
         \textbf{Dask}           & Lazy parallel arrays/dataframes; scales to cluster \\
         \hline
     \end{tblr}
+\captionof{table}{Important Libraries: Accelerating Python Code.}
+\label{tab:ch03-programming-foundations-inline-10}
     Rule of thumb: profile first (\texttt{cProfile}, \texttt{line\_profiler}), then optimise the bottleneck.
 \end{tcbitemize}
 
@@ -417,6 +439,8 @@
         \textbf{Altair}     & Declarative API based on Vega-Lite; grammar of graphics \\
         \hline
     \end{tblr}
+\captionof{table}{Important Libraries: Python Visualization Ecosystem.}
+\label{tab:ch03-programming-foundations-inline-11}
     Matplotlib is the default for publication figures; Plotly/Bokeh/Altair for interactive exploration.
 \end{tcbitemize}
 
@@ -442,6 +466,8 @@
         \textbf{Pandas}          & \texttt{pd.read\_sql(query, con)} --- query result directly to DataFrame \\
         \hline
     \end{tblr}
+\captionof{table}{Important Libraries: Database Access in Python.}
+\label{tab:ch03-programming-foundations-inline-12}
 \end{tcbitemize}
 
 % ---- 3.5 Working with Python --------------------------------------------------------------------
@@ -467,6 +493,8 @@
         \texttt{uv}              & Ultra-fast Rust-based pip/venv replacement \\
         \hline
     \end{tblr}
+\captionof{table}{Working with Python: Virtual Environments.}
+\label{tab:ch03-programming-foundations-inline-13}
     Best practice: one virtual environment per project; never install into the system Python.
 \end{tcbitemize}
 
@@ -490,6 +518,8 @@
         \texttt{conda env export}   & Export conda environment including non-Python packages \\
         \hline
     \end{tblr}
+\captionof{table}{Working with Python: Reproducible Package Management.}
+\label{tab:ch03-programming-foundations-inline-14}
 \end{tcbitemize}
 
 % ---- 3.5.3 Unit and integration testing ---------------------------------------------------------
@@ -524,6 +554,8 @@
         Property test   & \texttt{hypothesis} library generates random inputs \\
         \hline
     \end{tblr}
+\captionof{table}{Working with Python: Test Design Principles.}
+\label{tab:ch03-programming-foundations-inline-15}
 \end{tcbitemize}
 
 % ---- 3.5.4 Documenting code ---------------------------------------------------------------------
@@ -544,11 +576,14 @@
         \hline
         \texttt{def f(x: int) -> float:} & Type hint syntax; checked by \texttt{mypy} \\
         \hline
-        \texttt{dataclasses.dataclass}   & Auto-generates \texttt{\_\_init\_\_}, \texttt{\_\_repr\_\_} from annotated fields \\
+        \texttt{dataclasses.\allowbreak dataclass} & Auto-generates
+        \texttt{\_\_init\_\_}, \texttt{\_\_repr\_\_} from annotated fields \\
         \hline
         \texttt{sphinx-autodoc}          & Extracts docstrings to build HTML reference docs \\
         \hline
     \end{tblr}
+\captionof{table}{Working with Python: Docstrings and Type Hints.}
+\label{tab:ch03-programming-foundations-inline-16}
 \end{tcbitemize}
 
 % ---- 3.6 Version Control ------------------------------------------------------------------------
@@ -574,6 +609,8 @@
         Fault tolerance & Single point of failure  & Any clone can restore the repo \\
         \hline
     \end{tblr}
+\captionof{table}{Version Control: Why Version Control?}
+\label{tab:ch03-programming-foundations-inline-17}
 \end{tcbitemize}
 
 % ---- 3.6.2 Version control with GIT -------------------------------------------------------------
@@ -601,6 +638,8 @@
         \texttt{git rebase main}   & Replay commits on top of main \\
         \hline
     \end{tblr}
+\captionof{table}{Version Control: Core Git Concepts.}
+\label{tab:ch03-programming-foundations-inline-18}
 
     \tcbitem[title={Collaboration Workflow}, raster multicolumn=3]
     Remote repositories on GitHub/GitLab enable team collaboration.
@@ -621,6 +660,8 @@
         \texttt{git log --oneline --graph} & Visual commit DAG \\
         \hline
     \end{tblr}
+\captionof{table}{Version Control: Collaboration Workflow.}
+\label{tab:ch03-programming-foundations-inline-19}
 \end{tcbitemize}
 
 % ==================================================================================================
@@ -661,6 +702,8 @@
         \texttt{bool}    & 1 & Masks, logical operations \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to NumPy: Array dtypes.}
+\label{tab:ch03-programming-foundations-inline-20}
 \end{tcbitemize}
 
 % ---- 3.7.2 Array indexing and slicing -----------------------------------------------------------
@@ -687,6 +730,8 @@
         \texttt{a[..., 0]}          & Last axis = 0 for any number of leading axes \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to NumPy: Indexing and Slicing.}
+\label{tab:ch03-programming-foundations-inline-21}
 \end{tcbitemize}
 
 % ---- 3.7.3 Array operations ---------------------------------------------------------------------
@@ -714,6 +759,8 @@
         \texttt{np.clip(a, 0, 1)}             & Clamp values to $[0, 1]$ \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to NumPy: Vectorised Operations and ufuncs.}
+\label{tab:ch03-programming-foundations-inline-22}
 \end{tcbitemize}
 
 % ---- 3.7.4 Broadcasting -------------------------------------------------------------------------
@@ -771,6 +818,8 @@
         \texttt{df.to\_csv(path)}      & Write CSV \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Pandas: Reading and Writing Data.}
+\label{tab:ch03-programming-foundations-inline-23}
 \end{tcbitemize}
 
 % ---- 3.8.2 Data indexing and selection ----------------------------------------------------------
@@ -793,6 +842,8 @@
         \texttt{df.query} & String expression (efficient) & \texttt{df.query("age > 30 and city == 'Berlin'")} \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Pandas: loc, iloc, and Boolean Indexing.}
+\label{tab:ch03-programming-foundations-inline-24}
     Chained indexing (\texttt{df["a"]["b"]}) can cause \texttt{SettingWithCopyWarning}; prefer \texttt{.loc} for assignments.
 \end{tcbitemize}
 
@@ -830,19 +881,24 @@
     \tcbitem[title={GroupBy and Aggregation}, raster multicolumn=6]
     The \texttt{groupby} / \texttt{agg} / \texttt{transform} pattern implements the \emph{split-apply-combine} strategy\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
     \tcblower
-    \begin{tblr}{|Q[l,m,4.5cm]|X|}
+    \noindent\begin{tblr}{width=\linewidth,colspec={Q[l,m,5.3cm]X},
+                           hlines,vlines}
         \hline
         \textbf{Pattern} & \textbf{Result} \\
         \hline
         \texttt{df.groupby("region").mean()} & Per-group means as new DataFrame \\
         \hline
-        \texttt{df.groupby("region").agg(\{"sales": "sum", "profit": "mean"\})} & Multiple agg functions per column \\
+        \texttt{df.groupby("region").\allowbreak
+        agg(\{"sales": "sum",\allowbreak "profit": "mean"\})} & Multiple agg functions per column \\
         \hline
-        \texttt{df.groupby("region")["sales"].transform("mean")} & Broadcast group mean back to original index \\
+        \texttt{df.groupby("region")["sales"].\allowbreak
+        transform("mean")} & Broadcast group mean back to original index \\
         \hline
         \texttt{df.pivot\_table(values="sales", index="region", columns="year", aggfunc="sum")} & Pivot for cross-tabulation \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Pandas: GroupBy and Aggregation.}
+\label{tab:ch03-programming-foundations-inline-25}
 \end{tcbitemize}
 
 % ---- 3.9 Data visualization with Pandas ---------------------------------------------------------
@@ -932,6 +988,8 @@
         \texttt{df.join(other, on="key")}          & Join on index by default \\
         \hline
     \end{tblr}
+\captionof{table}{Advanced Pandas techniques: Merging and Joining DataFrames.}
+\label{tab:ch03-programming-foundations-inline-26}
 \end{tcbitemize}
 
 % ---- 3.11.2 Pivot tables and cross-tabulations --------------------------------------------------
@@ -956,6 +1014,8 @@
         \texttt{df.stack()} / \texttt{df.unstack()}              & Rotate innermost column/row level \\
         \hline
     \end{tblr}
+\captionof{table}{Advanced Pandas techniques: Pivot Tables and Cross-Tabulations.}
+\label{tab:ch03-programming-foundations-inline-27}
 \end{tcbitemize}
 
 % ---- 3.12 Performance optimization --------------------------------------------------------------
@@ -1028,6 +1088,8 @@
         \texttt{sklearn.metrics}         & Accuracy, F1, ROC-AUC, MSE, \ldots \\
         \hline
     \end{tblr}
+\captionof{table}{SciKit-Learn: Scikit-learn: Key Modules.}
+\label{tab:ch03-programming-foundations-inline-28}
 
     \tcbitem[title={Scikit-learn Pipeline}, raster multicolumn=6]
     A \texttt{Pipeline} chains preprocessing and model steps; \texttt{fit} on training data, \texttt{predict} on test data --- no data leakage\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
@@ -1048,6 +1110,8 @@
         \draw[arr] (enc) -- (feat);
         \draw[arr] (feat) -- (model);
     \end{tikzpicture}
+\captionof{figure}{SciKit-Learn: Scikit-learn Pipeline.}
+\label{fig:ch03-programming-foundations-inline-01}
     \end{center}
     \texttt{ColumnTransformer} applies different transformers to different feature subsets in parallel before feeding results to the final estimator.
 \end{tcbitemize}
@@ -1103,6 +1167,8 @@
         Update weights  & \texttt{optimizer.step()} \\
         \hline
     \end{tblr}
+\captionof{table}{PyTorch: nn.Module and the Training Loop.}
+\label{tab:ch03-programming-foundations-inline-29}
     \texttt{torch.utils.data.DataLoader} wraps any \texttt{Dataset} and handles batching, shuffling, and parallel loading.
 \end{tcbitemize}
 

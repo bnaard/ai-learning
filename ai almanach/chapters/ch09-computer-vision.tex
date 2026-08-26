@@ -49,6 +49,8 @@
         YCbCr & Luma + two chrominance channels & JPEG/video compression \\
         \hline
     \end{tblr}
+\captionof{table}{Image Representation and Morphology: Image Types and Colour Spaces.}
+\label{tab:ch09-computer-vision-inline-01}
 
     \tcbitem[title={Morphological Operations}, raster multicolumn=3]
     Morphology operates on binary (or grayscale) images using a \textbf{structuring element} $B$\textsuperscript{\cite[][pp.~627--636]{gonzalezWoods2018}}:
@@ -102,6 +104,8 @@
         % Z axis
         \draw[arr, thin, gray] (2.0,0) -- (4.5, 0) node[right, font=\scriptsize] {$Z$};
     \end{tikzpicture}
+\captionof{figure}{Single and Multi-View Geometry: Pinhole Camera Model.}
+\label{fig:ch09-computer-vision-inline-01}
     \end{center}
 
     \tcbitem[title={Homography and Epipolar Geometry}, raster multicolumn=2]
@@ -127,8 +131,8 @@
     \end{equation}
     Common spatial filters:
     \begin{itemize}
-        \item \textbf{Box filter}: uniform kernel; fast mean blur, but introduces ringing artefacts.
-        \item \textbf{Gaussian}: smooth, isotropic; no ringing; $\sigma$ controls blur radius.
+        \item \textbf{Box filter}: uniform kernel; fast mean blur, but can create blocky smoothing and boundary artefacts.
+        \item \textbf{Gaussian}: smooth and isotropic; $\sigma$ controls blur radius and typically avoids the ringing associated with sharp frequency cut-offs.
         \item \textbf{Unsharp mask}: $I_{\text{sharp}} = I + \alpha(I - G_\sigma * I)$; amplifies edges.
         \item \textbf{Median filter}: non-linear; preserves edges; best for salt-and-pepper noise.
     \end{itemize}
@@ -164,6 +168,8 @@
         Band-pass & Specific range & Texture analysis, Gabor filters \\
         \hline
     \end{tblr}
+\captionof{table}{Filtering: Frequency Domain Filtering.}
+\label{tab:ch09-computer-vision-inline-02}
 \end{tcbitemize}
 
 % ---- 9.1.5 Texture ----------------------------------------------------------------------------
@@ -235,6 +241,8 @@
         ORB   & FAST keypoints + Harris score & 256-bit BRIEF binary descriptor & Real-time; patent-free; good for mobile/SLAM \\
         \hline
     \end{tblr}
+\captionof{table}{Edge and Feature Detection: SIFT, SURF, and ORB.}
+\label{tab:ch09-computer-vision-inline-03}
     \textbf{Feature matching}: nearest-neighbour in descriptor space; \textbf{Lowe's ratio test} ($d_1/d_2 < 0.8$) removes ambiguous matches. \textbf{RANSAC} robustly estimates a geometric model (homography) from potentially noisy correspondences.
 \end{tcbitemize}
 
@@ -295,6 +303,8 @@
         RAFT (2020)     & 4D all-pairs cost volume + iterative GRU updates & State-of-the-art; robust to large motions \\
         \hline
     \end{tblr}
+\captionof{table}{Motion and Optical Flow: Deep Optical Flow.}
+\label{tab:ch09-computer-vision-inline-04}
     Deep methods generalise better to large motions and handle textureless regions via learned priors; they require large synthetic training datasets (FlyingChairs, Sintel, KITTI).
 \end{tcbitemize}
 
@@ -323,6 +333,8 @@
         \draw[arr] (meas) -- (upd);
         \draw[arr] (upd.east) -- ++(0.6,0) |- node[right, font=\tiny, pos=0.25] {next step} (pred.east);
     \end{tikzpicture}
+\captionof{figure}{Tracking: Kalman Filter: Predict-Update Cycle.}
+\label{fig:ch09-computer-vision-inline-02}
     \end{center}
 
     \tcbitem[title={Particle Filters and Deep Tracking}, raster multicolumn=2]
@@ -390,6 +402,8 @@
         YCbCr & Video compression (JPEG, H.264) \\
         \hline
     \end{tblr}
+\captionof{table}{Image Formation and Acquisition: Light and Color Models.}
+\label{tab:ch09-computer-vision-inline-05}
 
     \tcbitem[title={Camera Calibration}, raster multicolumn=3]
     \textbf{Zhang's method} (2000) estimates camera intrinsics $K$, extrinsics $[R|t]$, and lens distortion from multiple views of a planar checkerboard\textsuperscript{\cite[][pp.~45--52]{howseLearningOpenCV42020}}.
@@ -433,6 +447,8 @@
         Late (decision) & Combine per-sensor detections/decisions \\
         \hline
     \end{tblr}
+\captionof{table}{Sensors for Autonomous Systems: Sensor Fusion.}
+\label{tab:ch09-computer-vision-inline-06}
     State estimation typically uses \textbf{Kalman filters} (linear) or \textbf{particle filters} (non-linear, non-Gaussian) to fuse temporal sensor streams.
 \end{tcbitemize}
 
@@ -464,6 +480,8 @@
         DETR & Transformer & Bipartite matching; no anchors or NMS \\
         \hline
     \end{tblr}
+\captionof{table}{Object Detection and Tracking: Deep Object Detection.}
+\label{tab:ch09-computer-vision-inline-07}
     Key concepts: \textbf{IoU} (Intersection over Union), \textbf{NMS} (Non-Maximum Suppression), \textbf{mAP} (mean Average Precision).
 
     \tcbitem[title={Multi-Object Tracking}, raster multicolumn=6]
@@ -538,6 +556,8 @@
         Identification & ``Who is this?'' (1:$N$) & Search entire gallery; harder \\
         \hline
     \end{tblr}
+\captionof{table}{Face Recognition: Verification vs.\ Identification.}
+\label{tab:ch09-computer-vision-inline-08}
     Different threat models: verification tolerates higher thresholds (fewer false accepts); identification must handle large galleries efficiently.
 \end{tcbitemize}
 
@@ -623,6 +643,8 @@
         MAE & 2021 & Mask 75\% of image patches; reconstruct; efficient scalable pre-training \\
         \hline
     \end{tblr}
+\captionof{table}{Self-Supervised and Contrastive Learning: Learning Without Labels.}
+\label{tab:ch09-computer-vision-inline-09}
     These methods approach or surpass supervised pre-training on ImageNet, especially when labelled data is scarce.
 \end{tcbitemize}
 
@@ -662,4 +684,3 @@
         \item \fullcite{fleuretLittleBookDeep} --- Concise deep learning overview including CNNs for vision, object detection, and segmentation architectures.
     \end{itemize}
 \end{tcbitemize}
-

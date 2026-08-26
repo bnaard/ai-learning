@@ -1,0 +1,730 @@
+% ----------------------------------------------------------------------------------------------------------------------
+% AI Almanach - Released under the MIT License
+% ----------------------------------------------------------------------------------------------------------------------
+
+
+% User guides
+% Latex: https://ftp.agdsn.de/pub/mirrors/latex/dante/macros/latex/base/usrguide.pdf
+% Tabularray: https://mirror.physik.tu-berlin.de/pub/CTAN/macros/latex/contrib/tabularray/tabularray.pdf
+% TColorbox: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+% Posterbox Tutorial: https://mirror.clientvps.com/CTAN/macros/latex/contrib/tcolorbox/tcolorbox-tutorial-poster.pdf#[0,{%22name%22:%22Fit%22}]
+% Xcolor: https://mirror.clientvps.com/CTAN/macros/latex/contrib/xcolor/xcolor.pdf
+% TikZ and PGFPlots: https://tikz.dev/ and https://tikz.dev/pgfplots/
+%                    https://tug.ctan.org/info/visualtikz/VisualTikZ.pdf 
+% SVG Package: https://ctan.org/pkg/svg?lang=en
+% Geometry: https://ftp.gwdg.de/pub/ctan/macros/latex/contrib/geometry/geometry.pdf
+% fontspec: https://texdoc.org/serve/fontspec/0
+% fancyhdr: https://ftp.fau.de/ctan/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+% biblatex: https://distrib-coffee.ipsl.jussieu.fr/pub/mirrors/ctan/macros/latex/contrib/biblatex/doc/biblatex.pdf
+% amsmath: https://www.latex-project.org/help/documentation/amsldoc.pdf
+% grapheur: https://ctan.tetaneutral.net/graphics/pgf/contrib/tkz-grapheur/doc/tkz-grapheur-doc-en.pdf
+% enumitem: https://mirror.ibcp.fr/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
+
+\documentclass[8pt]{extreport}
+\tracinglostchars=2
+
+% The managed build starts from the repository root.
+% Search document-local files without depending on the caller's directory.
+\makeatletter
+\def\input@path{{ai almanach/}{./}}
+\makeatother
+
+% --- Hyphenation Rules --------------------------------------------------------
+\usepackage[USenglish]{babel}
+
+% --- Fonts --------------------------------------------------------------------
+
+% Load system fonts via fontspec (requires XeLaTeX or LuaLaTeX)
+% to get a list of installed fonts: luaotfload-tool --list=format 
+\usepackage{fontspec}
+\IfFontExistsTF{FreeSans}{
+    \setmainfont{FreeSans}[Scale=1]
+    \setsansfont{FreeSans}[Scale=1]
+    \setmonofont{FreeMono}[Scale=1]
+}{
+    \setmainfont{Latin Modern Roman}
+    \setsansfont{Latin Modern Sans}
+    \setmonofont{Latin Modern Mono}
+}
+
+% Prefer the poster font when installed, but keep the book reproducible.
+\IfFontExistsTF{QTFuturePoster}{
+    \newfontfamily\headerfont{QTFuturePoster}
+}{
+    \newfontfamily\headerfont{Latin Modern Sans}
+}
+
+
+% Emoji support
+\usepackage{emoji}
+
+% --- Page layout --------------------------------------------------------------
+\usepackage[
+    % showframe, 
+    nomarginpar, 
+    a4paper,
+    portrait, 
+    right=1.1cm,
+    left=1.1cm,
+    top=1.35cm,
+    bottom=1.15cm,
+    headsep=0.3cm,
+    headheight=0.75cm,
+    footskip=0.6cm,
+]{geometry}
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+
+% --- TColorbox ---------------------------------------------------------------
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,raster,listings,breakable,minted, poster}
+
+
+% --- Tables -------------------------------------------------------------------
+\usepackage{tabularray}
+
+% --- Color Names -------------------------------------------------------------
+\usepackage[dvipsnames]{xcolor}
+
+% --- Graphics -----------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{svg}
+\graphicspath{{./figures/}{./icons/}{./logos/}}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric}    % for shapes
+\usetikzlibrary{arrows.meta}         % for arrows, Arrow tip library 
+\usetikzlibrary{positioning}         % for relative positioning
+\usetikzlibrary{calc}                % for calculations to make complex coordinate calculations
+%\usetikzlibrary{backgrounds}        % Background Library "defines background for pictures". To use this in a Tikzpicture, an option is passed, e.g. \begin{tikzpicture}[show background rectangle], with a background rectangle style defined before the picture. (e.g. \tikzset{background rectangle/.style={<define background rectangle style here>}}
+% \usetikzlibrary{calendars}         % for calendar drawings
+% \usetikzlibrary{fadings}           % for fading effects
+% \usetikzlibrary{patterns}          % for patterns
+% \usetikzlibrary{shadows}           % for shadow effects 
+\usetikzlibrary{chains}            % for chain effects
+\usetikzlibrary{fit}               % for fitting nodes together
+% \usetikzlibrary{er}                % for entity relationship diagrams
+% \usetikzlibrary{intersections}     % for calculating intersections of paths
+% \usetikzlibrary{mindmap}           % for mind maps
+\usetikzlibrary{matrix}            % for matrix drawings
+\usetikzlibrary{angles}           % for angle markings
+\usetikzlibrary{quotes}           % for quotes in angles
+% \usetikzlibrary{trees}             % for tree drawings
+% \usetikzlibrary{decorations.pathmorphing}  % for path decorations like zigzag lines
+\usetikzlibrary{decorations.pathreplacing} % for braces and other path decorations
+% \usetikzlibrary{decorations.markings}      % for markings along a path
+% \usetikzlibrary{decorations.shapes}        % for shape decorations
+% \usetikzlibrary{decorations.text}          % for text decorations along a path
+% \usetikzlibrary{pgfplots.colorbrewer}      % for color maps
+
+% \usepackage{forest}               % for drawing trees https://ctan.ceremade.dauphine.fr/graphics/pgf/contrib/forest/forest-doc.pdf
+
+% \usepackage{adjustbox}          % for adjusting boxes
+
+\usepackage[labelfont=sf]{caption}  % for figure captions on non-floats
+
+\input{shapes/flowchart_styles.tex}  % load flowchart styles
+
+
+% --- Math Environments --------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{nicematrix}
+\NiceMatrixOptions{cell-space-limits = 1pt}
+\usepackage{siunitx}
+
+% --- Bibliography -------------------------------------------------------------
+\usepackage[autostyle=true]{csquotes} % recommended before biblatex
+\usepackage[backend=biber,style=numeric,sorting=nyt]{biblatex}
+\addbibresource{bibliography/references.bib}
+
+\renewcommand{\bibfont}{\normalfont\footnotesize}
+
+
+% --- Enumerations -----------------------------------------------------------------
+\usepackage{enumitem}
+
+\setlist{noitemsep}
+\setlist[1]{labelindent=\parindent} % < Usually a good idea
+\setlist[itemize]{leftmargin=*}
+\setlist[itemize,1]{label=-}
+
+% --- Helpers -----------------------------------------------------------------
+\usepackage{multicol}
+\usepackage{microtype}
+
+% --- URL, cross-references, and PDF metadata ----------------------------------
+\colorlet{citecolor}{black}
+\colorlet{linkcolor}{black}
+\colorlet{urlcolor}{black}
+\usepackage[
+  bookmarks=true,
+  breaklinks=true,
+  pdfborder={0 0 0},
+  citecolor=citecolor,
+  linkcolor=linkcolor,
+  urlcolor=urlcolor,
+  colorlinks=true,
+  linktocpage=false,
+  hyperindex=true,
+  linkbordercolor=white]{hyperref}
+\usepackage[capitalise,nameinlink]{cleveref}
+\hypersetup{
+    pdftitle={AI Almanach: Machine Learning, Data Science, and Intelligent Systems for Engineers},
+    pdfauthor={Bernhard Gerlach},
+    pdfsubject={A didactic engineering reference for artificial intelligence and data science},
+    pdfkeywords={artificial intelligence, machine learning, data science, deep learning, large language models, evaluation}
+}
+
+
+% --- Options ---------------------------------------------------------
+% \pagestyle{empty}
+% \setlength\parindent{0pt}
+% \setlength{\tabcolsep}{2pt}
+% \baselineskip=0pt
+\setlength{\columnsep}{0.65cm}
+% \setlength{\parskip}{0.1\baselineskip}
+
+\setlist[enumerate]{itemsep=0.2em, topsep=0.2em, parsep=0em, partopsep=0em}
+
+\captionsetup{font=small,labelfont={bf,sf}}
+% \captionsetup[sub]{font=small,labelfont={bf,sf}}
+
+\setcounter{secnumdepth}{4}
+
+
+\newcommand{\maincolor}{LimeGreen!90!Gray}
+\newcommand{\maincolspan}{4}
+\newcommand{\graphscale}{0.9}
+
+\title{AI Almanach}
+\author{Bernhard Gerlach}
+\date{\today}
+
+% --- TColorbox Skins ----------------------------------------------------------
+
+% Colorbox skin for bash listings
+\tcbsubskin{mintedbash}{empty}{
+        size=minimal,
+        listing engine=minted,
+        listing only,
+        minted style=friendly,
+        minted language=bash,
+        minted options={
+            fontsize=\footnotesize,
+            breaklines,
+            autogobble,
+        },
+        colback=gray!10!white,
+        colframe=gray!10!white,
+        listing only,
+        left=0em,
+        enhanced,
+}
+
+% Colorbox skin for python listings
+\tcbsubskin{mintedpython}{empty}{
+        size=minimal,
+        listing engine=minted,
+        listing only,
+        minted style=friendly,
+        minted language=python,
+        minted options={
+            fontsize=\footnotesize,
+            breaklines,
+            autogobble,
+        },
+        colback=gray!10!white,
+        colframe=gray!10!white,
+        listing only,
+        left=0em,
+        enhanced,
+        before skip=0.3\baselineskip,
+}
+
+% Skin for header box
+\tcbsubskin{headerboxskin}{empty}{
+        size=minimal,
+        coltitle=black!10!black,
+}
+
+
+
+% Skin for orange-based section boxes
+\tcbsubskin{sectionboxskin}{standard}{
+    size=small,
+    left=0.55em,
+    right=0.55em,
+    top=0.45em,
+    bottom=0.45em,
+    boxrule=0.45pt,
+    arc=0.8mm,
+    colback=\maincolor!2!white,
+    colframe=\maincolor!75!black,
+    coltitle=\maincolor!10!black,
+    colbacktitle=\maincolor!75!white,
+    fonttitle=\sffamily\bfseries,
+    toptitle=0.35mm,
+    bottomtitle=0.35mm,
+    fontupper=\sffamily\small,
+    fontlower=\sffamily\small,
+    lower separated=false,
+    valign lower=center,
+    halign=left,
+    subtitle style={top=0.4mm, bottom=0mm, boxrule=0.2pt, boxsep=0.1mm,
+        colback=\maincolor!50!\maincolor!20!white,
+        colupper=\maincolor!50!gray,
+        fontupper=\sffamily\bfseries\small,
+        coltext=\maincolor!10!black,
+        height=1.1\baselineskip,
+      }, 
+}
+
+
+% Skin for sub-section boxes
+\tcbsubskin{subsectionboxskin}{standard}{
+    size=fbox, 
+    top=0.4em,
+    % left=0.2em,
+    % right=0.2em,
+    % arc=0.25mm,
+    % top=0.4mm, 
+    % bottom=0mm, 
+    % boxrule=0.2pt, 
+    % boxsep=0.1mm,
+    frame empty,
+    % colback=\maincolor!2!white,
+    colback=white,
+    colbacktitle=\maincolor!50!\maincolor!20!white,
+    fonttitle=\sffamily\bfseries\small,
+    coltitle=\maincolor!10!black,
+    % height=1.1\baselineskip,    
+}
+
+
+% Skin for simple tables inside boxes
+\tcbsubskin{boxtablesimple}{empty}{
+    size=minimal,
+    before skip=0.2\baselineskip,
+    after skip=0.2\baselineskip,
+    colback=white,
+    colframe=gray,
+    frame empty,
+}
+
+
+\tcbsubskin{sectionraster}{sectionboxskin}{
+    raster columns=6,
+    raster row skip=0.35cm,
+    raster column skip=0.35cm,
+    skin=sectionboxskin,
+}
+
+% --- Semantic learning boxes -------------------------------------------------
+% These environments standardise how new material is introduced throughout v2.
+\newtcolorbox{learningobjectives}[1][Learning objectives]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=RoyalBlue!3!white,
+    colframe=RoyalBlue!65!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{plainlanguage}[1][In plain language]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=LimeGreen!4!white,
+    colframe=LimeGreen!55!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{engineernote}[1][Engineer's note]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=Orange!5!white,
+    colframe=Orange!70!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{workedexample}[1][Worked example]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=Cyan!3!white,
+    colframe=Cyan!55!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{checkpoint}[1][Check your understanding]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=Violet!3!white,
+    colframe=Violet!55!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{practicallab}[1][Practical lab]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=TealBlue!3!white,
+    colframe=TealBlue!65!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.6pt,
+    arc=0.6mm
+}
+
+\newtcolorbox{cautionbox}[1][Common trap]{
+    enhanced,
+    breakable,
+    title={#1},
+    colback=Red!3!white,
+    colframe=Red!60!black,
+    fonttitle=\sffamily\bfseries,
+    fontupper=\sffamily\small,
+    boxrule=0.45pt,
+    arc=0.6mm
+}
+
+\newcommand{\keyterm}[1]{\textbf{\textcolor{\maincolor!65!black}{#1}}}
+\newcommand{\evidencelevel}[1]{\textsf{\footnotesize Evidence: #1}}
+
+% --- Chapter 7-inspired learning rhythm --------------------------------------
+% Every chapter begins with an advance organiser and ends with retrieval and
+% transfer prompts. The visual sits beside the explanatory text so a short
+% introduction does not leave an empty half-page.
+\newcommand{\chapteropening}[6]{%
+\begin{tcolorbox}[
+    enhanced,
+    colback=white,
+    colframe=\maincolor!70!black,
+    boxrule=0.65pt,
+    arc=1mm,
+    title={Chapter compass},
+    fonttitle=\sffamily\bfseries,
+    before skip=0.5\baselineskip,
+    after skip=0.7\baselineskip]
+\begin{minipage}[t]{0.49\linewidth}
+\sffamily
+\textbf{Essential question}\par
+#2
+
+\medskip
+\textbf{Learning outcome}\par
+Explain the chain from \emph{#3} to \emph{#6}, calculate or trace one small
+case, diagnose a failure at each boundary, and name evidence that would make
+an engineering decision defensible.
+
+\medskip
+\textbf{How to read}\par
+First build the mental model, then follow the formal mechanism, and finally
+challenge the assumptions with the worked examples and retrieval prompts.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}
+\centering
+\begin{tikzpicture}[
+    node distance=3.5mm,
+    roadmap step/.style={
+        draw=\maincolor!70!black,
+        fill=\maincolor!7!white,
+        rounded corners=0.8mm,
+        minimum width=0.82\linewidth,
+        minimum height=6.5mm,
+        align=center,
+        font=\sffamily\scriptsize},
+    roadmap arrow/.style={-{Stealth[length=1.8mm]},thick,
+                          draw=\maincolor!70!black}]
+\node[roadmap step] (a) {#3};
+\node[roadmap step,below=of a] (b) {#4};
+\node[roadmap step,below=of b] (c) {#5};
+\node[roadmap step,below=of c] (d) {#6};
+\draw[roadmap arrow] (a) -- (b);
+\draw[roadmap arrow] (b) -- (c);
+\draw[roadmap arrow] (c) -- (d);
+\end{tikzpicture}
+\captionof{figure}{Chapter roadmap: #3, #4, #5, and #6.}
+\label{fig:#1-roadmap}
+\end{minipage}
+\end{tcolorbox}
+}
+
+\newcommand{\chaptersynthesis}[6]{%
+\section{Synthesis and Retrieval Practice}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Connect the mechanism},raster multicolumn=3]
+Start with \textbf{#3} and trace what information, uncertainty, or control
+signal crosses each boundary until \textbf{#6}.
+For every transition, state the representation, the operation, and the
+assumption that makes the operation meaningful.
+
+\tcbitem[title={Failure-first review},raster multicolumn=3]
+Choose one plausible failure at each stage.
+Separate specification error from data error, model error, implementation
+error, and operating-context change.
+Then identify the earliest observable signal that could reveal each failure.
+
+\tcbitem[title={Evidence ladder},raster multicolumn=6]
+Use the checklist as a design-review record rather than a vocabulary test.
+\tcblower
+\begin{tblr}{
+    width=\linewidth,
+    colspec={Q[l,0.18\linewidth]X[l]X[l]},
+    row{1}={font=\bfseries,bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Stage & Deep-dive question & Minimum useful evidence \\
+#3 & What is represented, measured, or assumed? & Provenance, units, bounds,
+and a counterexample \\
+#4 & Which mechanism transforms the input, and why? & A hand-worked case,
+invariant, or executable test \\
+#5 & How is uncertainty or error exposed? & Baseline comparison, slices,
+stress tests, and uncertainty \\
+#6 & Which decision follows, and who owns the residual risk? & Acceptance
+criterion, monitoring signal, fallback, and owner \\
+\end{tblr}
+\captionof{table}{Deep-dive evidence checklist for this chapter.}
+\label{tab:#1-synthesis-checklist}
+
+\tcbitem[title={Retrieve, explain, transfer},raster multicolumn=6]
+Without looking back, answer the chapter question: \emph{#2}
+Sketch the #3--#6 chain from memory, explain one equation or algorithm in
+plain language, and adapt the chain to a new domain.
+Check your answer against the chapter, correct it in a different colour, and
+write one question that the chapter does not settle.
+\end{tcbitemize}
+}
+
+\makeatletter
+\def\almanachchapterkey{}
+\def\almanachchapterquestion{}
+\def\almanachchapterstagea{}
+\def\almanachchapterstageb{}
+\def\almanachchapterstagec{}
+\def\almanachchapterstaged{}
+\let\almanachoriginalchapter\chapter
+\RenewDocumentCommand{\chapter}{s o m}{%
+    \IfBooleanTF{#1}{%
+        \almanachoriginalchapter*{#3}%
+    }{%
+        \IfNoValueTF{#2}{%
+            \almanachoriginalchapter{#3}%
+        }{%
+            \almanachoriginalchapter[#2]{#3}%
+        }%
+        \ifx\almanachchapterkey\@empty
+        \else
+            \chapteropening
+                {\almanachchapterkey}
+                {\almanachchapterquestion}
+                {\almanachchapterstagea}
+                {\almanachchapterstageb}
+                {\almanachchapterstagec}
+                {\almanachchapterstaged}%
+        \fi
+    }%
+}
+\makeatother
+
+\newcommand{\almanachinputchapter}[7]{%
+    \gdef\almanachchapterkey{#1}%
+    \gdef\almanachchapterquestion{#2}%
+    \gdef\almanachchapterstagea{#3}%
+    \gdef\almanachchapterstageb{#4}%
+    \gdef\almanachchapterstagec{#5}%
+    \gdef\almanachchapterstaged{#6}%
+    \input{#7}%
+    \almanachdeepdive{#1}%
+    \chaptersynthesis{#1}{#2}{#3}{#4}{#5}{#6}%
+    \gdef\almanachchapterkey{}%
+}
+
+\input{chapters/cross-cutting-deep-dives}
+
+
+
+
+
+% ----------------------------------------------------------------------------------------------------------------------
+% Header and Footer Settings
+% ----------------------------------------------------------------------------------------------------------------------
+
+\fancyhead[L]{
+    \LARGE {\headerfont AI Almanach} \textcolor{\maincolor}{for engineers}
+}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+
+
+% ----------------------------------------------------------------------------------------------------------------------
+% Main Document
+% ----------------------------------------------------------------------------------------------------------------------
+
+
+\begin{document}
+
+    \pagenumbering{gobble}
+    \input{frontmatter/ai-almanach-guide}
+
+    \setcounter{tocdepth}{1}
+    \tableofcontents
+    \clearpage
+    \listoffigures
+    \clearpage
+    \listoftables
+    \clearpage
+
+    \pagenumbering{arabic}
+
+    % ==== Chapters (each in separate file) ========================================================
+    \part{Orientation and Foundations}
+    \almanachinputchapter{orientation}
+        {How do intelligent systems turn goals and data into defensible
+         decisions?}
+        {Problem and context}{Representation}{Learning or reasoning}
+        {Evaluation and action}{chapters/ch01-introduction}
+    \almanachinputchapter{mathematics}
+        {Which mathematical objects let us describe learning, uncertainty,
+         and optimisation precisely?}
+        {Objects and notation}{Transformations}{Uncertainty}
+        {Optimisation}{chapters/ch02-mathematical-foundations}
+    \almanachinputchapter{programming}
+        {How do we turn an analytical idea into software that can be tested,
+         reproduced, and maintained?}
+        {Types and interfaces}{Arrays and data frames}{Pipelines}
+        {Tests and versions}{chapters/ch03-programming-foundations}
+    \almanachinputchapter{data-analytics}
+        {How does raw data become trustworthy evidence for an engineering
+         decision?}
+        {Acquire and define}{Clean and integrate}{Explore and model}
+        {Govern and communicate}{chapters/ch04-data-analytics}
+
+    \part{Learning from Data}
+    \almanachinputchapter{machine-learning}
+        {How can a model learn patterns that generalise beyond the examples
+         used to fit it?}
+        {Task and baseline}{Representation and model}{Fit and regularise}
+        {Validate and diagnose}{chapters/ch05-machine-learning}
+    \almanachinputchapter{deep-learning}
+        {How do layered differentiable models learn useful representations at
+         scale?}
+        {Represent}{Differentiate}{Optimise}{Scale and verify}
+        {chapters/ch06-deep-learning}
+    \almanachinputchapter{evaluation-mlops}
+        {What evidence shows that a learned system is useful now and remains
+         useful after deployment?}
+        {Evaluation contract}{Tests and uncertainty}{Release controls}
+        {Monitoring and revision}{chapters/ch06b-evaluation-mlops}
+    \almanachinputchapter{reinforcement-learning}
+        {How should an agent learn sequential decisions when actions change
+         the data it will observe next?}
+        {State and objective}{Act and observe}{Update value or policy}
+        {Evaluate behaviour}{chapters/ch07-reinforcement-learning}
+
+    \part{Trustworthy Perception, Language, and Generation}
+    \almanachinputchapter{trustworthy-ai}
+        {What evidence justifies trusting an AI-enabled system within a stated
+         operating boundary?}
+        {Scope and harms}{Threats and hazards}{Controls and tests}
+        {Assurance and operation}{chapters/ch08-functional-security}
+    \almanachinputchapter{computer-vision}
+        {How do pixels and sensor geometry become useful, testable statements
+         about a scene?}
+        {Image formation}{Features and geometry}{Prediction}
+        {Robust perception}{chapters/ch09-computer-vision}
+    \almanachinputchapter{nlp-generative-ai}
+        {How do language systems represent context and generate outputs that
+         can be evaluated rather than merely admired?}
+        {Tokenise}{Represent context}{Generate or retrieve}
+        {Evaluate meaning and risk}{chapters/ch12-nlp-voice-assistants}
+    \almanachinputchapter{practical-llm-engineering}
+        {How can a small language-model experiment reveal the mechanics and
+         trade-offs of real LLM systems?}
+        {Trace one token}{Adapt weights}{Benchmark quality and cost}
+        {Package and deploy}{chapters/ch12b-practical-llm-engineering}
+
+    \part{AI in Engineering and Society}
+    \almanachinputchapter{fintech}
+        {How can AI support financial decisions while controlling asymmetric
+         error costs, abuse, and regulatory risk?}
+        {Decision and data}{Risk model}{Constraint and control}
+        {Audit and monitoring}{chapters/ch10-fintech}
+    \almanachinputchapter{healthcare}
+        {How can AI improve a clinical workflow without confusing benchmark
+         performance with patient benefit?}
+        {Clinical need}{Representative evidence}{Workflow integration}
+        {Outcome monitoring}{chapters/ch11-healthcare}
+    \almanachinputchapter{industrial-ai}
+        {How do predictions become safe, timely actions in a physical
+         production system?}
+        {Sense}{Predict}{Plan}{Control and recover}
+        {chapters/ch13-industrial-ai}
+    \almanachinputchapter{supply-chain}
+        {How can uncertain demand and constrained resources be coordinated
+         across a changing network?}
+        {Observe the network}{Forecast scenarios}{Optimise decisions}
+        {Monitor and recover}{chapters/ch14-supply-chain}
+    \almanachinputchapter{multi-agent-systems}
+        {How can autonomous components coordinate without assuming that local
+         intelligence creates global order?}
+        {Perceive and reason}{Communicate}{Coordinate incentives}
+        {Verify emergence}{chapters/ch15-multi-agent-systems}
+    \almanachinputchapter{commerce-marketing}
+        {How can personalisation and forecasting create value without turning
+         feedback loops into manipulation or bias?}
+        {Observe behaviour}{Predict and personalise}{Experiment}
+        {Govern outcomes}{chapters/ch16-ecommerce-marketing}
+    \almanachinputchapter{it-law}
+        {Which legal duties attach to an AI system, its data, its outputs, and
+         the organisations operating it?}
+        {Classify the use}{Identify duties}{Document evidence}
+        {Reassess change}{chapters/ch17-it-law}
+    \almanachinputchapter{visualization}
+        {How can a visual representation make evidence easier to reason about
+         without overstating what the data supports?}
+        {Question}{Encode}{Compare}{Explain and verify}
+        {chapters/ch18-visualization}
+    \almanachinputchapter{startup}
+        {How can an AI venture learn whether a painful problem, a feasible
+         system, and sustainable economics exist at the same time?}
+        {Problem evidence}{Small experiment}{Unit economics}
+        {Scale responsibly}{chapters/ch19-startup}
+    \almanachinputchapter{scientific-writing}
+        {How can a technical claim be made traceable, reproducible, and useful
+         to a sceptical reader?}
+        {Claim}{Method}{Evidence}{Revision and publication}
+        {chapters/ch20-scientific-writing}
+
+    % ==== References ==============================================================================
+    \part{Back Matter}
+    \input{appendices/course-coverage-map}
+    \chapter{References}
+    \printbibliography[heading=none]
+
+\end{document}

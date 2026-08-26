@@ -50,6 +50,8 @@
                 node[below, font=\footnotesize]{state $s_{t+1}$, reward $r_{t+1}$}
                 (agent.south);
         \end{tikzpicture}
+\captionof{figure}{Introduction to Reinforcement Learning: Agent--Environment Interaction Loop.}
+\label{fig:ch07-reinforcement-learning-inline-01}
         \end{center}
 
         \tcbitem[title=Core Components, raster multicolumn=3]
@@ -78,6 +80,8 @@
             Generalise & Discover structure & Maximise return \\
             No exploration & No exploration & Exploration essential \\
         \end{tblr}
+\captionof{table}{Introduction to Reinforcement Learning: RL vs.\ Supervised vs.\ Unsupervised.}
+\label{tab:ch07-reinforcement-learning-inline-01}
         \textsuperscript{\cite[][p.~323]{hurbansGrokkingArtificialIntelligence2020}}
 
     \end{tcbitemize}
@@ -190,6 +194,8 @@
             \draw[arr, bend right=20] (s3) to
                 node[below, font=\footnotesize]{$a_2$} (s1);
         \end{tikzpicture}
+\captionof{figure}{Markov Decision Processes: MDP State Transitions.}
+\label{fig:ch07-reinforcement-learning-inline-02}
         \end{center}
 
         \tcbitem[title=Policy Types, raster multicolumn=3]
@@ -409,6 +415,8 @@
             Deterministic output & Stochastic policy \\
             Can be unstable & High variance gradients \\
         \end{tblr}
+\captionof{table}{Q-Learning and Deep Reinforcement Learning: Value-Based vs.\ Policy-Based Methods.}
+\label{tab:ch07-reinforcement-learning-inline-02}
         \textsuperscript{\cite[][p.~360]{hurbansGrokkingArtificialIntelligence2020}}
 
         \tcbitem[title={Actor-Critic Methods}, raster multicolumn=3]
@@ -662,8 +670,9 @@
     \textbf{Wet Grass example}: $R$ (rain), $S$ (sprinkler), $T$ (Tracey’s
     grass), $J$ (Jack’s grass). With $p(T|J,R,S)=p(T|R,S)$ and $p(J|R,S)=p(J|R)$:
     \[p(T,J,R,S) = p(T|R,S)\,p(J|R)\,p(R)\,p(S)\]
-    This compresses 15 parameters to 8. Every absent edge is a conditional
-    independence assumption.
+    This compresses 15 parameters to 8. The graph encodes sets of conditional
+    independence relations through d-separation and the local Markov property;
+    an absent edge should not be read as one unconditional independence claim.
     \tcblower
     \textbf{Explaining away}: in $A \to C \leftarrow B$, causes $A$ and $B$
     are independent a priori. Conditioning on the effect $C$ makes them
@@ -1001,4 +1010,3 @@
     \end{itemize}
 
     \end{tcbitemize}
-

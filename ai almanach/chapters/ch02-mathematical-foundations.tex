@@ -338,7 +338,7 @@
         A \textbf{random variable} $X$ is a function mapping outcomes of a random experiment to real numbers\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. \textbf{Discrete} random variables take countable values (e.g.\ number of heads in $n$ coin flips); \textbf{continuous} random variables take values in an uncountable range (e.g.\ height of a person). The three Kolmogorov axioms define a valid probability measure: (1) $P(A) \geq 0$; (2) $P(\Omega) = 1$; (3) $P(A \cup B) = P(A) + P(B)$ for disjoint $A, B$.
 
         \tcbitem[title={Probability Distributions}, raster multicolumn=6]
-        A \textbf{PMF} (probability mass function) gives $P(X = x)$ for discrete $X$. A \textbf{PDF} (probability density function) $f(x)$ satisfies $P(a \leq X \leq b) = \int_a^b f(x)\,dx$ for continuous $X$; note $f(x) \geq 0$ and $\int_{-\infty}^{\infty} f(x)\,dx = 1$. The \textbf{CDF} (cumulative distribution function) $F(x) = P(X \leq x)$ is monotonically non-decreasing and applies to both discrete and continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
+        A \textbf{PMF} (probability mass function) gives $P(X = x)$ for discrete $X$. A \textbf{PDF} (probability density function) $f(x)$ satisfies $P(a \leq X \leq b) = \int_a^b f(x)\,dx$ for continuous $X$; note $f(x) \geq 0$ and $\int_{-\infty}^{\infty} f(x)\,dx = 1$. The \textbf{CDF} (cumulative distribution function) $F(x) = P(X \leq x)$ is monotonically non-decreasing and applies to both discrete and continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}. For a continuous variable with density $f$, it is given by the integral below; for a discrete variable it is a cumulative sum of probability masses.
         \tcblower
         \begin{equation}
             F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt
@@ -353,10 +353,14 @@
         \end{equation}
 
         \tcbitem[title={Central Limit Theorem}, raster multicolumn=6]
-        The \textbf{Central Limit Theorem (CLT)} states that the sum (or mean) of $n$ independent, identically distributed random variables with finite mean $\mu$ and variance $\sigma^2$ converges in distribution to a Normal distribution as $n \to \infty$\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. This justifies the widespread use of Gaussian models and parametric tests even when individual observations are not normally distributed.
+        The \textbf{Central Limit Theorem (CLT)} states that the properly standardised mean of $n$ independent, identically distributed random variables with finite mean $\mu$ and non-zero finite variance $\sigma^2$ converges in distribution to a standard Normal variable as $n \to \infty$\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. This supports Normal approximations for many sample means, but it does not make the original observations Gaussian and convergence can be slow for heavy-tailed or highly skewed distributions.
         \tcblower
         \begin{equation}
-            \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \;\xrightarrow{d}\; \mathcal{N}\!\left(\mu,\, \frac{\sigma^2}{n}\right) \quad \text{as } n \to \infty
+            \frac{\sqrt{n}(\bar{X}_n-\mu)}{\sigma}
+            \;\xrightarrow{d}\; \mathcal{N}(0,1)
+            \quad \text{as } n \to \infty,
+            \qquad
+            \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i
         \end{equation}
         Practical implication: standard error of the mean $= \sigma / \sqrt{n}$ shrinks with sample size.
 
@@ -417,6 +421,8 @@
             Data use & Repeat-experiment model & Condition on observed data \\
             Prior & Not used & Explicitly encoded \\
         \end{tblr}
+\captionof{table}{Bayesian Statistics: Bayesian vs.\ Frequentist Approach.}
+\label{tab:ch02-mathematical-foundations-inline-01}
 
     \end{tcbitemize}
 
@@ -461,6 +467,8 @@
             Bar chart & Compare discrete categories & Heights encode quantity; grouped or stacked \\
             Heat map & 2D matrix of values & Colour encodes magnitude; useful for correlation matrices \\
         \end{tblr}
+\captionof{table}{Data Visualization: Chart Types Overview.}
+\label{tab:ch02-mathematical-foundations-inline-02}
 
     \end{tcbitemize}
 
@@ -503,6 +511,8 @@
             Reject $H_0$ & Type I error ($\alpha$, false positive) & Correct (power $= 1-\beta$) \\
             Fail to reject $H_0$ & Correct (true negative) & Type II error ($\beta$, false negative) \\
         \end{tblr}
+\captionof{table}{Hypothesis Test: Type I and Type II Errors.}
+\label{tab:ch02-mathematical-foundations-inline-03}
 
         \tcbitem[title={p-Value}, raster multicolumn=6]
         The \textbf{p-value} is the probability of observing a test statistic at least as extreme as the one computed, \emph{assuming the null hypothesis $H_0$ is true}\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. A small $p$-value (typically $< 0.05$) means the observed data would be rare under $H_0$, providing evidence against it. Common thresholds: $p < 0.05$ (significant), $p < 0.01$ (highly significant), $p < 0.001$ (very highly significant).
@@ -527,4 +537,3 @@
         \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
         \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
     \end{itemize}
-

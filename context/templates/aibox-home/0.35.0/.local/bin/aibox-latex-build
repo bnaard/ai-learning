@@ -19,15 +19,15 @@ prepare() {
 }
 
 build_0() {
-  prepare 'ai and data analytics/ai-dataanalytics-cards.tex' 'ai and data analytics/out'
-  printf '%s\n' 'Building LaTeX document '\''ai-dataanalytics-cards'\'''
-  'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai and data analytics/out' 'ai and data analytics/ai-dataanalytics-cards.tex'
+  prepare 'ai almanach/ai-almanach.tex' 'ai almanach/out'
+  printf '%s\n' 'Building LaTeX document '\''ai-almanach'\'''
+  'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai almanach/out' 'ai almanach/ai-almanach.tex'
 }
 
 case "${1:-all}" in
   all)
     build_0
     ;;
-  'ai-dataanalytics-cards') build_0 ;;
-  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-dataanalytics-cards' >&2; exit 2 ;;
+  'ai-almanach') build_0 ;;
+  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-almanach' >&2; exit 2 ;;
 esac

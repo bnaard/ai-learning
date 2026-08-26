@@ -1,9 +1,8 @@
 # Project status
 
-AI and Data Analytics Learning Cards is an active but incomplete educational
-project.
+AI Almanach is an active but incomplete educational project.
 
-- The maintained entry point is `ai and data analytics/ai-dataanalytics-cards.tex`.
+- The maintained entry point is `ai almanach/ai-almanach.tex`.
 - Twenty chapter files exist; many remain outlines, stubs, or placeholders.
 - The mathematics deck under `math/` is a separate supporting document.
 - There are no tagged releases or compatibility guarantees.

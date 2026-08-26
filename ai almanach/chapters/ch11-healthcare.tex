@@ -26,6 +26,8 @@
         \textbf{Patients / Society} & Care recipients, data subjects & Personal health monitoring, informed consent \\
         \hline
     \end{tblr}
+\captionof{table}{The Healthcare Ecosystem: Healthcare Stakeholders.}
+\label{tab:ch11-healthcare-inline-01}
 
     \tcbitem[title={Digital Health Transformation}, raster multicolumn=3]
     Digitisation of healthcare is driven by three converging forces:
@@ -70,6 +72,8 @@
         Regulatory / market & FDA/EMA approval & Automated documentation \\
         \hline
     \end{tblr}
+\captionof{table}{Drug Discovery: Traditional Drug Discovery Pipeline.}
+\label{tab:ch11-healthcare-inline-02}
 
     \tcbitem[title={Virtual Screening and Molecular Graphs}, raster multicolumn=3]
     \textbf{Virtual screening} applies ML to rank large compound libraries by predicted binding affinity, replacing costly physical assays\textsuperscript{\cite[][pp.~45--70]{brownArtificialIntelligenceDrugDiscovery2020}}.
@@ -194,6 +198,8 @@
         Ultrasound & Echo reflection & Soft tissue & None \\
         \hline
     \end{tblr}
+\captionof{table}{Imaging Modalities: Modality Comparison.}
+\label{tab:ch11-healthcare-inline-03}
     \textsuperscript{\cite[][pp.~1--30]{smithIntroductionMedicalImaging2010}}
 \end{tcbitemize}
 
@@ -213,6 +219,8 @@
         Gulshan et al.\ (2016) & Diabetic retinopathy grading from fundus photos & Inception v3, 128,000 images & AUC $= 0.99$; sensitivity/specificity exceeded human graders \\
         \hline
     \end{tblr}
+\captionof{table}{AI for Medical Image Analysis: Classification: Skin Cancer and Retinopathy.}
+\label{tab:ch11-healthcare-inline-04}
     Both use \textbf{transfer learning}: ImageNet-pretrained CNN fine-tuned on medical dataset; critical when labelled medical data is scarce.
 
     \tcbitem[title={Object Detection in Medical Images}, raster multicolumn=3]
@@ -281,6 +289,8 @@
         \textbf{Both} & Adaptive AI challenge & Locked vs.\ continuously-learning algorithms; change management \\
         \hline
     \end{tblr}
+\captionof{table}{Ground Truth and Clinical Integration: Regulatory Approval: FDA and CE.}
+\label{tab:ch11-healthcare-inline-05}
     Key principle: \textbf{intended use} defines risk class; diagnostic AI imaging tools are typically Class II (FDA) / Class IIa--IIb (EU MDR).
 \end{tcbitemize}
 
@@ -309,6 +319,8 @@
         \textbf{UMLS} & Meta-thesaurus integrating all above & NLP concept extraction backbone \\
         \hline
     \end{tblr}
+\captionof{table}{Clinical Text Processing: Medical Terminologies and Coding.}
+\label{tab:ch11-healthcare-inline-06}
 
     \tcbitem[title={Clinical Text Characteristics}, raster multicolumn=3]
     Clinical notes differ markedly from general text, creating specific NLP challenges\textsuperscript{\cite[][p.~464]{juhnArtificialIntelligenceNLP2020}}:
@@ -416,6 +428,8 @@
         \textbf{Vision system} & Dual-channel laparoscope for stereoscopic 3-D view; AI-overlay for anatomy annotation \\
         \hline
     \end{tblr}
+\captionof{table}{Surgical Robotics: Robotic-Assisted Surgery: da Vinci System.}
+\label{tab:ch11-healthcare-inline-07}
     Benefits: reduced blood loss, shorter hospital stay, finer dexterity in confined spaces. Limitation: haptic feedback limited; high acquisition cost.
 
     \tcbitem[title={Navigation and Image Registration in Surgery}, raster multicolumn=3]
@@ -441,7 +455,7 @@
         \item \textbf{Pseudonymisation}: replace direct identifiers with codes; re-identification risk remains if quasi-identifiers (age, gender, postcode) are retained.
         \item \textbf{Anonymisation}: irreversible removal; GDPR no longer applies — but harder to achieve than often assumed (Sweeney 87\% re-identification from demographics alone).
         \item \textbf{Data minimisation}: collect only what is necessary; purpose limitation; storage duration limits.
-        \item \textbf{DPA}: Data Protection Impact Assessment mandatory for high-risk AI health applications.
+        \item \textbf{DPIA}: Data Protection Impact Assessment required when processing is likely to result in a high risk to people's rights and freedoms; applicability must be assessed for the concrete health-AI use case.
     \end{itemize}
 
     \tcbitem[title={Federated Learning for Healthcare}, raster multicolumn=3]
@@ -471,6 +485,8 @@
         \textbf{Synthetic data} & GAN/VAE generates privacy-safe surrogates & Quality depends on generator; may not capture rare events \\
         \hline
     \end{tblr}
+\captionof{table}{Data Privacy and GDPR: Privacy-Preserving ML Techniques.}
+\label{tab:ch11-healthcare-inline-08}
     \textsuperscript{\cite[][p.~52]{liTwoDecadesFederated2020}}
 \end{tcbitemize}
 
@@ -511,6 +527,8 @@
         \textbf{Individual fairness} & Similar individuals treated similarly & No two patients get opposite decisions for irrelevant reasons \\
         \hline
     \end{tblr}
+\captionof{table}{Bias and Fairness in Medical AI: Fairness Metrics and Regulation.}
+\label{tab:ch11-healthcare-inline-09}
     Regulatory guidance (FDA AI/ML action plan, EU AI Act Art.~9) requires pre-market fairness analysis.
 \end{tcbitemize}
 

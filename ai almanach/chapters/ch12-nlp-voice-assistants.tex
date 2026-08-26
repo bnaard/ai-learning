@@ -50,6 +50,8 @@
         2018--2019 & GPT-1 (OpenAI) and BERT (Google) --- pre-trained large language models \\
         2020--2023 & GPT-3 (175B), ChatGPT, GPT-4 --- conversational AI at scale \\
     \end{tblr}
+\captionof{table}{What is NLP?: A Brief History of NLP.}
+\label{tab:ch12-nlp-voice-assistants-inline-01}
 \end{tcbitemize}
 
 % ---- 12.1.2 Linguistic Building Blocks -----------------------------------------------------
@@ -73,6 +75,8 @@
         \textbf{Pragmatics} & Language in context & Speaker intent; indirect requests; discourse coherence \\
         \textbf{Phonology} & Sound patterns & Stress, intonation, phoneme inventories (for speech) \\
     \end{tblr}
+\captionof{table}{Linguistic Building Blocks: Levels of Linguistic Analysis.}
+\label{tab:ch12-nlp-voice-assistants-inline-02}
 
     NLP systems typically must handle all levels: a machine translation system requires morphological analysis, syntactic parsing, semantic understanding, and pragmatic coherence.
 \end{tcbitemize}
@@ -122,7 +126,7 @@
         \item \textbf{Morphological awareness}: prefixes and suffixes become reusable tokens (\emph{un-}, \emph{-ness}, \emph{-ing})
         \item \textbf{Multilingual coverage}: any Unicode text can be represented; no whitespace required (works for Chinese, Japanese)
     \end{itemize}
-    \textbf{Vocabulary size trade-off}: larger vocabulary $\to$ more tokens, richer encoding, but larger model and memory footprint.
+    \textbf{Vocabulary size trade-off}: a larger vocabulary often yields fewer tokens per text and more specific fragments, but enlarges the embedding and output matrices; a smaller vocabulary usually creates longer sequences from more reusable fragments.
     BPE is greedy: ``I'm running'' tokenises to 3 tokens; ``I'm runnin'' (missing \emph{g}) tokenises to 4 tokens because \emph{runnin} is not in the learned vocabulary.
 \end{tcbitemize}
 
@@ -147,6 +151,8 @@
         \textbf{GLUE / SuperGLUE} & General NLU & Multi-task benchmark suite; BERT$_\mathrm{LARGE}$ scores 82.1 \\
         \textbf{Human evaluation} & Fluency, coherence, factuality & Gold standard; expensive; high inter-annotator variance \\
     \end{tblr}
+\captionof{table}{Evaluation of NLP Systems: Automatic NLP Metrics.}
+\label{tab:ch12-nlp-voice-assistants-inline-03}
 
     Automatic metrics correlate imperfectly with human judgment: a translation can score high on BLEU while being pragmatically awkward.
     Human evaluation remains the gold standard for high-stakes NLP applications.
@@ -210,9 +216,11 @@
 
 \begin{tcbitemize}[ skin=sectionraster ]
     \tcbitem[title={N-gram Language Models}, raster multicolumn=3]
-    An \textbf{$n$-gram language model} estimates word probabilities using the Markov assumption --- only the previous $n-1$ words matter\textsuperscript{\cite[][]{bengioNeuralProbabilisticLanguage}}:
+    An \textbf{$N$-gram language model} estimates word probabilities using the Markov assumption --- only the previous $N-1$ words matter\textsuperscript{\cite[][]{bengioNeuralProbabilisticLanguage}}:
     \begin{equation}
-        P(w_n \mid w_1, \ldots, w_{n-1}) \approx P(w_n \mid w_{n-n+1}, \ldots, w_{n-1})
+        P(w_t \mid w_1, \ldots, w_{t-1})
+        \approx
+        P(w_t \mid w_{t-N+1}, \ldots, w_{t-1})
     \end{equation}
     Counts in a training corpus estimate these probabilities.
     Smoothing (Laplace, Kneser-Ney) handles unseen $n$-grams.
@@ -224,7 +232,7 @@
     \begin{itemize}
         \item \textbf{Hidden Markov Model (HMM)}: generative model; hidden states = POS tags; observed outputs = words.
               Computes $P(\text{tags}|\text{words})$ via Viterbi decoding.
-        \item \textbf{Naive Bayes}: fast discriminative text classifier;
+        \item \textbf{Naive Bayes}: fast generative classifier that models class priors and class-conditional features;
               $P(c \mid \mathbf{x}) \propto P(c) \prod_i P(x_i \mid c)$.
               Still competitive for sentiment analysis with sparse features.
         \item \textbf{Conditional Random Field (CRF)}: discriminative sequence model; models $P(\mathbf{y}|\mathbf{x})$ directly; avoids HMM's independence assumptions.
@@ -413,6 +421,8 @@
         RAG & Retrieve relevant documents; inject into prompt &
             Knowledge-intensive tasks; up-to-date information \\
     \end{tblr}
+\captionof{table}{Pre-training and Fine-tuning: Pre-training vs.\ Fine-tuning vs.\ Prompting.}
+\label{tab:ch12-nlp-voice-assistants-inline-04}
     \vspace{2pt}
     \textsuperscript{\cite[][p.~70]{farrisHowLargeLanguage2025}}
     \textsuperscript{\cite[][p.~5]{raschkaBuildLargeLanguage2025}}
@@ -445,6 +455,8 @@
         Heads $A$ & 12 & 16 \\
         Parameters & 110M & 340M \\
     \end{tblr}
+\captionof{table}{BERT: BERT Architecture.}
+\label{tab:ch12-nlp-voice-assistants-inline-05}
 
     \tcbitem[title={Pre-training: MLM and NSP}, raster multicolumn=3]
     BERT is pre-trained with two unsupervised
@@ -479,6 +491,8 @@
         QA (SQuAD) & \texttt{[CLS]} + question + \texttt{[SEP]} + passage & Start/end token positions \\
         Named Entity Recognition & \texttt{[CLS]} + sentence & Per-token label from $T_i$ \\
     \end{tblr}
+\captionof{table}{BERT: Fine-tuning BERT for Downstream Tasks.}
+\label{tab:ch12-nlp-voice-assistants-inline-06}
 
     BERT achieved state-of-the-art on 11 NLP tasks at release, including GLUE
     (+7.7\,\%), SQuAD~1.1 F1~93.2, and CoNLL-2003 NER F1~92.8.
@@ -497,11 +511,11 @@
 
     Generation is \textbf{autoregressive}: the model produces one token at a time,
     appending each output to the input before predicting the next. The pre-training
-    objective maximises:
+    objective maximises the conditional log-likelihood:
     \begin{equation}
-        \mathcal{L} = \sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1};\,\theta)
+        \ell(\theta) = \sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1};\,\theta)
     \end{equation}
-    This is simply next-token prediction on large unlabelled
+    Equivalently, training minimises the negative log-likelihood $\mathcal{L}(\theta)=-\ell(\theta)$. This is next-token prediction on large unlabelled
     corpora.\textsuperscript{\cite[][p.~129]{raschkaBuildLargeLanguage2025}}
 
     \tcbitem[title={GPT Evolution and Scaling Laws}, raster multicolumn=3]
@@ -517,6 +531,8 @@
         GPT-3 & 2020 & 175B params; few-shot in-context learning \\
         GPT-4 & 2023 & Multimodal; strong reasoning and coding \\
     \end{tblr}
+\captionof{table}{GPT Family: GPT Evolution and Scaling Laws.}
+\label{tab:ch12-nlp-voice-assistants-inline-07}
     \vspace{2pt}
     \textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
 
@@ -633,7 +649,9 @@
     latency.\textsuperscript{\cite[][p.~83]{farrisHowLargeLanguage2025}}
 
     \textbf{Chunking strategy} matters significantly:
+    \par\smallskip\noindent
     \begin{tblr}{
+        width=\linewidth,
         colspec={X[l,2] X[l,4]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -645,6 +663,8 @@
         Semantic chunking & Embed and cluster sentences by similarity; highest quality \\
         Recursive splitting & Hierarchically split: paragraph $\to$ sentence $\to$ token \\
     \end{tblr}
+\captionof{table}{Retrieval-Augmented Generation: Vector Databases and Chunking.}
+\label{tab:ch12-nlp-voice-assistants-inline-08}
     Chunk size trades off recall (larger $=$ more context per chunk) against precision
     (smaller $=$ more focused retrieval).
 

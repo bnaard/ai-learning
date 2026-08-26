@@ -1,0 +1,105 @@
+\appendix
+\chapter{Curriculum and Course Coverage Map}
+\label{ch:course-coverage-map}
+
+This appendix makes the curriculum auditable.
+It maps the supplied external machine-learning course outcomes to the AI Almanach
+and adds the broader competencies required to build dependable AI systems.
+
+\begin{table}[htbp]
+\centering
+\caption{Coverage of the supplied external machine-learning course.}
+\label{tab:external-course-coverage}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={X[l] Q[l,0.27\textwidth] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Course requirement & Primary location & Evidence of mastery \\
+Statistics, derivatives, and matrices for ML &
+Mathematical Foundations &
+Derive a gradient, check tensor dimensions, and quantify uncertainty \\
+Classification and regression &
+Machine Learning &
+Implement baselines and compare metrics on held-out data \\
+Model optimisation &
+Deep Learning; Evaluation and MLOps &
+Tune only on validation data and report the search protocol \\
+Decision trees and forests &
+Machine Learning &
+Explain a split, control complexity, and measure generalisation \\
+Neural networks and support vector machines &
+Machine Learning; Deep Learning &
+Calculate a toy forward pass and diagnose optimisation behaviour \\
+Clustering and recommender systems &
+Machine Learning; E-Commerce and Marketing &
+Evaluate without pretending that unlabeled structure has one true answer \\
+Develop, implement, and scientifically evaluate an ML approach &
+Evaluation and MLOps; Practical LLM Engineering &
+Reproduce a baseline-to-candidate experiment with uncertainty and error
+analysis \\
+\end{tblr}
+\end{table}
+
+\section{Competencies added by the AI Almanach}
+
+\begin{itemize}
+    \item formulate a decision problem before selecting a model;
+    \item create data sheets, model cards, and reproducible experiment records;
+    \item detect leakage, distribution shift, shortcut learning, and metric
+          mismatch;
+    \item measure latency, throughput, memory, energy, and operational
+          reliability;
+    \item evaluate generative outputs with task-specific, human, and safety
+          tests;
+    \item reason about privacy, security, functional safety, fairness, and law;
+    \item communicate evidence and uncertainty to technical and non-technical
+          readers.
+\end{itemize}
+
+\section{Alignment with current curriculum frameworks}
+
+The curriculum also uses the ACM/IEEE/AAAI computing competencies as a
+technical breadth check and UNESCO's AI competency framework as a human-centred
+literacy check\textsuperscript{\cite{acmCS2023Curricula2024,unescoAICompetencyFramework2024}}.
+These frameworks are complementary rather than interchangeable: one helps
+audit computing depth, while the other foregrounds human agency, ethics, AI
+techniques, and system design.
+
+\begin{table}[htbp]
+\centering
+\caption{Framework alignment used to audit the AI Almanach curriculum.}
+\label{tab:curriculum-framework-alignment}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.22\textwidth] X[l] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Audit lens & Almanach coverage & Observable evidence \\
+Technical foundations &
+Mathematics, programming, data, ML, deep learning, RL, vision, and NLP &
+Trace a mechanism, implement a baseline, and test generalisation \\
+Systems and operations &
+Evaluation, MLOps, LLM engineering, security, and industrial systems &
+Specify release gates, operational budgets, monitoring, and rollback \\
+Human agency and ethics &
+Trustworthy AI, healthcare, finance, commerce, law, and visualization &
+Identify affected actors, contestability, harms, uncertainty, and duties \\
+Design and creation &
+Domain chapters, multi-agent systems, venture building, and scientific
+writing &
+Produce a bounded solution, evidence record, and reproducible argument \\
+\end{tblr}
+\end{table}
+
+\section{Definition of done for a chapter}
+
+A chapter is considered reviewed only when its important concepts have
+prerequisites, definitions, dimensional checks, at least one worked example,
+failure modes, evaluation guidance, and traceable sources.
+The chapter must compile without hidden local assets and must not contain
+unresolved placeholders.
+Time-sensitive claims must include a verification date or be rewritten as
+stable principles.

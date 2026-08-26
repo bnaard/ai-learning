@@ -68,7 +68,7 @@
 \begin{tcbitemize}[ skin=sectionraster ]
 
     \tcbitem[title=AI Technique Overview, raster multicolumn=6]
-    \begin{tblr}{|Q[l,m,3cm]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={Q[l,m,3cm]X X},hlines,vlines}
         \hline
         \textbf{Technique}           & \textbf{Core idea}                                    & \textbf{SC Application}                           \\
         \hline
@@ -83,6 +83,8 @@
         Multi-Agent Systems          & Distributed agents coordinate autonomously            & Decentralised supplier negotiation, fleet dispatch \\
         \hline
     \end{tblr}
+\captionof{table}{AI Techniques for Supply Chains: AI Technique Overview.}
+\label{tab:ch14-supply-chain-inline-01}
 
 \end{tcbitemize}
 
@@ -252,16 +254,16 @@
     The gap $S - s$ balances setup cost $K$ against holding and shortage costs.
 
     \tcbitem[title=Service Levels and Safety Stock, raster multicolumn=6]
-    Two common service level definitions\textsuperscript{\cite[][pp.~300--305]{vandeputInventoryOptimization2020}}:
-    \begin{tblr}{|Q[l,m,3cm]|X|X|}
-        \hline
+    Two common service level
+    definitions\textsuperscript{\cite[][pp.~300--305]{vandeputInventoryOptimization2020}}:
+    \par\smallskip\noindent
+    \begin{tblr}{width=\linewidth,colspec={Q[l,m,3cm]X X},hlines,vlines}
         \textbf{Metric}       & \textbf{Definition}                                        & \textbf{Typical target} \\
-        \hline
         Cycle service level (\textbf{Type~I})   & $P(\text{no stockout per cycle}) = F(s)$      & 90--99\% \\
-        \hline
         Fill rate (\textbf{Type~II})             & Fraction of demand satisfied from stock       & 95--99.5\% \\
-        \hline
     \end{tblr}
+\captionof{table}{Inventory Policies and Service Levels: Service Levels and Safety Stock.}
+\label{tab:ch14-supply-chain-inline-02}
     \textbf{Safety stock} (SS) is the buffer held against demand and lead-time variability:
     $\text{SS} = z_\alpha \sqrt{L \sigma_d^2 + \mu_d^2 \sigma_L^2}$
     where $\sigma_d$ = demand std.\ dev., $\sigma_L$ = lead-time std.\ dev.

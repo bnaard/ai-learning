@@ -18,12 +18,12 @@ prepare() {
   mkdir -p "$workspace/$output_dir" "$TEXMFVAR" "$TEXMFCONFIG"
 }
 
-document=${1:-'ai-dataanalytics-cards'}
+document=${1:-'ai-almanach'}
 case "$document" in
-  'ai-dataanalytics-cards')
-    prepare 'ai and data analytics/ai-dataanalytics-cards.tex' 'ai and data analytics/out'
-    printf '%s\n' 'Watching LaTeX document '\''ai-dataanalytics-cards'\'' (Ctrl-C to stop)'
-    exec 'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai and data analytics/out' '-pvc' '-view=none' 'ai and data analytics/ai-dataanalytics-cards.tex'
+  'ai-almanach')
+    prepare 'ai almanach/ai-almanach.tex' 'ai almanach/out'
+    printf '%s\n' 'Watching LaTeX document '\''ai-almanach'\'' (Ctrl-C to stop)'
+    exec 'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai almanach/out' '-pvc' '-view=none' 'ai almanach/ai-almanach.tex'
     ;;
-  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-dataanalytics-cards' >&2; exit 2 ;;
+  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-almanach' >&2; exit 2 ;;
 esac

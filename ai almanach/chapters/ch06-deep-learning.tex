@@ -66,6 +66,8 @@
         \node[below=0.15cm of h2, font=\sffamily\tiny] {Hidden};
         \node[below=0.55cm of o, font=\sffamily\tiny] {Output};
     \end{tikzpicture}
+\captionof{figure}{Perceptron and Multi-Layer Perceptrons: The XOR Problem and MLPs.}
+\label{fig:ch06-deep-learning-inline-01}
     \end{center}
 
     \tcbitem[title={From Perceptrons to Deep Learning}, raster multicolumn=6]
@@ -103,6 +105,8 @@
         Softmax & $\frac{e^{x_i}}{\sum_j e^{x_j}}$ & $(0, 1)$, sums to 1 & Output layer for classification \\
         \hline
     \end{tblr}
+\captionof{table}{Activation Functions: Why Activation Functions Matter.}
+\label{tab:ch06-deep-learning-inline-01}
 
     \tcbitem[title={ReLU: The Default Choice}, raster multicolumn=3]
     The \textbf{Rectified Linear Unit} $\mathrm{ReLU}(x) = \max(0, x)$ became the default activation after Glorot et al.\ (2011) showed it greatly improves training of deep networks\textsuperscript{\cite[][]{glorotUnderstandingDifficultyTraining}}.
@@ -117,7 +121,7 @@
         \mathrm{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{K} e^{x_j}}
     \end{equation}
     All outputs are positive and sum to $1$.
-    Combined with cross-entropy loss, softmax provides well-calibrated gradients for training classifiers.
+    Combined with cross-entropy loss, softmax provides useful gradients for training classifiers. Its outputs sum to one, but they are not automatically calibrated probabilities; calibration must be evaluated on held-out data.
 \end{tcbitemize}
 
 
@@ -177,6 +181,8 @@
         ResNet & 2015 & Skip connections; enabled training of 100+ layer networks \\
         \hline
     \end{tblr}
+\captionof{table}{Convolutional Networks: Landmark CNN Architectures.}
+\label{tab:ch06-deep-learning-inline-02}
 \end{tcbitemize}
 
 % ---- 6.2.3 Recurrent Networks, Memory Cells and LSTMs --------------------------------------
@@ -239,6 +245,8 @@
         Binary CE & $-[y\log\hat{y} + (1{-}y)\log(1{-}\hat{y})]$ & Binary classif. \\
         \hline
     \end{tblr}
+\captionof{table}{Forward Pass and Loss Functions: Common Loss Functions.}
+\label{tab:ch06-deep-learning-inline-03}
 \end{tcbitemize}
 
 % ---- 6.3.2 Weight Initialization and Transfer Function --------------------------------------
@@ -290,6 +298,8 @@
         Adam & Momentum + RMSprop; default choice\textsuperscript{\cite[][]{kingmaAdamMethodStochastic2017}} \\
         \hline
     \end{tblr}
+\captionof{table}{Backpropagation and Gradient Descent: Gradient Descent Variants.}
+\label{tab:ch06-deep-learning-inline-04}
 
     \tcbitem[title={Mini-Batch Gradient Descent}, raster multicolumn=6]
     In practice, gradients are computed on \textbf{mini-batches} (subsets of the training data, typically 32--512 examples)\textsuperscript{\cite[][p.~23]{fleuretLittleBookDeep}}.
@@ -488,6 +498,8 @@
         \node[lbl, below=0.1cm of emb_d] {Target tokens (shifted)};
         \node[lbl, above=0.1cm of out] {Output probs};
     \end{tikzpicture}
+\captionof{figure}{Transformer Architecture: Transformer Block Diagram.}
+\label{fig:ch06-deep-learning-inline-02}
     \end{center}
 
     \tcbitem[title={Positional Encoding}, raster multicolumn=3]
@@ -497,9 +509,9 @@
     \begin{equation}
         \mathrm{PE}_{t,2i} = \sin\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right),
         \quad
-        \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10^{4(2i-1)/D}}\right)
+        \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right)
     \end{equation}
-    This allows the model to extrapolate to sequences longer than seen during training. Learned positional embeddings perform similarly\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
+    The deterministic encoding can be evaluated at positions beyond those observed during training, but useful length extrapolation is an empirical property rather than a mathematical guarantee. Learned positional embeddings performed similarly in the original experiments\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
 
     \tcbitem[title={GPT and BERT: Decoder- and Encoder-Only}, raster multicolumn=3]
     Modern large language models are typically \emph{decoder-only} or \emph{encoder-only}\textsuperscript{\cite[][pp.~97--99]{fleuretLittleBookDeep}}:
@@ -561,6 +573,8 @@
         \draw[darr] (M1) -- (L1) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_1$};
         \draw[darr] (M2) -- (L2) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_2$};
     \end{tikzpicture}
+\captionof{figure}{Synthetic Gradients: Decoupled Neural Interfaces.}
+\label{fig:ch06-deep-learning-inline-03}
     \end{center}
 \end{tcbitemize}
 

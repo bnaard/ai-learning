@@ -65,6 +65,8 @@ latexmkrc
 build/
 _build/
 output/
+__pycache__/
+*.py[cod]
 
 # Claude Code local settings (personal, not shared)
 .claude/settings.local.json

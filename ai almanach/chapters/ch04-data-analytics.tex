@@ -29,6 +29,8 @@
         MAR  & Missing At Random — missingness depends on observed data only \\
         MNAR & Missing Not At Random — missingness depends on the unobserved value itself \\
     \end{tblr}
+\captionof{table}{Data Cleaning: Missing Data: MCAR, MAR, MNAR.}
+\label{tab:ch04-data-analytics-inline-01}
 
     \tcbitem[title=Outlier Detection, raster multicolumn=3]
     Outliers are observations that deviate markedly from the overall pattern\textsuperscript{\cite{hanDataMiningConcepts2012}}.
@@ -51,8 +53,10 @@
         Mode (categorical) & Assigns most frequent class \\
         Forward/back fill  & Time series; propagates last known value \\
         k-NN imputation    & Uses similar records; better for MAR \\
-        Model-based (MICE) & Multiple Imputation by Chained Equations; gold standard for MNAR \\
+        Model-based (MICE) & Multiple Imputation by Chained Equations; commonly relies on a Missing At Random assumption, while MNAR requires explicit sensitivity or missingness modelling \\
     \end{tblr}
+\captionof{table}{Data Cleaning: Imputation Strategies.}
+\label{tab:ch04-data-analytics-inline-02}
 \end{tcbitemize}
 
 % ---- 4.1.2 Data Integration -------------------------------------------------------------------------
@@ -78,6 +82,8 @@
         Transform & Clean, reshape, aggregate, apply business rules \\
         Load     & Write to target (DW, data lake, OLAP cube) \\
     \end{tblr}
+\captionof{table}{Data Integration: ETL Pipelines.}
+\label{tab:ch04-data-analytics-inline-03}
     Modern \emph{ELT} (load first, transform in-place) is preferred for cloud data lakes where storage is cheap and compute is elastic.
 
     \tcbitem[title=Data Fusion, raster multicolumn=6]
@@ -115,6 +121,8 @@
         Target encoding       & High-cardinality nominals; replaces category with mean target value \\
         Binary / Hash trick   & Very high cardinality; reduces dimensionality at cost of collisions \\
     \end{tblr}
+\captionof{table}{Data Transformation: Categorical Encoding.}
+\label{tab:ch04-data-analytics-inline-04}
 
     \tcbitem[title=Log and Power Transforms, raster multicolumn=3]
     Highly skewed features violate the normality assumptions of many models and can dominate distance metrics\textsuperscript{\cite{hanDataMiningConcepts2012}}.
@@ -141,6 +149,8 @@
         Filter, Wrapper, Embedded methods & PCA, autoencoders, LDA \\
         No transformation of values & Projects data into new space \\
     \end{tblr}
+\captionof{table}{Data Reduction: Feature Selection vs. Feature Extraction.}
+\label{tab:ch04-data-analytics-inline-05}
 
     \tcbitem[title={PCA: Principal Component Analysis}, raster multicolumn=3]
     PCA finds orthogonal directions (principal components) of maximum variance in the data\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}.
@@ -161,6 +171,8 @@
         Systematic                & Every $k$-th record                              & Ordered datasets \\
         Reservoir (online)        & Fixed-size sample from a stream in one pass      & Streaming / big data \\
     \end{tblr}
+\captionof{table}{Data Reduction: Sampling Strategies.}
+\label{tab:ch04-data-analytics-inline-06}
 \end{tcbitemize}
 
 % ---- 4.1.5 Foundations of Data Systems --------------------------------------------------------------
@@ -206,6 +218,8 @@
         Cost model & Non-linear (premium hardware) & Commodity servers \\
         Failure    & Single point of failure       & Graceful degradation \\
     \end{tblr}
+\captionof{table}{Foundations of Data Systems: Vertical vs. Horizontal Scaling.}
+\label{tab:ch04-data-analytics-inline-07}
 
     \tcbitem[title=CAP Theorem, raster multicolumn=3]
     In a distributed system it is impossible to simultaneously guarantee all three of\textsuperscript{\cite{gujaStartingDataAnalytics2025}}:
@@ -236,6 +250,8 @@
         Simplicity           & New engineers can understand the system                           & Abstraction, clean APIs, remove accidental complexity \\
         Evolvability         & Easy to adapt to new requirements                                 & Modular design, backward-compatible schemas, CI/CD \\
     \end{tblr}
+\captionof{table}{Foundations of Data Systems: Three Pillars of Maintainability.}
+\label{tab:ch04-data-analytics-inline-08}
 \end{tcbitemize}
 
 % ---- 4.1.6 Data Processing at Scale -----------------------------------------------------------------
@@ -265,6 +281,8 @@
         Iterative algorithms   & Painful                & Efficient \\
         Ecosystem              & HDFS, YARN, Hive       & SQL, Streaming, MLlib, GraphX \\
     \end{tblr}
+\captionof{table}{Data Processing at Scale: Hadoop \& Apache Spark.}
+\label{tab:ch04-data-analytics-inline-09}
 \end{tcbitemize}
 
 \subsubsection{Stream and Complex Event Processing}
@@ -280,6 +298,8 @@
         Micro-batch         & Seconds (Spark Streaming) & Aggregations with windowing \\
         Batch               & Minutes to hours        & Nightly ETL, model retraining \\
     \end{tblr}
+\captionof{table}{Data Processing at Scale: Real-Time vs. Near-Real-Time Processing.}
+\label{tab:ch04-data-analytics-inline-10}
 
     \tcbitem[title={Apache Kafka \& Event-Driven Architecture}, raster multicolumn=3]
     Apache Kafka is a distributed, fault-tolerant, high-throughput message log used as the backbone of event-driven data platforms\textsuperscript{\cite{leskovecMiningMassiveDatasets2014}}.
@@ -310,6 +330,8 @@
         Development          & Simpler initially         & Requires DevOps maturity \\
         Data storage         & Shared DB                 & DB-per-service \\
     \end{tblr}
+\captionof{table}{Microservices: Monolith vs. Microservices.}
+\label{tab:ch04-data-analytics-inline-11}
 
     \tcbitem[title={Benefits \& Trade-offs}, raster multicolumn=3]
     Microservices excel at scale and team autonomy but introduce distributed systems complexity\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
@@ -351,6 +373,8 @@
         docker-compose service    & Deployment / StatefulSet \\
         Port mapping              & Service (ClusterIP, NodePort, LoadBalancer) \\
     \end{tblr}
+\captionof{table}{Microservices: Containerization \& Orchestration.}
+\label{tab:ch04-data-analytics-inline-12}
 \end{tcbitemize}
 
 % ---- 4.1.8 Governance & Security -------------------------------------------------------------------
@@ -381,6 +405,8 @@
         $k$-anonymity            & Each record indistinguishable from $k-1$ others & Privacy model \\
         Differential Privacy     & Add calibrated noise; formal guarantee        & State of the art \\
     \end{tblr}
+\captionof{table}{Governance \& Security: Anonymization \& Pseudonymization.}
+\label{tab:ch04-data-analytics-inline-13}
 \end{tcbitemize}
 
 \subsubsection{Data Security}
@@ -406,6 +432,8 @@
         RBAC (Role-Based)      & Permissions attached to roles, users assigned to roles \\
         ABAC (Attribute-Based) & Policies on user/resource/env attributes; most flexible \\
     \end{tblr}
+\captionof{table}{Governance \& Security: Access Control.}
+\label{tab:ch04-data-analytics-inline-14}
 \end{tcbitemize}
 
 \subsubsection{Data Governance}
@@ -423,6 +451,8 @@
         Timeliness            & Is the data up-to-date for its use? \\
         Uniqueness            & Are duplicates controlled? \\
     \end{tblr}
+\captionof{table}{Governance \& Security: Data Quality Dimensions.}
+\label{tab:ch04-data-analytics-inline-15}
 
     \tcbitem[title={Data Lineage, Cataloging \& Stewardship}, raster multicolumn=3]
     \textbf{Data lineage} tracks where data originated and how it was transformed — essential for debugging, audits, and GDPR compliance\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
@@ -455,6 +485,8 @@
         ML Platform           & SageMaker                   & End-to-end ML lifecycle \\
         NoSQL                 & DynamoDB                    & Key-value / document at scale \\
     \end{tblr}
+\captionof{table}{Common Cloud Platforms \& Services: AWS Data Analytics Services.}
+\label{tab:ch04-data-analytics-inline-16}
 \end{tcbitemize}
 
 \subsubsection{Google Cloud}
@@ -472,6 +504,8 @@
         ML Platform           & Vertex AI                   & Unified ML training + serving \\
         Data Catalog          & Dataplex / Data Catalog     & Metadata management \\
     \end{tblr}
+\captionof{table}{Common Cloud Platforms \& Services: GCP Data Analytics Services.}
+\label{tab:ch04-data-analytics-inline-17}
 \end{tcbitemize}
 
 \subsubsection{Microsoft Azure}
@@ -489,6 +523,8 @@
         ETL / Orchestration   & Azure Data Factory             & Code-free ETL pipelines \\
         ML Platform           & Azure Machine Learning         & MLOps, AutoML, designer \\
     \end{tblr}
+\captionof{table}{Common Cloud Platforms \& Services: Azure Data Analytics Services.}
+\label{tab:ch04-data-analytics-inline-18}
 \end{tcbitemize}
 
 % ---- 4.1.10 DataOps ---------------------------------------------------------------------------------
@@ -520,6 +556,8 @@
         ML experiments          & MLflow, Weights \& Biases \\
         Infrastructure          & Terraform, Pulumi (IaC) \\
     \end{tblr}
+\captionof{table}{Data Ops: Version Control for Data Pipelines.}
+\label{tab:ch04-data-analytics-inline-19}
 \end{tcbitemize}
 
 \subsubsection{Containerization}
@@ -546,6 +584,8 @@
         Hard to reproduce state          & Full reproducibility from Dockerfile \\
         Rollback: restore backup         & Rollback: redeploy previous image tag \\
     \end{tblr}
+\captionof{table}{Data Ops: Immutable Infrastructure.}
+\label{tab:ch04-data-analytics-inline-20}
 \end{tcbitemize}
 
 \subsubsection{Building Data Pipelines}
@@ -575,6 +615,8 @@
         OpenLineage / Marquez       & Capture lineage events from Airflow runs \\
         Prometheus + Grafana        & Infrastructure and pipeline metrics \\
     \end{tblr}
+\captionof{table}{Data Ops: Orchestration Patterns \& Monitoring.}
+\label{tab:ch04-data-analytics-inline-21}
 \end{tcbitemize}
 
 % ---- 4.2 Exploratory Data Analysis ------------------------------------------------------------------
@@ -605,6 +647,8 @@
         Range                   & $x_{\max} - x_{\min}$; sensitive to outliers \\
         MAD                     & $\text{median}(|x_i - \text{median}|)$; very robust \\
     \end{tblr}
+\captionof{table}{Descriptive Statistics: Measures of Spread.}
+\label{tab:ch04-data-analytics-inline-22}
 
     \tcbitem[title={Five-Number Summary \& Box Plot}, raster multicolumn=6]
     Tukey's five-number summary provides a robust picture of a univariate distribution\textsuperscript{\cite{brucePracticalStatisticsData2017}}:
@@ -635,6 +679,8 @@
         \node[below] at (5,0) {\small $Q_3{+}1.5\text{IQR}$};
         \node[below] at (5.6,0) {\small outlier};
     \end{tikzpicture}
+\captionof{figure}{Descriptive Statistics: Five-Number Summary \& Box Plot.}
+\label{fig:ch04-data-analytics-inline-01}
     \end{center}
 \end{tcbitemize}
 
@@ -655,6 +701,8 @@
         Correlation matrix           & Heatmap \\
         High-dimensional overview    & Pair plot, parallel coordinates \\
     \end{tblr}
+\captionof{table}{Data Visualization Techniques: Chart Selection Guide.}
+\label{tab:ch04-data-analytics-inline-23}
 
     \tcbitem[title=Principles of Effective Visualization, raster multicolumn=3]
     Good visualizations maximize the \emph{data-ink ratio}: remove all ink that does not represent data\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
@@ -688,7 +736,7 @@
     where $d_i$ is the difference in ranks for observation $i$.
     Preferred over Pearson when data is ordinal or heavy-tailed.
 
-    \tcbitem[title={Correlation Matrix \& Correlation $\neq$ Causation}, raster multicolumn=6]
+    \tcbitem[title={Correlation Matrix \& Correlation Is Not Causation}, raster multicolumn=6]
     A \emph{correlation matrix} displays pairwise correlations for all variable pairs simultaneously; a heatmap visualization quickly reveals clusters of correlated features\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
 
     \textbf{Correlation does not imply causation.} Three alternative explanations always exist for a correlation between $X$ and $Y$:
@@ -700,6 +748,8 @@
         Confounding variable $Z$      & Hot weather increases both ice cream \emph{and} swimming \\
         Spurious correlation          & Nicolas Cage films $\sim$ pool drownings (coincidence) \\
     \end{tblr}
+\captionof{table}{Correlation Analysis: Correlation Matrix \& Correlation Is Not Causation.}
+\label{tab:ch04-data-analytics-inline-24}
     Establishing causation requires randomized controlled trials (RCTs) or causal inference methods (Pearl's do-calculus, instrumental variables, regression discontinuity).
 \end{tcbitemize}
 
@@ -714,7 +764,9 @@
         \item \textbf{Center} the data: subtract the column means so $\mathbb{E}[\mathbf{X}] = \mathbf{0}$
         \item (Optionally \textbf{scale}: divide by column std to get unit variance)
         \item \textbf{Compute} the covariance matrix $\mathbf{C} = \frac{1}{n-1}\mathbf{X}^\top\mathbf{X}$
-        \item \textbf{Eigendecompose}: $\mathbf{C} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^\top$; columns of $\mathbf{V}$ are principal directions
+        \item \textbf{Eigendecompose}: $\mathbf{C} =
+              \mathbf{V}\boldsymbol{\Lambda}\mathbf{V}^\top$; columns of
+              $\mathbf{V}$ are principal directions
         \item \textbf{Sort} eigenvectors by descending eigenvalue $\lambda_1 \geq \lambda_2 \geq \cdots$
         \item \textbf{Project}: $\mathbf{Z} = \mathbf{X}\mathbf{V}_k$ retains the top-$k$ components
         \item \textbf{Explained variance ratio}: $\frac{\lambda_j}{\sum_i \lambda_i}$; choose $k$ so cumulative ratio $\geq$ 95\%

@@ -1,0 +1,540 @@
+% Chapter-specific extensions injected by \almanachinputchapter.
+% Keep each extension compact, current, and tied to an engineering decision.
+
+\expandafter\def\csname almanachdeepdive@orientation\endcsname{%
+\section{Deep Dive: The Foundation-Model Lifecycle}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={One Model, Many System Layers},raster multicolumn=3]
+A foundation model is only one component in a lifecycle that includes data
+rights, pretraining, post-training, evaluation, retrieval, tools, serving,
+monitoring, and incident response.
+The same weights can behave very differently under another prompt template,
+retrieval corpus, decoding policy, tool permission, or user workflow.
+
+\tcbitem[title={Capability Is Not a Deployment Decision},raster multicolumn=3]
+Translate a proposed capability into a user, decision, error cost, operating
+boundary, baseline, acceptance test, fallback, and owner.
+Multimodal input or fluent generation expands the interface; it does not remove
+the need to define what counts as correct and safe.
+
+\tcbitem[title={Mini Design Review},raster multicolumn=6]
+For one AI application, draw
+\emph{data $\rightarrow$ model $\rightarrow$ system $\rightarrow$ human
+$\rightarrow$ outcome}.
+At every arrow, name what can be lost, distorted, attacked, or misunderstood.
+Then choose one metric and one qualitative investigation that could reveal the
+failure before deployment.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@mathematics\endcsname{%
+\section{Deep Dive: Numerical Stability and Honest Uncertainty}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Conditioning Before Optimisation},raster multicolumn=3]
+An algorithm can be mathematically correct and numerically unreliable.
+Inspect scale, units, rank, and condition number before interpreting a large
+gradient or unstable coefficient.
+Standardisation, orthogonal decompositions, and regularisation often improve
+the problem being solved rather than merely speeding up a solver.
+
+\tcbitem[title={Log-Sum-Exp},raster multicolumn=3]
+Directly computing $\log\sum_i e^{x_i}$ may overflow.
+With $m=\max_i x_i$,
+\begin{equation}
+  \log\sum_i e^{x_i}=m+\log\sum_i e^{x_i-m}.
+\end{equation}
+Subtracting $m$ changes neither the result nor softmax ratios, while keeping
+exponents in a representable range.
+
+\tcbitem[title={Intervals Need Assumptions},raster multicolumn=6]
+A confidence, credible, bootstrap, prediction, or conformal interval answers a
+different question under different assumptions.
+For every interval, state the random object, conditioning information,
+coverage target, data-dependence assumptions, and whether tuning reused the
+calibration data.
+Check empirical coverage on relevant slices rather than trusting the nominal
+percentage by name.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@programming\endcsname{%
+\section{Deep Dive: Reproducible ML Software}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Notebook to Package},raster multicolumn=3]
+Keep exploration in notebooks, but move reusable transformations, models, and
+metrics into typed modules with documented interfaces.
+A command-line entry point plus a versioned configuration makes the experiment
+rerunnable without executing cells in a remembered order.
+
+\tcbitem[title={Test Properties, Not Only Examples},raster multicolumn=3]
+Example tests check known cases.
+Property and metamorphic tests check invariants: shuffling rows should not
+change a permutation-invariant aggregate; serialization should preserve a
+prediction within tolerance; a monotone transform should preserve ranks.
+These tests catch families of failures that one golden input misses.
+
+\tcbitem[title={Operational Skeleton},raster multicolumn=6]
+Build a minimal repository with locked dependencies, configuration validation,
+structured logging, data-schema checks, unit tests, one end-to-end smoke test,
+an environment capture, and a single command that trains and evaluates a
+baseline.
+Record code revision, data identifier, seed, hardware, and output artifact in
+the same run manifest.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@data-analytics\endcsname{%
+\section{Deep Dive: Data Contracts, Lineage, and Drift}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={A Schema Is Not a Data Contract},raster multicolumn=3]
+A contract includes semantics, units, allowed values, null meaning, freshness,
+uniqueness, privacy classification, owners, change policy, and service level.
+Two columns can share a type while representing incompatible populations or
+measurement procedures.
+
+\tcbitem[title={Lineage Makes Errors Reversible},raster multicolumn=3]
+Record source, transformation version, validation result, and downstream
+consumers for every material dataset and feature.
+Lineage should answer which models used a corrupted source and which reports
+must be recomputed after a correction.
+
+\tcbitem[title={Drift Is a Question, Not One Score},raster multicolumn=6]
+Distinguish input drift $p(x)$, label drift $p(y)$, concept drift $p(y\mid x)$,
+and operational changes in collection or policy.
+A PSI or KS alert can indicate distribution change but cannot identify cause or
+business impact by itself.
+Pair statistical signals with slice-level performance, data-quality checks,
+and an investigation playbook.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@machine-learning\endcsname{%
+\section{Deep Dive: From Score to Decision Policy}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Probability, Threshold, Action},raster multicolumn=3]
+A classifier score becomes useful only through a decision policy.
+Choose thresholds from false-positive and false-negative consequences,
+capacity constraints, calibration, and an abstention or review path.
+Accuracy at the default threshold rarely captures this operating decision.
+
+\tcbitem[title={Calibration and Coverage},raster multicolumn=3]
+Measure reliability curves and proper scoring rules on held-out data.
+When uncertainty is material, compare calibrated probabilities, prediction
+intervals, or conformal sets and report empirical coverage and set size by
+slice.
+Coverage without useful sharpness can still produce an unusable system.
+
+\tcbitem[title={Data-Centric Error Loop},raster multicolumn=6]
+After a baseline, cluster errors by mechanism: ambiguous target, label error,
+missing feature, distribution gap, shortcut, capacity limit, or threshold
+policy.
+Make one intervention at a time, preserve a protected evaluation set, and
+measure whether improvement transfers beyond the error slice that inspired the
+change.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@deep-learning\endcsname{%
+\section{Deep Dive: Modern Training and Inference}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Residual Pre-Norm Blocks},raster multicolumn=3]
+Modern deep networks stabilise optimisation with residual paths and
+normalisation.
+In a pre-norm Transformer block,
+$x' = x + \mathrm{Attention}(\mathrm{Norm}(x))$ and
+$y = x' + \mathrm{MLP}(\mathrm{Norm}(x'))$.
+The residual path carries information and gradients even when a learned branch
+is initially poor.
+
+\tcbitem[title={Training Parallelism vs Inference},raster multicolumn=3]
+Self-attention can process training positions in parallel, but dense attention
+still has quadratic interaction cost in sequence length.
+Autoregressive generation remains sequential across new tokens.
+A key--value cache avoids recomputing earlier keys and values, trading memory
+for lower per-token latency.
+
+\tcbitem[title={Efficiency Is Multi-Dimensional},raster multicolumn=6]
+Quantisation, distillation, sparsity, low-rank adaptation, activation
+checkpointing, batching, and distributed sharding reduce different costs and
+introduce different errors.
+Benchmark end-to-end quality, latency, throughput, peak memory, energy, and
+operational complexity under the intended workload; parameter count alone is
+not a deployment metric.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@evaluation-mlops\endcsname{%
+\section{Deep Dive: Evaluating Generative and Adaptive Systems}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Quality Is a Vector},raster multicolumn=3]
+For generative systems, separate task success, factual grounding, instruction
+following, safety, style, latency, and cost.
+Aggregate scores can hide a release-blocking failure, so define non-compensable
+gates for critical behaviours.
+
+\tcbitem[title={Judges Need Evaluation Too},raster multicolumn=3]
+An LLM judge is a measurement instrument.
+Calibrate it against blinded human decisions, randomise order, test position
+and verbosity bias, report agreement and uncertainty, and keep a stable anchor
+set across judge changes.
+
+\tcbitem[title={Sequential Release Evidence},raster multicolumn=6]
+Combine offline suites with shadow traffic, canaries, guarded online
+experiments, rollback triggers, and post-release monitoring.
+Account for repeated looks at online metrics and delayed outcomes.
+A release is an evidence update, not permission to retire the evaluation set.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@reinforcement-learning\endcsname{%
+\section{Deep Dive: Offline, Safe, and Preference-Based Learning}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Offline RL and Coverage},raster multicolumn=3]
+Offline RL learns from a fixed behaviour dataset.
+Actions outside that dataset's support can receive optimistic values because
+their outcomes are weakly identified.
+Report behaviour-policy coverage and compare with behaviour cloning and a
+conservative non-learning baseline.
+
+\tcbitem[title={Safety Is a Constraint},raster multicolumn=3]
+Reward penalties do not guarantee a hard safety limit.
+Constrained policies, shields, action filters, simulators, and independent
+supervisors address different layers.
+Evaluate rare violations, recovery, and reward hacking rather than only mean
+return.
+
+\tcbitem[title={Off-Policy Evidence},raster multicolumn=6]
+Before deploying a new policy, estimate its value with importance weighting,
+doubly robust estimators, or a validated simulator.
+Large policy shifts create high-variance or biased estimates when action
+probabilities have little overlap.
+Report effective sample size, sensitivity to clipping, and where evaluation
+depends on extrapolation.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@trustworthy-ai\endcsname{%
+\section{Deep Dive: Agentic Systems and Deterministic Boundaries}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Treat Tool Output as Untrusted},raster multicolumn=3]
+Retrieved documents, web pages, messages, and tool results can contain
+instructions designed to compete with system policy.
+Parse data with schemas, isolate it from instructions, and keep authorization
+outside the model.
+
+\tcbitem[title={Least-Privilege Tool Use},raster multicolumn=3]
+Issue short-lived credentials for the minimum resource and action.
+Validate arguments, enforce limits, require confirmation for consequential
+changes, and log the request, decision, tool result, and artifact versions.
+The model proposes; a deterministic boundary disposes.
+
+\tcbitem[title={Trajectory-Level Assurance},raster multicolumn=6]
+Evaluate complete trajectories, including retries, tool selection, state
+changes, recovery, and human handover.
+A component that passes isolated prompts can still fail through compounding
+errors, excessive autonomy, or a permission path that bypasses the intended
+control.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@computer-vision\endcsname{%
+\section{Deep Dive: Foundation Vision and Robust Perception}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Prompts Change the Vision Interface},raster multicolumn=3]
+Promptable segmentation and vision--language models replace a fixed class list
+with points, boxes, text, or examples.
+This flexibility expands evaluation: test localisation, open-vocabulary
+recognition, grounding, refusal, and consistency across prompt wording.
+
+\tcbitem[title={Shift Is Often Physical},raster multicolumn=3]
+Weather, optics, compression, sensor ageing, viewpoint, motion blur, and scene
+composition alter the image-generating process.
+Corruption benchmarks are useful probes but do not replace data collected in
+the intended operational domain.
+
+\tcbitem[title={Perception-to-Action Trace},raster multicolumn=6]
+For one detected object, trace calibration, preprocessing, model output,
+tracking, fusion, uncertainty, planning, and fallback.
+Express how spatial or temporal error propagates into an action margin.
+Evaluate the system-level consequence, not only IoU or mAP in isolation.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@nlp-generative-ai\endcsname{%
+\section{Deep Dive: Retrieval, Tools, and Structured Generation}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={RAG Has Two Evaluations},raster multicolumn=3]
+Evaluate retrieval with relevance, recall, ranking, freshness, permissions, and
+coverage.
+Evaluate generation with grounding, citation correctness, completeness, and
+task success.
+A faithful answer to irrelevant evidence is still a retrieval failure.
+
+\tcbitem[title={Structured Output Is a Contract},raster multicolumn=3]
+Define a schema, validate every field, reject unknown actions, and separate
+syntactic validity from semantic authorization.
+Repair loops need bounded retries and telemetry; silently accepting a plausible
+but invalid object moves uncertainty into downstream code.
+
+\tcbitem[title={Long Context Is Not Perfect Memory},raster multicolumn=6]
+More tokens increase cost and can dilute relevant evidence.
+Compare long-context prompting with retrieval, summarisation, and explicit
+state.
+Test information at different positions, conflicting evidence, multilingual
+inputs, and instructions embedded inside retrieved content.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@practical-llm-engineering\endcsname{%
+\section{Deep Dive: Serving the Adapted Model}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Quantisation Experiment},raster multicolumn=3]
+Compare the reference model with 8-bit and 4-bit weight variants on the same
+quality, latency, throughput, and peak-memory suite.
+Separate quantised loading from quantisation-aware training and record which
+layers or tensors remain at higher precision.
+
+\tcbitem[title={Measure the Workload Shape},raster multicolumn=3]
+Prompt length, generated length, batch concurrency, cache reuse, and hardware
+determine serving behaviour.
+Report time to first token and inter-token latency in addition to total
+throughput; an average can hide an unusable tail.
+
+\tcbitem[title={Adapter Governance},raster multicolumn=6]
+Version base model, tokenizer, chat template, adapter, merge procedure,
+training data, licence, and evaluation result as one deployable bill of
+materials.
+Verify a merged artifact against the separate adapter path before promotion and
+retain a rollback target.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@fintech\endcsname{%
+\section{Deep Dive: Point-in-Time Financial Evaluation}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={What Was Knowable Then?},raster multicolumn=3]
+Reconstruct features, universe membership, prices, and filings as they were
+available at the decision timestamp.
+Later corrections, surviving firms, or revised labels create look-ahead and
+survivorship bias even when rows are split by date.
+
+\tcbitem[title={Backtest the Executable Policy},raster multicolumn=3]
+Include transaction costs, spread, latency, market impact, turnover,
+constraints, rejected orders, and capital limits.
+Compare against a simple implementable strategy and test performance across
+regimes rather than selecting a convenient interval.
+
+\tcbitem[title={Decisions Need Reasons and Appeals},raster multicolumn=6]
+For credit, fraud, or AML workflows, connect model output to threshold,
+capacity, adverse-action explanation, human review, and appeal.
+Measure calibration and error costs by relevant groups, plus queue burden and
+time to resolution.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@healthcare\endcsname{%
+\section{Deep Dive: From Retrospective Accuracy to Clinical Utility}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={External and Prospective Evidence},raster multicolumn=3]
+Validate across sites, devices, time periods, workflows, and patient groups.
+A retrospective external set tests transportability; a prospective silent
+study tests current data flow; an impact study tests whether use changes care
+and outcomes.
+
+\tcbitem[title={Thresholds Depend on the Pathway},raster multicolumn=3]
+Sensitivity and specificity do not determine value without prevalence,
+capacity, downstream tests, delay, and harm.
+Decision-curve or utility analysis makes the intervention threshold explicit
+and should be complemented by calibration and subgroup uncertainty.
+
+\tcbitem[title={Change Control for Learning Systems},raster multicolumn=6]
+Define which data, preprocessing, model, threshold, interface, or workflow
+changes require revalidation.
+Monitor input and outcome delay, override patterns, incidents, and calibration.
+A safe update plan includes rollback and communication, not only a newer model
+file.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@industrial-ai\endcsname{%
+\section{Deep Dive: Digital Twins, Edge AI, and Safe Updates}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Calibrate the Twin},raster multicolumn=3]
+A digital twin is useful only within a validated envelope.
+Estimate parameters from measured behaviour, compare residuals across operating
+regimes, quantify uncertainty, and identify effects absent from the simulator.
+
+\tcbitem[title={Edge Constraints Shape the Model},raster multicolumn=3]
+Timing jitter, memory, power, connectivity, sensor bandwidth, and thermal limits
+can dominate model choice.
+Benchmark on the target device with realistic preprocessing and concurrent
+loads, not only on a workstation.
+
+\tcbitem[title={Safe Over-the-Air Change},raster multicolumn=6]
+Sign artifacts, bind model and configuration versions, stage rollout, verify a
+shadow or canary, protect compatibility, and keep an independently tested
+fallback.
+An update must preserve the operational safety envelope even when its average
+prediction metric improves.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@supply-chain\endcsname{%
+\section{Deep Dive: Forecast Distributions to Robust Decisions}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Evaluate at the Decision Horizon},raster multicolumn=3]
+Use rolling-origin evaluation with the forecast horizons, hierarchy, and data
+latency of the planning process.
+Report scale-appropriate errors and interval coverage; one aggregate point
+metric can hide poor service for intermittent or high-value items.
+
+\tcbitem[title={Reconcile the Hierarchy},raster multicolumn=3]
+Product, region, channel, and total forecasts should add consistently.
+Reconciliation trades local fit for coherent planning and must respect which
+levels contain reliable signal and which are management aggregates.
+
+\tcbitem[title={Optimise Across Scenarios},raster multicolumn=6]
+Pass a forecast distribution or scenarios into inventory, routing, or capacity
+decisions rather than treating a point forecast as certain demand.
+Stress lead time, supplier failure, correlated disruption, and policy delay.
+Compare the learned policy with a transparent robust or stochastic-optimisation
+baseline.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@multi-agent-systems\endcsname{%
+\section{Deep Dive: LLM Agents as Distributed Systems}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Distinguish Three Agent Traditions},raster multicolumn=3]
+Classical BDI agents execute explicit beliefs, desires, and intentions.
+MARL agents learn policies through interaction.
+LLM agents generate plans and tool calls from context.
+The three can be combined, but their state, guarantees, and failure modes are
+not interchangeable.
+
+\tcbitem[title={Protocols Need Semantics},raster multicolumn=3]
+A message schema states syntax; an interaction protocol also defines allowed
+states, idempotency, timeouts, authorization, conflict resolution, and recovery.
+Use correlation identifiers and explicit ownership so retries do not create
+duplicate consequential actions.
+
+\tcbitem[title={Evaluate Trajectories and Emergence},raster multicolumn=6]
+Measure task success, steps, tool errors, communication cost, latency,
+permission violations, deadlocks, loops, and human interventions.
+Test adversarial messages and collusion as well as cooperative examples.
+Local pass rates do not prove stable collective behaviour.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@commerce-marketing\endcsname{%
+\section{Deep Dive: Feedback Loops and Multi-Sided Objectives}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Logged Data Reflects the Old Policy},raster multicolumn=3]
+Clicks and purchases are observed only for items exposed by an earlier ranking
+and interface.
+Position, availability, and selection bias confound naive supervised targets.
+Randomised exploration or carefully justified propensity methods help estimate
+counterfactual performance.
+
+\tcbitem[title={Delayed and Interfering Outcomes},raster multicolumn=3]
+Campaigns can change later conversion, returns, fatigue, and word of mouth.
+One user's exposure can affect inventory, prices, sellers, and other users, so
+standard independent-unit A/B assumptions may fail.
+
+\tcbitem[title={Balance the Marketplace},raster multicolumn=6]
+Evaluate relevance, conversion, margin, diversity, novelty, long-term retention,
+producer exposure, support burden, and safety constraints.
+Define which objectives are hard constraints and which can trade off.
+Monitor feedback loops that make the training data increasingly reflect the
+model's own past choices.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@it-law\endcsname{%
+\section{Deep Dive: From Legal Classification to Engineering Evidence}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Begin with Role and Intended Purpose},raster multicolumn=3]
+Map jurisdictions, actor roles, intended purpose, affected people, sector,
+data flows, and lifecycle stage before selecting obligations.
+Provider, deployer, importer, distributor, employer, controller, and processor
+can carry different duties for the same technical component.
+
+\tcbitem[title={Translate Duties into Controls},raster multicolumn=3]
+Turn requirements into owners, controls, evidence, retention, review dates, and
+incident paths.
+Examples include provenance records, risk management, human oversight,
+cybersecurity, performance monitoring, notices, rights handling, and supplier
+contracts.
+
+\tcbitem[title={Maintain a Legal Change Log},raster multicolumn=6]
+Record the source, jurisdiction, version, effective date, interpretation owner,
+affected system, and next review.
+The legal chapter is orientation, not legal advice; current official text and
+qualified counsel govern consequential decisions.
+Reassess when purpose, data, model, geography, users, or autonomy changes.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@visualization\endcsname{%
+\section{Deep Dive: Uncertainty, Accessibility, and Monitoring}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Show the Distribution Behind the Mean},raster multicolumn=3]
+Use intervals, densities, small multiples, or raw observations to show spread,
+sample size, and heterogeneity.
+For probabilistic models, reliability diagrams and risk--coverage curves reveal
+behaviour hidden by a single discrimination score.
+
+\tcbitem[title={Design Beyond Colour},raster multicolumn=3]
+Use contrast, direct labels, position, shape, line style, and ordering so the
+message survives colour-vision differences and monochrome output.
+Provide a meaningful caption or alternate description and preserve logical
+reading order in the exported document.
+
+\tcbitem[title={A Monitoring Chart Must Trigger Action},raster multicolumn=6]
+Connect every panel to an owner, threshold, investigation, and time horizon.
+Separate service health, data quality, prediction distribution, delayed
+performance, subgroup behaviour, incidents, and business outcomes.
+Annotate model or policy changes so the chart can support causal investigation
+rather than merely display motion.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@startup\endcsname{%
+\section{Deep Dive: Portfolio Evidence and Option Value}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Fund Learning Milestones},raster multicolumn=3]
+Tie spending to the next uncertainty-reducing milestone: verified problem,
+representative data, baseline feasibility, paid workflow adoption, responsible
+operation, or repeatable economics.
+Do not confuse accumulated code with reduced venture risk.
+
+\tcbitem[title={Preserve Strategic Options},raster multicolumn=3]
+Design pilots so data, evaluations, interfaces, and customer learning remain
+useful if the model, supplier, or route to market changes.
+Portability and a credible manual fallback create option value when technology
+and regulation move faster than the plan.
+\end{tcbitemize}
+}
+
+\expandafter\def\csname almanachdeepdive@scientific-writing\endcsname{%
+\section{Deep Dive: Reproducibility Audit}
+\begin{tcbitemize}[skin=sectionraster]
+\tcbitem[title={Recompute from a Clean Environment},raster multicolumn=3]
+Give the repository and manuscript to a reader who did not create the original
+environment.
+Record missing data, secrets, undocumented preprocessing, manual steps,
+unstable downloads, and discrepancies between figures and reported numbers.
+
+\tcbitem[title={Audit the Claim Graph},raster multicolumn=3]
+For every abstract and conclusion claim, link the supporting result, method,
+artifact, and limitation.
+Remove orphan claims and propagate changed numbers or caveats through captions,
+tables, discussion, model cards, and supplementary material.
+\end{tcbitemize}
+}
+
+\newcommand{\almanachdeepdive}[1]{%
+    \ifcsname almanachdeepdive@#1\endcsname
+        \csname almanachdeepdive@#1\endcsname
+    \fi
+}

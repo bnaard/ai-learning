@@ -227,7 +227,7 @@
         \item \textbf{Timed automata}: each transition has a real-valued clock guard $g \leq t \leq h$; reachability becomes decidable via region graphs
         \item \textbf{Timed Petri nets}: firing durations assigned to transitions; used for throughput analysis
         \item \textbf{Stochastic Petri nets}: exponential firing rates $\lambda$ yield an embedded CTMC; steady-state throughput solvable analytically
-        \item \textbf{Markov chains / queuing theory}: $M/M/1$ queue gives mean wait $W = \frac{1}{\mu - \lambda}$
+        \item \textbf{Markov chains / queueing theory}: for a stable $M/M/1$ queue with $\lambda<\mu$, mean time in the system is $W=\frac{1}{\mu-\lambda}$, while mean waiting time in the queue is $W_q=\frac{\lambda}{\mu(\mu-\lambda)}$
     \end{itemize}
 \end{tcbitemize}
 

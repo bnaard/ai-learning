@@ -1,0 +1,444 @@
+\chapter{Evaluation, Testing, and MLOps}
+\label{ch:evaluation-mlops}
+
+\begin{learningobjectives}
+After this chapter, you should be able to:
+\begin{itemize}
+    \item translate a real decision into a measurable evaluation contract;
+    \item choose leakage-resistant data splits and task-appropriate metrics;
+    \item quantify sampling uncertainty instead of reporting a lonely score;
+    \item test data, numerical code, learned behaviour, and the surrounding
+          system;
+    \item design an experiment in which a stronger model can genuinely lose;
+    \item define release gates and production monitoring for an ML service.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Training asks, ``Can the optimiser reduce this loss on these examples?''
+Evaluation asks, ``Does the resulting system help on the cases that matter,
+under conditions that resemble use, without unacceptable side effects?''
+Those are different questions.
+The second one is the engineering question.
+\end{plainlanguage}
+
+\section{Begin with an Evaluation Contract}
+
+Evaluation begins before a model is selected.
+A useful \keyterm{evaluation contract} records the intended decision, the unit
+being predicted, the population of interest, the costs of errors, and the
+conditions under which the result will be used.
+
+\begin{tcbitemize}[skin=sectionraster]
+    \tcbitem[title=Decision and action, raster multicolumn=3]
+    What action changes when the prediction changes?
+    A probability estimate that never changes a decision may be analytically
+    interesting but operationally irrelevant.
+
+    \tcbitem[title=Unit and population, raster multicolumn=3]
+    Is one row a machine cycle, a patient, an invoice, a customer, or a token?
+    Define who or what must generalise beyond the collected sample.
+
+    \tcbitem[title=Error costs, raster multicolumn=3]
+    A false alarm and a missed event rarely cost the same amount.
+    Record monetary, safety, fairness, and workload consequences.
+
+    \tcbitem[title=Operating conditions, raster multicolumn=3]
+    State expected input ranges, latency and memory budgets, human review,
+    fallback behaviour, and prohibited uses.
+\end{tcbitemize}
+
+\begin{engineernote}
+Write the acceptance criteria before training.
+If the criteria are invented after looking at results, model selection becomes
+an exercise in moving the goalposts with impressive numerical precision.
+\end{engineernote}
+
+\subsection{Baseline ladder}
+
+Every candidate should be compared with a ladder of increasingly credible
+baselines:
+
+\begin{enumerate}
+    \item a random or majority-class rule that exposes broken metrics;
+    \item a domain heuristic that represents current practice;
+    \item a simple statistical model that is easy to inspect;
+    \item the current production or previously accepted model;
+    \item the proposed model under exactly the same evaluation protocol.
+\end{enumerate}
+
+A complex candidate is not entitled to win.
+If logistic regression is more accurate, better calibrated, faster, and easier
+to maintain, the engineering victory belongs to logistic regression.
+
+\section{Data Splits and Leakage}
+
+The usual train/validation/test vocabulary describes different permissions.
+The \keyterm{training set} may influence learned parameters.
+The \keyterm{validation set} may influence hyperparameters, thresholds, model
+choice, and stopping.
+The \keyterm{test set} may influence the final claim, but not the system that
+is being claimed about.
+
+\begin{table}[htbp]
+\centering
+\caption{Choose a split that imitates the intended generalisation boundary.}
+\label{tab:split-strategies}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.18\textwidth] X[l] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Split & Use when & Typical leakage prevented \\
+Random stratified & Independent and identically distributed rows &
+Class proportions drifting between splits \\
+Grouped & Several rows belong to one person, machine, site, or source &
+The same entity appearing in train and test \\
+Temporal & The system predicts future observations &
+Future information influencing the past \\
+Geographic or site holdout & Deployment expands to unseen locations &
+Site-specific shortcuts and duplicated procedures \\
+Nested cross-validation & Hyperparameter selection and performance estimation
+share scarce data &
+Optimism from selecting and reporting on the same folds \\
+Private challenge set & Repeated model development risks benchmark overfitting &
+Direct and indirect adaptation to known test cases \\
+\end{tblr}
+\end{table}
+
+\keyterm{Data leakage} occurs when information unavailable at the intended
+prediction time influences training, preprocessing, selection, or evaluation.
+It can be obvious, such as leaving the target in the features, or subtle, such
+as fitting a scaler on all rows before cross-validation.
+
+\begin{cautionbox}[The pipeline must be inside the split]
+Imputation, normalisation, vocabulary construction, feature selection,
+oversampling, and dimensionality reduction learn from data.
+Fit those operations on each training fold and apply the fitted transformation
+to its validation fold.
+Libraries such as scikit-learn provide pipelines precisely to preserve this
+boundary.\textsuperscript{\cite{pedregosaScikitlearnMachineLearning2011}}
+\end{cautionbox}
+
+\subsection{Contamination and deduplication}
+
+For web-scale and generative models, exact train--test separation may be hard
+to prove.
+Record dataset provenance, licenses, hashes, and collection dates; perform
+exact and near-duplicate searches; and treat an unexplained benchmark jump as
+a reason to investigate rather than a reason to celebrate.
+Datasheets make these questions explicit at dataset level, while model cards
+record intended use and evaluation
+context.\textsuperscript{\cite{gebruDatasheetsDatasets2021,
+mitchellModelCardsModel2019}}
+
+\section{Metrics: Translate Errors into Numbers}
+
+No metric is universally best.
+A metric is a compressed statement about which distinctions and errors the
+evaluation considers important.
+
+\subsection{Classification}
+
+For a binary classifier, let $TP$, $FP$, $TN$, and $FN$ denote true positives,
+false positives, true negatives, and false negatives.
+
+\begin{align}
+    \text{precision} &= \frac{TP}{TP+FP},
+    &\text{recall} &= \frac{TP}{TP+FN},
+    \label{eq:precision-recall}\\
+    \text{specificity} &= \frac{TN}{TN+FP},
+    &F_1 &= 2\frac{\text{precision}\cdot\text{recall}}
+                    {\text{precision}+\text{recall}}.
+    \label{eq:specificity-f1}
+\end{align}
+
+Accuracy answers, ``What fraction was labelled correctly?''
+It can be misleading when classes are imbalanced or error costs differ.
+If only one in a thousand components fails, predicting ``healthy'' every time
+achieves \qty{99.9}{\percent} accuracy and catches no failures at all.
+
+\begin{workedexample}[A maintenance threshold]
+Suppose a model raises 50 alarms.
+Of these, 35 correspond to real failures, and it misses another 15 failures.
+Then $TP=35$, $FP=15$, and $FN=15$.
+Precision and recall are both $35/50=0.70$, so $F_1=0.70$.
+Whether this is acceptable cannot be inferred from $F_1$ alone: the decision
+depends on the cost of inspection, downtime, and a missed hazardous failure.
+\end{workedexample}
+
+Ranking metrics such as ROC AUC and average precision evaluate performance
+across thresholds.
+Operational decisions still require a threshold, so report results at the
+intended operating point and include the resulting workload.
+
+\subsection{Regression and forecasting}
+
+For errors $e_i=y_i-\hat y_i$ over $n$ observations,
+
+\begin{align}
+    \operatorname{MAE} &= \frac{1}{n}\sum_{i=1}^{n}|e_i|,
+    \label{eq:mae}\\
+    \operatorname{MSE} &= \frac{1}{n}\sum_{i=1}^{n}e_i^2,
+    &\operatorname{RMSE} &= \sqrt{\operatorname{MSE}}.
+    \label{eq:mse-rmse}
+\end{align}
+
+MAE is in the target's units and weights absolute errors linearly.
+RMSE is also in the target's units but penalises large errors more strongly.
+The coefficient of determination,
+
+\begin{equation}
+    R^2 = 1 -
+    \frac{\sum_i(y_i-\hat y_i)^2}
+         {\sum_i(y_i-\bar y)^2},
+    \label{eq:r-squared}
+\end{equation}
+
+compares squared error with a mean-prediction baseline.
+$R^2$ can be negative on test data when the candidate is worse than that
+baseline.
+This is not a software error; it is a useful message from the data.
+
+For forecasting, calculate errors with rolling or expanding temporal origins.
+A random split allows the model to learn from a future that the deployed
+system will never possess.
+
+\subsection{Probabilities and calibration}
+
+A probability is useful when statements such as ``about 20 out of 100 cases
+assigned probability 0.2 occur'' are empirically true.
+This agreement is \keyterm{calibration}.
+Evaluate it with reliability diagrams and proper scoring rules such as log
+loss or the Brier score, rather than checking only the winning class.
+
+For a binary target $y_i\in\{0,1\}$ and predicted probability $p_i$,
+
+\begin{equation}
+    \operatorname{Brier} = \frac{1}{n}\sum_{i=1}^{n}(p_i-y_i)^2.
+    \label{eq:brier-score}
+\end{equation}
+
+Calibration must be checked on data not used to fit the calibrator.
+It should also be checked by relevant subgroup when error consequences differ.
+
+\section{Uncertainty, Resampling, and Honest Comparisons}
+
+A score calculated from a finite sample is a random quantity.
+Reporting more decimal places does not create more evidence.
+
+\subsection{Bootstrap interval}
+
+Given a test set of $n$ independent evaluation units:
+
+\begin{enumerate}
+    \item sample $n$ units with replacement;
+    \item calculate the metric on the resample;
+    \item repeat many times using a recorded random seed;
+    \item report suitable quantiles of the bootstrap distribution.
+\end{enumerate}
+
+Resample at the independent unit.
+If one patient contributes many images, resampling individual images invents
+more independent evidence than the experiment contains.
+
+\begin{engineernote}
+For a paired model comparison, resample cases once and calculate both models
+on each same resample.
+The distribution of score differences is usually more informative than two
+separate confidence intervals.
+\end{engineernote}
+
+\subsection{Seeds and repeated experiments}
+
+Neural training and reinforcement learning can vary substantially across
+random initialisations, data order, and environment trajectories.
+Report all planned seeds, the aggregation rule, and dispersion.
+Do not quietly select the seed that tells the best story.
+
+Hyperparameter search consumes validation evidence.
+The final test set should be opened only after the model, preprocessing,
+threshold, and stopping rule are frozen.
+If the test result triggers another design iteration, it has become validation
+data and a fresh test is required.
+
+\section{A Testing Pyramid for Learned Systems}
+
+Traditional software specifies behaviour in code.
+ML systems distribute behaviour across code, data, parameters, configuration,
+and infrastructure, which expands the test surface and creates hidden
+technical debt.\textsuperscript{\cite{sculleyHiddenTechnicalDebt2015}}
+
+\begin{center}
+\begin{tikzpicture}[
+    every node/.style={font=\sffamily\small,align=center},
+    level/.style={draw=\maincolor!70!black,fill=\maincolor!8!white,
+                  minimum height=9mm}]
+    \node[level,minimum width=4.5cm] at (0,0)
+        {Decision and safety validation};
+    \node[level,minimum width=6.5cm] at (0,-0.95)
+        {End-to-end and human-in-the-loop tests};
+    \node[level,minimum width=8.5cm] at (0,-1.90)
+        {Model behaviour and robustness tests};
+    \node[level,minimum width=10.5cm] at (0,-2.85)
+        {Data, numerical, component, and integration tests};
+\end{tikzpicture}
+\captionof{figure}{A testing pyramid for ML systems. Lower layers run more
+often; higher layers validate consequential behaviour.}
+\label{fig:ml-testing-pyramid}
+\end{center}
+
+\begin{table}[htbp]
+\centering
+\caption{Examples of tests at different ML system layers.}
+\label{tab:ml-test-layers}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.18\textwidth] X[l] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Layer & Example assertion & Failure detected \\
+Data contract & Schema, units, ranges, missingness, uniqueness &
+Broken ingestion or silent source changes \\
+Numerical & Analytical gradient agrees with finite differences &
+Incorrect derivatives, broadcasting, or sign errors \\
+Training sanity & A small model can overfit a tiny clean batch &
+Disconnected loss, frozen parameters, or label mismatch \\
+Behavioural & Invariance under irrelevant formatting or permutation &
+Shortcut learning and brittle preprocessing \\
+Robustness & Quality under corruption, shift, and adversarial cases &
+Unsafe operating boundaries \\
+Integration & Saved model reproduces accepted predictions after reload &
+Serialization, preprocessing, or version mismatch \\
+System & Latency, memory, concurrency, fallback, and rollback budgets &
+Deployment failures invisible to offline accuracy \\
+\end{tblr}
+\end{table}
+
+\subsection{Property and metamorphic tests}
+
+Many ML outputs lack one exact expected value, but useful relationships remain
+testable.
+A unit conversion should change a physically meaningful output predictably.
+Permuting a set should not change a permutation-invariant model.
+Adding masked padding tokens should not alter unmasked sequence outputs.
+Behavioural testing libraries formalise such capability-oriented checks for
+NLP systems.\textsuperscript{\cite{ribeiroBeyondAccuracyBehavioral2020}}
+
+\subsection{Protected regression gates}
+
+Before deployment, define metrics that a new version must not degrade beyond a
+declared tolerance.
+Protect not only mean task quality but also safety tests, subgroup errors,
+calibration, latency, memory, and cost.
+The ML Test Score offers a production-oriented rubric spanning data,
+features, model development, and
+infrastructure.\textsuperscript{\cite{breckMLTestScore2017}}
+
+\section{From Experiment to Operated System}
+
+\keyterm{MLOps} applies software and operational discipline to the complete
+machine-learning lifecycle.
+Its goal is not merely automated deployment; it is controlled, traceable, and
+reversible change.
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=8mm and 8mm,
+    stage/.style={draw=\maincolor!70!black,fill=\maincolor!6!white,
+                  rounded corners=1mm,font=\sffamily\small,align=center,
+                  minimum width=2.5cm,minimum height=9mm},
+    >={Stealth[length=2mm]}]
+    \node[stage] (scope) {Scope and\\risk};
+    \node[stage,right=of scope] (data) {Versioned\\data};
+    \node[stage,right=of data] (train) {Reproducible\\training};
+    \node[stage,below=of train] (gate) {Evaluation\\gate};
+    \node[stage,left=of gate] (deploy) {Controlled\\deployment};
+    \node[stage,left=of deploy] (monitor) {Monitor and\\respond};
+    \draw[->] (scope) -- (data);
+    \draw[->] (data) -- (train);
+    \draw[->] (train) -- (gate);
+    \draw[->] (gate) -- (deploy);
+    \draw[->] (deploy) -- (monitor);
+    \draw[->] (monitor) -- (scope);
+\end{tikzpicture}
+\captionof{figure}{The controlled ML lifecycle: every release is measurable
+and reversible.}
+\label{fig:controlled-ml-lifecycle}
+\end{center}
+
+\subsection{What to version}
+
+At minimum, record code commit, environment lockfile, data snapshot or query,
+feature definitions, model configuration, seed, training logs, checkpoint,
+evaluation predictions, and the command that reproduces the result.
+A model file without its preprocessing and provenance is an archaeological
+artifact, not a release.
+
+\subsection{What to monitor}
+
+Production monitoring covers several distinct questions:
+
+\begin{itemize}
+    \item \textbf{service health:} availability, errors, latency, throughput,
+          memory, and cost;
+    \item \textbf{input health:} schema violations, missingness, ranges,
+          categories, and drift;
+    \item \textbf{output health:} score distribution, abstentions, constraint
+          violations, and unsafe content;
+    \item \textbf{delayed quality:} task metrics when ground truth eventually
+          arrives;
+    \item \textbf{decision impact:} workload, user outcomes, feedback loops,
+          and unintended behaviour.
+\end{itemize}
+
+Feature drift does not automatically imply quality loss, and stable features
+do not prove stable quality.
+Monitoring is a set of warning instruments, not a proof that the aircraft is
+sound.
+
+\section{Practical Lab: A Reproducible Model Comparison}
+
+\begin{practicallab}[Leakage, baselines, uncertainty, and a release gate]
+Choose a small tabular classification dataset with a meaningful group or time
+variable.
+Build one heuristic, logistic regression, a decision tree, and one ensemble.
+
+\textbf{Required protocol:}
+\begin{enumerate}
+    \item write the evaluation contract and choose the split before fitting;
+    \item put all learned preprocessing inside a pipeline;
+    \item freeze a test set and tune on training/validation data only;
+    \item report precision, recall, calibration, workload, and a paired
+          bootstrap interval;
+    \item introduce one deliberate leakage path and measure the false
+          improvement;
+    \item add data-contract, serialization, and behavioural tests;
+    \item define a release gate including quality and latency;
+    \item write a short model card with intended use, limitations, and evidence.
+\end{enumerate}
+
+\textbf{Exit criterion:}
+another student can reproduce the comparison from one command and explain why
+the selected model is preferable for the stated decision.
+\end{practicallab}
+
+\begin{checkpoint}
+Why is a final test set not ``more data for tuning''?
+Give one example where accuracy improves while the system becomes worse.
+Name one invariant that your next ML project can test without knowing an exact
+expected prediction.
+\end{checkpoint}
+
+\section{Further Reading}
+
+The production testing rubric of Breck et al. connects model quality to system
+readiness.\textsuperscript{\cite{breckMLTestScore2017}}
+Sculley et al. explain why small modelling changes can create large systems
+costs.\textsuperscript{\cite{sculleyHiddenTechnicalDebt2015}}
+Datasheets and model cards provide complementary documentation structures for
+data and trained
+models.\textsuperscript{\cite{gebruDatasheetsDatasets2021,
+mitchellModelCardsModel2019}}

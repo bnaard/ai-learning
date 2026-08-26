@@ -25,6 +25,8 @@
         Optimization         & Finds parameters minimizing the loss          & Gradient descent, normal equation              \\
         \hline
     \end{tblr}
+\captionof{table}{What is Machine Learning?: ML Components.}
+\label{tab:ch05-machine-learning-inline-01}
 
     \tcbitem[title=The Learning Pipeline, raster multicolumn=6]
     Every ML project follows a common pipeline: collect and prepare data, select features, choose and train a model, evaluate it on held-out data, and deploy it.
@@ -48,6 +50,8 @@
         \draw[arr] (train) -- (eval);
         \draw[arr] (eval) -- (deploy);
     \end{tikzpicture}
+\captionof{figure}{What is Machine Learning?: The Learning Pipeline.}
+\label{fig:ch05-machine-learning-inline-01}
     \end{center}
 \end{tcbitemize}
 
@@ -94,6 +98,8 @@
         Evaluation          & Accuracy, F1, ROC-AUC                         & Silhouette, within-cluster variance, domain judgment \\
         \hline
     \end{tblr}
+\captionof{table}{Supervised \& Unsupervised Learning: Classification vs.\ Clustering.}
+\label{tab:ch05-machine-learning-inline-02}
 \end{tcbitemize}
 
 % ---- 5.1.3 Regression & Classification ---------------------------------------------------------
@@ -143,6 +149,8 @@
         \draw[arr] ([yshift=3mm]agent.east) -- node[above, draw=none, minimum height=0, minimum width=0] {\footnotesize action $a_t$} ([yshift=3mm]env.west);
         \draw[arr] ([yshift=-3mm]env.west) -- node[below, draw=none, minimum height=0, minimum width=0] {\footnotesize state $s_{t+1}$, reward $r_{t+1}$} ([yshift=-3mm]agent.east);
     \end{tikzpicture}
+\captionof{figure}{Reinforcement Learning: Agent--Environment Loop.}
+\label{fig:ch05-machine-learning-inline-02}
     \end{center}
 \end{tcbitemize}
 
@@ -199,6 +207,8 @@
         Model-based          & GMM / EM                          & Mixture of Gaussian distributions          \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Clustering: Clustering Families.}
+\label{tab:ch05-machine-learning-inline-03}
 
     \tcbitem[title=Evaluating Cluster Quality, raster multicolumn=6]
     Because there are no labels, clustering quality must be assessed by internal criteria\textsuperscript{\cite[][pp.~443--445]{hanDataMiningConcepts2012}}. The silhouette coefficient $s(i)$ combines cohesion (average intra-cluster distance $a(i)$) and separation (average distance to the nearest other cluster $b(i)$) into a single score in $[-1, 1]$.
@@ -237,13 +247,14 @@
     \end{equation}
 
     \tcbitem[title={Choosing K: Elbow Method and Information Criteria}, raster multicolumn=3]
-    There is no single best method for choosing $K$\textsuperscript{\cite[][p.169]{iiiCourseMachineLearning}}. The elbow method plots the within-cluster sum of squares (WCSS) against $K$ and selects the value at which improvement begins to plateau. Information criteria penalize model complexity explicitly.
+    There is no single best method for choosing $K$\textsuperscript{\cite[][p.169]{iiiCourseMachineLearning}}. The elbow method plots the within-cluster sum of squares (WCSS) against $K$ and selects the value at which improvement begins to plateau. For probabilistic models such as Gaussian mixtures, information criteria penalise model complexity explicitly; they require a fitted likelihood rather than raw WCSS.
     \tcblower
     \begin{equation}
-        \text{BIC:}\; \arg\min_K \hat{\mathcal{L}}_K + K\log D
+        \operatorname{AIC} = -2\log \hat L + 2p,
         \qquad
-        \text{AIC:}\; \arg\min_K \hat{\mathcal{L}}_K + 2KD
+        \operatorname{BIC} = -2\log \hat L + p\log N
     \end{equation}
+    Here $\hat L$ is the maximised likelihood, $p$ is the number of fitted parameters, and $N$ is the number of independent observations. Lower values are preferred only among models fitted to the same response data under comparable likelihood definitions.
 \end{tcbitemize}
 
 % ---- 5.2.3 Expectation Maximization ------------------------------------------------------------
@@ -290,6 +301,8 @@
         Convergence guarantee   & Local optimum of WCSS     & Monotone increase of log-likelihood  \\
         \hline
     \end{tblr}
+\captionof{table}{Expectation Maximization: EM as a Generalization of K-Means.}
+\label{tab:ch05-machine-learning-inline-04}
 \end{tcbitemize}
 
 % ---- 5.2.4 DBSCAN ------------------------------------------------------------------------------
@@ -313,6 +326,8 @@
         Noise point         & Neither core nor border — an outlier                                         \\
         \hline
     \end{tblr}
+\captionof{table}{DBSCAN: Core, Border, and Noise Points.}
+\label{tab:ch05-machine-learning-inline-05}
 
     \tcbitem[title=DBSCAN Point Types Illustrated, raster multicolumn=6]
     With MinPts $= 4$ and radius $\varepsilon$, core points have dense neighborhoods, border points are nearby but sparse, and noise points are isolated\textsuperscript{\cite[][p.473]{hanDataMiningConcepts2012}}.
@@ -371,6 +386,8 @@
         \node[corecolor!80!black] at (0.45,-1.0) {\small Cluster 1};
         \node[corecolor!80!black] at (3.65,-0.9) {\small Cluster 2};
     \end{tikzpicture}
+\captionof{figure}{DBSCAN: DBSCAN Point Types Illustrated.}
+\label{fig:ch05-machine-learning-inline-03}
 
     \tcbitem[title=DBSCAN Algorithm, raster multicolumn=6]
     DBSCAN visits each unvisited point, expands a new cluster if a core point is found, and marks isolated points as noise\textsuperscript{\cite[][pp.~474--477]{hanDataMiningConcepts2012}}. With a spatial index (e.g.\ R-tree), complexity is $O(n \log n)$; without indexing it degrades to $O(n^2)$.
@@ -403,19 +420,18 @@
     \tcbitem[title=Linkage Criteria, raster multicolumn=3]
     The choice of linkage criterion defines how the distance between two clusters $C_i$ and $C_j$ is measured and strongly affects the shape of the resulting clusters\textsuperscript{\cite[][pp.~460--463]{hanDataMiningConcepts2012}}.
     \tcblower
-    \begin{tblr}{|Q[l,m,wd=2.6cm]|X|X|}
-        \hline
-        \textbf{Linkage}  & \textbf{Formula}                                                                                              & \textbf{Effect}                       \\
-        \hline
-        Single            & $\min_{p \in C_i,\, q \in C_j} d(p,q)$                                                                       & Chain-shaped, elongated clusters      \\
-        \hline
-        Complete          & $\max_{p \in C_i,\, q \in C_j} d(p,q)$                                                                       & Compact, spherical clusters           \\
-        \hline
-        Average (UPGMA)   & $\dfrac{1}{|C_i||C_j|}\displaystyle\sum_{p \in C_i}\sum_{q \in C_j} d(p,q)$                                  & Compromise between single and complete \\
-        \hline
-        Ward's method     & Merges pair minimizing increase in total within-cluster variance                                              & Compact, equal-size clusters          \\
-        \hline
-    \end{tblr}
+    \begin{description}
+        \item[Single:] minimum pairwise distance; it can form elongated
+        ``chains.''
+        \item[Complete:] maximum pairwise distance; it favours compact
+        clusters.
+        \item[Average (UPGMA):]
+        $\frac{1}{|C_i||C_j|}\sum_{p\in C_i,\,q\in C_j}d(p,q)$; a compromise
+        between single and complete linkage.
+        \item[Ward:] merge the pair causing the smallest increase in total
+        within-cluster variance; it often favours compact, similarly sized
+        clusters.
+    \end{description}
 
     \tcbitem[title=Reading a Dendrogram, raster multicolumn=6]
     The height of each merge in the dendrogram encodes the inter-cluster distance at which two groups were joined\textsuperscript{\cite[][pp.~457--467]{hanDataMiningConcepts2012}}. A horizontal cut at height $h$ produces the clustering at that granularity: every connected subtree below the cut is one cluster. Large vertical gaps between merges indicate a natural number of clusters.
@@ -452,6 +468,8 @@
             \node[left, font=\tiny] at (-0.55,\y) {\lbl};
         }
     \end{tikzpicture}
+\captionof{figure}{Hierarchical Clustering: Reading a Dendrogram.}
+\label{fig:ch05-machine-learning-inline-04}
 \end{tcbitemize}
 \section{Regression}
 
@@ -514,6 +532,8 @@
             \node[right, font=\tiny, text=red] at (0.1, 0.58) {decision boundary};
         \end{scope}
     \end{tikzpicture}
+\captionof{figure}{Logistic Regression: The Sigmoid Curve and Log-Odds.}
+\label{fig:ch05-machine-learning-inline-05}
 \end{tcbitemize}
 
 % ---- 5.3.3 Quantile Regression ------------------------------------------------------------------
@@ -594,6 +614,8 @@
         \filldraw[blue!70!black] (0.72, 0.69) circle (2.5pt);
         \node[right, font=\tiny, text=blue!70!black] at (0.73, 0.58) {dense};
     \end{tikzpicture}
+\captionof{figure}{Lasso \& Ridge Regression: Elastic Net and the Geometry of Sparsity.}
+\label{fig:ch05-machine-learning-inline-06}
 \end{tcbitemize}
 
 % ===========================================================================================
@@ -637,6 +659,8 @@
             (4.28,2.7)--(4.52,2.7) (4.4,2.58)--(4.4,2.82);
         \node[right, font=\tiny] at (4.55,2.7) {Class $-1$};
     \end{tikzpicture}
+\captionof{figure}{Introduction to Support Vector Machines: Maximum Margin Hyperplane.}
+\label{fig:ch05-machine-learning-inline-07}
 
     \tcbitem[title={Hard-Margin vs.\ Soft-Margin SVM}, raster multicolumn=6]
     Hard-margin SVM requires the data to be linearly separable; soft-margin SVM introduces slack variables $\xi_n \geq 0$ to allow misclassifications, controlled by the cost parameter $C$\textsuperscript{\cite[][pp.~98--101]{iiiCourseMachineLearning}}. Large $C$ penalizes errors heavily (narrow margin, risk of overfitting); small $C$ permits more errors (wider margin, better generalization).
@@ -668,6 +692,8 @@
         Sigmoid              & $K(\mathbf{x}_i,\mathbf{x}_j) = \tanh(\kappa\,\mathbf{x}_i\cdot\mathbf{x}_j - \delta)$              \\
         \hline
     \end{tblr}
+\captionof{table}{SVM for Classification: The Kernel Trick.}
+\label{tab:ch05-machine-learning-inline-06}
 
     \tcbitem[title={Multiclass SVMs}, raster multicolumn=2]
     SVMs are inherently binary classifiers. Two standard strategies extend them to $K$ classes\textsuperscript{\cite[][pp.~413--415]{hanDataMiningConcepts2012}}. \emph{One-vs-All} trains $K$ classifiers (class $k$ against all others) and assigns the class with the highest decision score. \emph{One-vs-One} trains $\binom{K}{2}$ binary classifiers and uses majority voting. The decision function for a new point is $d(\mathbf{x}) = \operatorname{sign}\!\left(\sum_{i} y_i \alpha_i K(\mathbf{x}_i, \mathbf{x}) + b_0\right)$.
@@ -737,6 +763,8 @@
                 edge from parent node[right, font=\tiny] {no}
             };
     \end{tikzpicture}
+\captionof{figure}{Introduction to Decision Trees: Decision Trees: Structure and Construction.}
+\label{fig:ch05-machine-learning-inline-08}
 
     \tcbitem[title={Splitting Criteria and Pruning}, raster multicolumn=6]
     The split at each node is chosen to maximize impurity reduction\textsuperscript{\cite[][pp.~330--344]{hanDataMiningConcepts2012}}. Pre-pruning stops growth early (threshold on gain); post-pruning grows a full tree then removes subtrees that do not improve validation accuracy. Both strategies reduce overfitting.
@@ -752,6 +780,8 @@
         CART               & Gini Index $= 1 - \sum_k p_k^2$                                       & Binary                \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Decision Trees: Splitting Criteria and Pruning.}
+\label{tab:ch05-machine-learning-inline-07}
 \end{tcbitemize}
 
 % ---- 5.5.2 Decision Trees for Classification ----------------------------------------------------
@@ -790,7 +820,8 @@
 \subsection{Random Forests}
 
 \begin{tcbitemize}[ skin=sectionraster ]
-    \tcbitem[title={Bagging and the Random Forest Algorithm}, raster multicolumn=3]
+    \tcbitem[title={Bagging and the Random Forest Algorithm},
+             raster multicolumn=6]
     A Random Forest trains $T$ decision trees on \emph{bootstrap} samples (sampling $N$ points with replacement) and combines their predictions by majority vote (classification) or averaging (regression)\textsuperscript{\cite[][pp.~586--588]{hanDataMiningConcepts2012}}. At each split, only a random subset of $m \approx \sqrt{D}$ features is considered. This double randomization decorrelates the individual trees and drastically reduces variance while keeping bias low.
     \tcblower
     \begin{equation}
@@ -801,7 +832,8 @@
         m \approx \sqrt{D} \text{ features per split}
     \end{equation}
 
-    \tcbitem[title={Out-of-Bag Error and Feature Importance}, raster multicolumn=3]
+    \tcbitem[title={Out-of-Bag Error and Feature Importance},
+             raster multicolumn=6]
     Each bootstrap sample leaves out roughly 37\% of the training points (out-of-bag, OOB)\textsuperscript{\cite[][p.588]{hanDataMiningConcepts2012}}. Predicting each training point with the trees that did \emph{not} train on it gives a free, unbiased estimate of generalization error without a separate validation set. Feature importance is measured by how much prediction accuracy drops when a feature's values are randomly permuted (permutation importance).
 \end{tcbitemize}
 
@@ -809,7 +841,8 @@
 \subsection{Gradient Boosting}
 
 \begin{tcbitemize}[ skin=sectionraster ]
-    \tcbitem[title={Gradient Boosting: Sequential Error Correction}, raster multicolumn=3]
+    \tcbitem[title={Gradient Boosting: Sequential Error Correction},
+             raster multicolumn=6]
     Gradient Boosting builds an ensemble sequentially: each new tree $h_t$ fits the \emph{negative gradient} (pseudo-residuals) of the loss of the current ensemble\textsuperscript{\cite[][p.590]{hanDataMiningConcepts2012}}. For squared-error loss, these pseudo-residuals equal the ordinary residuals $y_n - F_{t-1}(\mathbf{x}_n)$. A learning rate $\eta$ (shrinkage) scales each tree's contribution to prevent overfitting.
     \tcblower
     \begin{equation}
@@ -819,7 +852,7 @@
             \left[ -\frac{\partial \mathcal{L}(y_n, F_{t-1}(\mathbf{x}_n))}{\partial F_{t-1}(\mathbf{x}_n)} - h(\mathbf{x}_n) \right]^2
     \end{equation}
 
-    \tcbitem[title={XGBoost and LightGBM}, raster multicolumn=3]
+    \tcbitem[title={XGBoost and LightGBM}, raster multicolumn=6]
     XGBoost (Chen \& Guestrin, 2016) extends gradient boosting with a second-order Taylor expansion of the loss, L1/L2 regularization on tree weights, and efficient column subsampling. LightGBM (Ke et al., 2017) further accelerates training via Gradient-based One-Side Sampling (GOSS) and Exclusive Feature Bundling (EFB), enabling learning on very large datasets with millions of rows. Both consistently rank among the top performers on tabular-data benchmarks\textsuperscript{\cite[][p.590]{hanDataMiningConcepts2012}}.
     \tcblower
     \begin{tblr}{|Q[l,m,wd=2.6cm]|X|X|}
@@ -833,6 +866,8 @@
         LightGBM          & GOSS + EFB, leaf-wise growth                             & Large-scale datasets           \\
         \hline
     \end{tblr}
+\captionof{table}{Gradient Boosting: XGBoost and LightGBM.}
+\label{tab:ch05-machine-learning-inline-08}
 \end{tcbitemize}
 
 % ===========================================================================================
@@ -842,7 +877,7 @@
 \subsection{K-Nearest Neighbors}
 
 \begin{tcbitemize}[ skin=sectionraster ]
-    \tcbitem[title={K-Nearest Neighbors Algorithm}, raster multicolumn=3]
+    \tcbitem[title={K-Nearest Neighbors Algorithm}, raster multicolumn=6]
     K-Nearest Neighbors (k-NN) is a non-parametric, instance-based learner: instead of fitting an explicit model, it stores the training data and at prediction time finds the $k$ closest training examples to the query point\textsuperscript{\cite[][pp.~396--400]{hanDataMiningConcepts2012}}. For classification, it returns the majority class among the $k$ neighbors; for regression, it returns their mean. There is no training phase, but prediction cost is $O(ND)$ per query without indexing.
     \tcblower
     \begin{equation}
@@ -853,7 +888,7 @@
         \quad \text{(classification)}
     \end{equation}
 
-    \tcbitem[title={Weighted Voting and Choosing k}, raster multicolumn=3]
+    \tcbitem[title={Weighted Voting and Choosing k}, raster multicolumn=6]
     Distance-weighted k-NN gives closer neighbors more influence: the weight of neighbor $i$ is $w_i = 1/d(\mathbf{x}, \mathbf{x}_i)^2$\textsuperscript{\cite[][p.399]{hanDataMiningConcepts2012}}. The choice of $k$ is critical: $k=1$ is susceptible to noise (high variance); large $k$ smooths the boundary but may blur distinct clusters (high bias). Cross-validation is used to select the optimal $k$.
     \tcblower
     \begin{tblr}{|Q[c,m]|X|X|}
@@ -867,6 +902,8 @@
         $k = N$            & High             & Very low (predicts overall majority) \\
         \hline
     \end{tblr}
+\captionof{table}{K-Nearest Neighbors: Weighted Voting and Choosing k.}
+\label{tab:ch05-machine-learning-inline-09}
 \end{tcbitemize}
 
 % ---- 5.6.2 Distance Metrics -------------------------------------------------------------------
@@ -912,6 +949,8 @@
         Genotype         & Encoded representation; \emph{phenotype} = the actual decoded solution  \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Genetic Algorithms: Terminology: Chromosomes, Genes, and Fitness.}
+\label{tab:ch05-machine-learning-inline-10}
 
     \tcbitem[title={The GA Life Cycle}, raster multicolumn=3]
     A GA iterates through a fixed life cycle until a stopping condition is met (maximum generations, fitness threshold, or stagnation)\textsuperscript{\cite[][pp.~95--110]{hurbansGrokkingArtificialIntelligence2020}}. Selection pressure drives exploitation of high-fitness regions; mutation and diverse initialization drive exploration. This balance prevents premature convergence to suboptimal solutions.
@@ -945,6 +984,8 @@
         Gaussian mutation       & Gene perturbed by $\mathcal{N}(0,\sigma^2)$ (real-valued encoding)                   \\
         \hline
     \end{tblr}
+\captionof{table}{Introduction to Genetic Algorithms: Crossover and Mutation Operators.}
+\label{tab:ch05-machine-learning-inline-11}
 \end{tcbitemize}
 
 % ---- 5.7.2 Applications of Genetic Algorithms --------------------------------------------------
@@ -968,9 +1009,13 @@
         \hline
         Finance \& game AI          & Portfolio optimization, trading strategy development, level generation     \\
         \hline
-        \SetCell[c=2]{l,wd=\linewidth} {\textbf{Key parameters:} population size $N$, mutation rate $p_m$, crossover rate $p_c$, selection pressure, encoding, stopping condition} & \\
+        \SetCell[c=2]{l} {\textbf{Key parameters:} population size $N$,
+        mutation rate $p_m$, crossover rate $p_c$, selection pressure,
+        encoding, stopping condition} & \\
         \hline
     \end{tblr}
+\captionof{table}{Applications of Genetic Algorithms: Application Domains and Configurable Parameters.}
+\label{tab:ch05-machine-learning-inline-12}
 \end{tcbitemize}
 \section{Further Reading}
 

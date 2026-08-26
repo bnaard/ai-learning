@@ -1,4 +1,4 @@
-# AI and Data Analytics Learning Cards
+# AI Almanach
 
 This repository contains a card-based LaTeX learning reference for AI and
 data analytics. It is written for beginners who want a structured overview of
@@ -16,17 +16,17 @@ maintenance and maturity policy.
 ## Build
 
 The maintained entry point is
-`ai and data analytics/ai-dataanalytics-cards.tex`. It uses LuaLaTeX or
+`ai almanach/ai-almanach.tex`. It uses LuaLaTeX or
 XeLaTeX, `latexmk`, `biber`, the TeX packages in the preamble, and installed
 fonts such as FreeSans and FreeMono.
 
 From the repository root:
 
 ```sh
-cd "ai and data analytics"
+cd "ai almanach"
 latexmk -lualatex -shell-escape -interaction=nonstopmode \
-  -file-line-error ai-dataanalytics-cards.tex
-test -s ai-dataanalytics-cards.pdf
+  -file-line-error ai-almanach.tex
+test -s ai-almanach.pdf
 ```
 
 The separate mathematics deck can be built similarly:
@@ -44,7 +44,7 @@ LaTeX intermediates are ignored and must not be committed.
 ## Provenance and boundaries
 
 The chapter sources are maintained in
-`ai and data analytics/chapters/`. `bibliography/references.bib` is a Zotero
+`ai almanach/chapters/`. `bibliography/references.bib` is a Zotero
 export containing bibliographic metadata; it does not redistribute the
 referenced books or papers. Research notes and generated-content expectations
 are documented in the maintainer notes and summarized in

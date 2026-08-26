@@ -1,0 +1,349 @@
+% ==== Trustworthy AI ==========================================================
+\chapter{Trustworthy AI: Safety, Security, Privacy, and Assurance}
+\label{ch:trustworthy-ai}
+
+\begin{learningobjectives}
+After this chapter, you can:
+\begin{itemize}
+    \item distinguish reliability, functional safety, cybersecurity, privacy,
+          robustness, and responsible governance;
+    \item turn a use case into hazards, threats, requirements, and test
+          evidence;
+    \item identify attacks across the data--model--system lifecycle;
+    \item explain why model confidence is not a safety argument; and
+    \item draft a small assurance case with measurable release gates.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}[The umbrella analogy]
+A trustworthy AI system is like a well-run railway. \emph{Reliability} asks
+whether trains usually arrive. \emph{Safety} asks whether failures can injure
+people. \emph{Security} asks whether an adversary can manipulate signals.
+\emph{Privacy} asks whether passenger data is misused. \emph{Governance} asks
+who owns each decision and which evidence permits operation. A punctual train
+is not automatically a safe, secure, or privacy-preserving one.
+\end{plainlanguage}
+
+\section{From ``accurate model'' to trustworthy system}
+
+NIST's AI Risk Management Framework organizes voluntary risk work around four
+functions: \emph{govern}, \emph{map}, \emph{measure}, and \emph{manage}.
+Trustworthiness is contextual: the relevant harm, affected people, operating
+conditions, and risk tolerance must be stated rather than assumed
+\textsuperscript{\cite{nistAIRiskManagement2023}}.
+
+\begin{center}
+\begin{tblr}{width=\linewidth,colspec={Q[l,2.5cm]X X},hlines,
+             row{1}={font=\bfseries}}
+Property & Engineering question & Typical evidence \\
+Reliability & Does the system keep providing its specified service? & Failure
+rate, uptime, recovery tests \\
+Functional safety & Can faults create unacceptable physical harm? & Hazard
+analysis, safety requirements, fault injection \\
+Security & Can an adversary violate confidentiality, integrity, or
+availability? & Threat model, penetration tests, supply-chain controls \\
+Privacy & Can information about a person be exposed or misused? & Data-flow
+map, access tests, privacy analysis \\
+Robustness & Does behaviour remain acceptable under bounded variation? &
+Shift, stress, perturbation, and metamorphic tests \\
+Fairness & Are errors and benefits distributed acceptably for the context? &
+Subgroup metrics, uncertainty, impact analysis \\
+Accountability & Can decisions, owners, and evidence be reconstructed? &
+Versioned records, approvals, logs, incident process
+\end{tblr}
+\captionof{table}{Trustworthiness properties connect distinct engineering
+questions to distinct forms of evidence.}
+\label{tab:ch08-functional-security-inline-01}
+\end{center}
+
+For hazards $h_i$, a first screening model is
+\begin{equation}
+    R = \sum_i P(h_i \mid c)\,C(h_i \mid c),
+\end{equation}
+where $c$ describes the operational context and $C$ is consequence severity.
+The equation disciplines thought; it does not manufacture trustworthy numbers.
+Rare catastrophic events, uncertain probabilities, distribution shift, and
+unequal effects require scenarios and uncertainty ranges alongside a scalar.
+
+\begin{engineernote}
+Model accuracy is a component metric. System risk also depends on exposure,
+human interaction, sensors, software, actuators, access rights, fallback
+behaviour, and the severity of being wrong. A 99.9\% accurate classifier may
+still be unacceptable if its remaining errors trigger hazardous actions.
+\end{engineernote}
+
+\section{The assurance loop}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=5mm and 7mm,
+    every node/.style={font=\sffamily\scriptsize,align=center},
+    assurance step/.style={draw,rounded corners,fill=LimeGreen!8,
+                           minimum width=2.25cm,minimum height=8mm},
+    arr/.style={-{Stealth[length=2mm]},thick}]
+\node[assurance step] (scope) {Scope\\system and context};
+\node[assurance step,right=of scope] (analyse) {Analyse\\hazards and threats};
+\node[assurance step,right=of analyse] (require) {Specify\\claims and limits};
+\node[assurance step,below=of require] (control)
+    {Control\\prevent, detect, recover};
+\node[assurance step,left=of control] (verify) {Verify\\tests and evidence};
+\node[assurance step,left=of verify] (operate) {Operate\\monitor and respond};
+\draw[arr] (scope) -- (analyse);
+\draw[arr] (analyse) -- (require);
+\draw[arr] (require) -- (control);
+\draw[arr] (control) -- (verify);
+\draw[arr] (verify) -- (operate);
+\draw[arr] (operate) -- (scope);
+\end{tikzpicture}
+\caption{Assurance is a closed lifecycle, not a certificate attached at the
+end.}
+\label{fig:assurance-loop}
+\end{figure}
+
+\subsection{Define the system boundary}
+
+Begin with the complete sociotechnical system: users, model, training and
+evaluation data, APIs, retrieval stores, tools, sensors, actuators, operators,
+and downstream consumers. State the intended purpose and explicit exclusions.
+Then describe an \keyterm{operational design domain}: conditions under which
+the evidence is meant to hold.
+
+\subsection{Hazard analysis and risk assessment}
+
+A \keyterm{hazard} is a condition that can lead to harm; a \keyterm{threat} is
+a circumstance or actor capable of exploiting a vulnerability. Hazard analysis
+asks ``what can hurt whom?'' Threat modelling adds ``who or what can make it
+happen, through which path?''
+
+\begin{enumerate}
+    \item Name assets and affected stakeholders.
+    \item Describe losses or harms before guessing causes.
+    \item Identify hazardous system states and initiating events.
+    \item Estimate severity, exposure, controllability, and uncertainty.
+    \item Derive testable safety and security requirements.
+    \item Allocate controls and owners; document residual risk.
+\end{enumerate}
+
+In automotive engineering, ISO 26262 structures functional-safety work across
+the lifecycle and uses Automotive Safety Integrity Levels (ASILs). The level is
+derived by the standard's method; it must not be guessed from model accuracy
+\textsuperscript{\cite{isoRoadVehiclesFunctional2018}}. ISO/SAE 21434 addresses
+vehicle cybersecurity engineering across its lifecycle
+\textsuperscript{\cite{isoRoadVehiclesCybersecurity2021}}. They are
+complementary scopes, not interchangeable badges.
+
+\subsection{FTA and FMEA: top-down and bottom-up views}
+
+\keyterm{Fault Tree Analysis (FTA)} starts with an unwanted top event and
+decomposes combinations of causes. If independent rare causes $A$ and $B$ feed
+an OR gate, $P(A\cup B)=P(A)+P(B)-P(A)P(B)$. For an AND gate,
+$P(A\cap B)=P(A)P(B)$. Independence is an assumption to justify; shared data,
+power, clocks, or software often create common-cause failures.
+
+\keyterm{Failure Modes and Effects Analysis (FMEA)} moves bottom-up: for every
+component or function, ask how it can fail, what local and system effects
+follow, how the failure is detected, and what prevents or contains it. For ML,
+failure modes include stale features, corrupted labels, silent schema changes,
+out-of-domain inputs, unstable preprocessing, and unsafe downstream action.
+
+For conventional random hardware failures, two useful ratios are
+\begin{align}
+  \mathrm{DC} &= \frac{\lambda_{DD}}{\lambda_{DD}+\lambda_{DU}}, &
+  \mathrm{SFF} &= \frac{\lambda_S+\lambda_{DD}}
+  {\lambda_S+\lambda_{DD}+\lambda_{DU}},
+\end{align}
+where $\lambda_S$ is the safe failure rate and $\lambda_{DD},\lambda_{DU}$ are
+detected and undetected dangerous failure rates. These hardware-oriented
+quantities do not turn systematic specification, data, or software errors into
+random failures. Use the right model for the failure mechanism.
+
+\section{ML-specific failure modes}
+
+\begin{center}
+\begin{tblr}{width=\linewidth,colspec={Q[l,2.6cm]X X},hlines,
+             row{1}={font=\bfseries}}
+Failure family & Example & Evidence or control \\
+Specification & Proxy objective rewards the wrong behaviour & Scenario review,
+stakeholder sign-off, counterexamples \\
+Data & Missing subgroup, label error, leakage, stale source & Datasheet,
+provenance, slice tests, schema gates \\
+Statistical & Shift, poor calibration, irreducible overlap & OOD tests,
+calibration plot, abstention policy \\
+Implementation & Training/serving skew, numerical overflow & Golden examples,
+parity tests, bounds checks \\
+Interaction & Automation bias or confusing handover & Human-factors study,
+usable override, training \\
+Operations & Drift, dependency compromise, telemetry gap & Signed artifacts,
+monitoring, rollback drill
+\end{tblr}
+\captionof{table}{ML failures arise at specification, data, statistical,
+implementation, interaction, and operational boundaries.}
+\label{tab:ch08-functional-security-inline-02}
+\end{center}
+
+If a model emits confidence $s(x)$, that number is not automatically
+$P(Y=\hat y\mid x)$. Calibration must be measured on relevant data, including
+important slices. A selective system may abstain when confidence is low. With
+accepted set $A_\tau=\{x:s(x)\geq\tau\}$,
+\begin{align}
+  \mathrm{coverage}(\tau) &= \frac{|A_\tau|}{n}, &
+  \mathrm{risk}(\tau) &= \frac{1}{|A_\tau|}
+       \sum_{x_i\in A_\tau}\ell(f(x_i),y_i).
+\end{align}
+The risk--coverage curve makes the trade-off visible. Abstention is useful only
+when a safe fallback exists and the operator can recognize the handover.
+
+\begin{cautionbox}[The confidence trap]
+Softmax can be extremely confident far from the training distribution. Never
+write ``the model knows when it is wrong'' without a defined uncertainty
+method, representative evaluation, thresholds, and a tested fallback path.
+\end{cautionbox}
+
+\section{Adversarial machine learning}
+
+NIST classifies adversarial ML by system type, lifecycle stage, attacker goal,
+capability, access, and knowledge. Its 2025 taxonomy covers predictive and
+generative systems and stresses that mitigations have limits
+\textsuperscript{\cite{vassilevAdversarialMachineLearning2025}}.
+
+\begin{center}
+\begin{tblr}{width=\linewidth,
+             colspec={Q[l,2.3cm]Q[l,2.2cm]X X},hlines,
+             row{1}={font=\bfseries}}
+Attack & Stage & Engineering example & Defence-in-depth evidence \\
+Poisoning/backdoor & Train or adapt & Malicious examples create a hidden trigger
+& Provenance, access control, anomaly review, clean holdout \\
+Evasion & Inference & Crafted input crosses a decision boundary &
+Threat-specific
+stress tests, input constraints, detection, safe response \\
+Model extraction & Serving & Queries reconstruct behaviour or parameters & Rate
+limits, output minimization, monitoring, contractual controls \\
+Membership/privacy & Train/serve & Output reveals whether a record was present &
+Data minimization, privacy test, regularization or formal privacy \\
+Prompt injection & Application & Untrusted text competes with system
+instruction &
+Treat content as data, isolate tools, least privilege, confirmation \\
+Tool misuse & Application & Model invokes a damaging action & Allow-list,
+argument validation, sandbox, authorization outside the model \\
+Supply-chain attack & Build/deploy & Dataset, package, model, or adapter is
+replaced
+& Pinning, hashes/signatures, scanning, bill of materials, rollback
+\end{tblr}
+\captionof{table}{Adversarial-ML controls must address attacks across the
+training, serving, application, and supply-chain lifecycle.}
+\label{tab:ch08-functional-security-inline-03}
+\end{center}
+
+\begin{engineernote}[The model is not the security boundary]
+A prompt such as ``never reveal secrets'' is guidance to a probabilistic
+component, not access control. Credentials, permissions, validation, spending
+limits, and destructive-action approval belong in deterministic systems around
+the model. Assume retrieved documents and tool output may be hostile.
+\end{engineernote}
+
+For generative systems, also test confabulation, harmful or illegal assistance,
+sensitive-data disclosure, bias, information integrity, human over-reliance,
+and environmental or intellectual-property risks. NIST's Generative AI Profile
+maps such risks to govern--map--measure--manage actions
+\textsuperscript{\cite{nistGenerativeAIProfile2024}}.
+
+\section{Privacy by engineering, not by wishful thinking}
+
+Start with minimization: collect only justified fields, separate identifiers,
+limit retention, encrypt data, enforce least privilege, and log access. Simple
+de-identification is often reversible when auxiliary information exists.
+
+Two datasets $D,D'$ are \keyterm{adjacent} if they differ in one person's
+contribution. A randomized mechanism $M$ is
+$(\varepsilon,\delta)$-differentially
+private if for every measurable output set $S$,
+\begin{equation}
+  P[M(D)\in S] \leq e^{\varepsilon}P[M(D')\in S]+\delta.
+\end{equation}
+This bounds how much one contribution can change the released distribution.
+Smaller $\varepsilon$ generally means a stronger bound but more noise; repeated
+releases consume privacy budget. The guarantee depends on adjacency,
+accounting, implementation, and parameter choices---not merely on adding some
+noise\textsuperscript{\cite{nearDifferentialPrivacyGuarantees2025}}.
+
+Federated learning keeps raw training records local, but updates can still leak
+information and a coordinator can still be attacked. It is an architecture,
+not a proof of privacy. Combine it with explicit threat analysis and, when
+appropriate, secure aggregation or differential privacy.
+
+\section{Safety cases and governance}
+
+An \keyterm{assurance case} is a structured argument connecting claims to
+evidence under stated assumptions. It is stronger than a folder full of test
+reports because it explains why each report matters.
+
+\begin{workedexample}[A small assurance argument]
+\textbf{Claim:} the vision assistant cannot directly command hazardous motion.
+\begin{itemize}
+    \item \textbf{Argument:} commands pass through an independent, bounded
+          safety controller; uncertain perception triggers a controlled stop.
+    \item \textbf{Evidence:} interface specification, static analysis,
+          adversarial/OOD tests, latency bounds, fault injection, and a physical
+          emergency-stop test.
+    \item \textbf{Assumptions:} sensor range, braking capability, speed
+          envelope,
+          operator response, and maintenance interval.
+    \item \textbf{Defeaters:} shared power failure, stale frames, controller
+          bypass, or a test distribution that omits poor weather.
+\end{itemize}
+The defeaters are not embarrassing footnotes; they are the shopping list for
+the next tests.
+\end{workedexample}
+
+ISO/IEC 42001 specifies requirements for establishing and continually
+improving an organizational AI management system. It provides governance
+structure; it does not certify that every model output is safe
+\textsuperscript{\cite{isoAIManagementSystems2023}}. Applicable law and sector
+standards still need specialist review; see the legal chapter for orientation,
+not legal advice.
+
+\section{Practical lab: threat model and release gate}
+
+\begin{practicallab}[Red-team a small AI-assisted control application]
+\textbf{Scenario.} A language model translates a technician's request into a
+proposed maintenance action. A deterministic service validates and executes
+approved actions in a simulator. The model never receives production secrets.
+
+\textbf{Tasks.}
+\begin{enumerate}
+    \item Draw trust boundaries and data flows. Mark users, model host,
+          retrieved manuals, tool service, logs, and simulated plant.
+    \item Name at least three harms, three accidental failure modes, and three
+          adversarial paths. State attacker access and capability.
+    \item Write controls at prevention, detection, response, and recovery
+          layers. Give each an owner and observable signal.
+    \item Build a private evaluation set containing valid requests, malformed
+          arguments, prompt injection inside a manual, privilege escalation,
+          stale documentation, ambiguous units, and out-of-scope commands.
+    \item Define release gates before testing: zero unauthorized executions;
+          100\% rejection of destructive unconfirmed actions; bounded p95
+          latency; logged rationale and artifact versions for every attempt.
+    \item Run the suite on a baseline and one improved design. Report every
+          failed case; do not replace failures after seeing results.
+    \item Demonstrate rollback and write a one-page assurance case with claims,
+          evidence, assumptions, residual risks, and expiry date.
+\end{enumerate}
+
+\textbf{Deliverables.} Threat-model diagram, machine-readable test cases,
+results with confidence intervals where sampling is involved, incident/rollback
+record, and the assurance case. A release is ``not ready'' when evidence is
+missing---even if the demo is charming.
+\end{practicallab}
+
+\begin{checkpoint}
+\begin{enumerate}
+    \item Why can high held-out accuracy coexist with unacceptable system risk?
+    \item Give one common-cause failure that invalidates an independent-events
+          fault-tree calculation.
+    \item What security property cannot be enforced by a prompt alone?
+    \item Which assumptions define the meaning of an $(\varepsilon,\delta)$
+          privacy guarantee?
+    \item Write one claim--evidence--assumption triple for your own project.
+\end{enumerate}
+\end{checkpoint}

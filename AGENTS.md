@@ -241,8 +241,8 @@ See [`context/team/roster.md`](context/team/roster.md) and
 
 ## Project-specific notes
 
-The AI and Data Analytics learning-card authoring guide is maintained in
-[`docs/AI_PROJECT_GUIDE.md`](docs/AI_PROJECT_GUIDE.md).
+The AI Almanach authoring guide is maintained in
+[`docs/AI_ALMANACH_GUIDE.md`](docs/AI_ALMANACH_GUIDE.md).
 
 - Required MCP servers: `index-management`, `id-management`,
   `workitem-management`, `discussion-management`, `decision-record`,
@@ -277,7 +277,7 @@ Build and watch LaTeX only inside the development container. The read-only previ
 
 | Document | Source | Build | Watch | Preview |
 |---|---|---|---|---|
-| `ai-dataanalytics-cards` | `ai and data analytics/ai-dataanalytics-cards.tex` | `aibox-latex-build ai-dataanalytics-cards` | `aibox-latex-watch ai-dataanalytics-cards` | `http://127.0.0.1:8766/documents/ai-dataanalytics-cards/` |
+| `ai-almanach` | `ai almanach/ai-almanach.tex` | `aibox-latex-build ai-almanach` | `aibox-latex-watch ai-almanach` | `http://127.0.0.1:8766/documents/ai-almanach/` |
 
 Run `aibox-latex-build` with no argument to build every configured document. Run one `aibox-latex-watch <name>` process per document that should rebuild continuously; stop it with Ctrl-C. Host-side `aibox up` starts the shared Compose preview sidecar when `latex.preview.enabled = true`. Loopback previews on a remote host require SSH port forwarding.
 <!-- aibox-managed:latex-runtime END -->

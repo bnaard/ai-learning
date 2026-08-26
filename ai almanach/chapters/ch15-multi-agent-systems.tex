@@ -51,6 +51,8 @@
         Dynamics & Static (world waits) & Dynamic (world changes while deciding) \\
         Action/state space & Discrete & Continuous \\
     \end{tblr}
+\captionof{table}{Concepts of Agents and Multi-Agent Systems: Environment Types.}
+\label{tab:ch15-multi-agent-systems-inline-01}
     \end{center}
 
 \end{tcbitemize}
@@ -134,6 +136,8 @@
         \textbf{MaSE} (Multi-Agent SE) & Use cases $\to$ agents & Deployment, sequence diagrams \\
         \textbf{Tropos} & Social dependencies & Goal model, agent capabilities \\
     \end{tblr}
+\captionof{table}{Agent-Oriented Design: Agent-Oriented Methodologies.}
+\label{tab:ch15-multi-agent-systems-inline-02}
     \end{center}
     All start from a \emph{societal} view (roles, norms, dependencies) and
     progressively refine down to individual agent implementation.
@@ -211,6 +215,8 @@
         Limited to present percepts & Can pursue long-horizon goals \\
         Simple to implement & Complex engineering \\
     \end{tblr}
+\captionof{table}{Reactive Agents: Reactive vs.\ Deliberative.}
+\label{tab:ch15-multi-agent-systems-inline-03}
     \textsuperscript{\cite[][p.~67]{wooldridgeIntroductionMultiAgentSystems2009}}
 
 \end{tcbitemize}
@@ -329,13 +335,15 @@
         row{2-Z}={font=\small},
     }
         Protocol & Flow & Typical Use \\
-        FIPA Request & Initiator $\to$ PROPOSE $\to$ Participant; AGREE/REFUSE back & Simple service invocation \\
+        FIPA Request & REQUEST $\to$ AGREE/REFUSE $\to$ INFORM/FAILURE & Simple service invocation \\
         Contract Net & Announce $\to$ bids $\to$ award & Task allocation to best bidder \\
         Iterated Contract Net & Multiple rounds & Progressive negotiation \\
         English Auction & Ascending bids until timeout & Resource allocation \\
         Dutch Auction & Price decreasing until acceptance & Perishable goods allocation \\
         Brokering / Recruiting & Mediator finds capable agents & Service discovery \\
     \end{tblr}
+\captionof{table}{Communication Languages: Interaction Protocols.}
+\label{tab:ch15-multi-agent-systems-inline-04}
     \end{center}
 
 \end{tcbitemize}
@@ -669,6 +677,8 @@
         Mixed (general-sum) & Individual rewards & Balance self-interest \& cooperation & Trading agents, autonomous driving \\
         Team competition & Teams share within, compete across & Both challenges combined & AlphaStar, RoboCup \\
     \end{tblr}
+\captionof{table}{Key MARL Algorithms: Cooperative vs.\ Competitive vs.\ Mixed.}
+\label{tab:ch15-multi-agent-systems-inline-05}
     \end{center}
 
 \end{tcbitemize}
