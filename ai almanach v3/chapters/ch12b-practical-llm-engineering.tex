@@ -97,6 +97,42 @@ and where it failed.
 
 \section{From a Prompt to the Next Token}
 
+\factvisual{
+    \textbf{One prediction is a pipeline.}
+    The data shape changes at every boundary, but the model ultimately returns
+    one score per vocabulary item.
+    \begin{enumerate}
+        \item format messages;
+        \item tokenise text;
+        \item look up vectors;
+        \item mix positions with attention;
+        \item transform each position with an MLP;
+        \item map the final state to logits and probabilities.
+    \end{enumerate}
+}{
+    \begin{tikzpicture}[node distance=3.2mm]
+        \node[almanach card,text width=29mm] (text) {messages\\\scriptsize text};
+        \node[almanach card,text width=29mm,below=of text] (ids)
+            {tokeniser\\\scriptsize integer IDs};
+        \node[almanach card,text width=29mm,below=of ids] (embed)
+            {embedding\\\scriptsize $T\times d$ vectors};
+        \node[almanach accent card,text width=29mm,below=of embed] (blocks)
+            {Transformer blocks\\\scriptsize attention + MLP};
+        \node[almanach card,text width=29mm,below=of blocks] (logits)
+            {output projection\\\scriptsize $V$ logits};
+        \node[almanach accent card,text width=29mm,below=of logits] (next)
+            {decoding rule\\\scriptsize next token};
+        \draw[almanach arrow] (text) -- (ids);
+        \draw[almanach arrow] (ids) -- (embed);
+        \draw[almanach arrow] (embed) -- (blocks);
+        \draw[almanach arrow] (blocks) -- (logits);
+        \draw[almanach arrow] (logits) -- (next);
+    \end{tikzpicture}
+    \visualcaption{The prompt-to-token path. Shapes and semantics change at
+      every boundary; the next-token loop then appends the chosen token and
+      repeats.}{fig:prompt-to-token-pipeline}
+}
+
 \subsection{Step 1: apply the chat template}
 
 An instruct checkpoint expects role markers and control tokens in a particular

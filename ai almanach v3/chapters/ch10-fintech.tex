@@ -349,6 +349,37 @@
     Architecture: a lightweight feature extraction layer reads recent transaction history from an in-memory store (Redis), passes features to a pre-trained ML model served via REST API, and returns a risk score.
     Scores above a threshold trigger step-up authentication or decline; scores in a gray zone route to human review queues.
     Model drift monitoring and frequent retraining cycles are essential as fraud patterns evolve rapidly.
+    \factvisual{
+        \textbf{A score is not yet a decision.}
+        \begin{itemize}
+            \item Low risk: approve with ordinary monitoring.
+            \item Uncertain: request step-up authentication.
+            \item High risk: decline or hold according to policy.
+            \item Afterwards: capture outcomes and appeals for monitoring.
+        \end{itemize}
+    }{
+        \begin{tikzpicture}[node distance=4mm]
+            \node[almanach card,text width=24mm] (tx) {transaction};
+            \node[almanach card,text width=24mm,below=of tx] (features)
+                {live + historical features};
+            \node[almanach accent card,text width=24mm,below=of features] (score)
+                {risk score};
+            \node[almanach card,text width=18mm,below left=7mm and 8mm of score] (approve)
+                {approve};
+            \node[almanach accent card,text width=18mm,below=7mm of score] (verify)
+                {verify};
+            \node[almanach card,text width=18mm,below right=7mm and 8mm of score] (hold)
+                {hold / decline};
+            \draw[almanach arrow] (tx) -- (features);
+            \draw[almanach arrow] (features) -- (score);
+            \draw[almanach arrow] (score) -- node[left,font=\tiny] {low} (approve);
+            \draw[almanach arrow] (score) -- node[right,font=\tiny] {grey} (verify);
+            \draw[almanach arrow] (score) -- node[right,font=\tiny] {high} (hold);
+        \end{tikzpicture}
+        \visualcaption{A production fraud model feeds a threshold policy with
+          three operational paths, each requiring outcome monitoring.}
+          {fig:fraud-scoring-policy}
+    }
 
 \end{v3topic}
 

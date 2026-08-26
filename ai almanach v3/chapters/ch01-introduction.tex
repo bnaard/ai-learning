@@ -71,13 +71,38 @@
 \end{v3topic}
 \begin{v3topic}{Key Milestones in AI History}
         The history of AI spans over seven decades of ambition, breakthroughs, and setbacks\textsuperscript{\cite[][p.~6]{hurbansGrokkingArtificialIntelligence2020}}.
-        \begin{itemize}
-            \item \textbf{1950 -- Turing Test:} Alan Turing proposes the imitation game as a criterion for machine intelligence.
-            \item \textbf{1956 -- Dartmouth Conference:} John McCarthy coins the term \emph{Artificial Intelligence}.
-            \item \textbf{1958 -- Perceptron:} Frank Rosenblatt introduces the Perceptron, the first trainable single-layer neural network.
-            \item \textbf{1966 -- ELIZA:} Weizenbaum (MIT) creates ELIZA, simulating a psychotherapist.
-            \item \textbf{1969 -- Minsky \& Papert:} \emph{Perceptrons} demonstrates the XOR limitation.
-        \end{itemize}
+        \factvisual{
+            \textbf{Read the pattern, not only the dates.}
+            Early AI alternated between behavioural tests, symbolic systems,
+            and trainable models. Each advance also exposed a new limitation.
+
+            \begin{itemize}
+                \item \textbf{Test:} can behaviour appear intelligent?
+                \item \textbf{Name:} can intelligence become an engineering field?
+                \item \textbf{Learn:} can a machine adapt from examples?
+                \item \textbf{Interact:} can language create an illusion of understanding?
+                \item \textbf{Limit:} what cannot a single linear unit represent?
+            \end{itemize}
+        }{
+            \begin{tikzpicture}[x=1cm,y=0.82cm]
+                \draw[almanach line] (0,0) -- (0,4.3);
+                \foreach \y/\year/\event in {
+                    4/1950/Turing test,
+                    3/1956/Dartmouth,
+                    2/1958/Perceptron,
+                    1/1966/ELIZA,
+                    0/1969/XOR limit}{
+                    \fill[AlmanachOchre] (0,\y) circle (2.1pt);
+                    \node[anchor=east,font=\scriptsize\sffamily\bfseries,
+                          text=AlmanachTeal] at (-0.18,\y) {\year};
+                    \node[anchor=west,font=\scriptsize\sffamily,
+                          text width=27mm,align=left] at (0.18,\y) {\event};
+                }
+            \end{tikzpicture}
+            \visualcaption{Five early milestones show the cycle from an
+              intelligence criterion to a representational limit.}
+              {fig:early-ai-timeline}
+        }
 
 \end{v3topic}
 \begin{v3topic}{The Perceptron and the XOR Problem}
@@ -174,15 +199,37 @@
 \begin{v3topic}{Prolog: Logic Programming Basics}
         \textbf{Prolog} (PROgramming in LOGic) is a declarative language based on first-order predicate logic, closely associated with expert systems and symbolic AI.
 
-        A Prolog program consists of three building blocks:
-        \begin{description}
-            \item[Facts] Unconditional assertions about the world:\\
-                \texttt{parent(tom, bob).} \quad \texttt{parent(bob, ann).}
-            \item[Rules] Conditional derivations:\\
-                \texttt{grandparent(X, Z) :- parent(X, Y), parent(Y, Z).}
-            \item[Queries] Questions posed to the engine:\\
-                \texttt{?- grandparent(tom, ann).} \; $\Rightarrow$ \texttt{true.}
-        \end{description}
+        A Prolog program consists of three building blocks.
+        \factvisual{
+            \begin{itemize}
+                \item \textbf{Facts} are unconditional assertions:\\
+                    \texttt{parent(tom, bob).}\\
+                    \texttt{parent(bob, ann).}
+                \item \textbf{Rules} define conditional derivations:\\
+                    \texttt{grandparent(X, Z) :-}\\
+                    \texttt{parent(X, Y), parent(Y, Z).}
+                \item \textbf{Queries} ask the inference engine:\\
+                    \texttt{?- grandparent(tom, ann).}
+            \end{itemize}
+        }{
+            \begin{tikzpicture}[node distance=6mm]
+                \node[almanach card] (q) {Query\\\texttt{grandparent(tom, ann)}};
+                \node[almanach accent card,below=of q] (r) {Match rule\\find an intermediate $Y$};
+                \node[almanach card,below left=6mm and -2mm of r] (f1)
+                    {Fact\\\texttt{parent(tom,bob)}};
+                \node[almanach card,below right=6mm and -2mm of r] (f2)
+                    {Fact\\\texttt{parent(bob,ann)}};
+                \node[almanach accent card,below=18mm of r] (ok)
+                    {Unify $Y=\texttt{bob}$\\\texttt{true}};
+                \draw[almanach arrow] (q) -- (r);
+                \draw[almanach arrow] (r) -- (f1);
+                \draw[almanach arrow] (r) -- (f2);
+                \draw[almanach arrow] (f1) -- (ok);
+                \draw[almanach arrow] (f2) -- (ok);
+            \end{tikzpicture}
+            \visualcaption{A query succeeds when rule variables unify with
+              facts that jointly prove the goal.}{fig:prolog-proof-flow}
+        }
 
         The inference engine uses \emph{SLD resolution} (unification + backtracking) to search for proofs. Variables (uppercase) are unified with constants during resolution.
 

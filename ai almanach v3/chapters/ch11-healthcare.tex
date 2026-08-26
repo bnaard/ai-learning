@@ -60,6 +60,36 @@
 
 \begin{v3topic}{Traditional Drug Discovery Pipeline}
     From initial target identification to market approval takes \textbf{10--15 years} and costs \textbf{\$1--2 billion} on average\textsuperscript{\cite[][pp.~1--20]{blassDrugDiscoveryDevelopment2015}}.
+    \factvisual{
+        \begin{itemize}
+            \item \textbf{Early breadth:} many targets and compounds are explored.
+            \item \textbf{Progressive evidence:} biological plausibility becomes safety and efficacy evidence.
+            \item \textbf{Attrition:} candidates leave the pipeline at every gate.
+            \item \textbf{AI's role:} improve prioritisation and measurement; it does not remove experimental validation.
+        \end{itemize}
+    }{
+        \begin{tikzpicture}[y=0.72cm]
+            \foreach \y/\w/\label in {
+                5/5.8/Targets + hits,
+                4/5.0/Lead optimisation,
+                3/4.2/Pre-clinical,
+                2/3.4/Clinical I--III,
+                1/2.6/Regulatory review,
+                0/1.8/Approved therapy}{
+                \pgfmathtruncatemacro{\shade}{20+\y*8}
+                \path[fill=AlmanachTeal!\shade,draw=white]
+                    (-\w/2,\y) rectangle (\w/2,\y+0.72);
+                \node[font=\scriptsize\sffamily,text=AlmanachInk]
+                    at (0,\y+0.36) {\label};
+            }
+            \draw[almanach arrow] (3.4,5.7) -- (3.4,0.2)
+                node[midway,right,font=\scriptsize\sffamily,
+                     text width=14mm] {evidence grows\\candidates fall};
+        \end{tikzpicture}
+        \visualcaption{The discovery funnel narrows as evidence requirements
+          rise. Width is conceptual and does not encode a fixed attrition rate.}
+          {fig:drug-discovery-funnel}
+    }
 \visualseparator
     \begin{tblr}{|Q[l,m,2.5cm]|X[l]|X[l]|}
         \hline

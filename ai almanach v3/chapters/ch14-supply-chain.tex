@@ -36,7 +36,43 @@
     A retailer orders slightly more to be safe; the wholesaler amplifies this; the manufacturer sees enormous swings.
     Root causes include: demand forecast updating, order batching, price fluctuations, and rationing/shortage gaming.
 \visualseparator
-    \textbf{AI mitigation}: sharing point-of-sale data across tiers (information sharing), ML-based collaborative forecasting, and automated replenishment systems reduce information delays and amplification at each stage.
+    \factvisual{
+        \textbf{Read the amplification upstream.}
+        \begin{itemize}
+            \item Customer demand varies modestly.
+            \item Retailer orders respond to forecasts and safety stock.
+            \item Manufacturer orders inherit delays and larger corrections.
+        \end{itemize}
+        \textbf{AI mitigation:} shared point-of-sale data, collaborative
+        forecasting, and automated replenishment reduce information delay and
+        avoid each tier independently over-correcting.
+    }{
+        \begin{tikzpicture}
+            \begin{axis}[
+                almanach axis,
+                height=50mm,
+                xmin=1,xmax=8,
+                ymin=25,ymax=95,
+                xlabel={period},
+                ylabel={relative units},
+                xtick={1,2,3,4,5,6,7,8},
+                legend style={at={(0.5,1.02)},anchor=south},
+                legend columns=3]
+                \addplot[AlmanachInk!65,thick,mark=*]
+                    coordinates {(1,52)(2,55)(3,50)(4,57)(5,53)(6,58)(7,51)(8,55)};
+                \addlegendentry{demand}
+                \addplot[AlmanachTeal,thick,mark=square*]
+                    coordinates {(1,49)(2,61)(3,43)(4,67)(5,45)(6,70)(7,42)(8,65)};
+                \addlegendentry{retailer}
+                \addplot[AlmanachOchre,very thick,mark=triangle*]
+                    coordinates {(1,42)(2,76)(3,32)(4,86)(5,28)(6,91)(7,31)(8,82)};
+                \addlegendentry{factory}
+            \end{axis}
+        \end{tikzpicture}
+        \visualcaption{Illustrative bullwhip pattern: order variability grows
+          as delayed, locally optimised decisions move upstream.}
+          {fig:bullwhip-amplification}
+    }
 
 \end{v3topic}
 

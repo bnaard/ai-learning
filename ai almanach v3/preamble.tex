@@ -36,6 +36,10 @@
 \definecolor{AlmanachOchre}{HTML}{B56D28}
 \definecolor{AlmanachMist}{HTML}{EDF3F3}
 \definecolor{AlmanachRed}{HTML}{9C3D35}
+% Normalise legacy chapter colours into the book palette.
+\colorlet{LimeGreen}{AlmanachTeal}
+\colorlet{RoyalBlue}{AlmanachTeal}
+\colorlet{Orange}{AlmanachOchre}
 \color{AlmanachInk}
 
 \usepackage{microtype}
@@ -43,6 +47,10 @@
 \setstretch{1.055}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.54\baselineskip}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
 \raggedbottom
 
 \usepackage{titlesec}
@@ -79,6 +87,23 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\pgfplotsset{
+  almanach axis/.style={
+    width=\linewidth,
+    height=48mm,
+    axis line style={AlmanachInk!55},
+    tick style={AlmanachInk!55},
+    tick label style={font=\scriptsize},
+    label style={font=\small\sffamily},
+    grid=major,
+    major grid style={draw=AlmanachInk!10},
+    legend style={
+      draw=none,
+      fill=none,
+      font=\scriptsize,
+      cells={anchor=west}}
+  }
+}
 \usetikzlibrary{
   arrows.meta,
   angles,
@@ -89,7 +114,26 @@
   matrix,
   positioning,
   quotes,
-  shapes.geometric
+  shapes.geometric,
+  shapes.symbols
+}
+\tikzset{
+  almanach card/.style={
+    draw=AlmanachTeal!70,
+    fill=AlmanachMist,
+    rounded corners=1.5mm,
+    align=center,
+    font=\small\sffamily,
+    inner sep=5pt},
+  almanach accent card/.style={
+    almanach card,
+    draw=AlmanachOchre!85,
+    fill=AlmanachOchre!9},
+  almanach arrow/.style={
+    -{Stealth[length=2.2mm]},
+    thick,
+    draw=AlmanachOchre},
+  almanach line/.style={thick,draw=AlmanachTeal}
 }
 \input{shapes/flowchart_styles.tex}
 
@@ -100,6 +144,7 @@
 \NiceMatrixOptions{cell-space-limits=1pt}
 \usepackage{siunitx}
 \usepackage{tabularray}
+\SetTblrInner{rowsep=2.5pt,colsep=4pt}
 \usepackage{booktabs}
 \usepackage{caption}
 \captionsetup{
@@ -107,8 +152,10 @@
   labelfont={bf,sf,color=AlmanachTeal},
   labelsep=period,
   justification=raggedright,
-  singlelinecheck=false
+  singlelinecheck=false,
+  skip=5pt
 }
+\arrayrulecolor{AlmanachInk!18}
 \usepackage{listings}
 \lstdefinelanguage{json}{
   basicstyle=\ttfamily\small,
@@ -128,10 +175,33 @@
   showstringspaces=false
 }
 \usepackage{enumitem}
-\setlist{nosep,leftmargin=*}
-\setlist[itemize,1]{label=\textcolor{AlmanachTeal}{--}}
+\setlist{
+  leftmargin=*,
+  topsep=0.35\baselineskip,
+  itemsep=0.16\baselineskip,
+  parsep=0pt,
+  partopsep=0pt}
+\setlist[itemize,1]{
+  label=\textcolor{AlmanachTeal}{\raisebox{0.1ex}{\small\textbullet}}}
+\setlist[itemize,2]{
+  label=\textcolor{AlmanachOchre}{\raisebox{0.1ex}{\scriptsize$\circ$}}}
+\setlist[enumerate,1]{
+  label=\textcolor{AlmanachTeal}{\sffamily\bfseries\arabic*.},
+  ref=\arabic*}
+\setlist[description]{
+  style=nextline,
+  leftmargin=1.45em,
+  labelindent=0pt,
+  font=\normalfont\sffamily\bfseries\color{AlmanachTeal}}
+\renewcommand*{\descriptionlabel}[1]{%
+  \hspace\labelsep
+  \textcolor{AlmanachOchre}{\raisebox{0.15ex}{\scriptsize$\blacktriangleright$}}%
+  \hspace{0.45em}\normalfont\sffamily\bfseries
+  \textcolor{AlmanachTeal}{#1}}
 \usepackage{multicol}
 \usepackage{xparse}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
 
 \usepackage[autostyle=true]{csquotes}
 \usepackage[
@@ -166,10 +236,26 @@
 
 \NewDocumentEnvironment{didacticnote}{O{Note}}{%
   \par\addvspace{0.65\baselineskip}%
-  \begin{quote}\small
-  {\sffamily\bfseries\color{AlmanachTeal}#1.}\quad
+  \begin{tcolorbox}[
+    enhanced,
+    breakable,
+    colback=AlmanachMist!72,
+    colframe=AlmanachTeal,
+    boxrule=0pt,
+    borderline west={1.4pt}{0pt}{AlmanachTeal},
+    arc=1mm,
+    left=3mm,
+    right=3mm,
+    top=2mm,
+    bottom=2mm,
+    before skip=0pt,
+    after skip=0pt,
+    fonttitle=\small\sffamily\bfseries,
+    coltitle=AlmanachTeal!75!black,
+    title={#1}]
+  \small
 }{%
-  \end{quote}\addvspace{0.25\baselineskip}%
+  \end{tcolorbox}\addvspace{0.25\baselineskip}%
 }
 \NewDocumentEnvironment{plainlanguage}{O{In plain language}}{%
   \begin{didacticnote}[#1]}{\end{didacticnote}}
@@ -187,6 +273,23 @@
   \begin{didacticnote}[#1]}{\end{didacticnote}}
 \NewDocumentEnvironment{v3aside}{O{Context}}{%
   \begin{didacticnote}[#1]}{\end{didacticnote}}
+
+\NewDocumentCommand{\factvisual}{+m +m}{%
+  \par\addvspace{0.65\baselineskip}%
+  \noindent
+  \begin{minipage}[t]{0.44\linewidth}
+    \vspace{0pt}#1
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.52\linewidth}
+    \vspace{0pt}\centering#2
+  \end{minipage}
+  \par\addvspace{0.55\baselineskip}%
+}
+
+\NewDocumentCommand{\visualcaption}{m m}{%
+  \captionof{figure}{#1}%
+  \label{#2}%
+}
 
 \NewDocumentCommand{\chapterlead}{m m m m m m}{%
   \noindent

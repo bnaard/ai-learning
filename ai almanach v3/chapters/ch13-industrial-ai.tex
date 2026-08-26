@@ -15,12 +15,33 @@
 
 \begin{v3topic}{The Fourth Industrial Revolution}
     \textbf{Industry 4.0} describes the integration of digital technologies into manufacturing, following steam power (1.0), electrification (2.0), and computerised automation (3.0)\textsuperscript{\cite[][pp.~1--10]{dafflonChallengesApproachesCPS2021}}.
-    Its three strategic goals are:
-    \begin{itemize}
-        \item \textbf{Flexibility}: rapid product changeovers without retooling
-        \item \textbf{Efficiency}: minimise energy, material, and time waste
-        \item \textbf{Mass customisation}: produce lot-size-one at near-mass-production cost
-    \end{itemize}
+    \factvisual{
+        Its three strategic goals are:
+        \begin{itemize}
+            \item \textbf{Flexibility}: rapid product changeovers without retooling.
+            \item \textbf{Efficiency}: minimise energy, material, and time waste.
+            \item \textbf{Mass customisation}: produce lot-size-one at near-mass-production cost.
+        \end{itemize}
+        Industry numbers describe dominant production paradigms, not clean
+        replacement dates; factories often contain several generations at once.
+    }{
+        \begin{tikzpicture}[node distance=3.5mm]
+            \node[almanach card,text width=31mm] (one)
+                {Industry 1.0\\\scriptsize steam + mechanisation};
+            \node[almanach card,text width=31mm,below=of one] (two)
+                {Industry 2.0\\\scriptsize electricity + assembly lines};
+            \node[almanach card,text width=31mm,below=of two] (three)
+                {Industry 3.0\\\scriptsize electronics + automation};
+            \node[almanach accent card,text width=31mm,below=of three] (four)
+                {Industry 4.0\\\scriptsize connected cyber-physical systems};
+            \draw[almanach arrow] (one) -- (two);
+            \draw[almanach arrow] (two) -- (three);
+            \draw[almanach arrow] (three) -- (four);
+        \end{tikzpicture}
+        \visualcaption{A technology timeline from mechanised production to
+          connected, data-synchronised production systems.}
+          {fig:industrial-revolutions-timeline}
+    }
 
 \end{v3topic}
 \begin{v3topic}{Cyber-Physical Systems}

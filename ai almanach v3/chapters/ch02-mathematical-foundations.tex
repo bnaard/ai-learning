@@ -391,10 +391,60 @@
 \begin{v3topic}{Normal (Gaussian) Distribution}
         The \textbf{Normal distribution} $\mathcal{N}(\mu, \sigma^2)$ is the most important continuous distribution in statistics and ML. Its bell-shaped PDF is symmetric about the mean $\mu$; the standard deviation $\sigma$ controls the width\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{68-95-99.7 rule}: approximately 68\%, 95\%, and 99.7\% of values lie within 1, 2, and 3 standard deviations of the mean, respectively.
 \visualseparator
-        \begin{equation}
-            f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
-        \end{equation}
-        The standard Normal $\mathcal{N}(0,1)$ has $\mu=0$, $\sigma=1$. Standardisation: $z = (x - \mu)/\sigma$.
+        \factvisual{
+            \begin{equation*}
+                f(x) = \frac{1}{\sigma\sqrt{2\pi}}
+                \exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+            \end{equation*}
+            \begin{itemize}
+                \item \textbf{Centre:} mean, median, and mode coincide at $\mu$.
+                \item \textbf{Width:} larger $\sigma$ produces a lower, wider bell.
+                \item \textbf{Area:} probability is area under the density, not bar height.
+                \item \textbf{Standardise:} $z=(x-\mu)/\sigma$ converts values to standard-deviation units.
+            \end{itemize}
+        }{
+            \begin{tikzpicture}
+                \begin{axis}[
+                    almanach axis,
+                    height=52mm,
+                    xmin=-3.4,xmax=3.4,
+                    ymin=0,ymax=0.46,
+                    xlabel={$z$-score},
+                    ylabel={density},
+                    ytick=\empty,
+                    xtick={-3,-2,-1,0,1,2,3},
+                    legend style={at={(0.5,1.02)},anchor=south},
+                    legend columns=2]
+                    \addplot+[ybar interval,
+                        fill=AlmanachTeal!24,
+                        draw=AlmanachTeal!45,
+                        mark=none] coordinates {
+                        (-3.2,0.008)(-2.8,0.015)(-2.4,0.030)
+                        (-2.0,0.060)(-1.6,0.120)(-1.2,0.205)
+                        (-0.8,0.300)(-0.4,0.375)(0,0.405)
+                        (0.4,0.370)(0.8,0.300)(1.2,0.205)
+                        (1.6,0.120)(2.0,0.060)(2.4,0.030)
+                        (2.8,0.015)(3.2,0.008)};
+                    \addlegendentry{sample histogram}
+                    \addplot[AlmanachOchre,very thick,smooth,
+                        domain=-3.3:3.3,samples=120]
+                        {0.39894228*exp(-x^2/2)};
+                    \addlegendentry{$\mathcal{N}(0,1)$ density}
+                    \draw[AlmanachInk!45,dashed]
+                        (axis cs:-1,0) -- (axis cs:-1,0.242);
+                    \draw[AlmanachInk!45,dashed]
+                        (axis cs:1,0) -- (axis cs:1,0.242);
+                    \draw[decorate,decoration={brace,mirror,amplitude=3pt},
+                        AlmanachTeal]
+                        (axis cs:-1,-0.012) -- (axis cs:1,-0.012)
+                        node[midway,below=3pt,font=\scriptsize] {$\approx68\%$};
+                \end{axis}
+            \end{tikzpicture}
+            \visualcaption{Illustrative observations form a histogram;
+              the Normal model is a continuous density. The central interval
+              $[-1\sigma,+1\sigma]$ contains about 68\% of its area.}
+              {fig:normal-histogram-density}
+        }
 
 \end{v3topic}
 \begin{v3topic}{Binomial Distribution}

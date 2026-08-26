@@ -94,7 +94,7 @@ services:
       # Host exposure is explicit and defaults to loopback only.
       - "127.0.0.1:8766:8765"
     environment:
-      AIBOX_LATEX_DOCUMENTS_JSON: "[{\"name\":\"ai-almanach\",\"pdf\":\"/workspace/ai almanach/out/ai-almanach.pdf\",\"source\":\"ai almanach/ai-almanach.tex\"}]"
+      AIBOX_LATEX_DOCUMENTS_JSON: "[{\"name\":\"ai-almanach\",\"pdf\":\"/workspace/ai almanach/out/ai-almanach.pdf\",\"source\":\"ai almanach/ai-almanach.tex\"},{\"name\":\"ai-almanach-v3\",\"pdf\":\"/workspace/ai almanach v3/out/ai-almanach-v3.pdf\",\"source\":\"ai almanach v3/ai-almanach-v3.tex\"}]"
       AIBOX_LATEX_PREFERRED_DOCUMENT: "ai-almanach"
     tmpfs:
       - /tmp:size=16m,mode=1777

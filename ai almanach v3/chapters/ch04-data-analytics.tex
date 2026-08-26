@@ -84,15 +84,42 @@
 \begin{v3topic}{ETL Pipelines}
     \textbf{Extract--Transform--Load} is the standard pattern for moving data into a data warehouse or analytical store\textsuperscript{\cite{hanDataMiningConcepts2012}}.
 \visualseparator
-    \begin{tblr}{colspec={|Q[c,m,1.2cm]|X|}, hlines}
-        \textbf{Step}   & \textbf{Description} \\
-        Extract  & Pull raw data from operational sources (databases, APIs, files) \\
-        Transform & Clean, reshape, aggregate, apply business rules \\
-        Load     & Write to target (DW, data lake, OLAP cube) \\
-    \end{tblr}
-\captionof{table}{Data Integration: ETL Pipelines.}
-\label{tab:ch04-data-analytics-inline-03}
-    Modern \emph{ELT} (load first, transform in-place) is preferred for cloud data lakes where storage is cheap and compute is elastic.
+    \factvisual{
+        \begin{description}
+            \item[Extract] Pull immutable source data from databases, APIs,
+                files, and event streams.
+            \item[Transform] Validate, clean, join, reshape, and apply explicit
+                business rules.
+            \item[Load] Publish versioned data to a warehouse, lakehouse, or
+                analytical store.
+        \end{description}
+        Modern \emph{ELT} loads first and transforms inside the analytical
+        platform. In both patterns, lineage and quality checks belong at every
+        boundary.
+    }{
+        \begin{tikzpicture}[node distance=5mm]
+            \node[almanach card,text width=23mm] (sources)
+                {sources\\\scriptsize DB · API · files};
+            \node[almanach card,text width=23mm,below=of sources] (extract)
+                {extract\\\scriptsize snapshot + metadata};
+            \node[almanach accent card,text width=23mm,below=of extract] (transform)
+                {transform\\\scriptsize test + clean + join};
+            \node[almanach card,text width=23mm,below=of transform] (store)
+                {analytical store};
+            \node[almanach card,text width=23mm,below=of store] (consumers)
+                {BI · models · APIs};
+            \draw[almanach arrow] (sources) -- (extract);
+            \draw[almanach arrow] (extract) -- (transform);
+            \draw[almanach arrow] (transform) -- (store);
+            \draw[almanach arrow] (store) -- (consumers);
+            \draw[AlmanachOchre,dashed,-{Stealth[length=2mm]}]
+                (consumers.east) to[out=0,in=0]
+                node[right,font=\tiny\sffamily,align=left]
+                {quality feedback} (transform.east);
+        \end{tikzpicture}
+        \visualcaption{An ETL pipeline is a monitored flow with feedback, not
+          a one-way file copy.}{fig:etl-monitored-flow}
+    }
 
 \end{v3topic}
 \begin{v3topic}{Data Fusion}

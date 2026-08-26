@@ -210,6 +210,38 @@
     rules apply from December 2027 and product-embedded high-risk rules from
     August 2028\textsuperscript{\cite{europeanCommissionAIAct2026}}.
     It classifies AI systems by risk level:
+    \factvisual{
+        \textbf{Classification is a legal analysis, not a model label.}
+        The intended purpose, deployment context, actor role, affected people,
+        and applicable definitions determine which duties attach.
+        The same technical component can sit in different legal categories in
+        different products or workflows.
+    }{
+        \begin{tikzpicture}[y=0.72cm]
+            \path[fill=AlmanachRed!72,draw=white]
+                (-1.3,3.3) -- (1.3,3.3) -- (0.8,4.1) -- (-0.8,4.1) -- cycle;
+            \node[font=\scriptsize\sffamily,text=white] at (0,3.68)
+                {unacceptable};
+            \path[fill=AlmanachOchre!72,draw=white]
+                (-2.0,2.2) -- (2.0,2.2) -- (1.3,3.2) -- (-1.3,3.2) -- cycle;
+            \node[font=\scriptsize\sffamily,text=white] at (0,2.68)
+                {high risk};
+            \path[fill=AlmanachTeal!58,draw=white]
+                (-2.8,1.1) -- (2.8,1.1) -- (2.0,2.1) -- (-2.0,2.1) -- cycle;
+            \node[font=\scriptsize\sffamily,text=white] at (0,1.58)
+                {transparency duties};
+            \path[fill=AlmanachTeal!24,draw=white]
+                (-3.6,0) -- (3.6,0) -- (2.8,1.0) -- (-2.8,1.0) -- cycle;
+            \node[font=\scriptsize\sffamily] at (0,0.48)
+                {minimal risk / voluntary practice};
+            \draw[almanach arrow] (4.0,0.2) -- (4.0,3.8)
+                node[midway,right,font=\tiny\sffamily,align=left]
+                {obligations\\intensify};
+        \end{tikzpicture}
+        \visualcaption{A conceptual risk pyramid for the categories discussed
+          here. It is an orientation aid, not a substitute for classification
+          under the Act.}{fig:eu-ai-act-risk-pyramid}
+    }
     \begin{tblr}{|X[2]|X[4]|X[4]|}
         \hline
         \textbf{Risk Level} & \textbf{Examples} & \textbf{Requirements} \\

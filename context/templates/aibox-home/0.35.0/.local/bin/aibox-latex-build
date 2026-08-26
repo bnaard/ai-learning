@@ -24,10 +24,18 @@ build_0() {
   'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai almanach/out' 'ai almanach/ai-almanach.tex'
 }
 
+build_1() {
+  prepare 'ai almanach v3/ai-almanach-v3.tex' 'ai almanach v3/out'
+  printf '%s\n' 'Building LaTeX document '\''ai-almanach-v3'\'''
+  'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai almanach v3/out' 'ai almanach v3/ai-almanach-v3.tex'
+}
+
 case "${1:-all}" in
   all)
     build_0
+    build_1
     ;;
   'ai-almanach') build_0 ;;
-  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-almanach' >&2; exit 2 ;;
+  'ai-almanach-v3') build_1 ;;
+  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-almanach, ai-almanach-v3' >&2; exit 2 ;;
 esac

@@ -336,6 +336,36 @@
     Interaction protocols define the expected \emph{sequence of messages}
     between agents --- the agent-level analogue of network protocols.
     \textsuperscript{\cite[][Ch.~4]{bellifeministeDevelopingMultiAgentSystems2007}}
+    \factvisual{
+        \textbf{A performative has protocol meaning.}
+        A request is not complete when it is sent. The receiver may refuse or
+        agree, and an agreement must eventually resolve as information or
+        failure.
+        \begin{itemize}
+            \item Conversation IDs correlate asynchronous replies.
+            \item Timeouts and failure paths are part of the protocol.
+            \item Payload validity does not guarantee semantic agreement.
+        \end{itemize}
+    }{
+        \begin{tikzpicture}[x=1cm,y=0.72cm]
+            \node[font=\small\sffamily\bfseries] at (0,4.8) {Requester};
+            \node[font=\small\sffamily\bfseries] at (4.5,4.8) {Provider};
+            \draw[AlmanachInk!45] (0,4.4) -- (0,0);
+            \draw[AlmanachInk!45] (4.5,4.4) -- (4.5,0);
+            \draw[almanach arrow] (0,3.9) -- node[above,font=\scriptsize]
+                {REQUEST} (4.5,3.9);
+            \draw[almanach arrow] (4.5,3.0) -- node[above,font=\scriptsize]
+                {AGREE / REFUSE} (0,3.0);
+            \draw[almanach arrow] (4.5,1.6) -- node[above,font=\scriptsize]
+                {INFORM / FAILURE} (0,1.6);
+            \node[draw=AlmanachOchre,dashed,rounded corners,
+                  fit={(0,3.25)(4.5,1.25)},inner sep=5pt,
+                  label={[font=\tiny\sffamily,text=AlmanachOchre]below:
+                  one conversation}] {};
+        \end{tikzpicture}
+        \visualcaption{The FIPA Request interaction as a sequence: acceptance
+          and task outcome are separate messages.}{fig:fipa-request-sequence}
+    }
     \begin{center}
     \begin{tblr}{
         colspec={X[l]X[l]X[l]},

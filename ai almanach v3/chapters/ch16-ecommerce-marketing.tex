@@ -23,6 +23,30 @@
         \item \textbf{Logistics}: last-mile routing, demand forecasting, warehouse automation
     \end{itemize}
     AI creates a \emph{data flywheel}: more users generate more behavioural data, enabling better models, attracting more users.
+    \factvisual{
+        \textbf{The flywheel has a governance condition.}
+        More interactions can improve ranking and recommendations only when
+        measurements represent durable user value.
+        Optimising clicks alone can amplify popularity bias, manipulation, or
+        short-term engagement at the expense of satisfaction.
+    }{
+        \begin{tikzpicture}[node distance=10mm]
+            \node[almanach card] (users) {more users};
+            \node[almanach card,right=of users] (events) {more events};
+            \node[almanach accent card,below=of events] (models) {better models};
+            \node[almanach card,left=of models] (value) {better experience};
+            \draw[almanach arrow] (users) -- (events);
+            \draw[almanach arrow] (events) -- (models);
+            \draw[almanach arrow] (models) -- (value);
+            \draw[almanach arrow] (value) -- (users);
+            \node[font=\tiny\sffamily,text=AlmanachOchre,
+                  align=center] at ($(users)!0.5!(models)$)
+                  {measure\\long-term value};
+        \end{tikzpicture}
+        \visualcaption{A governed data flywheel. Feedback improves the system
+          only when the objective measures the value the product intends to
+          create.}{fig:ecommerce-data-flywheel}
+    }
 
 \end{v3topic}
 \begin{v3topic}{Programmatic Advertising}

@@ -51,7 +51,7 @@ preview-enhanced = [
 ]
 
 [runtime_home]
-generated_at = "2026-08-26T13:08:59.462451+00:00"
+generated_at = "2026-08-26T15:26:29.411949+00:00"
 
 [runtime_home.files]
 ".claude/keybindings.json" = "187a3f75b831cbec4b025eecd23f06e76a77f46d6f47e4e730ef341f0d1db21c"
@@ -91,8 +91,8 @@ generated_at = "2026-08-26T13:08:59.462451+00:00"
 ".local/bin/aibox-agent-signal" = "0902610c48afcf647151d5692080c3988cd30fb027b59383dd840c13f5c84f21"
 ".local/bin/aibox-codex-notify" = "184ea90ef2670ef589feccc19466a2c9caf5aaa78a48815b1ae86844881af874"
 ".local/bin/aibox-copy" = "8ad9b94df76a00b938aa933bbda8305d5222bf7f9374a3bd5afef5f0fc361654"
-".local/bin/aibox-latex-build" = "dfcf51e9408749f510cc9ff587f2e19a073298991f264f6518d7f8674e8723c0"
-".local/bin/aibox-latex-watch" = "c7741e0e67677fd1022fd48b15f9a94d16f689d1888cb0acc67a9134bc9d30b7"
+".local/bin/aibox-latex-build" = "d6bdcff6cf339fdbbe764b5b7ae36f0317418e69848291942d2cd147e498c855"
+".local/bin/aibox-latex-watch" = "6d2c5808bf784b8a2f78e869d28e67a7ba417c8695c1259bea552ea44e83009a"
 ".local/bin/aibox-powerkit-render-list" = "2fee132c86c69deb2198d2ed32d895d008c77ca7f5c68f910d1793e6edadfdbc"
 ".local/bin/aibox-powerkit-render-session" = "3e5ca872bdc0bcec25616f5a2f469d64ec13bb9342415344171b204c42c28b77"
 ".local/bin/aibox-preview" = "23dd64645a9c95aa944e4af20091349fd22e3214e48ef15f5757646b5bc375f6"

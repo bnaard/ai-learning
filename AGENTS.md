@@ -278,6 +278,7 @@ Build and watch LaTeX only inside the development container. The read-only previ
 | Document | Source | Build | Watch | Preview |
 |---|---|---|---|---|
 | `ai-almanach` | `ai almanach/ai-almanach.tex` | `aibox-latex-build ai-almanach` | `aibox-latex-watch ai-almanach` | `http://127.0.0.1:8766/documents/ai-almanach/` |
+| `ai-almanach-v3` | `ai almanach v3/ai-almanach-v3.tex` | `aibox-latex-build ai-almanach-v3` | `aibox-latex-watch ai-almanach-v3` | `http://127.0.0.1:8766/documents/ai-almanach-v3/` |
 
 Run `aibox-latex-build` with no argument to build every configured document. Run one `aibox-latex-watch <name>` process per document that should rebuild continuously; stop it with Ctrl-C. Host-side `aibox up` starts the shared Compose preview sidecar when `latex.preview.enabled = true`. Loopback previews on a remote host require SSH port forwarding.
 <!-- aibox-managed:latex-runtime END -->

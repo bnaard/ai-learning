@@ -248,6 +248,41 @@
 
 \end{v3topic}
 \begin{v3topic}{When to Use Which Distribution Chart}
+    \factvisual{
+        \textbf{Start from the analytical question.}
+        \begin{itemize}
+            \item Need the shape of one continuous variable? Use a histogram or density.
+            \item Need robust group comparison? Use box or violin plots.
+            \item Need every observation? Use dots, strips, or swarms.
+            \item Need category counts? Use bars, not a histogram.
+        \end{itemize}
+    }{
+        \begin{tikzpicture}[node distance=4mm]
+            \node[almanach accent card,text width=28mm] (q)
+                {What must the reader compare?};
+            \node[almanach card,text width=20mm,below left=7mm and 8mm of q]
+                (shape) {shape};
+            \node[almanach card,text width=20mm,below=7mm of q]
+                (groups) {groups};
+            \node[almanach card,text width=20mm,below right=7mm and 8mm of q]
+                (points) {points};
+            \node[almanach card,text width=20mm,below=of shape]
+                (hist) {histogram / KDE};
+            \node[almanach card,text width=20mm,below=of groups]
+                (box) {box / violin};
+            \node[almanach card,text width=20mm,below=of points]
+                (strip) {strip / swarm};
+            \draw[almanach arrow] (q) -- (shape);
+            \draw[almanach arrow] (q) -- (groups);
+            \draw[almanach arrow] (q) -- (points);
+            \draw[almanach arrow] (shape) -- (hist);
+            \draw[almanach arrow] (groups) -- (box);
+            \draw[almanach arrow] (points) -- (strip);
+        \end{tikzpicture}
+        \visualcaption{Chart selection begins with the comparison task, then
+          chooses the simplest mark that exposes the required evidence.}
+          {fig:distribution-chart-decision-tree}
+    }
     \begin{tblr}{|X[l]|X[l]|}
         \hline
         \textbf{Goal}                        & \textbf{Chart type}                    \\

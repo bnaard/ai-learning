@@ -541,6 +541,7 @@
         GPT-1 & 2018 & 117M params; fine-tuned on downstream tasks \\
         GPT-2 & 2019 & 1.5B params; release withheld (misuse risk) \\
         GPT-3 & 2020 & 175B params; few-shot in-context learning \\
+        Chinchilla & 2022 & 70B params; compute-optimal parameter--data balance \\
         GPT-4 & 2023 & Multimodal; strong reasoning and coding \\
     \end{tblr}
 \captionof{table}{GPT Family: GPT Evolution and Scaling Laws.}
@@ -548,10 +549,63 @@
     \vspace{2pt}
     \textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
 
-    \textbf{Scaling laws} (Kaplan et al.\ 2020): model performance improves
-    predictably as a power law with (i) number of parameters, (ii) training compute, and
-    (iii) dataset size. ``Bigger is better'' largely replaced careful architectural
-    engineering.\textsuperscript{\cite[][p.~10]{farrisHowLargeLanguage2025}}
+    \textbf{Scaling laws} describe predictable power-law relationships among
+    loss, parameter count, training data, and compute.
+    The important engineering question is not simply how large a model can be,
+    but how a fixed compute budget should be divided between model capacity and
+    training tokens.
+
+    \factvisual{
+        \textbf{The Chinchilla correction.}
+        Hoffmann et al.\ trained more than 400 models and found that many large
+        language models were undertrained.
+        For compute-optimal training, doubling parameter count should be paired
+        with roughly twice as many training tokens.
+
+        At the same training-compute budget as the 280B-parameter Gopher,
+        \textbf{Chinchilla used 70B parameters and four times more data}.
+        It outperformed Gopher and several other larger models across a broad
+        evaluation suite.\textsuperscript{\cite{hoffmannTrainingComputeOptimal2022}}
+    }{
+        \begin{tikzpicture}[x=5.5mm,y=8mm]
+            \node[anchor=east,font=\scriptsize\sffamily\bfseries]
+                at (0,2.2) {Gopher};
+            \node[anchor=east,font=\scriptsize\sffamily\bfseries]
+                at (0,0.6) {Chinchilla};
+            \node[anchor=south,font=\scriptsize\sffamily,
+                  text=AlmanachTeal] at (2,3) {model size};
+            \node[anchor=south,font=\scriptsize\sffamily,
+                  text=AlmanachOchre] at (6.5,3) {training data};
+            \foreach \x in {0.5,1.5,2.5,3.5}{
+                \fill[AlmanachTeal!75] (\x,1.9) rectangle +(0.75,0.6);
+            }
+            \fill[AlmanachOchre!75] (5.3,1.9) rectangle +(0.75,0.6);
+            \fill[AlmanachTeal!75] (0.5,0.3) rectangle +(0.75,0.6);
+            \foreach \x in {5.3,6.3,7.3,8.3}{
+                \fill[AlmanachOchre!75] (\x,0.3) rectangle +(0.75,0.6);
+            }
+            \node[font=\tiny,anchor=west] at (0.5,1.55)
+                {$4\times$ relative parameters};
+            \node[font=\tiny,anchor=west] at (5.3,1.55)
+                {$1\times$ relative data};
+            \node[font=\tiny,anchor=west] at (0.5,-0.05)
+                {$1\times$ relative parameters};
+            \node[font=\tiny,anchor=west] at (5.3,-0.05)
+                {$4\times$ relative data};
+        \end{tikzpicture}
+        \visualcaption{At equal training compute, Chinchilla reallocated the
+          budget from parameter count to substantially more training data.
+          Blocks show relative, not absolute, quantities.}
+          {fig:chinchilla-compute-allocation}
+    }
+
+    \begin{engineernote}[What Chinchilla does not imply]
+    Compute-optimal pre-training is not a universal deployment optimum.
+    Data quality, inference cost, latency, memory, and the expected number of
+    downstream queries can justify training a smaller model on more tokens.
+    Treat the paper as a resource-allocation result under stated assumptions,
+    not as a timeless constant for every architecture and dataset.
+    \end{engineernote}
 
 \end{v3topic}
 \begin{v3topic}{Emergent Abilities of Large Models}
