@@ -1,0 +1,264 @@
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[AlmanachInk]
+    (current page.south west) rectangle (current page.north east);
+  \fill[AlmanachTeal]
+    (current page.north west) rectangle
+    ([yshift=-10mm]current page.north east);
+  \draw[AlmanachOchre,line width=1.2pt]
+    ([xshift=28mm,yshift=-112mm]current page.north west) --
+    ([xshift=-24mm,yshift=-112mm]current page.north east);
+  \foreach \x/\y in {
+    2.8/5.0,5.1/6.2,7.6/4.7,10.0/6.6,12.4/5.3,14.8/6.8,17.2/5.1}
+  {
+    \fill[AlmanachTeal!65!white]
+      ([xshift=\x cm,yshift=\y cm]current page.south west)
+      circle (1.6mm);
+  }
+  \draw[AlmanachTeal!65!white,line width=0.7pt]
+    ([xshift=2.8cm,yshift=5.0cm]current page.south west) --
+    ([xshift=5.1cm,yshift=6.2cm]current page.south west) --
+    ([xshift=7.6cm,yshift=4.7cm]current page.south west) --
+    ([xshift=10.0cm,yshift=6.6cm]current page.south west) --
+    ([xshift=12.4cm,yshift=5.3cm]current page.south west) --
+    ([xshift=14.8cm,yshift=6.8cm]current page.south west) --
+    ([xshift=17.2cm,yshift=5.1cm]current page.south west);
+\end{tikzpicture}
+
+\vspace*{31mm}
+{\color{white}\sffamily\bfseries\fontsize{38}{43}\selectfont
+AI Almanach\par}
+\vspace{5mm}
+{\color{AlmanachTeal!35!white}\sffamily\fontsize{17}{22}\selectfont
+Machine Learning, Data Science, and Intelligent Systems\par}
+\vspace{3mm}
+{\color{white}\sffamily\large
+A prose-first engineering reference\par}
+
+\vfill
+\begin{minipage}{0.66\textwidth}
+  \color{white!88}
+  From mathematical objects to operated systems: each chapter connects
+  intuition, formal mechanisms, worked evidence, failure analysis, and
+  transfer to practice.
+\end{minipage}
+
+\vfill
+{\color{white}\sffamily\Large Bernhard Gerlach\par}
+\vspace{2mm}
+{\color{AlmanachTeal!35!white}\sffamily
+Third working edition · \today\par}
+\end{titlepage}
+
+\clearpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\small
+\textbf{Purpose.}
+This book is an educational engineering reference. It is not a substitute
+for professional safety assurance, clinical judgement, financial advice, or
+legal review.
+
+\textbf{Evidence.}
+Definitions, methods, and empirical claims should be traceable to primary
+literature, standards, official documentation, or identified syntheses.
+Claims about changing models, software, benchmarks, and law must be checked
+again before consequential use.
+
+\textbf{Reproducibility.}
+Results depend on data, splits, random seeds, software versions, numerical
+precision, hardware, and measurement protocol. A benchmark without its
+conditions is a story, not a measurement.
+
+\textbf{Design.}
+This edition was rebuilt from a clean document architecture. It uses normal
+prose, restrained typographic cues, adjacent explanatory visuals, and
+captioned figures and tables rather than a card or poster grid.
+\vspace*{\fill}
+\clearpage
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Artificial intelligence is a family of methods for representing problems,
+learning from observations, reasoning under uncertainty, optimising choices,
+and constructing systems that interact with people and the physical world.
+This Almanach develops that family for engineering students and practitioners
+whose prior mathematics, programming, and domain experience may differ.
+
+The route begins with mathematical, programming, and data foundations. It
+then develops classical machine learning, deep learning, evaluation and
+operations, and reinforcement learning. Later chapters connect these
+mechanisms to trustworthy AI, perception, language, finance, healthcare,
+industry, supply chains, multi-agent systems, commerce, law, visualisation,
+venture design, and scientific communication.
+
+Throughout the book, training a model is treated as one link in a larger
+chain. Useful systems also require a well-scoped decision, representative
+data, meaningful baselines, uncertainty analysis, controlled release,
+monitoring, human responsibility, and a credible response when assumptions
+fail.
+
+\chapter*{Preface: keeping the reasoning chain visible}
+\addcontentsline{toc}{chapter}{Preface}
+
+AI is often difficult because several lessons arrive at once. A learner may
+meet a new application, notation, algorithm, and software tool in a single
+paragraph. This book separates those layers, then reconnects them through a
+repeated engineering loop.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  stage/.style={
+    draw=AlmanachTeal,
+    fill=AlmanachMist,
+    rounded corners=1mm,
+    align=center,
+    minimum width=27mm,
+    minimum height=10mm,
+    font=\sffamily\small},
+  link/.style={-{Stealth[length=2mm]},AlmanachOchre,thick},
+  node distance=8mm and 8mm]
+  \node[stage] (question) {Question and\\constraints};
+  \node[stage,right=of question] (data) {Data and\\assumptions};
+  \node[stage,right=of data] (model) {Model and\\objective};
+  \node[stage,below=of model] (evaluate) {Evaluation and\\uncertainty};
+  \node[stage,left=of evaluate] (operate) {System and\\operations};
+  \node[stage,left=of operate] (revise) {Decision and\\revision};
+  \draw[link] (question) -- (data);
+  \draw[link] (data) -- (model);
+  \draw[link] (model) -- (evaluate);
+  \draw[link] (evaluate) -- (operate);
+  \draw[link] (operate) -- (revise);
+  \draw[link] (revise) -- (question);
+\end{tikzpicture}
+\caption{The recurring engineering loop connecting questions to evidence.}
+\label{fig:frontmatter-engineering-loop}
+\end{figure}
+
+The loop matters because a technically elegant model can still fail. Target
+leakage, the wrong evaluation unit, an unobserved subgroup, unsafe fallback
+behaviour, or silent drift can invalidate the surrounding system even when a
+test score looks impressive.
+
+\chapter*{How to use this book}
+\addcontentsline{toc}{chapter}{How to use this book}
+
+\section*{Choose a route}
+
+The chapters are dependency ordered, but the book also works as a reference.
+Start with the route closest to your goal and return to a prerequisite when a
+symbol, assumption, or implementation step is not yet explainable.
+
+\begin{table}[htbp]
+\centering
+\caption{Suggested learning routes through the AI Almanach.}
+\label{tab:frontmatter-learning-routes}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.19\textwidth]X[l]X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,
+  vlines}
+Route & Begin with & Then emphasise \\
+Complete first pass & Orientation, mathematics, programming, and data &
+Machine learning, deep learning, evaluation, then application chapters \\
+ML engineer & Mathematics refresh and data foundations &
+ML, deep learning, MLOps, trustworthy AI, and practical labs \\
+LLM engineer & Linear algebra, probability, and neural networks &
+NLP, practical LLM engineering, evaluation, safety, and operations \\
+Data scientist & Statistics, programming, and data analytics &
+ML, causal reasoning, visualisation, and deployment \\
+Technical leader & Orientation and evaluation &
+Trust, law, operations, applications, and evidence limitations \\
+\end{tblr}
+\end{table}
+
+\section*{A repeated learning sequence}
+
+The sequence below makes the reasoning visible and exposes missing evidence.
+It combines constructive alignment, worked-example support, retrieval
+practice, and spatial contiguity between words and meaningful graphics
+\cite{biggsEnhancingTeachingConstructive1996,
+swellerCognitiveLoadTheory2019,dunloskyImprovingStudentsLearning2013,
+roedigerTestEnhancedLearning2006,mayerUsingMultimediaElearning2017}.
+
+\begin{enumerate}
+  \item Start with the decision or question that gives the method a purpose.
+  \item State prerequisites, notation, units, and operating assumptions.
+  \item Build a plain-language mental model and identify where it breaks.
+  \item Follow the formal mechanism through a small, worked example.
+  \item Connect the mechanism to implementation and systems constraints.
+  \item Predict a failure, then design a test that can distinguish it.
+  \item Retrieve the reasoning without looking and transfer it to a new case.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\caption{Evidence-informed learning patterns used in every chapter.}
+\label{tab:frontmatter-didactic-patterns}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.22\textwidth]X[l]X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,
+  vlines}
+Pattern & Purpose & Reader action \\
+Chapter roadmap & Expose dependencies before detail &
+Predict the four-stage chain, then redraw it after reading \\
+Worked example & Make the reasoning path observable &
+Explain each step, then complete a changed case \\
+Failure analysis & Build diagnostic knowledge &
+Locate the violated assumption and propose a discriminating test \\
+Retrieval prompt & Strengthen later recall and reveal gaps &
+Answer without looking, check, correct, and revisit after a delay \\
+Transfer task & Prevent example-bound knowledge &
+Change the domain or constraints and adapt the method \\
+Adjacent visual & Reduce split attention for spatial ideas &
+Trace the figure while explaining the corresponding prose \\
+\end{tblr}
+\end{table}
+
+\section*{Evidence and notation}
+
+Use four evidence levels: primary or normative evidence; authoritative
+synthesis; official operational documentation; and illustrative examples.
+The final category can explain an idea but cannot establish a general claim.
+For empirical results, record the dataset, split, metric, uncertainty,
+hardware, and software configuration. For equations, check dimensions,
+boundary cases, sign conventions, and at least one numerical example.
+
+\begin{table}[htbp]
+\centering
+\caption{Core notation used across chapters.}
+\label{tab:frontmatter-core-notation}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[c,0.14\textwidth]X[l]X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,
+  vlines}
+Symbol & Meaning & Typical shape or range \\
+$\mathbf{x}$ & Feature vector & $\mathbf{x}\in\mathbb{R}^{d}$ \\
+$X$ & Design matrix or token representations &
+$X\in\mathbb{R}^{n\times d}$ \\
+$y,\hat y$ & Observed target and model prediction &
+Scalar, class, sequence, or structured object \\
+$\theta$ & Trainable parameters & Vector or collection of tensors \\
+$\mathcal{L}$ & Loss or empirical objective & Usually $\mathbb{R}$ \\
+$p(y\mid x)$ & Conditional probability &
+$[0,1]$, summing or integrating to one \\
+$\nabla_{\theta}\mathcal{L}$ & Gradient with respect to parameters &
+The same shape as $\theta$ \\
+$\mathbb{E}[X]$ & Expectation of a random variable & The units of $X$ \\
+\end{tblr}
+\end{table}
+
+\begin{checkpoint}
+Choose a model you already know. Name its input, target, parameters,
+objective, evaluation unit, one assumption, one failure mode, and the person
+or process responsible for the final decision. Every blank is a useful
+reading goal.
+\end{checkpoint}

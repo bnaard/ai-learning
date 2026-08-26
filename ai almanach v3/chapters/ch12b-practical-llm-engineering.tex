@@ -1,0 +1,687 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+\chapter{Practical LLM Engineering}
+\chapterlead{Which mechanisms and trade-offs appear in a small LLM experiment?}{Trace}{Adapt}{Benchmark}{Deploy}{practical-llm-engineering}
+
+\label{ch:practical-llm-engineering}
+
+\begin{learningobjectives}
+After this chapter, you should be able to:
+\begin{itemize}
+    \item trace text through tokenisation, embeddings, attention, MLP blocks,
+          and logits;
+    \item calculate the shapes and parameter counts of important Transformer
+          matrices;
+    \item derive the LoRA update and explain which parameters receive gradients;
+    \item design a small supervised post-training dataset without leaking
+          evaluation cases;
+    \item compare a base model, an instruct model, and several adapter
+          configurations;
+    \item measure time to first token, decode throughput, memory, and output
+          quality;
+    \item decide when to keep an adapter separate and when to merge it into the
+          base model;
+    \item produce a reproducible evaluation dossier rather than a persuasive
+          demo.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+An LLM is a repeated stack of matrix operations that predicts a distribution
+for the next token.
+Post-training does not pour facts into a tiny mechanical brain.
+It changes selected numerical directions so that some continuations become
+more likely and others less likely under a defined prompt format.
+LoRA makes that change economical by learning two narrow matrices instead of
+relearning each large weight matrix.
+\end{plainlanguage}
+
+\section{The Lab Contract}
+
+This chapter uses \texttt{HuggingFaceTB/SmolLM2-135M-Instruct} as a concrete,
+small decoder-only model.
+The model card describes a 135-million-parameter member of the SmolLM2 family,
+trained on two trillion tokens and then instruction-tuned with supervised
+fine-tuning and preference
+optimisation.\textsuperscript{\cite{benallalSmolLM2WhenSmol2025,
+huggingfaceSmolLM2135MInstruct2026}}
+The checkpoint is small enough for teaching and local experiments, but small
+does not mean magically capable.
+
+\begin{cautionbox}[Verify before running]
+Model repositories, licenses, files, chat templates, and library APIs can
+change.
+Before an experiment, archive the model-card revision, license, exact commit or
+file hashes, tokenizer configuration, and software versions.
+The architectural values in \cref{tab:smollm2-config} were verified against the
+published checkpoint configuration on 26 August 2026; they are not a promise
+about a future revision.
+\end{cautionbox}
+
+\begin{table}[htbp]
+\centering
+\caption{Selected published configuration values for the teaching checkpoint.}
+\label{tab:smollm2-config}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={X[l] Q[r,0.18\textwidth] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Quantity & Value & Engineering consequence \\
+Vocabulary size & 49,152 & Embedding and output spaces contain 49,152 token
+IDs \\
+Hidden size $d_{\mathrm{model}}$ & 576 & Each token state has 576 scalar
+components \\
+Transformer layers & 30 & Attention and MLP transformations repeat 30 times \\
+Query heads & 9 & Each query head has dimension $576/9=64$ \\
+Key/value heads & 3 & Three query heads share each KV head; the KV cache is
+smaller \\
+MLP intermediate size & 1,536 & Each token expands before being projected back
+to 576 \\
+Maximum configured positions & 8,192 & Longer inputs require a supported
+strategy and fresh evaluation \\
+Tied token embeddings & yes & Input embedding and output projection share
+parameters \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+The lab is deliberately a model-comparison experiment.
+Its deliverable is not ``the model said the desired sentence once.''
+The deliverable is evidence showing what changed, what did not, what it cost,
+and where it failed.
+\end{engineernote}
+
+\section{From a Prompt to the Next Token}
+
+\subsection{Step 1: apply the chat template}
+
+An instruct checkpoint expects role markers and control tokens in a particular
+format.
+The tokenizer's \keyterm{chat template} converts a list of system, user, and
+assistant messages into that format.
+Hand-written imitation templates can shift every token boundary and make an
+otherwise correct training run teach the wrong interface.
+
+\subsection{Step 2: tokenise}
+
+The tokenizer maps text to integer IDs,
+
+\begin{equation}
+    (s_1,\ldots,s_m) \longmapsto (t_1,\ldots,t_T),
+    \qquad t_i\in\{0,\ldots,V-1\},
+    \label{eq:text-to-token-ids}
+\end{equation}
+
+where $V$ is vocabulary size and $T$ is sequence length.
+Tokens are not necessarily words.
+Whitespace, punctuation, code, and different languages can produce very
+different token counts.
+
+\begin{plainlanguage}[Tokenisation analogy---and its limit]
+Tokenisation resembles replacing reusable text fragments with catalogue
+numbers.
+Unlike Morse code or a lossless compressor designed only for short bit strings,
+the token inventory is also part of the model's learned computational interface.
+Changing it changes the embedding and output spaces.
+\end{plainlanguage}
+
+\subsection{Step 3: look up embeddings}
+
+Let the embedding matrix be $E\in\mathbb{R}^{V\times d}$.
+Each token ID selects one row, producing
+
+\begin{equation}
+    X^{(0)} = E[t_1,\ldots,t_T]
+    \in\mathbb{R}^{T\times d}.
+    \label{eq:embedding-lookup}
+\end{equation}
+
+For this checkpoint, $V=49{,}152$ and $d=576$, so the embedding table contains
+$49{,}152\times576=28{,}311{,}552$ scalar parameters.
+Because the output weights are tied, the same parameter table is reused when
+hidden states are mapped back to token logits.
+
+\subsection{Step 4: attention mixes information across positions}
+
+For one conventional attention head with row-vector activations,
+
+\begin{align}
+    Q &= XW_Q, & K &= XW_K, & V &= XW_V,
+    \label{eq:qkv-projections}\\
+    A &= \operatorname{softmax}\!\left(
+        \frac{QK^{\mathsf T}}{\sqrt{d_h}} + M\right),
+    & H &= AV.
+    \label{eq:scaled-dot-product-attention}
+\end{align}
+
+$M$ is a causal mask that prevents a position from reading future tokens.
+The $T\times T$ matrix $A$ contains data-dependent mixing weights.
+Multi-head attention performs related computations in several learned
+projection spaces and combines their
+outputs.\textsuperscript{\cite{vaswaniAttentionAllYou2023}}
+
+The teaching checkpoint uses \keyterm{grouped-query attention}: nine query
+heads share three key/value heads.
+With head dimension 64, query projections produce $9\times64=576$ components,
+while key and value projections each produce $3\times64=192$ components.
+This reduces the key/value cache used during autoregressive generation.
+
+\begin{engineernote}[Generation and the KV cache]
+Autoregressive decoding still produces one new token per decoder step.
+With a KV cache, earlier key and value tensors are reused; the model does not
+need to recompute the complete prefix at every step.
+Prompt processing and token-by-token decoding therefore have different cost
+profiles and should be measured separately.
+\end{engineernote}
+
+\subsection{Step 5: the MLP transforms each position}
+
+Attention exchanges information between positions.
+The feed-forward block then applies learned transformations independently to
+each position.
+A Llama-style gated MLP can be written schematically as
+
+\begin{equation}
+    \operatorname{MLP}(x) =
+    W_{\mathrm{down}}
+    \left(\operatorname{SiLU}(W_{\mathrm{gate}}x)
+    \odot W_{\mathrm{up}}x\right),
+    \label{eq:gated-mlp}
+\end{equation}
+
+where $\odot$ is elementwise multiplication.
+Residual connections add transformed information to the existing stream, and
+normalisation controls scale.
+The exact order and normalisation type are architectural choices; not every
+Transformer uses the same pre-norm or post-norm design.
+
+\subsection{Step 6: map hidden state to logits}
+
+After the final block and normalisation, the last relevant hidden state is
+projected to one logit per vocabulary item.
+
+\begin{equation}
+    z = hE^{\mathsf T}\in\mathbb{R}^{V},
+    \qquad
+    p(t_{T+1}=j\mid t_{\leq T})=
+    \frac{\exp(z_j)}{\sum_{k=1}^{V}\exp(z_k)}.
+    \label{eq:next-token-softmax}
+\end{equation}
+
+Greedy decoding chooses the largest probability.
+Sampling transforms the distribution through temperature, top-$k$, top-$p$,
+or related rules and then draws a token.
+Decoding configuration is part of an evaluation protocol, not an aesthetic
+afterthought.
+
+\section{Where Approximately 135 Million Parameters Live}
+
+Parameter counting is a dimensional-analysis exercise and an excellent way to
+catch misunderstandings.
+Ignoring small normalisation vectors, one layer of the published configuration
+has approximately:
+
+\begin{align}
+    N_{\mathrm{attention}}
+    &= 576\cdot576
+      + 192\cdot576
+      + 192\cdot576
+      + 576\cdot576
+      = 884{,}736,
+      \label{eq:smollm-attention-parameters}\\
+    N_{\mathrm{MLP}}
+    &= 3\cdot(1{,}536\cdot576)
+      = 2{,}654{,}208.
+      \label{eq:smollm-mlp-parameters}
+\end{align}
+
+Thirty layers therefore contribute about $106.17$ million parameters, and the
+tied embedding table adds about $28.31$ million.
+Normalisation vectors bring the total to roughly $134.5$ million, which is
+appropriately described as a 135M model.
+
+\begin{checkpoint}
+Check the units in \cref{eq:smollm-attention-parameters}.
+Why are the key and value projections smaller than the query and output
+projections?
+What would happen to embedding parameters if vocabulary size doubled while
+hidden size stayed fixed?
+\end{checkpoint}
+
+\section{LoRA: Learning a Small Weight Update}
+
+Full fine-tuning learns an update for every selected base parameter.
+Low-Rank Adaptation freezes a base matrix and parameterises its update as the
+product of two narrower matrices.\textsuperscript{\cite{huLoRALowRank2021}}
+
+Deep-learning frameworks commonly store a linear-layer weight as
+$W\in\mathbb{R}^{d_{\mathrm{out}}\times d_{\mathrm{in}}}$ and compute
+$Y=XW^{\mathsf T}$.
+LoRA defines
+
+\begin{align}
+    \Delta W &= \frac{\alpha}{r}BA,
+    \label{eq:lora-update}\\
+    A &\in\mathbb{R}^{r\times d_{\mathrm{in}}},
+    &B &\in\mathbb{R}^{d_{\mathrm{out}}\times r},
+    \label{eq:lora-shapes}\\
+    Y' &= X(W+\Delta W)^{\mathsf T}.
+    \label{eq:lora-forward}
+\end{align}
+
+$r$ is the adapter rank and $\alpha/r$ scales the update.
+Because $\operatorname{rank}(BA)\leq r$, LoRA can only express updates in a
+low-rank family, which is the deliberate constraint.
+
+\begin{plainlanguage}[The two-narrow-matrix intuition]
+Imagine that the original weight matrix is a large routing table.
+Full fine-tuning may alter every route independently.
+LoRA instead learns $r$ reusable input patterns in $A$ and $r$ corresponding
+output directions in $B$.
+Their combinations create a structured correction to the original table.
+\end{plainlanguage}
+
+The number of trainable LoRA scalars for one matrix is
+
+\begin{equation}
+    N_{\mathrm{LoRA}} = r(d_{\mathrm{in}}+d_{\mathrm{out}}),
+    \label{eq:lora-parameter-count}
+\end{equation}
+
+compared with $d_{\mathrm{in}}d_{\mathrm{out}}$ base scalars.
+
+\begin{workedexample}[Rank-eight query and value adapters]
+For the 576-by-576 query matrix and rank $r=8$,
+
+\[
+    N_Q = 8(576+576)=9{,}216.
+\]
+
+For the 192-by-576 value matrix,
+
+\[
+    N_V = 8(576+192)=6{,}144.
+\]
+
+Targeting query and value projections in all 30 layers therefore trains
+$30(9{,}216+6{,}144)=460{,}800$ LoRA parameters, about \qty{0.34}{\percent} of
+a 134.5-million-parameter base.
+This estimate must be checked against the framework's printed trainable
+parameter count because target-module names and architecture details can vary.
+\end{workedexample}
+
+\subsection{When gradients are computed}
+
+During a training step:
+
+\begin{enumerate}
+    \item the batch is tokenised and padded or packed;
+    \item a forward pass computes logits and causal language-modelling loss;
+    \item automatic differentiation propagates gradients through the network;
+    \item gradients with respect to frozen $W$ are not stored for optimisation;
+    \item gradients for $A$ and $B$ are accumulated;
+    \item the optimiser updates $A$ and $B$, then gradients are cleared.
+\end{enumerate}
+
+If $B$ begins at zero and $A$ begins randomly, then $\Delta W=0$ at
+initialisation, so the adapter initially reproduces the base layer.
+At the first step, $B$ can receive a gradient while the gradient for $A$ may be
+zero; after $B$ moves away from zero, both factors can learn.
+
+\begin{cautionbox}[LoRA does not make all training memory disappear]
+Freezing base weights removes their optimiser states and parameter gradients,
+but backpropagation still needs activations or recomputation to obtain adapter
+gradients.
+Sequence length, batch size, precision, checkpointing, and attention
+implementation can still dominate memory.
+\end{cautionbox}
+
+\section{Supervised Post-Training Data}
+
+For a token sequence $t_1,\ldots,t_T$, causal language modelling minimises the
+negative log-likelihood of the next token,
+
+\begin{equation}
+    \mathcal{L}_{\mathrm{CLM}}
+    = -\sum_{i=1}^{T-1}
+      m_{i+1}\log p_{\theta}(t_{i+1}\mid t_{\leq i}),
+    \label{eq:causal-lm-loss}
+\end{equation}
+
+where mask $m_{i+1}$ selects which tokens contribute to the loss.
+An instruction-tuning pipeline may train on all formatted tokens or only on
+assistant-response tokens.
+Whichever rule is chosen must be documented and tested on one visible example.
+
+\subsection{A useful example schema}
+
+Store structured messages rather than one preformatted string when possible:
+
+\begin{lstlisting}[language=json]
+{"messages": [
+  {"role": "system", "content": "Answer as a concise lab assistant."},
+  {"role": "user", "content": "Convert 2.5 kW to watts."},
+  {"role": "assistant", "content": "2.5 kW = 2500 W."}
+]}
+\end{lstlisting}
+
+The experiment should use a licensed, narrow dataset whose desired behaviour
+can be scored.
+A handful of sentences is enough for a software smoke test, not enough to
+support a broad claim of new capability.
+
+\subsection{Split by the source of similarity}
+
+Random row splits are weak when prompts are generated from templates.
+Hold out entire prompt families, source documents, entities, or time periods so
+that surface variants cannot straddle train and test.
+Deduplicate exact and near-duplicate prompts and responses before splitting.
+Keep a private challenge set whose prompts are never used in training,
+debugging, early stopping, or prompt design.
+
+\begin{table}[htbp]
+\centering
+\caption{Minimum dataset record for the tiny-model lab.}
+\label{tab:tiny-llm-data-record}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.24\textwidth] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Field & Purpose \\
+Stable example ID and hash & Detect duplicates and prove which example was
+used \\
+Source and license & Establish provenance and permitted use \\
+Prompt-family or group ID & Enable leakage-resistant splitting \\
+Messages before templating & Preserve semantic structure independently of
+tokenizer version \\
+Expected properties or rubric & Make evaluation possible without copying a
+preferred phrase \\
+Risk tags & Identify safety, privacy, formatting, and subgroup cases \\
+\end{tblr}
+\end{table}
+
+\section{Training Conditions and Baselines}
+
+One run cannot distinguish learning from randomness, leakage, prompt effects,
+or a broken comparison.
+Use a baseline matrix in which only declared factors change.
+
+\begin{table}[htbp]
+\centering
+\caption{Baseline ladder for the LoRA experiment.}
+\label{tab:lora-baselines}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[c,0.08\textwidth] Q[l,0.25\textwidth] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+ID & Condition & Question answered \\
+B0 & Released base checkpoint & What does pre-training alone provide? \\
+B1 & Released instruct checkpoint & What did general instruction post-training
+already provide? \\
+B2 & Instruct checkpoint plus rank-4, rank-8, and rank-16 LoRA & Does rank
+affect the quality--cost trade-off? \\
+B3 & Attention-only versus attention-plus-MLP targets & Which modules need
+adaptation? \\
+B4 & No-op or randomly initialised adapter & Does the pipeline create an
+apparent gain without learning? \\
+B5 & Full fine-tuning, only if resources permit & What quality is traded for
+parameter efficiency? \\
+\end{tblr}
+\end{table}
+
+Keep dataset, splits, tokenizer, token budget, evaluation prompts, decoding,
+and stopping rule fixed across candidate comparisons.
+Use more than one seed for claims about training quality.
+Record learning curves and the best checkpoint rule rather than reporting only
+the winner.
+
+\begin{engineernote}[A robust first-run checklist]
+Before a long run, verify that the formatted input is readable, labels are
+shifted correctly, masked positions are intentional, only adapter parameters
+are trainable, loss is finite, one optimiser step changes adapter weights, a
+saved adapter reloads, and a tiny batch can be overfit.
+These tests catch more bugs per joule than heroic hyperparameter tuning.
+\end{engineernote}
+
+\section{Evaluation: Quality Is a Vector}
+
+Language-model evaluation is sensitive to prompt templates, few-shot examples,
+decoding, library versions, and task implementations.
+Reproducible harnesses help, but do not make these choices
+disappear.\textsuperscript{\cite{bidermanLessonsTrenchesReproducible2026}}
+Holistic evaluation treats accuracy, calibration, robustness, fairness, bias,
+toxicity, and efficiency as distinct dimensions rather than forcing them into
+one leaderboard
+number.\textsuperscript{\cite{liangHolisticEvaluationLanguage2023}}
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation layers for the tiny-model experiment.}
+\label{tab:tiny-llm-evaluation-layers}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.20\textwidth] X[l] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Layer & Example measures & Important control \\
+Task correctness & Exact match, numeric tolerance, F1, schema validity &
+Score held-out prompt families, not training paraphrases \\
+Instruction following & Constraint satisfaction and rubric items &
+Blind the evaluator to model identity and randomise order \\
+Robustness & Paraphrase, whitespace, spelling, irrelevant context &
+Preserve intended semantics and record perturbations \\
+Safety and privacy & Refusal cases, sensitive-data regurgitation, prompt
+injection &
+Use authorised synthetic or public test data \\
+General regression & A small unrelated capability suite &
+Check that narrow gains did not destroy useful behaviour \\
+Systems & Load time, TTFT, tokens/s, p50/p95 latency, memory &
+Pin hardware, dtype, runtime, lengths, batch, and warm-up \\
+\end{tblr}
+\end{table}
+
+\subsection{Avoid evaluator leakage}
+
+Do not use the same model to generate training answers, design evaluation
+rubrics, and judge outputs without independent checks.
+For subjective tasks, use a blinded rubric with observable criteria, multiple
+raters where possible, inter-rater agreement, and adjudication rules.
+Show representative failures, not only averages.
+
+\subsection{Report uncertainty}
+
+For case-level metrics, use a paired bootstrap over independent prompt groups.
+For human ratings, report the number of raters and cases, agreement, and an
+interval suited to the sampling design.
+For training comparisons, include variation across planned seeds.
+
+\section{Benchmarking Latency, Throughput, and Memory}
+
+\keyterm{Time to first token} measures the delay until the first generated
+token and is strongly influenced by prompt processing.
+\keyterm{Inter-token latency} or its reciprocal, decode tokens per second,
+describes the autoregressive phase.
+\keyterm{Throughput} may count output tokens across a batch or concurrent
+requests and must therefore state its denominator.
+
+\begin{practicallab}[Performance measurement matrix]
+Compare base, separate-adapter, and merged-model inference under these fixed
+conditions:
+\begin{itemize}
+    \item batch sizes 1 and 4;
+    \item prompt lengths 32, 256, and 1,024 tokens;
+    \item generated lengths 32 and 128 tokens;
+    \item greedy decoding for deterministic timing;
+    \item a pinned device, dtype, runtime, checkpoint revision, and power mode;
+    \item at least five warm-up runs followed by at least 30 measured repeats.
+\end{itemize}
+
+Record checkpoint disk size, load time, host RAM, accelerator memory, time to
+first token, output tokens per second, and end-to-end p50 and p95 latency.
+Synchronise asynchronous accelerators before stopping a timer.
+Do not compare numbers copied from different machines as if they were a
+controlled experiment.
+\end{practicallab}
+
+\begin{cautionbox}[Why this chapter prints no universal tokens-per-second value]
+Throughput depends on processor, memory bandwidth, kernels, batch size,
+sequence lengths, dtype, quantisation, cache, thermal state, runtime version,
+and timing method.
+A number without those conditions is not portable evidence.
+The lab teaches how to obtain a defensible number on the learner's system.
+\end{cautionbox}
+
+\section{Separate Adapter or Merged Model?}
+
+PEFT-style tooling can keep LoRA factors separate or merge the update into a
+standalone set of base weights.\textsuperscript{\cite{huggingfacePEFTLoRA2026}}
+For ordinary LoRA, merging computes $W_{\mathrm{merged}}=W+\Delta W$ once, so
+the deployed linear layer has the original shape.
+
+\begin{table}[htbp]
+\centering
+\caption{Trade-offs between separate and merged LoRA deployment.}
+\label{tab:lora-deployment-tradeoffs}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.19\textwidth] X[l] X[l]},
+    row{1}={font=\bfseries, bg=\maincolor!15!white},
+    hlines,
+    vlines}
+Concern & Separate base plus adapter & Merged model \\
+Storage for many tasks & One shared base plus small adapters & One full
+checkpoint per merged task \\
+Task switching & Load or activate another adapter & Load another complete
+model \\
+Disable or inspect adaptation & Straightforward & Original factors may no
+longer be available \\
+Runtime compatibility & Requires adapter support and correct base revision &
+Looks like an ordinary standalone model \\
+Inference overhead & Implementation dependent; measure it & No adapter branch
+after a correct merge \\
+Quantisation workflow & Depends on supported training/inference path & Merge
+and quantisation order requires validation \\
+Provenance & Base and adapter versions must remain paired & One artifact, but
+its derivation must still be recorded \\
+\end{tblr}
+\end{table}
+
+Keep adapters separate when one base serves many tasks, rapid switching or
+rollback matters, or adapter-level analysis is required.
+Merge when deployment accepts only a standalone model, task switching is
+unnecessary, or measured runtime simplicity matters more than shared storage.
+
+\begin{engineernote}[Numerical equivalence is a test, not an assumption]
+Before release, compare logits or deterministic outputs from separate and
+merged paths on a fixed suite.
+Dtype conversion, quantisation, unsupported adapter variants, target-module
+mismatch, and library behaviour can prevent exact equivalence.
+Define a numerical tolerance and investigate violations.
+\end{engineernote}
+
+\section{End-to-End Practical Protocol}
+
+\begin{practicallab}[A defensible tiny-LLM LoRA study]
+\textbf{Question:}
+Can a rank-eight adapter improve a narrow, measurable engineering-assistant
+task without unacceptable general regression or systems cost?
+
+\textbf{Procedure:}
+\begin{enumerate}
+    \item archive the model card, license, configuration, tokenizer, and hashes;
+    \item write intended use, prohibited use, metric, resource budget, and
+          stopping rule;
+    \item create and document licensed messages with source and prompt-family
+          IDs;
+    \item deduplicate, then split by prompt family into train, validation, and
+          private test;
+    \item run B0 and B1 before any training and save their raw predictions;
+    \item implement rank-eight query/value LoRA and verify the
+          460,800-parameter estimate;
+    \item run formatting, masking, gradient, tiny-batch overfit, save, and
+          reload tests;
+    \item train with recorded seeds, token budget, curves, and checkpoint rule;
+    \item evaluate task, robustness, safety, regression, and uncertainty
+          against baselines;
+    \item benchmark separate and merged inference with the fixed measurement
+          matrix;
+    \item write a model card, failure gallery, resource table, and
+          reproducibility command.
+\end{enumerate}
+
+\textbf{Exit criterion:}
+A peer can reproduce every table from archived inputs and explain whether the
+adapter should be rejected, kept separate, or merged.
+\end{practicallab}
+
+\section{What This Experiment Does Not Prove}
+
+A successful narrow adaptation does not show that the model gained general
+reasoning, acquired reliable factual knowledge, became safe, or will work on
+another language or domain.
+An unsuccessful run does not prove that LoRA is ineffective; the data,
+template, target modules, rank, optimiser, token budget, or evaluation may be
+wrong.
+Good science narrows these alternative explanations through baselines,
+ablations, and transparent limitations.
+
+\begin{checkpoint}
+\begin{enumerate}
+    \item For $d_{\mathrm{in}}=512$, $d_{\mathrm{out}}=1024$, and $r=4$,
+          calculate the LoRA parameter count.
+    \item Explain why a random split can leak template-generated prompts.
+    \item Distinguish time to first token from decode tokens per second.
+    \item Give one reason to keep an adapter separate and one reason to merge
+          it.
+    \item Name three conditions required to compare throughput honestly.
+\end{enumerate}
+\end{checkpoint}
+
+%
+\section{Deep Dive: Serving the Adapted Model}
+\begin{v3topic}{Quantisation Experiment}
+Compare the reference model with 8-bit and 4-bit weight variants on the same
+quality, latency, throughput, and peak-memory suite.
+Separate quantised loading from quantisation-aware training and record which
+layers or tensors remain at higher precision.
+
+\end{v3topic}
+\begin{v3topic}{Measure the Workload Shape}
+Prompt length, generated length, batch concurrency, cache reuse, and hardware
+determine serving behaviour.
+Report time to first token and inter-token latency in addition to total
+throughput; an average can hide an unusable tail.
+
+\end{v3topic}
+\begin{v3topic}{Adapter Governance}
+Version base model, tokenizer, chat template, adapter, merge procedure,
+training data, licence, and evaluation result as one deployable bill of
+materials.
+Verify a merged artifact against the separate adapter path before promotion and
+retain a rollback target.
+\end{v3topic}
+
+\chapterreview{Trace}{Adapt}{Benchmark}{Deploy}
+
+\section{Further Reading}
+
+The original LoRA paper develops the low-rank update and reports its empirical
+trade-offs.\textsuperscript{\cite{huLoRALowRank2021}}
+The SmolLM2 paper and checkpoint model card document the model family and its
+training
+context.\textsuperscript{\cite{benallalSmolLM2WhenSmol2025,
+huggingfaceSmolLM2135MInstruct2026}}
+The PEFT documentation is the operational reference for current adapter APIs
+and merging behaviour.\textsuperscript{\cite{huggingfacePEFTLoRA2026}}
+Biderman et al. discuss why seemingly minor evaluation conventions can change
+language-model
+results.\textsuperscript{\cite{bidermanLessonsTrenchesReproducible2026}}

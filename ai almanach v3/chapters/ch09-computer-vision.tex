@@ -1,0 +1,722 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Foundational Computer Vision =============================================================================
+\chapter{Foundational Computer Vision}
+
+\chapterlead{How do pixels and geometry become testable statements about a scene?}{Sense}{Represent}{Infer}{Stress-test}{computer-vision}
+
+% ==== Section 1: Image Processing and Low-Level Vision ==========================================
+\section{Image Processing and Low-Level Vision}
+
+% ---- 9.1.1 Image Acquisition ------------------------------------------------------------------
+\subsection{Image Acquisition}
+
+\begin{v3topic}{The Human Visual System}
+    The human retina contains approximately \textbf{120 million rods} (scotopic: low-light, achromatic) and
+    \textbf{6 million cones} (photopic: three types L/M/S sensitive to long, medium, short wavelengths)\textsuperscript{\cite[][p.~57]{szeliski2022}}.
+    The \textbf{fovea} packs high-density cones for fine detail; peripheral vision relies mostly on rods.
+    Lateral inhibition in the retina enhances local contrast before signals reach the visual cortex.
+\visualseparator
+    CV relevance: the trichromatic cone response motivates RGB color models; the multi-scale,
+    hierarchical organisation of V1--V5 cortical areas inspired convolutional neural networks.
+
+\end{v3topic}
+\begin{v3topic}{Camera Sensors: CCD and CMOS}
+    Most digital cameras capture light with one of two sensor technologies\textsuperscript{\cite[][pp.~68--73]{jahneDigitalImageProcessing2005}}:
+    \begin{itemize}
+        \item \textbf{CCD} (Charge-Coupled Device): charge shifts pixel-by-pixel to a single readout amplifier; excellent uniformity, higher power consumption.
+        \item \textbf{CMOS}: each pixel has its own amplifier enabling random access; lower power, faster readout, now dominant.
+    \end{itemize}
+    Most sensors use a \textbf{Bayer mosaic} (one R, two G, one B per $2{\times}2$ block).
+    Colour reconstruction via \textbf{demosaicing}.
+    Principal noise sources: shot noise (Poisson), read noise (Gaussian), fixed-pattern noise.
+\end{v3topic}
+
+% ---- 9.1.2 Image Representation and Morphology ------------------------------------------------
+\subsection{Image Representation and Morphology}
+
+\begin{v3topic}{Image Types and Colour Spaces}
+    A digital image is a discrete function $I: \mathbb{Z}^2 \to V$ where $V$ is the value set\textsuperscript{\cite[][p.~38]{gonzalezWoods2018}}.
+    Common types: \textbf{binary} (0/1), \textbf{grayscale} ($0$--$255$), \textbf{colour} (3-channel), \textbf{depth/range} (float).
+\visualseparator
+    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Space} & \textbf{Channels} & \textbf{Key use} \\
+        \hline
+        RGB   & Red, Green, Blue (additive) & Capture, display; device-dependent \\
+        \hline
+        HSV   & Hue, Saturation, Value & Illumination-robust hue; segmentation \\
+        \hline
+        CIE L*a*b* & Lightness, red-green, blue-yellow & Perceptually uniform; colour difference $\Delta E$ \\
+        \hline
+        YCbCr & Luma + two chrominance channels & JPEG/video compression \\
+        \hline
+    \end{tblr}
+\captionof{table}{Image Representation and Morphology: Image Types and Colour Spaces.}
+\label{tab:ch09-computer-vision-inline-01}
+
+\end{v3topic}
+\begin{v3topic}{Morphological Operations}
+    Morphology operates on binary (or grayscale) images using a \textbf{structuring element} $B$\textsuperscript{\cite[][pp.~627--636]{gonzalezWoods2018}}:
+    \begin{itemize}
+        \item \textbf{Erosion} $A \ominus B$: pixel belongs to result only if all of $B$ fits inside $A$; shrinks objects, removes small blobs.
+        \item \textbf{Dilation} $A \oplus B$: pixel belongs to result if any part of $B$ overlaps $A$; expands objects, fills thin gaps.
+    \end{itemize}
+    Grayscale morphology substitutes min (erosion) and max (dilation) over the structuring element neighbourhood.
+
+\end{v3topic}
+\begin{v3topic}{Opening and Closing}
+    Compositions of erosion and dilation yield powerful filters\textsuperscript{\cite[][pp.~638--645]{gonzalezWoods2018}}:
+    \begin{itemize}
+        \item \textbf{Opening} $= A \ominus B \oplus B$: smooth contour, remove small protrusions and isolated noise pixels.
+        \item \textbf{Closing} $= A \oplus B \ominus B$: fill small holes and narrow gaps between objects.
+    \end{itemize}
+    The \textbf{top-hat transform} $T = I - \mathrm{Opening}(I)$ extracts bright features smaller than the structuring element — useful for illumination correction.
+\end{v3topic}
+
+% ---- 9.1.3 Single and Multi-View Geometry -----------------------------------------------------
+\subsection{Single and Multi-View Geometry}
+
+\begin{v3topic}{Pinhole Camera Model}
+    The \textbf{pinhole camera} models perspective projection\textsuperscript{\cite[][pp.~44--50]{hartleyZisserman2004}}:
+    \begin{equation}
+        \lambda \begin{bmatrix} u \\ v \\ 1 \end{bmatrix}
+        = \underbrace{\begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}}_{K}
+        \begin{bmatrix} R \mid \mathbf{t} \end{bmatrix}
+        \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}
+    \end{equation}
+    $K$ = intrinsic matrix ($f_x, f_y$: focal lengths in pixels; $c_x, c_y$: principal point).
+    $[R \mid \mathbf{t}]$: extrinsic (rotation + translation from world to camera).
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[scale=0.85,
+        arr/.style={-{Stealth[length=2mm]}, thick},
+        ray/.style={dashed, gray}
+    ]
+        % Image plane
+        \draw[thick, fill=blue!8] (-0.5, -0.8) rectangle (0.5, 0.8);
+        \node[font=\scriptsize] at (0, 1.0) {Image plane};
+        % Optical centre
+        \filldraw[black] (2.0, 0) circle (2pt) node[above, font=\scriptsize] {$C$};
+        % 3D point
+        \filldraw[orange] (4.0, 1.2) circle (2pt) node[right, font=\scriptsize] {$P(X,Y,Z)$};
+        % Project onto image plane
+        \draw[ray] (4.0, 1.2) -- (2.0, 0) -- (0.3, 0.45);
+        \filldraw[red] (0.3, 0.45) circle (1.5pt) node[left, font=\scriptsize] {$p(u,v)$};
+        % Optical axis
+        \draw[arr, thin] (2.0, 0) -- (-0.5, 0) node[midway, below, font=\scriptsize] {$f$};
+        % Z axis
+        \draw[arr, thin, gray] (2.0,0) -- (4.5, 0) node[right, font=\scriptsize] {$Z$};
+    \end{tikzpicture}
+\captionof{figure}{Single and Multi-View Geometry: Pinhole Camera Model.}
+\label{fig:ch09-computer-vision-inline-01}
+    \end{center}
+
+\end{v3topic}
+\begin{v3topic}{Homography and Epipolar Geometry}
+    A \textbf{homography} $H$ (3×3, 8 DOF) maps points between two views of a planar surface\textsuperscript{\cite[][pp.~32--36]{hartleyZisserman2004}}:
+    $\mathbf{p}' \sim H\mathbf{p}$.
+    Applications: panorama stitching, planar marker tracking.
+    Estimated robustly with \textbf{RANSAC} + DLT from $\geq 4$ point correspondences.
+\visualseparator
+    \textbf{Epipolar geometry} describes the constraint between two calibrated views.
+    For a point $\mathbf{p}$ in image 1, its match in image 2 lies on the
+    \textbf{epipolar line} $\ell' = F\mathbf{p}$, where $F$ is the $3{\times}3$ \textbf{fundamental matrix} (rank 2).
+    Stereo depth: $Z = \frac{f \cdot B}{d}$ (baseline $B$, disparity $d = x_L - x_R$).
+\end{v3topic}
+
+% ---- 9.1.4 Filtering --------------------------------------------------------------------------
+\subsection{Filtering}
+
+\begin{v3topic}{Spatial Filtering and Convolution}
+    \textbf{Convolution} with kernel $h$ over image $f$ at position $(x,y)$\textsuperscript{\cite[][pp.~120--132]{gonzalezWoods2018}}:
+    \begin{equation}
+        (f * h)[x,y] = \sum_{i,j} f[x-i,\, y-j]\, h[i,j]
+    \end{equation}
+    Common spatial filters:
+    \begin{itemize}
+        \item \textbf{Box filter}: uniform kernel; fast mean blur, but can create blocky smoothing and boundary artefacts.
+        \item \textbf{Gaussian}: smooth and isotropic; $\sigma$ controls blur radius and typically avoids the ringing associated with sharp frequency cut-offs.
+        \item \textbf{Unsharp mask}: $I_{\text{sharp}} = I + \alpha(I - G_\sigma * I)$; amplifies edges.
+        \item \textbf{Median filter}: non-linear; preserves edges; best for salt-and-pepper noise.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Gaussian Blur}
+    The \textbf{Gaussian kernel} is the most important smoothing filter\textsuperscript{\cite[][pp.~138--142]{jahneDigitalImageProcessing2005}}:
+    \begin{equation}
+        G(x,y;\sigma) = \frac{1}{2\pi\sigma^2} \exp\!\left(-\frac{x^2+y^2}{2\sigma^2}\right)
+    \end{equation}
+    Key properties:
+    \begin{itemize}
+        \item Separable: $G(x,y) = G(x)\cdot G(y)$ — fast 1D × 1D implementation.
+        \item Gaussian scale space: progressively blurring at increasing $\sigma$ reveals coarser structure; foundation of multi-scale analysis and SIFT.
+        \item Isotropic: no preferred orientation → rotationally invariant smoothing.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Frequency Domain Filtering}
+    The \textbf{Discrete Fourier Transform} decomposes an image into spatial frequency components\textsuperscript{\cite[][pp.~218--245]{gonzalezWoods2018}}:
+    \begin{equation}
+        F(u,v) = \sum_{x=0}^{M-1}\sum_{y=0}^{N-1} f(x,y)\, e^{-j2\pi\left(\frac{ux}{M}+\frac{vy}{N}\right)}
+    \end{equation}
+    The \textbf{convolution theorem} states: $(f * h) \leftrightarrow F \cdot H$ — convolution in the spatial domain equals pointwise multiplication in the frequency domain.
+    This allows large kernel convolutions to be performed efficiently via FFT in $O(MN\log MN)$.
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|X[l]|}
+        \hline
+        \textbf{Filter} & \textbf{What it passes} & \textbf{Effect} \\
+        \hline
+        Low-pass  & Low frequencies & Blurring, noise removal \\
+        \hline
+        High-pass & High frequencies & Edge enhancement, sharpening \\
+        \hline
+        Band-pass & Specific range & Texture analysis, Gabor filters \\
+        \hline
+    \end{tblr}
+\captionof{table}{Filtering: Frequency Domain Filtering.}
+\label{tab:ch09-computer-vision-inline-02}
+\end{v3topic}
+
+% ---- 9.1.5 Texture ----------------------------------------------------------------------------
+\subsection{Texture}
+
+\begin{v3topic}{Classical Texture Descriptors}
+    Hand-crafted texture features capture local intensity patterns\textsuperscript{\cite[][pp.~645--662]{szeliski2022}}:
+    \begin{itemize}
+        \item \textbf{GLCM} (Gray-Level Co-occurrence Matrix): counts how often pairs of pixel intensities co-occur at a given offset; features: contrast, energy, homogeneity, correlation.
+        \item \textbf{LBP} (Local Binary Pattern): compare centre pixel to its 8 neighbours; encode as binary string $\to$ histogram. Fast, robust to monotonic illumination changes.
+        \item \textbf{Gabor filters}: oriented sinusoidal wave modulated by a Gaussian envelope; tunable frequency $\omega_0$ and orientation $\theta$. A bank at multiple scales and orientations captures rich texture information.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Bag-of-Visual-Words and CNN Texture}
+    \textbf{Bag-of-Visual-Words (BoVW)}\textsuperscript{\cite[][pp.~682--686]{szeliski2022}}: (1) extract local descriptors (SIFT) densely; (2) cluster into a visual codebook ($K$-means, $K$ = 500–4000); (3) represent each image as a frequency histogram over codewords; (4) classify with SVM (TF-IDF weighting).
+\visualseparator
+    \textbf{CNN texture features}: early layers learn Gabor-like oriented filters; intermediate layers capture textons and repetitive patterns.
+    The \textbf{Gram matrix} $G = F^\top F$ (where $F$ are spatial feature maps flattened) captures second-order statistics of CNN activations --- used for neural style transfer and texture synthesis\textsuperscript{\cite[][p.~119]{fleuretLittleBookDeep}}.
+\end{v3topic}
+
+
+% ==== Section 2: Mid-Level Vision and Video ====================================================
+\section{Mid-Level Vision and Video}
+
+% ---- 9.2.1 Edge and Feature Detection ---------------------------------------------------------
+\subsection{Edge and Feature Detection}
+
+\begin{v3topic}{Edge Detection and the Canny Detector}
+    Edges mark discontinuities in intensity caused by depth, surface orientation, or reflectance changes.
+    The \textbf{Sobel operator} approximates image gradients\textsuperscript{\cite[][pp.~693--706]{gonzalezWoods2018}}:
+    \begin{equation}
+        |\nabla I| = \sqrt{G_x^2 + G_y^2}, \quad
+        G_x = \begin{bmatrix}-1&0&1\\-2&0&2\\-1&0&1\end{bmatrix} * I
+    \end{equation}
+    The \textbf{Canny detector} (1986) is the standard pipeline:
+    \begin{enumerate}
+        \item Gaussian smoothing ($\sigma$)
+        \item Gradient magnitude \& direction
+        \item Non-maximum suppression (thin edges to 1 pixel)
+        \item Double threshold (high $T_h$, low $T_l$)
+        \item Hysteresis linking: strong edges kept; weak edges kept only if connected to strong ones
+    \end{enumerate}
+
+\end{v3topic}
+\begin{v3topic}{Harris Corners and FAST}
+    \textbf{Harris corner detector} (Harris \& Stephens, 1988)\textsuperscript{\cite[][pp.~215--220]{szeliski2022}}:
+    build the \textbf{structure tensor} from image gradients:
+    \begin{equation}
+        M = \sum_{(x,y) \in W} w(x,y) \begin{bmatrix} I_x^2 & I_xI_y \\ I_xI_y & I_y^2 \end{bmatrix}
+    \end{equation}
+    Corner response: $R = \det(M) - k\,\mathrm{trace}^2(M)$.
+    Large $R$ $\to$ corner; $R < 0$ $\to$ edge; $|R|$ small $\to$ flat region.
+\visualseparator
+    \textbf{FAST} (Features from Accelerated Segment Test): test 16 pixels on a circle of radius 3; a pixel is a corner if $\geq N$ consecutive pixels are all brighter or all darker than the centre by a threshold.
+    Extremely fast; widely used in real-time SLAM and tracking pipelines.
+
+\end{v3topic}
+\begin{v3topic}{SIFT, SURF, and ORB}
+    Scale- and rotation-invariant local feature descriptors\textsuperscript{\cite[][pp.~225--240]{szeliski2022}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,1.5cm]|X[l]|X[l]|X[l]|}
+        \hline
+        \textbf{Method} & \textbf{Detection} & \textbf{Descriptor} & \textbf{Properties} \\
+        \hline
+        SIFT  & DoG (Difference of Gaussians) multi-scale & 128-dim gradient histogram & Scale + rotation invariant; patented until 2020 \\
+        \hline
+        SURF  & Hessian approximation with integral images & 64-dim Haar wavelet response & Faster than SIFT; approximate \\
+        \hline
+        ORB   & FAST keypoints + Harris score & 256-bit BRIEF binary descriptor & Real-time; patent-free; good for mobile/SLAM \\
+        \hline
+    \end{tblr}
+\captionof{table}{Edge and Feature Detection: SIFT, SURF, and ORB.}
+\label{tab:ch09-computer-vision-inline-03}
+    \textbf{Feature matching}: nearest-neighbour in descriptor space; \textbf{Lowe's ratio test} ($d_1/d_2 < 0.8$) removes ambiguous matches. \textbf{RANSAC} robustly estimates a geometric model (homography) from potentially noisy correspondences.
+\end{v3topic}
+
+% ---- 9.2.2 Segmentation -----------------------------------------------------------------------
+\subsection{Segmentation}
+
+\begin{v3topic}{Thresholding and Region-Based Segmentation}
+    \textbf{Segmentation} partitions an image into meaningful regions\textsuperscript{\cite[][pp.~741--804]{gonzalezWoods2018}}.
+    \begin{itemize}
+        \item \textbf{Otsu thresholding}: analytically finds global threshold $T^*$ that maximises inter-class variance between foreground and background; optimal for bimodal histograms.
+        \item \textbf{Adaptive thresholding}: local threshold based on neighbourhood mean/Gaussian; handles uneven illumination.
+        \item \textbf{Watershed}: treat gradient magnitude as topographic surface; region growing from seed markers; boundaries form at watershed lines. Over-segmentation controlled by marker selection.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Graph-Cut and Superpixels}
+    \textbf{Graph-Cut segmentation}\textsuperscript{\cite[][pp.~302--306]{szeliski2022}}: model image as graph ($G = \langle V, E \rangle$) with nodes as pixels and edge weights encoding similarity; minimise the cut to obtain two-class partition.
+    \textbf{GrabCut} (Rother et al., 2004): iterative refinement using GMMs for foreground/background appearance, solved via min-cut; user supplies rough bounding box.
+\visualseparator
+    \textbf{Superpixels} (SLIC, 2012): group pixels into perceptually uniform, compact clusters via $k$-means in $[\mathrm{CIELAB},\,x,\,y]$ with a spatial compactness term.
+    Reduce pixels by ${\times}100$ while preserving boundaries; used as pre-processing for semantic segmentation.
+\end{v3topic}
+
+% ---- 9.2.3 Motion and Optical Flow ------------------------------------------------------------
+\subsection{Motion and Optical Flow}
+
+\begin{v3topic}{The Optical Flow Equation}
+    \textbf{Optical flow} $\mathbf{u}=(u,v)$ describes apparent pixel motion between consecutive frames.
+    The \textbf{brightness constancy assumption} $I(x,y,t) = I(x+u, y+v, t+\Delta t)$ leads via Taylor expansion to the \textbf{optical flow constraint equation}\textsuperscript{\cite[][pp.~498--504]{szeliski2022}}:
+    \begin{equation}
+        I_x\,u + I_y\,v + I_t = 0
+    \end{equation}
+    where $I_x, I_y$ are spatial and $I_t$ the temporal gradient.
+    This is one equation in two unknowns --- the \textbf{aperture problem}: flow along the gradient direction is determined; motion parallel to an edge is ambiguous.
+    Additional constraints (local smoothness or spatial neighbourhood) resolve the ambiguity.
+
+\end{v3topic}
+\begin{v3topic}{Lucas-Kanade and Horn-Schunck}
+    Two classical approaches resolve the aperture problem with different assumptions\textsuperscript{\cite[][pp.~504--510]{szeliski2022}}:
+    \begin{itemize}
+        \item \textbf{Lucas-Kanade (1981)}: local method; assumes constant flow within a $w{\times}w$ window; over-determined system solved by least squares.
+          Works well for small displacements; fails in textureless regions.
+        \item \textbf{Horn-Schunck (1981)}: global method; adds quadratic smoothness regulariser $\lambda\iint(|\nabla u|^2 + |\nabla v|^2)\,\mathrm{d}x\,\mathrm{d}y$ to the data term; solved iteratively.
+          Dense flow; tends to smooth discontinuities at motion boundaries.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Deep Optical Flow}
+    Deep learning overcomes limitations of classical methods on large displacements\textsuperscript{\cite[][p.~83]{fleuretLittleBookDeep}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Method} & \textbf{Key Idea} & \textbf{Contribution} \\
+        \hline
+        FlowNet (2015)  & End-to-end CNN on synthetic ``Flying Chairs'' dataset & First CNN for optical flow; correlation layer \\
+        \hline
+        PWC-Net (2018)  & Pyramid + warping + cost volume & Efficient; strong accuracy–speed tradeoff \\
+        \hline
+        RAFT (2020)     & 4D all-pairs cost volume + iterative GRU updates & State-of-the-art; robust to large motions \\
+        \hline
+    \end{tblr}
+\captionof{table}{Motion and Optical Flow: Deep Optical Flow.}
+\label{tab:ch09-computer-vision-inline-04}
+    Deep methods generalise better to large motions and handle textureless regions via learned priors; they require large synthetic training datasets (FlyingChairs, Sintel, KITTI).
+\end{v3topic}
+
+% ---- 9.2.4 Tracking ---------------------------------------------------------------------------
+\subsection{Tracking}
+
+\begin{v3topic}{Kalman Filter: Predict-Update Cycle}
+    The \textbf{Kalman filter} (1960) is the optimal linear estimator for tracking under Gaussian noise\textsuperscript{\cite[][pp.~540--547]{szeliski2022}}:
+    \begin{itemize}
+        \item \textbf{Predict}: $\hat{\mathbf{x}}_{k|k-1} = F\hat{\mathbf{x}}_{k-1}$; $P_{k|k-1} = FPF^\top + Q$
+        \item \textbf{Update}: $K = P H^\top (HPH^\top + R)^{-1}$; $\hat{\mathbf{x}}_{k} = \hat{\mathbf{x}}_{k|k-1} + K(z_k - H\hat{\mathbf{x}}_{k|k-1})$
+    \end{itemize}
+    $F$: state transition; $H$: observation model; $Q$, $R$: process/measurement noise covariances.
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[
+        box/.style={rectangle, draw, rounded corners=2pt, minimum width=2.2cm, minimum height=0.7cm,
+                    font=\scriptsize, fill=blue!10, align=center},
+        arr/.style={-{Stealth[length=1.5mm]}, thick}
+    ]
+        \node[box] (pred) {Predict\\$\hat{x}_{k|k-1}, P_{k|k-1}$};
+        \node[box, right=1.8cm of pred] (upd) {Update\\$\hat{x}_k, P_k$};
+        \node[box, below=0.8cm of upd, fill=orange!15] (meas) {Measurement\\$z_k$};
+        \draw[arr] (pred) -- node[above, font=\tiny] {prior} (upd);
+        \draw[arr] (meas) -- (upd);
+        \draw[arr] (upd.east) -- ++(0.6,0) |- node[right, font=\tiny, pos=0.25] {next step} (pred.east);
+    \end{tikzpicture}
+\captionof{figure}{Tracking: Kalman Filter: Predict-Update Cycle.}
+\label{fig:ch09-computer-vision-inline-02}
+    \end{center}
+
+\end{v3topic}
+\begin{v3topic}{Particle Filters and Deep Tracking}
+    \textbf{Particle filter} (Sequential Monte Carlo): represents the posterior by $N$ weighted samples (particles)\textsuperscript{\cite[][pp.~548--553]{szeliski2022}}.
+    Steps: (1) propagate via motion model, (2) weight by observation likelihood, (3) resample.
+    Handles non-linear, non-Gaussian distributions; computationally heavy for large $N$.
+\visualseparator
+    \textbf{Deep tracking}:
+    \begin{itemize}
+        \item \textbf{SORT} (2016): Kalman filter state $(x,y,w,h,\dot{x},\dot{y})$ + Hungarian matching via IoU distance; fast, simple.
+        \item \textbf{DeepSORT} (2017): adds deep ReID appearance descriptor to reduce ID switches.
+        \item \textbf{ByteTrack} (2022): retains low-confidence detections in association; state-of-the-art MOT performance.
+    \end{itemize}
+\end{v3topic}
+
+% ---- 9.2.5 Shape ------------------------------------------------------------------------------
+\subsection{Shape}
+
+\begin{v3topic}{Shape from Shading and Stereo}
+    \textbf{Shape from Shading}: recover surface normals from a single image given known illumination\textsuperscript{\cite[][pp.~667--676]{szeliski2022}}.
+    Under the Lambertian model: $I = \rho\,(\mathbf{n} \cdot \mathbf{l})$
+    where $\rho$ is albedo, $\mathbf{n}$ surface normal, $\mathbf{l}$ light direction.
+    The shape-albedo ambiguity makes this under-constrained without additional priors.
+    \textbf{Photometric stereo}: multiple images under different illumination directions; resolves ambiguity.
+\visualseparator
+    \textbf{Active contours / snakes} (Kass et al., 1988): energy-minimising curve
+    $E = \int \left[\alpha|C'|^2 + \beta|C''|^2 + E_{\mathrm{image}}(C)\right] \mathrm{d}s$
+    (internal smoothness + external image gradient). Level-set methods provide an implicit alternative that handles topology changes.
+
+\end{v3topic}
+\begin{v3topic}{3D Reconstruction and Structure from Motion}
+    \textbf{Structure from Motion (SfM)} recovers a sparse 3D point cloud and camera poses from an unordered image set\textsuperscript{\cite[][pp.~719--733]{szeliski2022}}:
+    \begin{enumerate}
+        \item Feature extraction and matching (SIFT + RANSAC)
+        \item Incremental or global camera pose estimation
+        \item Triangulation of 3D points
+        \item \textbf{Bundle adjustment}: non-linear least-squares refining all camera parameters and point positions simultaneously
+    \end{enumerate}
+    \textbf{Multi-View Stereo (MVS)}: extends SfM to dense reconstruction.
+    Modern neural approaches (NeRF, 3DGS) learn implicit or explicit 3D representations directly from images via differentiable rendering.
+\end{v3topic}
+
+
+% ==== Section 3: Computer Vision for Autonomous Systems =====================================
+\section{Computer Vision for Autonomous Systems}
+
+% ---- 9.3.1 Image Formation and Acquisition -------------------------------------------------
+\subsection{Image Formation and Acquisition}
+
+\begin{v3topic}{Light and Color Models}
+    Cameras sample a 3D scene illuminated by light (visible spectrum: 380--700\,nm) and project it onto a 2D sensor\textsuperscript{\cite[][pp.~15--20]{jahneDigitalImageProcessing2005}}.
+    Radiometry describes light transport (irradiance, radiance, BRDF); photometry weights by human perception.
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|}
+        \hline
+        \textbf{Color Model} & \textbf{Use Case} \\
+        \hline
+        RGB & Display, rendering (device-dependent) \\
+        \hline
+        HSV/HSL & Color-based segmentation, skin detection \\
+        \hline
+        CIE LAB & Perceptually uniform; color comparison \\
+        \hline
+        YCbCr & Video compression (JPEG, H.264) \\
+        \hline
+    \end{tblr}
+\captionof{table}{Image Formation and Acquisition: Light and Color Models.}
+\label{tab:ch09-computer-vision-inline-05}
+
+\end{v3topic}
+\begin{v3topic}{Camera Calibration}
+    \textbf{Zhang's method} (2000) estimates camera intrinsics $K$, extrinsics $[R|t]$, and lens distortion from multiple views of a planar checkerboard\textsuperscript{\cite[][pp.~45--52]{howseLearningOpenCV42020}}.
+    Each view provides 2 constraints on $K$; $\geq 3$ views are needed.
+    Radial distortion is modelled as $r'(x) = x(1 + k_1 r^2 + k_2 r^4 + \ldots)$.
+    Implemented in OpenCV via \texttt{cv2.calibrateCamera()}.
+\end{v3topic}
+
+% ---- 9.3.2 Sensors -------------------------------------------------------------------------
+\subsection{Sensors for Autonomous Systems}
+
+\begin{v3topic}{Vision Sensors}
+    \begin{itemize}
+        \item \textbf{Monocular camera}: single image; depth ambiguous; cheap, widely deployed
+        \item \textbf{Stereo cameras}: depth from disparity $d = fB/Z$ (baseline $B$, focal length $f$)
+        \item \textbf{Event cameras} (DVS): log changes in illuminance asynchronously per pixel; microsecond latency, high dynamic range, no motion blur
+        \item \textbf{Night vision}: near-infrared (NIR) illumination + sensor, or thermal (LWIR, 8--14\,$\mu$m)
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{LiDAR and Radar}
+    \textbf{LiDAR} measures round-trip time of laser pulses: $d = ct/2$\textsuperscript{\cite[][pp.~8--10]{howseLearningOpenCV42020}}.
+    \begin{itemize}
+        \item \emph{Rotating} (Velodyne): 360\textdegree{} scan; 16--128 beams; dense point cloud at 10\,Hz
+        \item \emph{Solid-state} (MEMS/OPA/Flash): no moving parts; cheaper; narrower FoV
+    \end{itemize}
+    \textbf{Radar} (FMCW, 77\,GHz): measures range \emph{and} velocity simultaneously via Doppler. All-weather capable; sparse but robust.
+
+\end{v3topic}
+\begin{v3topic}{Sensor Fusion}
+    Autonomous systems combine complementary sensors to overcome individual limitations:
+    cameras provide rich texture/colour, LiDAR provides accurate 3D geometry, radar provides velocity and weather robustness.
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|}
+        \hline
+        \textbf{Fusion Level} & \textbf{Description} \\
+        \hline
+        Early (raw) & Combine raw sensor data (e.g., project LiDAR into image) \\
+        \hline
+        Middle (feature) & Fuse intermediate feature representations from each modality \\
+        \hline
+        Late (decision) & Combine per-sensor detections/decisions \\
+        \hline
+    \end{tblr}
+\captionof{table}{Sensors for Autonomous Systems: Sensor Fusion.}
+\label{tab:ch09-computer-vision-inline-06}
+    State estimation typically uses \textbf{Kalman filters} (linear) or \textbf{particle filters} (non-linear, non-Gaussian) to fuse temporal sensor streams.
+\end{v3topic}
+
+% ---- 9.3.3 Object Detection and Tracking ---------------------------------------------------
+\subsection{Object Detection and Tracking}
+
+\begin{v3topic}{Classical Object Detection}
+    Before deep learning, detection relied on hand-crafted features + classifiers:
+    \begin{itemize}
+        \item \textbf{Viola-Jones} (2001): Haar-like features + AdaBoost cascade; first real-time face detector
+        \item \textbf{HOG + SVM} (Dalal \& Triggs, 2005): histogram of oriented gradients in cells + linear SVM; pedestrian detection standard
+        \item \textbf{Sliding window}: evaluate classifier at every position/scale; exhaustive but slow
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Deep Object Detection}
+    Deep detectors learn features and localisation end-to-end\textsuperscript{\cite[][pp.~105--109]{fleuretLittleBookDeep}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
+        \hline
+        \textbf{Model} & \textbf{Type} & \textbf{Key Innovation} \\
+        \hline
+        Faster R-CNN & Two-stage & Region Proposal Network + ROI pooling \\
+        \hline
+        SSD & Single-stage & Multi-scale feature maps; anchor boxes \\
+        \hline
+        YOLO & Single-stage & Single forward pass; grid-based; real-time \\
+        \hline
+        DETR & Transformer & Bipartite matching; no anchors or NMS \\
+        \hline
+    \end{tblr}
+\captionof{table}{Object Detection and Tracking: Deep Object Detection.}
+\label{tab:ch09-computer-vision-inline-07}
+    Key concepts: \textbf{IoU} (Intersection over Union), \textbf{NMS} (Non-Maximum Suppression), \textbf{mAP} (mean Average Precision).
+
+\end{v3topic}
+\begin{v3topic}{Multi-Object Tracking}
+    Tracking extends detection across time by associating detections frame-to-frame:
+    \begin{itemize}
+        \item \textbf{SORT} (2016): Kalman filter prediction + Hungarian algorithm for bounding box association; uses IoU as distance metric
+        \item \textbf{DeepSORT} (2017): adds a deep ReID appearance descriptor; reduces ID switches by re-identifying occluded targets
+        \item \textbf{ByteTrack} (2022): uses \emph{low-confidence} detections for association; SOTA on MOT17
+    \end{itemize}
+    Evaluation metrics: \textbf{MOTA} (tracking accuracy), \textbf{MOTP} (precision), \textbf{ID switches} (identity changes).
+\end{v3topic}
+
+% ---- 9.3.4 Semantic Segmentation -----------------------------------------------------------
+\subsection{Semantic and Instance Segmentation}
+
+\begin{v3topic}{Semantic Segmentation}
+    Assigns a class label to \emph{every pixel} in the image\textsuperscript{\cite[][pp.~110--112]{fleuretLittleBookDeep}}.
+    \begin{itemize}
+        \item \textbf{FCN} (Long et al., 2015): fully convolutional; transposed convolutions for upsampling; first end-to-end pixel labelling
+        \item \textbf{U-Net} (Ronneberger et al., 2015): encoder--decoder with skip connections; standard for medical imaging
+        \item \textbf{DeepLab v3+} (Chen et al., 2018): dilated (atrous) convolutions + ASPP for multi-scale context
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Instance and Panoptic Segmentation}
+    \textbf{Instance segmentation} distinguishes individual objects of the same class:
+    \begin{itemize}
+        \item \textbf{Mask R-CNN} (He et al., 2017): Faster R-CNN + per-instance mask branch; ROI Align for pixel-accurate alignment
+    \end{itemize}
+    \textbf{Panoptic segmentation} unifies \emph{stuff} (amorphous regions: sky, road) and \emph{things} (countable objects: cars, people) --- every pixel gets a class label \emph{and} an instance ID.
+    \textbf{MOTS} (Multi-Object Tracking and Segmentation) extends this to video with per-frame masks and tracking IDs.
+\end{v3topic}
+
+
+% ==== Section 4: Cognitive Computer Vision ===================================================
+\section{Cognitive Computer Vision}
+
+% ---- 9.4.1 Image Classification ------------------------------------------------------------
+\subsection{Image Classification}
+
+\begin{v3topic}{CNN Classifiers and Transfer Learning}
+    Image classification assigns one or more class labels to an entire image\textsuperscript{\cite[][p.~104]{fleuretLittleBookDeep}}.
+    Standard architectures (AlexNet, VGG, ResNet --- see Ch.~6) are trained on ImageNet (1.2M images, 1000 classes) with cross-entropy loss.
+    \textbf{Transfer learning}: pre-train on ImageNet, freeze early layers, fine-tune later layers on the target dataset --- dramatically reduces labelled data requirements.
+
+\end{v3topic}
+\begin{v3topic}{Image Retrieval and Scene Understanding}
+    \textbf{Image retrieval}: extract a CNN embedding (e.g., penultimate layer) and find nearest neighbours via cosine similarity in a vector index (FAISS)\textsuperscript{\cite[][p.~104]{fleuretLittleBookDeep}}.
+    \textbf{Scene understanding} goes beyond object labels: recognising spatial layout, relationships between objects, and functional properties of a scene.
+    Modern approaches use \textbf{Vision Transformers (ViT)}: split image into patches, treat as tokens, and apply self-attention --- competitive with CNNs on classification.
+\end{v3topic}
+
+% ---- 9.4.2 Recognition ---------------------------------------------------------------------
+\subsection{Face Recognition}
+
+\begin{v3topic}{Face Recognition Pipeline}
+    Face recognition follows a standard pipeline: (1) \textbf{detection} (locate face in image), (2) \textbf{alignment} (geometric normalisation), (3) \textbf{feature extraction} (embed into vector), (4) \textbf{comparison} (distance in embedding space).
+    \begin{itemize}
+        \item \textbf{Eigenfaces} (Turk \& Pentland, 1991): PCA-based global appearance; limited by illumination/pose
+        \item \textbf{FaceNet} (Schroff et al., 2015): triplet loss $\to$ 128-d embedding; L2 distance for verification
+        \item \textbf{ArcFace} (Deng et al., 2019): additive angular margin loss; SOTA on LFW, MegaFace
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Verification vs.\ Identification}
+    \begin{tblr}{|Q[l,m]|X[l]|X[l]|}
+        \hline
+        \textbf{Task} & \textbf{Question} & \textbf{Complexity} \\
+        \hline
+        Verification & ``Is this person $X$?'' (1:1) & Compare against one template \\
+        \hline
+        Identification & ``Who is this?'' (1:$N$) & Search entire gallery; harder \\
+        \hline
+    \end{tblr}
+\captionof{table}{Face Recognition: Verification vs.\ Identification.}
+\label{tab:ch09-computer-vision-inline-08}
+    Different threat models: verification tolerates higher thresholds (fewer false accepts); identification must handle large galleries efficiently.
+\end{v3topic}
+
+% ---- 9.4.3 Image Synthesis -----------------------------------------------------------------
+\subsection{Image Synthesis}
+
+\begin{v3topic}{Super-Resolution and Style Transfer}
+    \textbf{Super-resolution}: reconstruct high-resolution images from low-resolution input.
+    SRCNN (Dong et al., 2014) was the first deep approach; ESRGAN (Wang et al., 2018) uses GAN-based perceptual loss for photorealistic results.
+
+    \textbf{Neural style transfer} (Gatys et al., 2015): optimise an image to match the \emph{content} of one image (via feature activations) and the \emph{style} of another (via Gram matrix of feature maps).
+
+\end{v3topic}
+\begin{v3topic}{Image-to-Image Translation}
+    \begin{itemize}
+        \item \textbf{pix2pix} (Isola et al., 2017): conditional GAN with \emph{paired} training data; learns mapping between image domains (sketch $\to$ photo, segmentation $\to$ image)
+        \item \textbf{CycleGAN} (Zhu et al., 2017): \emph{unpaired} domain translation using cycle-consistency loss ($G(F(x)) \approx x$); enables horse $\leftrightarrow$ zebra, summer $\leftrightarrow$ winter
+    \end{itemize}
+    Both demonstrate that GANs (see Ch.~6) can learn complex image transformations beyond simple generation.
+\end{v3topic}
+
+% ---- 9.4.4 Vision and Language --------------------------------------------------------------
+\subsection{Vision and Language}
+
+\begin{v3topic}{CLIP and Zero-Shot Vision}
+    \textbf{CLIP} (Radford et al., 2021) jointly trains an image encoder and a text encoder on 400M image--text pairs using contrastive learning\textsuperscript{\cite[][pp.~115--117]{fleuretLittleBookDeep}}.
+    Similarity: $\ell_{m,n} = f(i_m)^\top g(t_n)$.
+    This enables \textbf{zero-shot classification}: compare image embedding against text embeddings of class descriptions --- no task-specific training needed.
+
+\end{v3topic}
+\begin{v3topic}{Image Captioning and VQA}
+    \textbf{Image captioning}: CNN image encoder $\to$ transformer/LSTM text decoder; generates natural language descriptions of images.
+    \textbf{Visual Question Answering (VQA)}: given an image and a text question, predict an answer --- requires joint vision--language reasoning.
+
+\end{v3topic}
+\begin{v3topic}{Text-to-Image Generation}
+    Text-conditioned image generation has progressed rapidly:
+    \begin{itemize}
+        \item \textbf{DALL-E} (Ramesh et al., 2021): discrete VAE + autoregressive transformer; generates images from text prompts
+        \item \textbf{Stable Diffusion} (Rombach et al., 2022): \emph{latent diffusion} --- denoising in a compressed latent space; text conditioning via CLIP encoder; open-source, runs on consumer GPUs
+    \end{itemize}
+    The \textbf{diffusion process}\textsuperscript{\cite[][pp.~121--123]{fleuretLittleBookDeep}}: a forward process gradually adds Gaussian noise to data; the model learns to reverse this, generating samples by iterative denoising from pure noise.
+\end{v3topic}
+
+
+% ==== Section 5: Challenges in Computer Vision ===============================================
+\section{Challenges in Computer Vision}
+
+% ---- 9.5.1 Fairness and Explainability ------------------------------------------------------
+\subsection{Fairness and Explainability}
+
+\begin{v3topic}{Bias in Computer Vision}
+    Face recognition error rates vary significantly by demographic group (the \emph{Gender Shades} study by Buolamwini \& Gebru, 2018, found error rates up to 34$\times$ higher for dark-skinned women than light-skinned men).
+    Bias arises from unbalanced training data, label quality, and evaluation practices.
+    Mitigations: balanced datasets, fairness-aware training objectives, demographic-specific evaluation.
+
+\end{v3topic}
+\begin{v3topic}{Explainability Methods}
+    Understanding \emph{why} a model makes a decision is essential for trust and debugging:
+    \begin{itemize}
+        \item \textbf{Grad-CAM} (Selvaraju et al., 2017): gradient of class score w.r.t.\ final conv feature maps $\to$ localisation heatmap
+        \item \textbf{Saliency maps}: backpropagate class score to input pixels to show which pixels matter
+        \item \textbf{LIME}: model-agnostic; perturb input locally, fit a simple interpretable model
+    \end{itemize}
+\end{v3topic}
+
+% ---- 9.5.2 Self-Supervised and Contrastive Learning -----------------------------------------
+\subsection{Self-Supervised and Contrastive Learning}
+
+\begin{v3topic}{Learning Without Labels}
+    Self-supervised methods learn visual representations from unlabelled data, then transfer to downstream tasks:
+\visualseparator
+    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
+        \hline
+        \textbf{Method} & \textbf{Year} & \textbf{Key Idea} \\
+        \hline
+        SimCLR & 2020 & Two augmented views + NT-Xent contrastive loss; large batch needed \\
+        \hline
+        BYOL & 2020 & Online + target networks; stop-gradient; no negative pairs \\
+        \hline
+        DINO & 2021 & ViT + self-distillation; student on local, teacher on global crops \\
+        \hline
+        MAE & 2021 & Mask 75\% of image patches; reconstruct; efficient scalable pre-training \\
+        \hline
+    \end{tblr}
+\captionof{table}{Self-Supervised and Contrastive Learning: Learning Without Labels.}
+\label{tab:ch09-computer-vision-inline-09}
+    These methods approach or surpass supervised pre-training on ImageNet, especially when labelled data is scarce.
+\end{v3topic}
+
+% ---- 9.5.3 Robust Computer Vision -----------------------------------------------------------
+\subsection{Robust Computer Vision}
+
+\begin{v3topic}{Adversarial Examples}
+    Imperceptible perturbations can cause confident misclassification (Szegedy et al., 2013; Goodfellow et al., 2015).
+    \textbf{FGSM} (Fast Gradient Sign Method):
+    \begin{equation}
+        x_{\mathrm{adv}} = x + \epsilon \cdot \mathrm{sign}\!\left(\nabla_x \mathcal{L}(\theta, x, y)\right)
+    \end{equation}
+    Defences: adversarial training (augment with adversarial examples), certified robustness, input preprocessing.
+
+\end{v3topic}
+\begin{v3topic}{Domain Shift and OOD Detection}
+    \textbf{Domain shift}: distribution mismatch between training and deployment environments (e.g., lab images vs.\ real-world scenes).
+    Mitigation: domain adaptation via adversarial alignment of feature distributions, or test-time adaptation.
+
+    \textbf{Out-of-Distribution (OOD) detection}: identify inputs that fall outside the training distribution.
+    Methods: maximum softmax probability, energy-based scoring, Mahalanobis distance in feature space.
+    Critical for safety in autonomous driving and medical imaging.
+\end{v3topic}
+
+
+% ==== Section 6: Further Reading =============================================================
+%
+\section{Deep Dive: Foundation Vision and Robust Perception}
+\begin{v3topic}{Prompts Change the Vision Interface}
+Promptable segmentation and vision--language models replace a fixed class list
+with points, boxes, text, or examples.
+This flexibility expands evaluation: test localisation, open-vocabulary
+recognition, grounding, refusal, and consistency across prompt wording.
+
+\end{v3topic}
+\begin{v3topic}{Shift Is Often Physical}
+Weather, optics, compression, sensor ageing, viewpoint, motion blur, and scene
+composition alter the image-generating process.
+Corruption benchmarks are useful probes but do not replace data collected in
+the intended operational domain.
+
+\end{v3topic}
+\begin{v3topic}{Perception-to-Action Trace}
+For one detected object, trace calibration, preprocessing, model output,
+tracking, fusion, uncertainty, planning, and fallback.
+Express how spatial or temporal error propagates into an action margin.
+Evaluate the system-level consequence, not only IoU or mAP in isolation.
+\end{v3topic}
+
+\chapterreview{Sense}{Represent}{Infer}{Stress-test}
+
+\section{Further Reading}
+
+\begin{v3topic}{Recommended Sources for Computer Vision}
+    \begin{itemize}
+        \item \fullcite{szeliski2022} --- Comprehensive CV textbook covering geometry, image processing, feature detection, recognition, and 3D reconstruction.
+        \item \fullcite{gonzalezWoods2018} --- Classic digital image processing reference: filtering, morphology, frequency domain, segmentation.
+        \item \fullcite{hartleyZisserman2004} --- Definitive treatment of multi-view geometry: epipolar geometry, fundamental matrix, 3D reconstruction.
+        \item \fullcite{jahneDigitalImageProcessing2005} --- Thorough coverage of image processing fundamentals with mathematical rigour.
+        \item \fullcite{howseLearningOpenCV42020} --- Practical computer vision with OpenCV and Python: camera calibration, feature detection, tracking.
+        \item \fullcite{fleuretLittleBookDeep} --- Concise deep learning overview including CNNs for vision, object detection, and segmentation architectures.
+    \end{itemize}
+\end{v3topic}

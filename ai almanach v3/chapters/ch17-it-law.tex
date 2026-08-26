@@ -1,0 +1,438 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== International IT Law =============================================================================
+\chapter{International IT Law}
+
+\chapterlead{Which duties attach to an AI system, its data, and its operators?}{Classify}{Identify}{Document}{Reassess}{it-law}
+
+\begin{v3aside}[Chapter Scope]
+    This is a \textbf{signpost chapter} for AI practitioners — not a legal textbook.
+    It maps the regulatory landscape you will encounter when building, training, or deploying AI systems,
+    and points you to the right regulations and references.
+    When legal questions become concrete, consult qualified legal counsel.
+    Regulatory status in this chapter was checked on 26 August 2026; always
+    recheck the official text, application date, jurisdiction, and guidance.
+\end{v3aside}
+
+% ---- 17.1 Legal Foundations for AI Practitioners ------------------------------------------------
+\section{Legal Foundations for AI Practitioners}
+
+\subsection{Key Areas of IT Law}
+
+\begin{v3topic}{IT Law: Areas and AI Relevance}
+    \begin{tblr}{|X[2]|X[3]|X[3]|}
+        \hline
+        \textbf{Area} & \textbf{Core Concern} & \textbf{Relevant for AI When\ldots} \\
+        \hline
+        Data Protection / Privacy & Lawful processing of personal data & Training on personal data; profiling; automated decisions \\
+        \hline
+        Intellectual Property & Copyright, patents, trade secrets & Training data sources; model outputs; software licensing \\
+        \hline
+        AI-Specific Regulation & Risk-based obligations for AI systems & Deploying AI in the EU; high-risk use cases (hiring, credit, medical) \\
+        \hline
+        Cybersecurity Law & Security obligations, incident reporting & Running AI infrastructure; critical-sector deployment \\
+        \hline
+        E-Commerce / Contracts & Platform liability, online contracts & Selling AI services; deploying via APIs or SaaS \\
+        \hline
+        Product Liability & Liability for defective products / AI & AI causing harm to individuals or property \\
+        \hline
+    \end{tblr}
+\captionof{table}{Key Areas of IT Law: IT Law: Areas and AI Relevance.}
+\label{tab:ch17-it-law-inline-01}
+    \textsuperscript{\cite[][pp.~1--25]{lloydInformationTechnologyLaw2020}}
+
+\end{v3topic}
+\begin{v3topic}{International vs.\ EU Law}
+    Digital systems are inherently cross-border, yet law is territorial.
+    Key challenges: \emph{which law applies?} (jurisdiction), \emph{which court decides?} (forum), \emph{will judgments be recognised?}
+    The EU has emerged as the dominant regulatory force in digital markets — the \emph{Brussels Effect} means EU rules often become de-facto global standards because multinationals find a single compliance approach more practical\textsuperscript{\cite[][pp.~3--18]{savinEUInternetLaw2017}}.
+
+\end{v3topic}
+\begin{v3topic}{Regulatory Bodies}
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Body} & \textbf{Role} \\
+        \hline
+        European Data Protection Board (EDPB) & Harmonises GDPR interpretation across EU \\
+        \hline
+        National DPAs & Enforce GDPR (e.g.\ BfDI Germany, ICO UK, CNIL France) \\
+        \hline
+        EU AI Office & Oversees EU AI Act compliance; established 2024 \\
+        \hline
+        FTC (US) & Enforces against unfair/deceptive AI practices in the US \\
+        \hline
+    \end{tblr}
+\captionof{table}{Key Areas of IT Law: Regulatory Bodies.}
+\label{tab:ch17-it-law-inline-02}
+\end{v3topic}
+
+% ---- 17.2 Data Protection and Privacy ----------------------------------------------------------
+\section{Data Protection and Privacy}
+
+\subsection{GDPR Essentials}
+
+\begin{v3topic}{GDPR Core Principles (Art.\ 5)}
+    The \textbf{General Data Protection Regulation} (EU 2016/679) governs any processing of personal data of EU residents, regardless of where the processor is located\textsuperscript{\cite[][pp.~15--30]{itgovernanceprivacyteamEUGDPR2020}}.
+\visualseparator
+    \begin{itemize}
+        \item \textbf{Lawfulness, fairness, transparency} — processing must have a legal basis
+        \item \textbf{Purpose limitation} — collected for specified, explicit purposes only
+        \item \textbf{Data minimisation} — only what is necessary
+        \item \textbf{Accuracy} — kept accurate and up to date
+        \item \textbf{Storage limitation} — not kept longer than necessary
+        \item \textbf{Integrity and confidentiality} — appropriate security
+        \item \textbf{Accountability} — controller must demonstrate compliance
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Legal Bases for Processing (Art.\ 6)}
+    Every processing activity requires one of six legal bases\textsuperscript{\cite[][pp.~31--50]{itgovernanceprivacyteamEUGDPR2020}}:
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Basis} & \textbf{When to use} \\
+        \hline
+        Consent & User freely, specifically, informed consent \\
+        \hline
+        Contract & Processing necessary to perform a contract \\
+        \hline
+        Legal obligation & Required by law \\
+        \hline
+        Vital interests & Life-or-death situations \\
+        \hline
+        Public task & Official authority or public interest \\
+        \hline
+        Legitimate interests & Balance test; cannot override data subject rights \\
+        \hline
+    \end{tblr}
+\captionof{table}{GDPR Essentials: Legal Bases for Processing (Art.\ 6).}
+\label{tab:ch17-it-law-inline-03}
+    For ML: \emph{legitimate interests} or \emph{consent} are most common, but each has risks.
+
+\end{v3topic}
+\begin{v3topic}{Data Subject Rights}
+    GDPR grants individuals enforceable rights that AI systems must
+    support\textsuperscript{\cite[][pp.~80--120]{itgovernanceprivacyteamEUGDPR2020}}:
+    \par\smallskip\noindent
+    \begin{tblr}{width=\linewidth,colspec={X[2]X[4]X[4]},hlines,vlines}
+        \hline
+        \textbf{Right} & \textbf{Meaning} & \textbf{AI Implication} \\
+        \hline
+        Access (Art.\ 15) & See what data is held & Models trained on personal data must allow data inventory \\
+        \hline
+        Rectification (Art.\ 16) & Correct inaccurate data & Correction must propagate to training sets where feasible \\
+        \hline
+        Erasure (Art.\ 17) & ``Right to be forgotten'' & May require retraining or machine unlearning \\
+        \hline
+        Portability (Art.\ 20) & Receive data in machine-readable format & APIs and data export pipelines required \\
+        \hline
+        Object (Art.\ 21) & Opt out of processing & Must honour objections to profiling \\
+        \hline
+    \end{tblr}
+\captionof{table}{GDPR Essentials: Data Subject Rights.}
+\label{tab:ch17-it-law-inline-04}
+\end{v3topic}
+
+\subsection{GDPR for AI/ML}
+
+\begin{v3topic}{Automated Decision-Making (Art.\ 22)}
+    Individuals have the right \emph{not to be subject to a decision based solely on automated processing} that produces \textbf{legal or similarly significant effects} — e.g.\ automated loan refusal, CV screening, parole assessment\textsuperscript{\cite[][pp.~140--155]{itgovernanceprivacyteamEUGDPR2020}}.
+\visualseparator
+    \begin{itemize}
+        \item Exceptions: explicit consent, contractual necessity, or authorised by law
+        \item Even where allowed: must provide \emph{meaningful information about the logic involved} and the right to \emph{human review}
+        \item Practical implication: black-box models in high-stakes decisions are legally risky
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Data Protection Impact Assessment (DPIA)}
+    A \textbf{DPIA} (Art.\ 35) is mandatory before processing that is ``likely to result in a high risk'' to individuals — this includes large-scale profiling, systematic monitoring, and use of sensitive data\textsuperscript{\cite[][pp.~160--175]{itgovernanceprivacyteamEUGDPR2020}}.
+    For AI: required when training on sensitive data (health, biometrics), deploying facial recognition, or building behavioural profiling systems.
+\visualseparator
+    DPIA documents: purpose, necessity, proportionality, risks, and mitigations.
+
+\end{v3topic}
+\begin{v3topic}{Anonymisation vs.\ Pseudonymisation}
+    \begin{tblr}{|X[2]|X[4]|X[4]|}
+        \hline
+        & \textbf{Anonymisation} & \textbf{Pseudonymisation} \\
+        \hline
+        Definition & Re-identification is \emph{irreversibly impossible} & Replaced with artificial identifier; re-identification possible with key \\
+        \hline
+        GDPR applicability & GDPR does \emph{not} apply & GDPR still applies; counts as a safeguard \\
+        \hline
+        ML use & Freely usable for training & Reduces risk but not a free pass \\
+        \hline
+        Challenge & True anonymisation is technically hard (re-identification attacks) & Key management is a critical security requirement \\
+        \hline
+    \end{tblr}
+\captionof{table}{GDPR for AI/ML: Anonymisation vs.\ Pseudonymisation.}
+\label{tab:ch17-it-law-inline-05}
+    Re-identification of ``anonymised'' datasets via auxiliary information is a well-documented ML attack vector\textsuperscript{\cite[][pp.~1--15]{voightGDPRPracticalGuide2017}}.
+\end{v3topic}
+
+\subsection{International Data Transfers}
+
+\begin{v3topic}{Transferring Data Outside the EEA}
+    GDPR restricts transfers of personal data to countries outside the European Economic Area (EEA) unless adequate protection is ensured\textsuperscript{\cite[][pp.~200--230]{itgovernanceprivacyteamEUGDPR2020}}:
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Mechanism} & \textbf{How it works} \\
+        \hline
+        Adequacy Decision & EU Commission declares destination country adequate (e.g.\ UK post-Brexit, Japan, Canada); no extra steps needed \\
+        \hline
+        Standard Contractual Clauses (SCCs) & EU-approved contract templates; most common mechanism for US/global transfers \\
+        \hline
+        Binding Corporate Rules (BCRs) & Internal codes for multinational groups; expensive to obtain \\
+        \hline
+        Derogations (Art.\ 49) & Explicit consent, vital interests, public interest; narrow scope \\
+        \hline
+    \end{tblr}
+\captionof{table}{International Data Transfers: Transferring Data Outside the EEA.}
+\label{tab:ch17-it-law-inline-06}
+    \textbf{Schrems II (2020)}: The ECJ invalidated the EU-US Privacy Shield, requiring additional safeguards even when using SCCs.
+    The EU-US Data Privacy Framework (2023) replaced it, but faces ongoing legal challenges.
+    Cloud-based ML training that sends EU personal data to US servers must address this.
+\end{v3topic}
+
+% ---- 17.3 AI-Specific Regulation ---------------------------------------------------------------
+\section{AI-Specific Regulation}
+
+\subsection{EU AI Act}
+
+\begin{v3topic}{EU AI Act: Risk-Based Classification}
+    The \textbf{EU Artificial Intelligence Act} (Regulation 2024/1689) is a
+    broad horizontal AI law with staged application dates.
+    Prohibitions and AI-literacy duties began applying in February 2025;
+    GPAI duties began in August 2025; enforcement and specified transparency
+    rules began in August 2026. Under the 2026 timeline, Annex III high-risk
+    rules apply from December 2027 and product-embedded high-risk rules from
+    August 2028\textsuperscript{\cite{europeanCommissionAIAct2026}}.
+    It classifies AI systems by risk level:
+    \begin{tblr}{|X[2]|X[4]|X[4]|}
+        \hline
+        \textbf{Risk Level} & \textbf{Examples} & \textbf{Requirements} \\
+        \hline
+        \SetCell[r=1]{c} Unacceptable & Certain manipulative, exploitative,
+        social-scoring, biometric, and predictive-policing practices &
+        \textbf{Prohibited}, subject to the Act's definitions and exceptions \\
+        \hline
+        High Risk & HR/recruitment tools, credit scoring, medical devices, critical infrastructure, law enforcement, education assessment & Conformity assessment, human oversight, transparency, data governance, logging, incident reporting \\
+        \hline
+        Transparency Risk & Interactive AI and specified synthetic content &
+        Disclosure or marking duties where Article 50 applies \\
+        \hline
+        Minimal Risk & Spam filters, AI-assisted games & No specific obligations; voluntary codes encouraged \\
+        \hline
+    \end{tblr}
+\captionof{table}{EU AI Act: EU AI Act: Risk-Based Classification.}
+\label{tab:ch17-it-law-inline-07}
+
+\end{v3topic}
+\begin{v3topic}{High-Risk AI: Key Obligations}
+    Providers of high-risk AI systems must\textsuperscript{[EU AI Act, Arts.\ 9--17]}:
+\visualseparator
+    \begin{itemize}
+        \item Establish a \textbf{risk management system} (ongoing)
+        \item Implement \textbf{data governance}: training/validation data quality checks
+        \item Produce \textbf{technical documentation} and keep logs
+        \item Ensure \textbf{transparency} to users and regulators
+        \item Enable \textbf{human oversight} mechanisms
+        \item Achieve sufficient \textbf{accuracy, robustness, and cybersecurity}
+        \item Register in the EU \textbf{AI database} before deployment
+        \item Conduct \textbf{conformity assessment} (self-assessment for most; third-party for some)
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{General-Purpose AI (GPAI) Models}
+    The AI Act also regulates \textbf{GPAI models} (e.g.\ large language models):
+\visualseparator
+    \begin{itemize}
+        \item All GPAI providers: technical documentation, copyright compliance, training data summary
+        \item GPAI with \textbf{systemic risk}: $10^{25}$ training FLOPs creates
+              a statutory presumption, while other models can be designated;
+              additional evaluation, incident, and cybersecurity duties apply
+        \item Applies to models made available in the EU, regardless of where trained
+        \item Open-source models have partial exemptions (transparency obligations remain)
+    \end{itemize}
+\end{v3topic}
+
+\subsection{Other Jurisdictions}
+
+\begin{v3topic}{Global AI Regulatory Landscape}
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Jurisdiction} & \textbf{Approach} \\
+        \hline
+        \textbf{United States} & Federal sector and cross-cutting authorities
+        coexist with state law. Executive Order 14179 revoked Executive Order
+        14110 in January 2025 and directed a new federal AI policy review and
+        action plan\textsuperscript{\cite{whiteHouseRemovingBarriersAI2025}}. \\
+        \hline
+        \textbf{China} & Multiple specific regulations: Deep Synthesis Provisions (deepfakes, 2022), Generative AI Regulation (2023), Algorithm Recommendation Regulation (2022). Focus on security, content control, data localisation. \\
+        \hline
+        \textbf{United Kingdom} & ``Pro-innovation'' approach: no single AI law; sector regulators (ICO, FCA, CMA) apply existing frameworks. AI Safety Institute established 2023. May diverge from EU. \\
+        \hline
+        \textbf{Brazil / Canada} & Privacy, consumer, sector, and evolving
+        AI-specific proposals differ by jurisdiction; verify enacted text and
+        effective dates before relying on a comparison. \\
+        \hline
+    \end{tblr}
+\captionof{table}{Other Jurisdictions: Global AI Regulatory Landscape.}
+\label{tab:ch17-it-law-inline-08}
+\end{v3topic}
+
+% ---- 17.4 Intellectual Property and AI ---------------------------------------------------------
+\section{Intellectual Property and AI}
+
+\subsection{Copyright and AI}
+
+\begin{v3topic}{Training Data and Copyright}
+    Scraping copyrighted text, images, or code to train AI models raises copyright infringement risks.
+    Key questions\textsuperscript{\cite[][pp.~150--180]{lloydInformationTechnologyLaw2020}}:
+\visualseparator
+    \begin{itemize}
+        \item \textbf{EU}: Text and Data Mining (TDM) exception (DSM Directive, Art.\ 4) allows mining of lawfully accessed content unless rights-holders opt out; Art.\ 3 allows TDM for research organisations
+        \item \textbf{US}: Fair use doctrine — outcome uncertain; ongoing litigation (e.g.\ Getty Images v.\ Stability AI, NYT v.\ OpenAI)
+        \item Best practice: use openly licensed datasets, document data provenance, respect opt-out mechanisms
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{AI-Generated Content and Authorship}
+    Copyright requires a \textbf{human author} in most jurisdictions.
+    Fully AI-generated output (no human creative input) is generally \emph{not} copyrightable in the EU or US\textsuperscript{\cite[][pp.~185--200]{lloydInformationTechnologyLaw2020}}.
+\visualseparator
+    \begin{itemize}
+        \item EU: no authorship without a natural person; AI as tool can qualify if human made creative choices
+        \item US Copyright Office: rejects purely AI-generated works; hybrid works assessed case-by-case
+        \item UK: Computer-generated works have a narrow copyright (50 years, person who made arrangements)
+        \item Implication: AI-generated code, images, text may be in the public domain
+    \end{itemize}
+\end{v3topic}
+
+\subsection{Software and Open Source Licensing}
+
+\begin{v3topic}{Open-Source Licences for AI Models}
+    \begin{tblr}{|X[2]|X[2]|X[6]|}
+        \hline
+        \textbf{Licence} & \textbf{Type} & \textbf{Key Obligations / Restrictions} \\
+        \hline
+        MIT & Permissive & Attribution only; can use in proprietary products \\
+        \hline
+        Apache 2.0 & Permissive & Attribution + patent grant; popular for ML frameworks (TensorFlow) \\
+        \hline
+        GPL v3 & Copyleft & Derivatives must also be GPL; ``viral'' — problematic for proprietary AI products \\
+        \hline
+        LGPL & Weak copyleft & Library linking allowed without copyleft propagation \\
+        \hline
+        RAIL (Responsible AI Licence) & Use-restriction & Adds \emph{use restrictions} (e.g.\ no military, no surveillance) on top of permissive base; used by BLOOM, Stable Diffusion \\
+        \hline
+        Llama Community Licence & Proprietary & Usage restrictions above certain user thresholds; not OSI-approved \\
+        \hline
+    \end{tblr}
+\captionof{table}{Software and Open Source Licensing: Open-Source Licences for AI Models.}
+\label{tab:ch17-it-law-inline-09}
+    \textsuperscript{\cite[][pp.~210--240]{lloydInformationTechnologyLaw2020}} Always check: (1) model licence, (2) training data licence, (3) code licence — they are independent.
+\end{v3topic}
+
+% ---- 17.5 Cybersecurity and Liability ----------------------------------------------------------
+\section{Cybersecurity and Liability}
+
+\subsection{Information Security Law}
+
+\begin{v3topic}{NIS2 Directive (EU 2022/2555)}
+    The \textbf{NIS2 Directive} (transposed by EU member states by Oct.\ 2024) significantly expands cybersecurity obligations for ``essential'' and ``important'' entities\textsuperscript{\cite[][pp.~280--310]{savinEUInternetLaw2017}}:
+\visualseparator
+    \begin{itemize}
+        \item Covers: energy, transport, health, digital infrastructure, cloud providers, managed security services, and more
+        \item Requires: risk management measures, supply-chain security, encryption, access control, incident response plans
+        \item \textbf{Incident reporting}: significant incidents must be reported to national authority within 24 hours (early warning) and 72 hours (full notification)
+        \item Senior management accountability: personal liability for non-compliance
+        \item Fines: up to €10M or 2\% global turnover (essential entities)
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{eIDAS and Electronic Signatures}
+    \textbf{eIDAS} (Regulation 910/2014, updated eIDAS2 under way) establishes a framework for electronic identification and trust services across the EU\textsuperscript{\cite[][pp.~320--340]{savinEUInternetLaw2017}}:
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Type} & \textbf{Legal Status} \\
+        \hline
+        Simple electronic signature & Basic; low assurance \\
+        \hline
+        Advanced electronic signature (AdES) & Uniquely linked to signatory; tamper-evident \\
+        \hline
+        Qualified electronic signature (QES) & Equivalent to handwritten signature; highest assurance \\
+        \hline
+    \end{tblr}
+\captionof{table}{Information Security Law: eIDAS and Electronic Signatures.}
+\label{tab:ch17-it-law-inline-10}
+    Relevant for AI systems that automate contract execution or identity verification.
+\end{v3topic}
+
+\subsection{AI Liability}
+
+\begin{v3topic}{Liability Gaps in AI Systems}
+    Traditional product liability (EU Product Liability Directive) requires proof of defect, damage, and causation.
+    AI creates accountability gaps\textsuperscript{\cite[][pp.~350--370]{lloydInformationTechnologyLaw2020}}:
+    \begin{tblr}{|X[2]|X[4]|}
+        \hline
+        \textbf{Challenge} & \textbf{Explanation} \\
+        \hline
+        Opacity & ML models may not provide traceable causal chains \\
+        \hline
+        Distributed responsibility & Data provider, model developer, deployer, and user all contribute \\
+        \hline
+        Autonomous behaviour & AI actions may not be foreseeable from design \\
+        \hline
+        Evolving systems & Models that update post-deployment may differ from what was tested \\
+        \hline
+    \end{tblr}
+\captionof{table}{AI Liability: Liability Gaps in AI Systems.}
+\label{tab:ch17-it-law-inline-11}
+    \textbf{EU AI Liability Directive (proposed, 2022)}: Would introduce a rebuttable \emph{presumption of causality} — if a claimant can show an AI system violated a legal duty and caused harm, the burden shifts to the provider to disprove causation.
+    Combined with the AI Act's obligations, non-compliant high-risk AI faces both regulatory fines \emph{and} civil liability exposure.
+\end{v3topic}
+
+% ---- 17.6 Further Reading -----------------------------------------------------------------------
+\section{Literature and Further Reading}
+
+\begin{v3topic}{Further Reading}
+    \begin{itemize}
+        \item \fullcite{lloydInformationTechnologyLaw2020} --- Comprehensive UK/EU IT law reference; covers data protection, IP, e-commerce, cybersecurity.
+        \item \fullcite{itgovernanceprivacyteamEUGDPR2020} --- Practical GDPR implementation guide; articles by article walk-through.
+        \item \fullcite{voightGDPRPracticalGuide2017} --- Legal practitioner's GDPR guide; good on data transfers and enforcement.
+        \item \fullcite{savinEUInternetLaw2017} --- EU internet law: e-commerce, data protection, network regulation.
+        \item \fullcite{lutziPrivateInternationalLaw2020} --- Jurisdiction and conflict-of-laws in online systems; relevant for cross-border AI services.
+        \item \fullcite{siemsComparativeLaw2018} --- Comparative legal methods; useful for understanding divergence between EU/US/other regimes.
+        \item \fullcite{thirlwaySourcesInternationalLaw2019} --- Foundations of international law; context for where EU law sits in the global system.
+    \end{itemize}
+\end{v3topic}
+
+%
+\section{Deep Dive: From Legal Classification to Engineering Evidence}
+\begin{v3topic}{Begin with Role and Intended Purpose}
+Map jurisdictions, actor roles, intended purpose, affected people, sector,
+data flows, and lifecycle stage before selecting obligations.
+Provider, deployer, importer, distributor, employer, controller, and processor
+can carry different duties for the same technical component.
+
+\end{v3topic}
+\begin{v3topic}{Translate Duties into Controls}
+Turn requirements into owners, controls, evidence, retention, review dates, and
+incident paths.
+Examples include provenance records, risk management, human oversight,
+cybersecurity, performance monitoring, notices, rights handling, and supplier
+contracts.
+
+\end{v3topic}
+\begin{v3topic}{Maintain a Legal Change Log}
+Record the source, jurisdiction, version, effective date, interpretation owner,
+affected system, and next review.
+The legal chapter is orientation, not legal advice; current official text and
+qualified counsel govern consequential decisions.
+Reassess when purpose, data, model, geography, users, or autonomy changes.
+\end{v3topic}
+
+\chapterreview{Classify}{Identify}{Document}{Reassess}

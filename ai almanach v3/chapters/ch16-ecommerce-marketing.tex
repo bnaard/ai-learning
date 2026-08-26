@@ -1,0 +1,565 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== AI in E-Commerce, Marketing and Demand Forecasting =============================================================================
+\chapter{AI in E-Commerce, Marketing and Demand Forecasting}
+
+\chapterlead{How can personalisation create value without harmful feedback loops?}{Discover}{Recommend}{Experiment}{Govern}{commerce-marketing}
+
+% ==== Section 1: AI in E-Commerce ===============================================================
+\section{AI in E-Commerce}
+
+% ---- 16.1.1 Application Areas -----------------------------------------------------------------------
+\subsection{Application Areas}
+
+
+\begin{v3topic}{E-Commerce AI Landscape}
+    E-commerce platforms apply AI across the full customer lifecycle\textsuperscript{\cite[][pp.~58--65]{laudonECommerce2020}}:
+    \begin{itemize}
+        \item \textbf{Retail}: product recommendations, dynamic pricing, inventory replenishment, visual search
+        \item \textbf{Entertainment}: content personalisation, playlist generation, next-episode prediction
+        \item \textbf{Advertising}: programmatic bidding, audience targeting, creative optimisation
+        \item \textbf{Logistics}: last-mile routing, demand forecasting, warehouse automation
+    \end{itemize}
+    AI creates a \emph{data flywheel}: more users generate more behavioural data, enabling better models, attracting more users.
+
+\end{v3topic}
+\begin{v3topic}{Programmatic Advertising}
+    \textbf{Real-time bidding (RTB)} auctions a single ad impression within ${\sim}100\,\mathrm{ms}$\textsuperscript{\cite[][pp.~445--452]{laudonECommerce2020}}.
+    A \textbf{demand-side platform (DSP)} bids on behalf of advertisers; a \textbf{supply-side platform (SSP)} represents publishers.
+    Models predict \textbf{click-through rate (CTR)} and \textbf{conversion rate (CVR)} from user context, page content, and historical behaviour.
+\visualseparator
+    \begin{tblr}{|X|X|}
+        \hline
+        \textbf{Metric} & \textbf{Formula} \\
+        \hline
+        CTR & $\text{Clicks}/\text{Impressions}$ \\
+        \hline
+        CPM & Cost per 1000 impressions \\
+        \hline
+        ROAS & Revenue / Ad Spend \\
+        \hline
+    \end{tblr}
+\captionof{table}{Application Areas: Programmatic Advertising.}
+\label{tab:ch16-ecommerce-marketing-inline-01}
+
+\end{v3topic}
+\begin{v3topic}{IoT in Retail}
+    \textbf{Smart retail} integrates sensor networks with AI analytics\textsuperscript{\cite[][pp.~70--75]{chaffeyDigitalBusinessECommerce2019}}:
+    \begin{itemize}
+        \item \textbf{RFID and shelf sensors}: real-time inventory visibility; trigger automated replenishment
+        \item \textbf{Computer vision cameras}: dwell-time analysis, planogram compliance, cashierless checkout (Amazon Go)
+        \item \textbf{Beacon technology}: proximity-based offers sent to shoppers' smartphones
+        \item \textbf{Smart fitting rooms}: product information displayed via RFID tag reads
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{The Long Tail}
+    In digital marketplaces, a vast number of niche products (the ``long tail'') collectively outperform a few popular items\textsuperscript{\cite[][pp.~3--8]{leskovecMiningMassiveDatasets2014}}.
+    Traditional physical retail can stock only the most popular items; online platforms can offer millions.
+    Recommender systems are the mechanism that makes the long tail economically viable: they connect users with relevant niche items that they would never discover by browsing.
+
+\end{v3topic}
+
+% ---- 16.1.2 Virtual Assistants and Search -----------------------------------------------------------------------
+\subsection{Virtual Assistants and Search}
+
+
+\begin{v3topic}{NLP-Powered Chatbots}
+    E-commerce chatbots handle product queries, order tracking, and returns at scale\textsuperscript{\cite[][pp.~150--155]{chaffeyDigitalBusinessECommerce2019}}.
+    Architecture: an intent classification model (fine-tuned transformer or BERT-based) maps user utterances to actions; a dialogue manager maintains context; a fulfilment layer queries backend systems.
+    \textbf{Key metrics}: task completion rate, escalation rate, CSAT (customer satisfaction score).
+
+\end{v3topic}
+\begin{v3topic}{Voice Search}
+    Voice queries (Alexa, Google, Siri) differ from text: they are longer, conversational, and often question-form\textsuperscript{\cite[][pp.~155--158]{chaffeyDigitalBusinessECommerce2019}}.
+    Optimising for voice requires \textbf{featured snippets} (concise, direct answers) and structured data markup.
+    Voice-first commerce: single-result responses mean the \emph{top-1 recommendation matters critically} --- ranking errors are immediately visible to the user.
+
+\end{v3topic}
+\begin{v3topic}{Visual Product Search}
+    Visual search allows shoppers to photograph a product and retrieve visually similar items\textsuperscript{\cite[][pp.~160--163]{chaffeyDigitalBusinessECommerce2019}}.
+    A CNN (e.g., ResNet or EfficientNet) encodes the query image into an embedding; approximate nearest-neighbour (ANN) search retrieves the closest product embeddings from the catalogue.
+\visualseparator
+    \textbf{Pipeline}: Query image $\xrightarrow{\text{CNN encoder}}$ $\mathbf{q} \in \mathbb{R}^d$ $\xrightarrow{\text{ANN index}}$ Top-$k$ product images.
+    \textbf{Applications}: Pinterest Lens, Google Lens, ASOS visual search. Reduces the vocabulary gap: users can search for items they cannot name.
+
+\end{v3topic}
+
+% ---- 16.1.3 Dynamic Pricing -----------------------------------------------------------------------
+\subsection{Dynamic Pricing}
+
+
+\begin{v3topic}{Pricing Theory Foundations}
+    The \textbf{price elasticity of demand} measures the percentage change in quantity demanded per percentage change in price\textsuperscript{\cite[][pp.~39--42]{laudonECommerce2020}}:
+    \begin{equation}
+        \varepsilon = \frac{\partial Q / Q}{\partial P / P} = \frac{\partial \ln Q}{\partial \ln P}
+    \end{equation}
+    $|\varepsilon| > 1$: elastic (price-sensitive); $|\varepsilon| < 1$: inelastic.
+    \textbf{Willingness-to-pay (WTP)}: the maximum price a consumer accepts; price discrimination extracts consumer surplus by offering different prices to different segments.
+
+\end{v3topic}
+\begin{v3topic}{Bayesian Optimal Pricing}
+    When true WTP is unknown, Bayesian inference maintains a posterior distribution over demand parameters\textsuperscript{\cite[][pp.~45--48]{laudonECommerce2020}}.
+    Given a prior $p(\theta)$ and observed sales at historic prices, the posterior $p(\theta | \text{data})$ is updated via Bayes' theorem.
+    The \textbf{optimal price} maximises expected revenue:
+    \begin{equation}
+        p^* = \arg\max_p \; p \cdot \mathbb{E}_\theta[Q(p, \theta)]
+    \end{equation}
+    Thompson Sampling balances \emph{exploration} (trying new prices) and \emph{exploitation} (using the current best estimate).
+
+\end{v3topic}
+\begin{v3topic}{RL-Based Dynamic Pricing}
+    Pricing can be framed as an MDP: state $= $ inventory level, time-to-deadline, competitor prices; action $= $ posted price; reward $= $ revenue\textsuperscript{\cite[][pp.~55--60]{laudonECommerce2020}}.
+    \textbf{Q-learning} and \textbf{policy gradient} methods learn pricing policies without assuming a demand model.
+    \textbf{Surge pricing} (Uber, airlines) adjusts prices in real time to balance supply and demand.
+    Key challenge: \emph{price fairness} --- identical items offered at different prices to different users raise ethical and legal concerns.
+
+\end{v3topic}
+\begin{v3topic}{Demand Elasticity Measurement}
+    Estimating $\varepsilon$ from observational data is confounded by omitted variables (promotions, holidays)\textsuperscript{\cite[][p.~4]{wickDemandForecastingIndividual2021}}.
+    \textbf{Approaches}:
+    \begin{itemize}
+        \item \textbf{Randomised price experiments}: A/B test different prices on matched user segments
+        \item \textbf{Instrumental variables}: Use cost shocks (shipping, tariff changes) as instruments
+        \item \textbf{Double ML} (Chernozhukov et al.): estimate nuisance functions with ML, then recover a causal price coefficient
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 16.1.4 Ethics and Regulation -----------------------------------------------------------------------
+\subsection{Ethics and Regulation}
+
+
+\begin{v3topic}{GDPR in E-Commerce}
+    The EU General Data Protection Regulation applies to any organisation processing EU residents' data\textsuperscript{\cite[][pp.~25--35]{itgovernanceprivacyteamEUGDPR2020}}:
+    \begin{itemize}
+        \item \textbf{Lawful basis}: consent or legitimate interest for personalisation and advertising cookies
+        \item \textbf{Data minimisation}: collect only what is strictly necessary; avoid re-identification of anonymised data
+        \item \textbf{Right to explanation}: profiling and automated decisions must be explainable to data subjects
+        \item \textbf{Data portability}: users can request their data in machine-readable format
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Algorithmic Fairness and Dark Patterns}
+    \textbf{Algorithmic pricing fairness}: dynamic pricing must not discriminate based on protected characteristics (race, gender) embedded in correlated features such as neighbourhood\textsuperscript{\cite[][pp.~80--85]{laudonECommerce2020}}.
+    \textbf{Dark patterns} are UI/UX designs that exploit cognitive biases to nudge users into unintended actions (e.g., hidden unsubscribe flows, pre-ticked consent boxes, countdown timers).
+    The EU Digital Services Act (DSA, 2022) explicitly prohibits dark patterns targeting consumers.
+
+\end{v3topic}
+
+% ==== Section 2: Marketing Analytics ===============================================================
+\section{Marketing Analytics}
+
+% ---- 16.2.1 Foundations -----------------------------------------------------------------------
+\subsection{Foundations}
+
+
+\begin{v3topic}{Marketing Mix (4Ps)}
+    The classical \textbf{marketing mix} describes four controllable decision variables\textsuperscript{\cite[][pp.~18--24]{chaffeyDigitalBusinessECommerce2019}}:
+    \begin{itemize}
+        \item \textbf{Product}: features, quality, branding, packaging
+        \item \textbf{Price}: pricing strategy, discounts, payment terms
+        \item \textbf{Place}: distribution channels (own site, marketplace, omnichannel)
+        \item \textbf{Promotion}: advertising, content marketing, email, SEO/SEM
+    \end{itemize}
+    Digital channels have added \textbf{4Cs} (Customer, Cost, Convenience, Communication) as a consumer-centric counterpart.
+
+\end{v3topic}
+\begin{v3topic}{Customer Journey and Attribution}
+    The \textbf{customer journey} maps touchpoints from awareness to purchase and retention\textsuperscript{\cite[][pp.~92--98]{chaffeyDigitalBusinessECommerce2019}}.
+    \textbf{Attribution models} assign credit for a conversion across touchpoints:
+    \begin{itemize}
+        \item \textbf{Last-click}: 100\% credit to final touchpoint (over-values retargeting)
+        \item \textbf{First-click}: 100\% credit to first touchpoint (over-values awareness)
+        \item \textbf{Linear}: equal credit to all touchpoints
+        \item \textbf{Data-driven (algorithmic)}: Shapley values from game theory allocate credit proportionally to each channel's marginal contribution
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 16.2.2 Descriptive Analytics -----------------------------------------------------------------------
+\subsection{Descriptive Analytics}
+
+
+\begin{v3topic}{RFM Customer Segmentation}
+    \textbf{RFM analysis} scores customers on three dimensions to identify high-value segments\textsuperscript{\cite[][pp.~110--115]{chaffeyDigitalBusinessECommerce2019}}:
+    \begin{itemize}
+        \item \textbf{Recency (R)}: days since last purchase --- recent buyers are more likely to respond
+        \item \textbf{Frequency (F)}: number of purchases in a period --- loyal customers are more profitable
+        \item \textbf{Monetary (M)}: total spend --- high-value customers deserve premium service
+    \end{itemize}
+    Customers are ranked 1--5 on each dimension; a score of 555 identifies champions. RFM segments guide differentiated CRM campaigns.
+
+\end{v3topic}
+\begin{v3topic}{Market Basket Analysis}
+    \textbf{Association rule mining} discovers co-purchase patterns in transaction data\textsuperscript{\cite[][pp.~217--221]{leskovecMiningMassiveDatasets2014}}.
+    For a rule $A \Rightarrow B$:
+    \begin{equation}
+        \text{support}(A \cup B) = \frac{|\{t : A \cup B \subseteq t\}|}{|T|}
+    \end{equation}
+    \begin{equation}
+        \text{confidence}(A \Rightarrow B) = \frac{\text{support}(A \cup B)}{\text{support}(A)}
+    \end{equation}
+    \begin{equation}
+        \text{lift}(A \Rightarrow B) = \frac{\text{confidence}(A \Rightarrow B)}{\text{support}(B)}
+    \end{equation}
+    Lift $> 1$ indicates a genuine association beyond chance.
+
+\end{v3topic}
+\begin{v3topic}{Apriori Algorithm}
+    The \textbf{Apriori algorithm} efficiently mines frequent itemsets by exploiting the \emph{anti-monotone property}: any superset of an infrequent itemset is also infrequent\textsuperscript{\cite[][pp.~222--226]{leskovecMiningMassiveDatasets2014}}.
+\visualseparator
+    \textbf{Procedure}:
+    \begin{enumerate}
+        \item Find all frequent 1-itemsets (items with support $\geq$ \textit{min\_sup})
+        \item Generate candidate $k$-itemsets by joining frequent $(k-1)$-itemsets
+        \item Prune candidates with any infrequent $(k-1)$-subset
+        \item Repeat until no new frequent itemsets found
+    \end{enumerate}
+    \textbf{FP-Growth} improves efficiency by compressing transactions into an FP-tree, avoiding repeated database scans.
+
+\end{v3topic}
+\begin{v3topic}{SEO and Search Analytics}
+    \textbf{Search engine optimisation (SEO)} improves organic visibility\textsuperscript{\cite[][pp.~130--136]{chaffeyDigitalBusinessECommerce2019}}.
+    Key signals for search ranking: relevance (keyword match, semantic similarity via BERT-based models), authority (PageRank, backlinks), user experience (Core Web Vitals, bounce rate, dwell time).
+    \textbf{Search analytics}: query performance reports reveal which terms drive traffic, click-through rates per keyword, and content gap opportunities.
+    \textbf{SEM}: paid search (Google Ads) complements organic reach via automated bidding strategies optimised for conversions.
+
+\end{v3topic}
+
+% ---- 16.2.3 Predictive Analytics -----------------------------------------------------------------------
+\subsection{Predictive Analytics}
+
+
+\begin{v3topic}{Customer Churn Prediction}
+    \textbf{Churn} is the rate at which customers stop doing business with a company\textsuperscript{\cite[][pp.~145--150]{chaffeyDigitalBusinessECommerce2019}}.
+    Prediction pipeline:
+    \begin{enumerate}
+        \item \textbf{Define churn}: no purchase for $N$ days (contractual) or declining engagement (non-contractual)
+        \item \textbf{Feature engineering}: RFM scores, session frequency, support tickets, time-since-last-login
+        \item \textbf{Model}: gradient boosted trees (XGBoost/LightGBM) or survival models (Cox proportional hazards)
+        \item \textbf{Action}: target high-propensity churners with retention offers
+    \end{enumerate}
+
+\end{v3topic}
+\begin{v3topic}{Customer Lifetime Value (CLV)}
+    \textbf{CLV} estimates the total net profit attributable to a customer over their relationship with the firm\textsuperscript{\cite[][pp.~152--157]{chaffeyDigitalBusinessECommerce2019}}.
+    The basic discounted cash flow formulation:
+    \begin{equation}
+        \text{CLV} = \sum_{t=1}^{T} \frac{m_t \cdot r_t}{(1+d)^t} - \text{CAC}
+    \end{equation}
+    where $m_t$ = margin in period $t$, $r_t$ = retention probability, $d$ = discount rate, CAC = customer acquisition cost.
+    The \textbf{Pareto/NBD model} (Schmittlein et al.) estimates CLV for non-contractual settings using purchase history.
+
+\end{v3topic}
+\begin{v3topic}{Sales Forecasting}
+    Accurate sales forecasts drive inventory planning, staffing, and budgeting\textsuperscript{\cite[][pp.~4--8]{hyndmanForecastingPrinciples2021}}.
+    \textbf{Methods hierarchy}:
+    \begin{itemize}
+        \item \textbf{Statistical}: ARIMA, Exponential Smoothing (ETS), seasonal decomposition
+        \item \textbf{ML}: gradient boosted trees with lag features, calendar effects, price features
+        \item \textbf{Deep learning}: DeepAR (probabilistic LSTM), N-BEATS, temporal fusion transformer
+        \item \textbf{Ensemble}: weighted average of multiple models; meta-learner approach
+    \end{itemize}
+    Probabilistic forecasts (prediction intervals) are preferable to point estimates for inventory decisions.
+
+\end{v3topic}
+\begin{v3topic}{Propensity Models}
+    A \textbf{propensity model} estimates the probability that a customer will perform a target action (purchase, upgrade, open email)\textsuperscript{\cite[][pp.~162--167]{chaffeyDigitalBusinessECommerce2019}}.
+    Training: binary classification on historical data; features include browsing behaviour, demographics, product interest signals.
+    \textbf{Uplift modelling} (causal ML) goes further: it estimates the \emph{incremental} effect of a treatment (e.g., sending a coupon) on conversion probability, avoiding wasted spend on customers who would convert anyway.
+
+\end{v3topic}
+
+% ---- 16.2.4 Prescriptive Analytics -----------------------------------------------------------------------
+\subsection{Prescriptive Analytics}
+
+
+\begin{v3topic}{A/B Testing and Experiments}
+    \textbf{Randomised controlled experiments} are the gold standard for evaluating marketing interventions\textsuperscript{\cite[][pp.~178--183]{chaffeyDigitalBusinessECommerce2019}}.
+    Procedure: randomly split users into control (A) and treatment (B); measure the metric of interest; apply a two-sample hypothesis test.
+    \textbf{Minimum detectable effect (MDE)}: determines required sample size $n \propto (\sigma / \delta)^2$, where $\sigma$ is variance and $\delta$ is the smallest meaningful effect.
+    Pitfalls: peeking (stopping early), novelty effects, interaction effects between concurrent experiments.
+
+\end{v3topic}
+\begin{v3topic}{Multi-Armed Bandits for Campaigns}
+    \textbf{Multi-armed bandit (MAB)} algorithms allocate traffic adaptively across campaign variants, balancing exploration and exploitation\textsuperscript{\cite[][pp.~458--462]{suttonReinforcementLearningIntroduction2018}}:
+    \begin{itemize}
+        \item \textbf{$\varepsilon$-greedy}: with probability $\varepsilon$ explore randomly; otherwise exploit the best-known variant
+        \item \textbf{UCB}: select variant with highest upper confidence bound $\hat{\mu}_i + \sqrt{2\ln t / n_i}$
+        \item \textbf{Thompson Sampling}: sample from Beta posterior; select highest sample
+    \end{itemize}
+    MABs converge faster than fixed A/B tests and minimise regret during the experiment itself.
+
+\end{v3topic}
+\begin{v3topic}{Upselling, Cross-selling and Targeting}
+    \textbf{Upselling}: recommending a higher-tier product to a customer already considering a purchase.
+    \textbf{Cross-selling}: recommending complementary products (``Customers also bought\ldots'').
+    Both are powered by association rules and collaborative filtering models\textsuperscript{\cite[][pp.~185--190]{chaffeyDigitalBusinessECommerce2019}}.
+    \textbf{Audience targeting}: lookalike models identify new prospects who resemble existing high-value customers; features are matched via embedding similarity in ad platform user spaces.
+
+\end{v3topic}
+\begin{v3topic}{Closed-Loop vs.\ Human-in-the-Loop}
+    \textbf{Closed-loop marketing automation}: ML models select, personalise, and send communications without human review; feedback (opens, clicks, conversions) retrains models automatically\textsuperscript{\cite[][pp.~200--205]{chaffeyDigitalBusinessECommerce2019}}.
+    \textbf{Human-in-the-loop}: marketers review ML recommendations before deployment; essential for brand safety, legal compliance, and novel contexts where models lack training data.
+    \textbf{Omnichannel}: unifying customer data and messaging across web, mobile, email, in-store, and social for a consistent journey.
+
+\end{v3topic}
+
+% ==== Section 3: Recommender Systems ===============================================================
+\section{Recommender Systems}
+
+% ---- 16.3.1 Foundations -----------------------------------------------------------------------
+\subsection{Foundations}
+
+
+\begin{v3topic}{History and Impact}
+    Recommender systems emerged in the mid-1990s with GroupLens (Usenet news) and Amazon's item-based filtering\textsuperscript{\cite[][pp.~1--5]{aggarwalRecommenderSystems2016}}.
+    The \textbf{Netflix Prize} (2006--2009) catalysed algorithmic research: a \$1M prize for improving RMSE by 10\% over Cinematch generated breakthrough matrix factorisation techniques.
+    Today, recommenders drive $\sim$35\% of Amazon's revenue and $\sim$80\% of Netflix viewing time.
+
+\end{v3topic}
+\begin{v3topic}{User--Item Matrix and Feedback Types}
+    The central data structure is the \textbf{user--item interaction matrix} $\mathbf{R} \in \mathbb{R}^{m \times n}$, where $m$ = users, $n$ = items\textsuperscript{\cite[][pp.~8--13]{aggarwalRecommenderSystems2016}}.
+\visualseparator
+    \begin{tblr}{|X|X|}
+        \hline
+        \textbf{Explicit feedback} & \textbf{Implicit feedback} \\
+        \hline
+        Star ratings (1--5) & Clicks, views, dwell time \\
+        \hline
+        Thumbs up/down & Add to cart, purchase \\
+        \hline
+        Sparse, noisy & Dense, but ambiguous \\
+        \hline
+        User-intentional & Behavioural proxy \\
+        \hline
+    \end{tblr}
+\captionof{table}{Foundations: User--Item Matrix and Feedback Types.}
+\label{tab:ch16-ecommerce-marketing-inline-02}
+    Most production systems rely on implicit feedback because it is abundant, though it does not distinguish preference from mere exposure.
+
+\end{v3topic}
+\begin{v3topic}{Levels of Personalisation}
+    Recommender systems exist on a personalisation spectrum\textsuperscript{\cite[][pp.~15--18]{jannachRecommenderSystemsIntroduction2010}}:
+    \begin{itemize}
+        \item \textbf{Non-personalised}: editorial ``bestsellers'' or ``trending'' lists --- no user model required
+        \item \textbf{Segment-based}: same recommendations for a user group (age, geography) --- coarse but scalable
+        \item \textbf{Collaborative}: personalised based on similar users' behaviour --- requires interaction data
+        \item \textbf{Content-based}: personalised based on item attributes and user profile --- effective for new items
+        \item \textbf{Hybrid}: combines multiple signals --- best accuracy in practice
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Evaluation Metrics}
+    Offline evaluation metrics for recommenders\textsuperscript{\cite[][pp.~20--28]{aggarwalRecommenderSystems2016}}:
+    \begin{itemize}
+        \item \textbf{RMSE/MAE}: for explicit-rating prediction tasks
+        \item \textbf{Precision@$k$}: fraction of recommended items that are relevant
+        \item \textbf{Recall@$k$}: fraction of relevant items that appear in top-$k$
+        \item \textbf{NDCG@$k$}: normalised discounted cumulative gain, rewards rank-ordering of relevant items
+        \item \textbf{Diversity}: average pairwise dissimilarity in top-$k$ list
+        \item \textbf{Coverage}: fraction of the catalogue that the system recommends across users
+    \end{itemize}
+    Offline metrics are necessary but not sufficient: \textbf{online A/B tests} measure business impact (CTR, conversion, revenue).
+
+\end{v3topic}
+
+% ---- 16.3.2 Collaborative Filtering -----------------------------------------------------------------------
+\subsection{Collaborative Filtering}
+
+
+\begin{v3topic}{User-Based Collaborative Filtering}
+    \textbf{User-based CF} predicts user $u$'s rating for item $i$ by aggregating ratings from similar users\textsuperscript{\cite[][pp.~31--36]{aggarwalRecommenderSystems2016}}:
+    \begin{equation}
+        \hat{r}_{ui} = \bar{r}_u + \frac{\sum_{v \in N(u)} \text{sim}(u,v)\,(r_{vi} - \bar{r}_v)}{\sum_{v \in N(u)} |\text{sim}(u,v)|}
+    \end{equation}
+    \textbf{Cosine similarity} between user rating vectors:
+    \begin{equation}
+        \text{sim}(u,v) = \frac{\mathbf{r}_u \cdot \mathbf{r}_v}{\|\mathbf{r}_u\|\,\|\mathbf{r}_v\|}
+    \end{equation}
+    \textbf{Pearson correlation} accounts for rating scale differences between users.
+
+\end{v3topic}
+\begin{v3topic}{Item-Based Collaborative Filtering}
+    \textbf{Item-based CF} (Amazon's original algorithm) computes item--item similarities from user rating patterns\textsuperscript{\cite[][pp.~38--42]{aggarwalRecommenderSystems2016}}:
+    \begin{equation}
+        \hat{r}_{ui} = \frac{\sum_{j \in N(i)} \text{sim}(i,j)\,r_{uj}}{\sum_{j \in N(i)} |\text{sim}(i,j)|}
+    \end{equation}
+    Item similarities are \textbf{pre-computed offline} and stable over time; only the personalised combination at query time is online.
+    \textbf{Advantage over user-based}: items change less frequently than users; scales better for large user bases.
+
+\end{v3topic}
+\begin{v3topic}{Matrix Factorisation}
+    \textbf{Matrix factorisation (MF)} decomposes the interaction matrix $\mathbf{R} \approx \mathbf{P}\mathbf{Q}^\top$, where $\mathbf{P} \in \mathbb{R}^{m \times k}$ contains \emph{user latent factors} and $\mathbf{Q} \in \mathbb{R}^{n \times k}$ contains \emph{item latent factors}\textsuperscript{\cite[][pp.~30--37]{korenMatrixFactorizationTechniques2009}}.
+    The predicted rating:
+    \begin{equation}
+        \hat{r}_{ui} = \mathbf{p}_u^\top \mathbf{q}_i + b_u + b_i + \mu
+    \end{equation}
+    where $b_u$, $b_i$ are user/item biases and $\mu$ is the global mean.
+    \textbf{SVD} learns factors by minimising regularised squared error via stochastic gradient descent:
+    \begin{equation}
+        \min_{\mathbf{P},\mathbf{Q}} \sum_{(u,i)\in\mathcal{K}} \bigl(r_{ui} - \hat{r}_{ui}\bigr)^2 + \lambda\bigl(\|\mathbf{p}_u\|^2 + \|\mathbf{q}_i\|^2\bigr)
+    \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{ALS for Implicit Feedback}
+    \textbf{Alternating Least Squares (ALS)} is the standard approach for implicit feedback\textsuperscript{\cite[][pp.~40--45]{korenMatrixFactorizationTechniques2009}}.
+    A binary confidence matrix $c_{ui} = 1 + \alpha \cdot \text{count}_{ui}$ encodes interaction strength.
+    ALS fixes $\mathbf{Q}$ and solves for each $\mathbf{p}_u$ in closed form (least-squares), then swaps.
+    Because the closed-form solution is the same for all users given $\mathbf{Q}$, it parallelises efficiently for large-scale systems.
+
+\end{v3topic}
+\begin{v3topic}{Bayesian Personalised Ranking (BPR)}
+    \textbf{BPR} optimises for \emph{pairwise ranking} rather than rating prediction\textsuperscript{\cite[][p.~1]{rendleBPRBayesianPersonalized2009}}: the model should score observed (positive) interactions higher than unobserved ones.
+    For each triple $(u, i^+, j^-)$ (user $u$, observed item $i^+$, unobserved item $j^-$):
+    \begin{equation}
+        \mathcal{L}_{\text{BPR}} = -\sum_{(u,i^+,j^-)} \ln\sigma\!\bigl(\hat{r}_{ui^+} - \hat{r}_{uj^-}\bigr) + \lambda \|\Theta\|^2
+    \end{equation}
+    BPR is model-agnostic: it can be applied on top of MF, neural networks, or any scoring function.
+    \textbf{Key insight}: for e-commerce, the task is \emph{ranking} (what to show at position 1), not \emph{rating prediction} (what score to assign).
+
+\end{v3topic}
+
+% ---- 16.3.3 Content-Based Filtering -----------------------------------------------------------------------
+\subsection{Content-Based Filtering}
+
+
+\begin{v3topic}{Feature Extraction for Items}
+    Content-based filtering builds an item profile from attributes and recommends items similar to those the user has liked\textsuperscript{\cite[][pp.~65--70]{aggarwalRecommenderSystems2016}}.
+    \textbf{Text}: TF-IDF or sentence embeddings (BERT) of product descriptions and reviews.
+    \textbf{Images}: CNN feature vectors (ResNet last layer) for visual products (fashion, home decor).
+    \textbf{Structured}: categorical encodings (genre, brand, category), numerical features (price, rating).
+    A \textbf{user profile} is built as a weighted average of item features rated positively; recommendations are items with highest cosine similarity to the profile.
+
+\end{v3topic}
+\begin{v3topic}{Factorisation Machines}
+    \textbf{Factorisation Machines (FM)} generalise matrix factorisation to arbitrary feature vectors\textsuperscript{\cite[][p.~995]{rendleFactorizationMachines2010}}:
+    \begin{equation}
+        \hat{y}(\mathbf{x}) = w_0 + \sum_i w_i x_i + \sum_{i<j} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j
+    \end{equation}
+    The pairwise interaction term $\langle \mathbf{v}_i, \mathbf{v}_j \rangle$ captures feature interactions (e.g., user $\times$ item, item $\times$ category) via low-rank factorisation of the interaction matrix.
+    FM unifies MF and content-based approaches: user, item, and context features can all be included in $\mathbf{x}$.
+
+\end{v3topic}
+
+% ---- 16.3.4 Hybrid Systems -----------------------------------------------------------------------
+\subsection{Hybrid Recommender Systems}
+
+
+\begin{v3topic}{Hybrid Approaches}
+    Hybrid systems combine collaborative and content-based methods to mitigate their individual weaknesses\textsuperscript{\cite[][pp.~80--87]{jannachRecommenderSystemsIntroduction2010}}:
+    \begin{itemize}
+        \item \textbf{Weighted hybrid}: linear combination of scores from multiple recommenders
+        \item \textbf{Switching}: use content-based for new users (cold-start), switch to CF once enough interactions exist
+        \item \textbf{Cascade}: use one method to filter candidates, another to re-rank
+        \item \textbf{Feature augmentation}: output of one model used as input feature to another
+        \item \textbf{Meta-level}: user model of one system used as input to another
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{The Cold-Start Problem}
+    \textbf{Cold start} occurs when a new user or new item has no interaction history\textsuperscript{\cite[][pp.~88--92]{aggarwalRecommenderSystems2016}}:
+    \begin{itemize}
+        \item \textbf{New user}: ask for explicit preferences (onboarding quiz); use demographic defaults; show popularity-based recommendations
+        \item \textbf{New item}: use content features (no interaction needed); boost new items with controlled exploration budget
+        \item \textbf{Contextual}: use session context (query, referrer, device) as surrogate for user model
+    \end{itemize}
+    Cold start is why purely collaborative systems fail in practice without content-based fallbacks.
+
+\end{v3topic}
+
+% ---- 16.3.5 Large-Scale and Modern Approaches -----------------------------------------------------------------------
+\subsection{Large-Scale and Modern Approaches}
+
+
+\begin{v3topic}{Two-Stage Retrieval Architecture}
+    Large-scale recommenders (billions of users, millions of items) separate the problem into two stages\textsuperscript{\cite[][pp.~95--100]{aggarwalRecommenderSystems2016}}:
+    \begin{enumerate}
+        \item \textbf{Retrieval (candidate generation)}: fast approximate nearest-neighbour search returns $\mathcal{O}(100)$ candidates from the full catalogue
+        \item \textbf{Ranking}: a complex model (Wide\&Deep, transformer) scores the candidates and selects the final top-$k$
+    \end{enumerate}
+\visualseparator
+    \textbf{Why two stages?} Expensive ranking models cannot evaluate millions of items per request; fast retrieval narrows the search space.
+    \textbf{Two-tower model}: a query tower encodes the user/context; an item tower encodes item features; the inner product $\mathbf{q}_u^\top \mathbf{e}_i$ is the retrieval score.
+
+\end{v3topic}
+\begin{v3topic}{Approximate Nearest Neighbour (ANN)}
+    \textbf{FAISS} (Facebook AI Similarity Search) provides GPU-accelerated exact and approximate nearest-neighbour search over embedding vectors\textsuperscript{\cite[][p.~535]{liFaissLibraryEfficient2019}}.
+    Key FAISS indices:
+    \begin{itemize}
+        \item \textbf{IVF} (Inverted File): partitions the space into Voronoi cells; search only a subset of cells
+        \item \textbf{HNSW} (Hierarchical Navigable Small World): graph-based index with $O(\log n)$ query complexity
+        \item \textbf{PQ} (Product Quantisation): compresses vectors to reduce memory; trades recall for speed
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Wide \& Deep / Neural CF}
+    \textbf{Wide \& Deep} (Google, 2016) combines a \emph{wide} linear model (for memorisation of frequent patterns) with a \emph{deep} MLP (for generalisation)\textsuperscript{\cite[][p.~7]{chengWideDeepLearning2016}}.
+    \textbf{Neural Collaborative Filtering (NCF)} (He et al., 2017) replaces the inner product in MF with an MLP to learn arbitrary user--item interactions\textsuperscript{\cite[][p.~173]{heNeuralCollaborativeFiltering2017}}:
+    \begin{equation}
+        \hat{r}_{ui} = \sigma\!\bigl(\mathbf{h}^\top \text{MLP}\bigl([\mathbf{p}_u \| \mathbf{q}_i]\bigr)\bigr)
+    \end{equation}
+    NCF achieves state-of-the-art ranking performance on implicit feedback benchmarks.
+
+\end{v3topic}
+\begin{v3topic}{RL and Causal Approaches}
+    \textbf{RL-based recommenders} model the recommendation session as an MDP: state = user history; action = item to recommend; reward = long-term engagement or revenue\textsuperscript{\cite[][pp.~470--475]{suttonReinforcementLearningIntroduction2018}}.
+    Optimising for immediate clicks creates filter bubbles; RL can explicitly trade short-term engagement for diversity and long-term retention.
+    \textbf{Causal recommenders} address \emph{exposure bias}: items that were never shown cannot appear in training data as negatives; inverse propensity scoring (IPS) re-weights observations to correct for the logging policy\textsuperscript{\cite[][pp.~22--30]{pearlCausalInferenceStatistics2016}}.
+
+\end{v3topic}
+\begin{v3topic}{Multi-Stakeholder Recommenders}
+    Real platforms serve multiple principals simultaneously\textsuperscript{\cite[][pp.~105--110]{aggarwalRecommenderSystems2016}}:
+    \begin{itemize}
+        \item \textbf{Users}: want relevant, diverse, non-repetitive recommendations
+        \item \textbf{Producers/sellers}: want fair visibility for their items (exposure fairness)
+        \item \textbf{Platform}: maximises revenue, engagement, and regulatory compliance
+    \end{itemize}
+    \textbf{Multi-objective optimisation}: Pareto-optimal trade-offs between user satisfaction and producer fairness; constrained re-ranking adds minimum exposure constraints for small sellers without critically degrading user utility.
+
+\end{v3topic}
+
+% ==== Section 4: Further Reading ===============================================================
+%
+\section{Deep Dive: Feedback Loops and Multi-Sided Objectives}
+\begin{v3topic}{Logged Data Reflects the Old Policy}
+Clicks and purchases are observed only for items exposed by an earlier ranking
+and interface.
+Position, availability, and selection bias confound naive supervised targets.
+Randomised exploration or carefully justified propensity methods help estimate
+counterfactual performance.
+
+\end{v3topic}
+\begin{v3topic}{Delayed and Interfering Outcomes}
+Campaigns can change later conversion, returns, fatigue, and word of mouth.
+One user's exposure can affect inventory, prices, sellers, and other users, so
+standard independent-unit A/B assumptions may fail.
+
+\end{v3topic}
+\begin{v3topic}{Balance the Marketplace}
+Evaluate relevance, conversion, margin, diversity, novelty, long-term retention,
+producer exposure, support burden, and safety constraints.
+Define which objectives are hard constraints and which can trade off.
+Monitor feedback loops that make the training data increasingly reflect the
+model's own past choices.
+\end{v3topic}
+
+\chapterreview{Discover}{Recommend}{Experiment}{Govern}
+
+\section{Further Reading}
+
+\begin{itemize}
+    \item \fullcite{aggarwalRecommenderSystems2016} --- Comprehensive graduate-level textbook covering all recommender paradigms: neighbourhood methods, matrix factorisation, deep learning, and context-aware systems.
+    \item \fullcite{jannachRecommenderSystemsIntroduction2010} --- Accessible introduction to recommender systems with practical examples; covers collaborative, content-based, and hybrid methods.
+    \item \fullcite{ricciRecommenderSystemsHandbook2015} --- Edited handbook with 30+ chapters from leading researchers; the reference for advanced topics including cross-domain and group recommenders.
+    \item \fullcite{leskovecMiningMassiveDatasets2014} --- Chapters 9 (recommendation systems) and 6 (frequent itemsets / Apriori) are directly relevant; freely available online.
+    \item \fullcite{laudonECommerce2020} --- Broad e-commerce textbook; covers digital business models, advertising technology, pricing, and regulatory landscape.
+    \item \fullcite{chaffeyDigitalBusinessECommerce2019} --- Practitioner-oriented digital business guide; strong on marketing analytics, customer journey, and omnichannel strategy.
+    \item \fullcite{itgovernanceprivacyteamEUGDPR2020} --- Implementation guide for GDPR compliance; directly applicable to data collection, profiling, and personalisation in e-commerce.
+    \item \fullcite{hyndmanForecastingPrinciples2021} --- The standard reference for time-series forecasting methods; freely available online; essential for demand and sales forecasting.
+    \item \fullcite{korenMatrixFactorizationTechniques2009} --- Seminal paper on matrix factorisation for recommender systems; introduces SVD with biases; highly readable introduction to latent factor models.
+    \item \fullcite{pearlCausalInferenceStatistics2016} --- Primer on causal inference; essential background for uplift modelling, debiased recommenders, and causal attribution in marketing.
+\end{itemize}

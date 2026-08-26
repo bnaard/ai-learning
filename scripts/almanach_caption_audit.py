@@ -15,7 +15,6 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CHAPTER_DIR = ROOT / "ai almanach" / "chapters"
 
 HEADING_RE = re.compile(
     r"\\(?:chapter|section|subsection)\*?\{([^{}]+)\}"
@@ -139,14 +138,20 @@ def main() -> int:
         action="store_true",
         help="add captions and labels to uncaptioned inline blocks",
     )
+    parser.add_argument(
+        "--book-dir",
+        default="ai almanach",
+        help="book directory relative to the repository root",
+    )
     args = parser.parse_args()
 
     total_tables = 0
     total_figures = 0
-    paths = sorted(CHAPTER_DIR.glob("ch*.tex"))
-    paths.append(
-        ROOT / "ai almanach" / "appendices" / "course-coverage-map.tex"
-    )
+    book_dir = ROOT / args.book_dir
+    paths = sorted((book_dir / "chapters").glob("ch*.tex"))
+    appendix = book_dir / "appendices" / "course-coverage-map.tex"
+    if appendix.exists():
+        paths.append(appendix)
 
     for path in paths:
         missing_tables, missing_figures = caption_file(path, args.fix)

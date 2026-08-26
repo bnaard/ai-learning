@@ -1,0 +1,578 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Artificial Intelligence in FinTech =============================================================================
+\chapter{Artificial Intelligence in FinTech}
+
+\chapterlead{How can AI support financial decisions under asymmetric risk?}{Onboard}{Assess}{Transact}{Govern}{fintech}
+
+% ============================================================
+\section{Concepts of FinTech and Artificial Intelligence}
+% ============================================================
+
+% ---- 10.1.1 Introduction to FinTech ----------------------------------------------------
+\subsection{Introduction to FinTech}
+
+
+\begin{v3topic}{What is FinTech?}
+    \textbf{FinTech} (Financial Technology) refers to the use of innovative technology to design, deliver, and improve financial products and services\textsuperscript{\cite[][p.~3]{kardellBuildFinancialSoftware2025}}.
+    FinTech spans a broad spectrum: from mobile payment apps and digital lending platforms to algorithmic trading, blockchain, and AI-powered advisory services.
+    The term gained widespread use after the 2008 financial crisis as startups challenged incumbents with leaner, data-driven business models.
+
+\end{v3topic}
+\begin{v3topic}{The FinTech Ecosystem}
+    The FinTech ecosystem is a network of interdependent actors co-creating value around financial services.
+\visualseparator
+    \begin{tblr}{|Q[c,m,4cm]|X|}
+        \hline
+        \textbf{Actor}        & \textbf{Role} \\
+        \hline
+        Incumbent banks       & Capital, trust, customer base, regulated infrastructure \\
+        \hline
+        FinTech startups      & Agile innovation, niche products, technology-first design \\
+        \hline
+        Regulators (BaFin, ECB, FCA) & Set rules, grant licenses, enforce compliance \\
+        \hline
+        BigTech (Apple, Google, Amazon) & Distribution power, data, embedded finance \\
+        \hline
+        Customers             & End users driving adoption and behavioral data \\
+        \hline
+    \end{tblr}
+\captionof{table}{Introduction to FinTech: The FinTech Ecosystem.}
+\label{tab:ch10-fintech-inline-01}
+
+\end{v3topic}
+\begin{v3topic}{Open Banking and PSD2}
+    The EU \textbf{Payment Services Directive 2} (PSD2, 2018) mandates that banks expose customer account data via standardized APIs to licensed third-party providers (TPPs)\textsuperscript{\cite[][p.~4]{kardellBuildFinancialSoftware2025}}.
+\visualseparator
+    \begin{itemize}
+        \item \textbf{AISPs} (Account Information Service Providers): read-only access to account data
+        \item \textbf{PISPs} (Payment Initiation Service Providers): initiate payments on behalf of customers
+        \item Enables aggregation, personal finance management, and lending innovation
+        \item Analogous open-banking frameworks adopted in the UK, Australia, and USA
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Revolution in Financial Services}
+    Three forces have disrupted traditional finance\textsuperscript{\cite[][pp.~1--2]{jansenMachineLearningAlgorithmic2020}}:
+\visualseparator
+    \begin{enumerate}
+        \item \textbf{Digitization} of data — transaction records, market feeds, alternative data (social, satellite, IoT) are now machine-readable at scale
+        \item \textbf{Democratization} of computing — cloud platforms, open-source ML libraries, and APIs lower barriers to entry
+        \item \textbf{ML advances} — supervised, unsupervised, and reinforcement learning algorithms extract signals that were previously inaccessible
+    \end{enumerate}
+
+\end{v3topic}
+
+% ---- 10.1.2 Applications in Banking and Finance ----------------------------------------
+\subsection{Applications in Banking and Finance}
+
+
+\begin{v3topic}{Neo-Banks and Digital-Only Banking}
+    \textbf{Neo-banks} (Revolut, N26, Chime, Monzo) operate without physical branches, delivering the full current-account experience through a smartphone app\textsuperscript{\cite[][p.~5]{kardellBuildFinancialSoftware2025}}.
+    They leverage cloud infrastructure and open APIs to offer lower fees, real-time notifications, and instant onboarding.
+    Their data-native architecture feeds ML models for spend categorization, fraud scoring, and personalized financial coaching.
+
+\end{v3topic}
+\begin{v3topic}{Payments and the ACH Network}
+    The \textbf{Automated Clearing House} (ACH) is the US electronic payment backbone, processing billions of credit and debit transactions annually\textsuperscript{\cite[][pp.~5--6]{kardellBuildFinancialSoftware2025}}.
+    ACH files contain structured batch records (file header, batch header, entry detail, addenda, batch/file control) parsed by bank software.
+    Alongside ACH, real-time payment rails (SEPA Instant, FedNow, SWIFT gpi) are reshaping global money movement toward 24/7 settlement.
+
+\end{v3topic}
+\begin{v3topic}{Wealth Management and Lending}
+    AI transforms \textbf{wealth management} through automated portfolio construction, risk profiling, and goal-based planning at lower cost (robo-advisory, see Section 4).
+    In \textbf{lending}, ML models score creditworthiness using alternative data (transaction history, social behavior, telco data) beyond traditional credit bureau scores, enabling faster decisions and broader financial inclusion.
+
+\end{v3topic}
+\begin{v3topic}{Financial Inclusion}
+    An estimated 1.4 billion adults globally remain \emph{unbanked} (World Bank, 2021).
+    FinTech addresses inclusion by offering mobile-money services (M-Pesa), micro-lending platforms, and credit scoring from non-traditional data.
+    ML allows lenders to assess risk for thin-file customers who lack formal credit histories — reducing the dependence on collateral and expanding access.
+
+\end{v3topic}
+
+% ---- 10.1.3 Underlying Technologies ---------------------------------------------------
+\subsection{FinTech Underlying Technologies}
+
+
+\begin{v3topic}{Cloud Banking}
+    Cloud platforms (AWS, Azure, GCP) supply banks with elastic compute, managed data pipelines, and ML services on demand\textsuperscript{\cite[][pp.~65--67]{kardellBuildFinancialSoftware2025}}.
+    \textbf{Core banking-as-a-service} providers (Thought Machine, Mambu, Finxact) offer cloud-native ledger systems replacing decades-old COBOL mainframes.
+    Key benefits: real-time data availability, rapid deployment of ML models, lower operational risk via managed SLAs.
+
+\end{v3topic}
+\begin{v3topic}{Blockchain, DLT and Smart Contracts}
+    A \textbf{distributed ledger} (DLT) is a shared, append-only database replicated across nodes with cryptographic integrity.
+    \textbf{Blockchain} chains blocks of transactions via hash pointers; Bitcoin (2009) proved the concept; Ethereum added programmability through \textbf{smart contracts} — self-executing code that enforces agreement terms without an intermediary.
+    Financial use cases include: cross-border settlement (Ripple/XRP), tokenized securities, trade finance automation, and central bank digital currencies (CBDCs).
+
+\end{v3topic}
+\begin{v3topic}{ML and DL in Finance}
+    Machine learning is the primary analytical engine of modern FinTech\textsuperscript{\cite[][pp.~1--3]{jansenMachineLearningAlgorithmic2020}}:
+\visualseparator
+    \begin{tblr}{|Q[c,m]|X|}
+        \hline
+        \textbf{ML Type}       & \textbf{Finance Application} \\
+        \hline
+        Supervised             & Credit scoring, fraud classification, price forecasting \\
+        \hline
+        Unsupervised           & Customer segmentation, anomaly detection, eigenportfolios \\
+        \hline
+        Reinforcement Learning & Algorithmic trading agents, portfolio optimization \\
+        \hline
+        Deep Learning          & Time-series forecasting (LSTM), sentiment (BERT), OCR \\
+        \hline
+    \end{tblr}
+\captionof{table}{FinTech Underlying Technologies: ML and DL in Finance.}
+\label{tab:ch10-fintech-inline-02}
+
+\end{v3topic}
+\begin{v3topic}{NLP for Financial Text}
+    Financial institutions generate and consume vast quantities of text: earnings call transcripts, regulatory filings (SEC EDGAR, annual reports), news feeds, and social media.
+    NLP methods extract structured signals from unstructured text\textsuperscript{\cite[][pp.~440--441]{jansenMachineLearningAlgorithmic2020}}: sentiment scores from analyst reports, topic models from SEC filings, named-entity recognition for event detection, and large language model (LLM) summaries of earnings calls.
+
+\end{v3topic}
+
+% ============================================================
+\section{AI Applications in Financial Services}
+% ============================================================
+
+% ---- 10.2.1 Credit Scoring and Lending ------------------------------------------------
+\subsection{Credit Scoring and Lending}
+
+
+\begin{v3topic}{Traditional Credit Scorecards}
+    Classical credit scoring assigns a numerical score to an applicant based on a weighted sum of features: payment history, amounts owed, length of credit history, new credit, and credit mix (FICO model)\textsuperscript{\cite[][p.~149]{jansenMachineLearningAlgorithmic2020}}.
+    Scorecards were historically built with \textbf{logistic regression} on bureau data, offering interpretability and regulatory defensibility but limited predictive power for thin-file customers.
+
+\end{v3topic}
+\begin{v3topic}{ML-Based Credit Models}
+    Modern lenders deploy gradient boosting (XGBoost, LightGBM) and deep learning models on enriched feature sets\textsuperscript{\cite[][pp.~365--366]{jansenMachineLearningAlgorithmic2020}}.
+    Alternative data signals:
+\visualseparator
+    \begin{itemize}
+        \item Transaction patterns (cash-flow regularity, merchant categories)
+        \item Mobile metadata (device usage, call records — with consent)
+        \item Psychographic questionnaire scores
+        \item Social network behavior (in some jurisdictions)
+    \end{itemize}
+    Tree ensembles handle non-linear interactions and missing data naturally; SHAP values provide local explanations.
+
+\end{v3topic}
+\begin{v3topic}{Fairness and Disparate Impact}
+    Algorithmic credit decisions can inadvertently encode historical discrimination if protected attributes (race, gender, age) correlate with training features\textsuperscript{\cite[][p.~716]{jansenMachineLearningAlgorithmic2020}}.
+    \textbf{Disparate impact} (US Equal Credit Opportunity Act) occurs when a neutral criterion disproportionately disadvantages a protected class.
+    Mitigation: \emph{pre-processing} (re-weighting training data), \emph{in-processing} (fairness-regularized loss), \emph{post-processing} (threshold equalization across groups), and individual explainability requirements under GDPR Article 22.
+
+\end{v3topic}
+
+% ---- 10.2.2 Algorithmic Trading -------------------------------------------------------
+\subsection{Algorithmic Trading}
+
+
+\begin{v3topic}{What is Algorithmic Trading?}
+    \textbf{Algorithmic trading} uses computer programs to execute trading decisions automatically according to pre-specified rules or learned strategies\textsuperscript{\cite[][pp.~1--2]{jansenMachineLearningAlgorithmic2020}}.
+    The goal of active investment management is to generate \textbf{alpha} — portfolio returns in excess of a benchmark.
+    The \emph{fundamental law of active management} decomposes the information ratio (IR) as:
+    \begin{equation}
+        \mathrm{IR} \approx \mathrm{IC} \cdot \sqrt{N}
+    \end{equation}
+    where IC is the information coefficient (forecast skill) and $N$ is the breadth (number of independent bets).
+
+\end{v3topic}
+\begin{v3topic}{Alpha Factors and Feature Engineering}
+    An \textbf{alpha factor} is any signal, attribute, or transformation of data that historically correlates with future asset returns\textsuperscript{\cite[][pp.~82--84]{jansenMachineLearningAlgorithmic2020}}.
+    Classic factor families: \emph{momentum} (12-1 month return), \emph{value} (price-to-book ratio), \emph{quality} (return on equity), \emph{volatility} (low-vol anomaly), \emph{size} (small-cap premium).
+    ML feature engineering extends factors to alternative data: NLP sentiment scores, satellite imagery activity, web traffic, credit-card transaction aggregates.
+
+\end{v3topic}
+\begin{v3topic}{Strategy Types}
+\visualseparator
+    \begin{tblr}{|Q[c,m]|X|}
+        \hline
+        \textbf{Strategy}       & \textbf{Description} \\
+        \hline
+        Statistical arbitrage   & Pairs trading / cointegration; mean-reversion of spread \\
+        \hline
+        Market making           & Post limit orders on both sides; profit from bid-ask spread \\
+        \hline
+        Trend following (CTA)   & Long/short based on momentum signals across asset classes \\
+        \hline
+        High-frequency (HFT)    & Microsecond latency; exploit microstructure inefficiencies \\
+        \hline
+        Long-short equity       & ML signals rank stocks; long winners, short losers \\
+        \hline
+    \end{tblr}
+\captionof{table}{Algorithmic Trading: Strategy Types.}
+\label{tab:ch10-fintech-inline-03}
+
+\end{v3topic}
+\begin{v3topic}{RL for Trading}
+    Deep reinforcement learning casts trading as a Markov Decision Process: the agent observes market state $s_t$ (price features, portfolio state), takes action $a_t$ (buy/hold/sell), and receives reward $r_t$ (risk-adjusted P\&L)\textsuperscript{\cite[][pp.~679--680]{jansenMachineLearningAlgorithmic2020}}.
+    The agent learns a policy $\pi(a|s)$ that maximizes expected cumulative return.
+    Key challenge: non-stationarity of financial markets makes generalization from historical training data difficult.
+
+\end{v3topic}
+\begin{v3topic}{Backtesting and Overfitting Risk}
+    Backtesting simulates a strategy on historical data to estimate future performance\textsuperscript{\cite[][pp.~222--226]{jansenMachineLearningAlgorithmic2020}}.
+    Critical pitfalls:
+\visualseparator
+    \begin{tblr}{|X|X|X|}
+        \hline
+        \textbf{Pitfall}         & \textbf{Cause}                                    & \textbf{Remedy} \\
+        \hline
+        Look-ahead bias          & Using future data in feature construction          & Strict point-in-time data discipline \\
+        \hline
+        Survivorship bias        & Only including assets that survived to today        & Use delisted/bankrupt-company data \\
+        \hline
+        Overfitting (data mining) & Too many strategy parameters fit to noise          & Walk-forward validation, Deflated Sharpe \\
+        \hline
+        Transaction costs        & Ignoring slippage, commissions, market impact       & Model realistic costs per strategy \\
+        \hline
+    \end{tblr}
+\captionof{table}{Algorithmic Trading: Backtesting and Overfitting Risk.}
+\label{tab:ch10-fintech-inline-04}
+
+\end{v3topic}
+
+% ---- 10.2.3 Chatbots and Customer Service --------------------------------------------
+\subsection{Chatbots and Customer Service}
+
+
+\begin{v3topic}{NLP-Powered Banking Assistants}
+    Virtual banking assistants (Bank of America's Erica, Cleo, KAI by Kasisto) handle natural language queries about balances, transactions, and product recommendations\textsuperscript{\cite[][p.~14]{kardellBuildFinancialSoftware2025}}.
+    They combine \textbf{intent recognition} (classify user goal: balance inquiry, payment initiation, fraud report), \textbf{slot filling} (extract entities: amount, date, account), and \textbf{dialogue management} (maintain context across turns).
+    Large language models (GPT-4, Claude) are now being integrated for open-ended advisory conversations.
+
+\end{v3topic}
+\begin{v3topic}{Generative AI in Finance}
+    Generative AI enables FinTech applications beyond rule-based chatbots\textsuperscript{\cite[][pp.~13--15]{kardellBuildFinancialSoftware2025}}:
+\visualseparator
+    \begin{itemize}
+        \item \textbf{Code generation}: AI pair-programmers assist developers building ACH parsers, API handlers, and database schemas
+        \item \textbf{Document summarization}: Automatic digests of lengthy regulatory filings and contracts
+        \item \textbf{Report generation}: Narrative commentary on portfolio performance
+        \item \textbf{Synthetic data}: Training data for fraud detection where real data is scarce or sensitive
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 10.2.4 KYC and AML --------------------------------------------------------------
+\subsection{KYC and AML}
+
+
+\begin{v3topic}{Know Your Customer (KYC)}
+    \textbf{KYC} is the regulatory obligation for financial institutions to verify the identity of customers before and during a business relationship.
+    Steps: identity document verification (OCR + liveness detection), sanctions list screening (OFAC, UN), politically exposed persons (PEP) checks, and ongoing monitoring\textsuperscript{\cite[][pp.~378--379]{kardellBuildFinancialSoftware2025}}.
+    ML accelerates KYC via facial recognition, document forgery detection (CNN classifiers), and fuzzy-matching algorithms for name screening.
+
+\end{v3topic}
+\begin{v3topic}{Anti-Money Laundering (AML)}
+    \textbf{AML} programs detect and report suspicious transactions that may represent layering or integration of illicit funds.
+    Traditional rule-based systems generate high false-positive rates ($>$95\%).
+    ML approaches:
+\visualseparator
+    \begin{itemize}
+        \item \textbf{Transaction monitoring}: anomaly detection flags structuring (smurfing), round-trip transfers, and mule accounts
+        \item \textbf{Network analysis}: graph ML (GNN) uncovers money laundering rings via transaction flow topology
+        \item \textbf{Risk scoring}: ensemble models produce customer risk scores updated in real time
+        \item \textbf{RegTech}: automated SAR (Suspicious Activity Report) narrative generation
+    \end{itemize}
+
+\end{v3topic}
+
+% ============================================================
+\section{Fraud Detection in FinTech}
+% ============================================================
+
+% ---- 10.3.1 Types of Financial Fraud -------------------------------------------------
+\subsection{Types of Financial Fraud}
+
+
+\begin{v3topic}{Payment and Card Fraud}
+    \textbf{Payment fraud} includes card-not-present (CNP) fraud (online transactions using stolen card data), counterfeit cards (skimming), account takeover (ATO), and authorized push payment (APP) scams where customers are socially engineered into authorizing transfers.
+    Global card fraud losses exceeded \$33 billion in 2022 (Nilson Report).
+    Real-time fraud scoring at the point of authorization (sub-100 ms) is the primary defense.
+
+\end{v3topic}
+\begin{v3topic}{Insurance and Identity Fraud}
+    \textbf{Insurance fraud} ranges from exaggerated claims (soft fraud) to staged accidents (hard fraud), costing the US industry an estimated \$80 billion annually.
+    \textbf{Identity fraud} involves using stolen or synthetic personal information (name, SSN, date of birth) to open accounts, apply for credit, or conduct transactions.
+    \textbf{Synthetic identity fraud} — combining real and fabricated data — is the fastest-growing fraud type and is particularly difficult to detect with traditional checks.
+
+\end{v3topic}
+\begin{v3topic}{The Wirecard Case}
+    \textbf{Wirecard AG} (Germany) was a DAX-listed FinTech payment processor that collapsed in June 2020 after disclosing that \texteuro{}1.9 billion in cash held in Philippine escrow accounts did not exist.
+    Key fraud mechanisms: fictitious revenue from third-party acquiring (TPA) partners, inflated balance sheet, and auditor failures (EY signed off for years).
+    Lessons for AI in finance: anomaly detection on financial statements (Benford's law, ratio analysis), graph-based counterparty risk, and the need for explainable AI to support human investigator judgment rather than replace it.
+
+\end{v3topic}
+
+% ---- 10.3.2 ML for Fraud Detection ---------------------------------------------------
+\subsection{ML for Fraud Detection}
+
+
+\begin{v3topic}{Anomaly Detection Approaches}
+    \textbf{Unsupervised anomaly detection} identifies unusual patterns without labeled fraud examples\textsuperscript{\cite[][p.~150]{jansenMachineLearningAlgorithmic2020}}:
+\visualseparator
+    \begin{itemize}
+        \item \textbf{Isolation Forest}: randomly partitions features; anomalies require fewer splits to isolate
+        \item \textbf{Autoencoder}: reconstruction error flags transactions the network cannot compress faithfully
+        \item \textbf{One-class SVM}: learns a decision boundary around normal behavior
+        \item \textbf{DBSCAN}: density-based clustering; low-density points flagged as anomalies
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Supervised Classification for Fraud}
+    When labeled fraud cases are available, supervised classifiers achieve higher precision:
+    Gradient boosting (XGBoost, LightGBM), random forests, and neural networks are state of the art\textsuperscript{\cite[][pp.~345--346]{jansenMachineLearningAlgorithmic2020}}.
+    Key features: transaction amount, merchant category code (MCC), device fingerprint, geolocation distance from home, time-of-day, velocity (number of transactions per hour), and behavioral biometrics.
+
+\end{v3topic}
+\begin{v3topic}{Class Imbalance Problem}
+    Fraud datasets are severely imbalanced — typically 0.1--1\% positive class.
+    Naively training on raw data produces a model that predicts ``not fraud'' for everything with high accuracy but zero utility.
+\visualseparator
+    Remedies:
+    \begin{itemize}
+        \item \textbf{SMOTE} (Synthetic Minority Oversampling Technique): interpolates synthetic minority samples in feature space
+        \item \textbf{Cost-sensitive learning}: assign higher misclassification cost to false negatives
+        \item \textbf{Threshold tuning}: optimize the decision threshold on precision-recall curve, not accuracy
+        \item \textbf{Ensemble methods}: combine multiple weak detectors to improve recall
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Real-Time Fraud Scoring}
+    Production fraud systems must return a decision within $<$100 ms at transaction authorization time.
+    Architecture: a lightweight feature extraction layer reads recent transaction history from an in-memory store (Redis), passes features to a pre-trained ML model served via REST API, and returns a risk score.
+    Scores above a threshold trigger step-up authentication or decline; scores in a gray zone route to human review queues.
+    Model drift monitoring and frequent retraining cycles are essential as fraud patterns evolve rapidly.
+
+\end{v3topic}
+
+% ============================================================
+\section{Robo-Advisory}
+% ============================================================
+
+% ---- 10.4.1 Definition and Types -------------------------------------------------------
+\subsection{Definition and Types of Robo-Advisors}
+
+
+\begin{v3topic}{What is a Robo-Advisor?}
+    A \textbf{robo-advisor} is a digital platform that provides automated, algorithm-driven financial planning and investment management services with minimal human intervention\textsuperscript{\cite[][p.~125]{jansenMachineLearningAlgorithmic2020}}.
+    First-generation robo-advisors (Betterment 2010, Wealthfront 2011) offered low-cost passive ETF portfolios.
+    Current platforms provide goal-based planning, tax optimization, and personalized risk profiling at management fees of 0.15--0.50\% vs.\ 1--2\% for traditional advisors.
+
+\end{v3topic}
+\begin{v3topic}{Pure vs.\ Hybrid Robo-Advisors}
+\visualseparator
+    \begin{tblr}{|Q[c,m]|X|X|}
+        \hline
+                             & \textbf{Pure Robo} & \textbf{Hybrid / Bionic} \\
+        \hline
+        Advice channel        & Fully automated algorithm & Algorithm + human advisor access \\
+        \hline
+        Cost                  & Very low (0.15--0.30\%)   & Moderate (0.50--0.85\%) \\
+        \hline
+        Complexity handled    & Standard risk profiles    & Complex tax, estate, business needs \\
+        \hline
+        Examples              & Betterment, Wealthfront   & Vanguard Personal Advisor, Schwab \\
+        \hline
+    \end{tblr}
+\captionof{table}{Definition and Types of Robo-Advisors: Pure vs.\ Hybrid Robo-Advisors.}
+\label{tab:ch10-fintech-inline-05}
+
+\end{v3topic}
+
+% ---- 10.4.2 Portfolio Management -------------------------------------------------------
+\subsection{Portfolio Management}
+
+
+\begin{v3topic}{Modern Portfolio Theory (Markowitz)}
+    Harry Markowitz (1952) showed that a rational investor maximizes expected return for a given level of risk (variance)\textsuperscript{\cite[][p.~127]{jansenMachineLearningAlgorithmic2020}}.
+    For a portfolio of $N$ assets with weight vector $\mathbf{w}$, expected return $\boldsymbol{\mu}$, and covariance $\boldsymbol{\Sigma}$:
+    \begin{equation}
+        \min_{\mathbf{w}}\; \mathbf{w}^\top \boldsymbol{\Sigma}\, \mathbf{w} \quad \text{s.t.} \quad \mathbf{w}^\top \boldsymbol{\mu} = \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1
+    \end{equation}
+    The set of optimal portfolios traces the \emph{efficient frontier} in mean-variance space.
+
+\end{v3topic}
+\begin{v3topic}{Sharpe Ratio and Risk-Adjusted Performance}
+    The \textbf{Sharpe ratio} measures risk-adjusted return\textsuperscript{\cite[][p.~122]{jansenMachineLearningAlgorithmic2020}}:
+    \begin{equation}
+        S = \frac{\mathbb{E}[r_p - r_f]}{\sigma_p}
+    \end{equation}
+    where $r_p$ is portfolio return, $r_f$ is the risk-free rate, and $\sigma_p$ is portfolio return volatility.
+    Robo-advisors target a client's required Sharpe ratio by tuning the equity/bond allocation.
+    Modern alternatives include Sortino ratio (downside deviation only) and Calmar ratio (return/max drawdown).
+
+\end{v3topic}
+\begin{v3topic}{Black-Litterman Model}
+    The \textbf{Black-Litterman model} (1990) addresses the instability of Markowitz optimization under estimation error in $\boldsymbol{\mu}$\textsuperscript{\cite[][pp.~131--132]{jansenMachineLearningAlgorithmic2020}}.
+    It blends market-implied equilibrium returns (derived from the market-cap-weighted CAPM) with investor views via a Bayesian update:
+    \begin{equation}
+        \boldsymbol{\mu}^* = [(\tau \boldsymbol{\Sigma})^{-1} + \mathbf{P}^\top \boldsymbol{\Omega}^{-1} \mathbf{P}]^{-1}[\,(\tau \boldsymbol{\Sigma})^{-1} \boldsymbol{\Pi} + \mathbf{P}^\top \boldsymbol{\Omega}^{-1} \mathbf{q}\,]
+    \end{equation}
+    where $\boldsymbol{\Pi}$ is the equilibrium return, $\mathbf{P}$ is the view matrix, $\mathbf{q}$ the view vector, and $\boldsymbol{\Omega}$ view uncertainty.
+
+\end{v3topic}
+\begin{v3topic}{Rebalancing and Tax-Loss Harvesting}
+    \textbf{Automatic rebalancing} periodically restores portfolio weights to target allocations when drift (due to differential asset returns) exceeds a threshold.
+    Trigger-based rebalancing (e.g., when any asset deviates $>$5\%) is more tax-efficient than calendar-based.
+    \textbf{Tax-loss harvesting} (TLH) systematically sells positions at a loss to realize capital losses that offset taxable gains, then repurchases a correlated substitute to maintain market exposure — subject to wash-sale rules (30-day window in the US).
+    Wealthfront claims 1.55--2.99\% after-tax return improvement via daily TLH.
+
+\end{v3topic}
+
+% ---- 10.4.3 Goal-Based Investing -------------------------------------------------------
+\subsection{Goal-Based Investing}
+
+
+\begin{v3topic}{Risk Profiling and Investor Preferences}
+    Robo-advisors elicit \textbf{risk tolerance} through questionnaires covering time horizon, income stability, financial knowledge, and emotional reaction to losses (based on behavioral finance research).
+    Risk scores map to model portfolios along a conservative-to-aggressive spectrum (e.g., 20/80 to 100/0 equity/bond allocation).
+    Limitations: self-reported risk tolerance is volatile and may diverge from revealed preference during market crashes.
+
+\end{v3topic}
+\begin{v3topic}{Goal-Based Portfolio Modeling}
+    Rather than optimizing a single portfolio, \textbf{goal-based investing} allocates separate sub-portfolios (``buckets'') to distinct financial goals: emergency fund (short horizon, capital preservation), home purchase (medium horizon), and retirement (long horizon, growth)\textsuperscript{\cite[][p.~125]{jansenMachineLearningAlgorithmic2020}}.
+    Each sub-portfolio has its own risk budget, return objective, and time horizon.
+    Monte Carlo simulation projects goal achievement probabilities under thousands of market scenarios, enabling advice such as ``increase monthly contributions by \$150 to reach 90\% confidence.''
+
+\end{v3topic}
+
+% ============================================================
+\section{Trust, Ethics, and Regulation}
+% ============================================================
+
+% ---- 10.5.1 Bias and Fairness ----------------------------------------------------------
+\subsection{Bias and Fairness in AI Finance}
+
+
+\begin{v3topic}{Algorithmic Discrimination in Lending}
+    ML credit models may perpetuate or amplify historical discrimination even without explicitly encoding protected attributes\textsuperscript{\cite[][p.~716]{jansenMachineLearningAlgorithmic2020}}.
+    Proxy discrimination arises when correlated features (zip code, education level) carry demographic signal.
+    \textbf{Disparate impact}: under the US Equal Credit Opportunity Act (ECOA), the 80\% rule states that if the acceptance rate for a protected group is less than 80\% of the highest group rate, the policy is suspect.
+
+\end{v3topic}
+\begin{v3topic}{Explainability Requirements}
+    Regulations demand explainability for automated financial decisions:
+\visualseparator
+    \begin{itemize}
+        \item \textbf{GDPR Art.~22}: right not to be subject to solely automated decisions; right to explanation
+        \item \textbf{EU AI Act (2024)}: credit scoring and insurance pricing classified as high-risk AI — mandatory transparency, logging, human oversight, and bias monitoring
+        \item \textbf{US FCRA}: adverse action notices must cite specific reasons for credit denial
+        \item SHAP and LIME provide model-agnostic local explanations compatible with regulatory requirements
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 10.5.2 Financial Regulation ------------------------------------------------------
+\subsection{Regulation of AI in Financial Services}
+
+
+\begin{v3topic}{MiFID II and Algorithmic Trading}
+    The EU \textbf{Markets in Financial Instruments Directive II} (MiFID II, 2018) introduced specific requirements for algorithmic trading firms:
+\visualseparator
+    \begin{itemize}
+        \item Algorithm registration and stress-testing obligations
+        \item Kill-switch capability to halt trading immediately
+        \item Annual self-assessment of trading algorithms
+        \item Market-making algorithms must maintain quotes during normal conditions
+        \item Tick data reporting and best-execution obligations
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Regulation of Robo-Advisors}
+    Robo-advisors providing investment advice are subject to financial regulations across jurisdictions:
+\visualseparator
+    \begin{tblr}{|Q[c,m]|X|}
+        \hline
+        \textbf{Jurisdiction} & \textbf{Regime} \\
+        \hline
+        EU                    & MiFID II suitability assessment; ESMA Guidelines on Robo-Advice (2018) \\
+        \hline
+        Germany               & BaFin authorization as investment advisor; GDPR compliance \\
+        \hline
+        USA                   & SEC Registered Investment Advisor (RIA) status; fiduciary duty \\
+        \hline
+        UK                    & FCA authorization; Consumer Duty (2023) \\
+        \hline
+    \end{tblr}
+\captionof{table}{Regulation of AI in Financial Services: Regulation of Robo-Advisors.}
+\label{tab:ch10-fintech-inline-06}
+
+\end{v3topic}
+
+% ---- 10.5.3 Future Outlook -------------------------------------------------------------
+\subsection{Future Outlook}
+
+
+\begin{v3topic}{CBDCs and Programmable Money}
+    \textbf{Central bank digital currencies} (CBDCs) are sovereign digital money issued directly by central banks.
+    Over 130 countries are exploring CBDCs (BIS survey 2023).
+    Programmable CBDCs can embed spending conditions (welfare payments restricted to food), automate tax withholding, and enable real-time cross-border settlement without correspondent banking intermediaries.
+    AI systems will be critical for CBDC fraud monitoring and AML compliance at scale.
+
+\end{v3topic}
+\begin{v3topic}{DeFi and Embedded Finance}
+    \textbf{Decentralized Finance} (DeFi) replicates financial services (lending, trading, derivatives) through smart contracts on public blockchains, without centralized intermediaries.
+    Total value locked (TVL) in DeFi peaked at $\sim$\$180 billion in 2021.
+    \textbf{Embedded finance} integrates financial services into non-financial platforms: Shopify Capital (merchant lending), Uber Money, and BNPL (buy now, pay later) at checkout.
+    ML models are the intelligence layer enabling real-time underwriting at point of sale.
+
+\end{v3topic}
+\begin{v3topic}{ESG and Sustainable Finance}
+    \textbf{ESG} (Environmental, Social, Governance) investing integrates non-financial risk factors into asset allocation.
+    AI applications in sustainable finance\textsuperscript{\cite[][p.~715]{jansenMachineLearningAlgorithmic2020}}:
+\visualseparator
+    \begin{itemize}
+        \item Satellite imagery and NLP to monitor corporate environmental compliance
+        \item LLMs to extract ESG disclosures from annual reports and sustainability reports
+        \item ML to construct ESG scores from unstructured data beyond agency ratings
+        \item Climate risk stress-testing of loan portfolios (NGFS scenarios)
+    \end{itemize}
+
+\end{v3topic}
+
+% ============================================================
+%
+\section{Deep Dive: Point-in-Time Financial Evaluation}
+\begin{v3topic}{What Was Knowable Then?}
+Reconstruct features, universe membership, prices, and filings as they were
+available at the decision timestamp.
+Later corrections, surviving firms, or revised labels create look-ahead and
+survivorship bias even when rows are split by date.
+
+\end{v3topic}
+\begin{v3topic}{Backtest the Executable Policy}
+Include transaction costs, spread, latency, market impact, turnover,
+constraints, rejected orders, and capital limits.
+Compare against a simple implementable strategy and test performance across
+regimes rather than selecting a convenient interval.
+
+\end{v3topic}
+\begin{v3topic}{Decisions Need Reasons and Appeals}
+For credit, fraud, or AML workflows, connect model output to threshold,
+capacity, adverse-action explanation, human review, and appeal.
+Measure calibration and error costs by relevant groups, plus queue burden and
+time to resolution.
+\end{v3topic}
+
+\chapterreview{Onboard}{Assess}{Transact}{Govern}
+
+\section{Further Reading}
+% ============================================================
+
+\subsection*{Further Reading}
+
+
+\begin{v3topic}{Further Reading}
+    \begin{itemize}
+        \item \fullcite{jansenMachineLearningAlgorithmic2020} --- The definitive practical reference for ML applied to trading and investment: alpha factor research, portfolio optimization, backtesting, NLP for finance, and deep RL trading agents.
+        \item \fullcite{kardellBuildFinancialSoftware2025} --- Hands-on guide to building core banking software with generative AI: ACH processing, FastAPI, PostgreSQL, and AI-assisted development in a FinTech context.
+    \end{itemize}
+
+\end{v3topic}

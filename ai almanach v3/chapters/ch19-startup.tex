@@ -1,0 +1,276 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Start-up ================================================================
+\chapter{Building an AI Venture}
+\chapterlead{How can an AI venture test problem, feasibility, and economics?}{Problem}{Experiment}{Economics}{Scale}{startup}
+
+\label{ch:startup}
+
+\section{From an Interesting Model to a Valuable Product}
+
+\begin{v3topic}{Start with a Painful Workflow}
+A start-up begins with a costly, frequent, and observable problem---not with a
+model looking for somewhere to live.
+Describe who performs the work, what triggers it, which inputs are available,
+what outcome matters, and what happens when the decision is wrong.
+Customer interviews are evidence about behaviour only when they reconstruct
+specific past events; compliments and hypothetical purchase intent are weak
+signals\textsuperscript{\cite{constableTalkingHumansSuccess2014}}.
+
+\end{v3topic}
+\begin{v3topic}{Write the Non-AI Baseline First}
+Before training, compare the proposed system with a rule, search interface,
+spreadsheet, process redesign, or human service.
+The baseline exposes whether uncertainty-tolerant statistical behaviour is
+actually needed.
+It also establishes the minimum quality, cost, latency, and reliability that
+an AI solution must beat.
+
+\end{v3topic}
+\begin{v3topic}{Separate Four Hypotheses}
+An AI product simultaneously tests a \keyterm{problem hypothesis} (the pain is
+real), a \keyterm{value hypothesis} (improvement changes behaviour), a
+\keyterm{feasibility hypothesis} (data and technology meet the target), and a
+\keyterm{viability hypothesis} (the economics and obligations are sustainable).
+A successful model experiment validates only part of the feasibility
+hypothesis.
+It does not prove demand, workflow adoption, lawful data rights, or a viable
+business.
+\end{v3topic}
+
+\begin{cautionbox}[The benchmark-to-business fallacy]
+An improvement on a public benchmark may have no economic value if the error
+being reduced is cheap, the workflow cannot use the output, integration costs
+dominate, or the data distribution differs from the customer environment.
+Define the operational decision and its error costs before choosing a metric.
+\end{cautionbox}
+
+\section{The Evidence Loop}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=7mm and 9mm,
+    venture step/.style={draw,rounded corners=1mm,fill=LimeGreen!8,
+        minimum width=2.7cm,minimum height=8mm,align=center,
+        font=\sffamily\scriptsize},
+    venture arrow/.style={-{Stealth[length=2mm]},thick}]
+\node[venture step] (assumption) {Rank the riskiest\\assumption};
+\node[venture step,right=of assumption] (test)
+    {Design the smallest\\credible test};
+\node[venture step,below=of test] (measure)
+    {Measure behaviour,\\quality, cost, and risk};
+\node[venture step,left=of measure] (decide) {Continue, change,\\or stop};
+\draw[venture arrow] (assumption) -- (test);
+\draw[venture arrow] (test) -- (measure);
+\draw[venture arrow] (measure) -- (decide);
+\draw[venture arrow] (decide) -- (assumption);
+\end{tikzpicture}
+\caption{The start-up evidence loop turns assumptions into explicit tests and
+decision gates.}
+\label{fig:startup-evidence-loop}
+\end{figure}
+
+\begin{v3topic}{Assumption Ledger}
+Maintain one row per important assumption.
+Record the consequence of being wrong, present evidence, test method, decision
+threshold, owner, and review date.
+Rank by \emph{uncertainty multiplied by consequence}, not by which experiment
+is most entertaining to build.
+
+\end{v3topic}
+\begin{v3topic}{Experiment Before Architecture}
+Match the test to the hypothesis.
+Use interviews and observation for workflow pain, a concierge service for
+value, a frozen representative dataset for technical feasibility, a paid
+pilot for willingness to pay, and a threat or compliance review for risks
+that cannot ethically be discovered in production.
+
+\end{v3topic}
+\begin{v3topic}{Evidence Gates}
+Stage gates are useful when they specify evidence rather than ceremony.
+Cooper emphasises adaptable, accountable gates with explicit criteria instead
+of a rigid linear process\textsuperscript{\cite{cooperPerspectiveStageGateIdeatoLaunch2008}}.
+For an AI system, every gate should include product, model, operations, safety,
+security, privacy, and economic evidence.
+\visualseparator
+\begin{tblr}{
+    width=\linewidth,
+    colspec={Q[l,0.16\linewidth]X[l]X[l]X[l]},
+    row{1}={font=\bfseries,bg=LimeGreen!15},
+    hlines,
+    vlines}
+Gate & Question & Evidence & Stop or change when \\
+Discovery & Is the problem frequent and costly? & Observed workflows,
+interviews, current workaround & No repeated behaviour or accountable buyer \\
+Feasibility & Can a simple system meet the target? & Baseline, representative
+split, error slices, cost profile & Target requires unavailable data or unsafe
+behaviour \\
+Pilot & Does the workflow improve in context? & Prospective usage, overrides,
+time saved, incident log & Users route around the system or errors concentrate \\
+Production & Can the service be operated responsibly? & SLOs, monitoring,
+security review, legal basis, fallback & Residual risk or unit economics exceed
+tolerance \\
+Scale & Does value persist across customers? & Cohort retention, support load,
+shift tests, margin by segment & Custom work grows faster than repeatable value \\
+\end{tblr}
+\captionof{table}{Evidence gates for an AI product from discovery to scale.}
+\label{tab:startup-evidence-gates}
+\end{v3topic}
+
+\section{AI Feasibility and Product Architecture}
+
+\begin{v3topic}{Define the Product Contract}
+Specify the input, output, user, decision, latency, availability, acceptable
+error, abstention path, privacy boundary, and operating conditions.
+Then write the evaluation contract: dataset provenance, split logic, metrics,
+slices, uncertainty, baselines, and release threshold.
+The product and evaluation contracts must describe the same real-world use.
+
+\end{v3topic}
+\begin{v3topic}{Build, Buy, or Partner}
+\textbf{Build} when proprietary capability is central and evidence supports
+the long-term cost.
+\textbf{Buy} when a service is substitutable and contracts meet privacy,
+security, availability, and exit needs.
+\textbf{Partner} when success requires domain access or distribution that the
+team cannot recreate.
+Preserve an exit path: exportable data, portable evaluations, versioned
+prompts or adapters, and a non-proprietary fallback.
+
+\end{v3topic}
+\begin{v3topic}{Where Defensibility Comes From}
+Model access alone is rarely a durable moat.
+More defensible assets are permissioned data generated by a valuable workflow,
+hard-won integration, trust and distribution, a fast learning loop, and
+evidence that the system performs safely in a demanding niche.
+Feedback data is useful only when its labels are meaningful and its collection
+does not create harmful incentives.
+\end{v3topic}
+
+\begin{engineernote}[Prototype the uncertainty boundary]
+A polished interface can hide unreliable behaviour.
+During discovery, show confidence limits, abstentions, citations, provenance,
+and failure cases explicitly.
+The team needs to learn where automation stops being dependable before users
+learn that lesson in production.
+\end{engineernote}
+
+\section{Unit Economics for AI Systems}
+
+For one completed customer workflow, a useful contribution estimate is
+\begin{equation}
+  M = P - C_{\mathrm{inference}} - C_{\mathrm{data}}
+      - C_{\mathrm{review}} - C_{\mathrm{support}} - C_{\mathrm{risk}},
+\end{equation}
+where $P$ is realised revenue and the costs include failed requests and human
+review, not merely successful model calls.
+If a workflow needs $n$ attempts with per-attempt cost $c$ and succeeds with
+probability $p$, the expected inference cost per successful workflow is
+approximately
+\begin{equation}
+  C_{\mathrm{inference/success}} = \frac{n c}{p}.
+\end{equation}
+This approximation must be expanded when retries are correlated, cache hits
+matter, long contexts change cost, or expensive failures create support and
+liability exposure.
+
+\begin{workedexample}[The cheaper model is not always the cheaper product]
+Model A costs \$0.04 per attempt and completes 80\% of workflows without human
+review.
+Model B costs \$0.10 and completes 95\%.
+A failed workflow costs \$1.20 in review time.
+Ignoring other costs, expected cost is
+$0.04 + 0.20(1.20)=\$0.28$ for A and
+$0.10 + 0.05(1.20)=\$0.16$ for B.
+Optimise the full workflow, then verify the assumptions with measured queues
+and failure categories.
+\end{workedexample}
+
+\section{Responsible Commercialisation}
+
+\begin{v3topic}{Data and Rights}
+Record the origin, licence, consent or legal basis, purpose, retention, and
+deletion route for each data source.
+Separate the right to access data from the right to train a model, generate an
+output, or transfer data to a supplier.
+
+\end{v3topic}
+\begin{v3topic}{Claims and Sales}
+Marketing claims are engineering requirements in public clothing.
+Attach scope, date, dataset, uncertainty, and known limits to every material
+performance claim.
+Do not convert a laboratory result into claims about safety, health, finance,
+or legal compliance that the study did not test.
+
+\end{v3topic}
+\begin{v3topic}{Operating Responsibility}
+Name owners for model changes, security patches, incidents, customer notices,
+data-subject requests, and rollback.
+Budget for monitoring, red-team work, documentation, insurance, and specialist
+review where the domain requires it.
+
+\end{v3topic}
+\begin{v3topic}{Kill Criteria Are an Asset}
+Stopping preserves time and credibility.
+Precommit to kill or pivot criteria for absent demand, unattainable quality,
+unsafe residual risk, unlawful data dependence, integration burden, and unit
+economics that do not improve with realistic scale.
+\end{v3topic}
+
+\section{Practical Lab: One-Page AI Product Brief}
+
+\begin{practicallab}[Turn a model idea into an evidence plan]
+Choose one workflow and produce a one-page brief containing:
+\begin{enumerate}
+    \item the user, triggering event, current workaround, and measurable pain;
+    \item the non-AI baseline and the smallest AI-assisted intervention;
+    \item product and evaluation contracts, including error costs and
+          abstention;
+    \item the five riskiest assumptions and one cheap, ethical test for each;
+    \item a cost model per successful workflow and a sensitivity analysis;
+    \item data rights, safety, security, privacy, and legal review questions;
+    \item pilot, production, and scale gates with owners and kill criteria.
+\end{enumerate}
+Interview three relevant users and revise the brief using observed behaviour.
+The deliverable is the changed assumption ledger, not a slide deck claiming
+that every interview was encouraging.
+\end{practicallab}
+
+\begin{checkpoint}
+\begin{enumerate}
+    \item Which of the four hypotheses does a high offline score support?
+    \item What is the strongest non-AI baseline for your proposed workflow?
+    \item Which cost grows when model quality falls even if token cost stays
+          fixed?
+    \item What evidence would make you stop the project next week?
+\end{enumerate}
+\end{checkpoint}
+
+%
+\section{Deep Dive: Portfolio Evidence and Option Value}
+\begin{v3topic}{Fund Learning Milestones}
+Tie spending to the next uncertainty-reducing milestone: verified problem,
+representative data, baseline feasibility, paid workflow adoption, responsible
+operation, or repeatable economics.
+Do not confuse accumulated code with reduced venture risk.
+
+\end{v3topic}
+\begin{v3topic}{Preserve Strategic Options}
+Design pilots so data, evaluations, interfaces, and customer learning remain
+useful if the model, supplier, or route to market changes.
+Portability and a credible manual fallback create option value when technology
+and regulation move faster than the plan.
+\end{v3topic}
+
+\chapterreview{Problem}{Experiment}{Economics}{Scale}
+
+\section{Further Reading}
+
+Customer interviews and evidence-based discovery are developed in
+\cite{constableTalkingHumansSuccess2014}.
+Cooper's stage-gate work explains how explicit, adaptable gates support
+accountability without forcing innovation into a rigid waterfall
+\cite{cooperPerspectiveStageGateIdeatoLaunch2008}.

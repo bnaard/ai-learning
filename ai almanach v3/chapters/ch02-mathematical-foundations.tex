@@ -1,0 +1,582 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Mathematical Foundations =============================================================================
+    \chapter{Mathematical Foundations}
+\chapterlead{Which mathematical objects make learning, uncertainty, and optimisation precise?}{Objects}{Transform}{Estimate}{Optimise}{mathematics}
+
+    \section{Advanced Mathematics}
+    \subsection{Calculus}
+    \subsubsection{Differentiation}
+\begin{v3topic}{Gradient}
+        The gradient for any function $y = f(x)$ is defined as follows. The gradient is also called the first derivative. The three notations $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable\textsuperscript{\cite[][p89]{yangMathematicsCivilEngineers2018} and \cite[][p393]{bronsteinTaschenbuchMathematik2001}}.
+\visualseparator
+        \begin{equation}
+            f'(x) = \frac{dy}{dx} = \frac{df(x)}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+        \end{equation}
+
+        \vspace*{4ex}
+        \centering
+        \captionsetup{hypcap=false}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    width=8cm,
+                    height=6cm,
+                    axis lines=middle,
+                    axis line style={thick, -Stealth},
+                    xlabel={$x$},
+                    ylabel={$y = f(x)$},
+                    xmin=0, xmax=3,
+                    ymin=-0.5, ymax=5,
+                    enlarge y limits={upper=0.05},
+                    enlarge x limits={upper=0.05},
+                    samples=100,
+                    domain=0:2.2,
+                    legend cell align=left,
+                    legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east, cells={anchor=west}},
+                    clip=false,
+                    ylabel style={at={(ticklabel cs:1.0)},anchor=south},
+                    xlabel style={at={(1.0,0.1)},anchor=south},
+                    % ytick={0,1,2,3,4},
+                    ytick distance=1,
+                    minor y tick num=0,
+                    grid=both,
+                    major grid style={draw=gray!20, thin},
+                    minor grid style={draw=gray!10, very thin},
+                ]
+                % Plot y = x^2
+                \addplot[thick, \maincolor!80!black, smooth] {x^2};
+                \addlegendentry{$y = x^2$}
+
+                % Tangent at point P (x=1, y=1)
+                % Derivative: y' = 2x, at x=1: y'(1) = 2
+                % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
+                \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
+                \addlegendentry{Tangent $y = 2x - 1$ at $P$}
+
+                % Mark point P
+                \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
+                \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
+
+                % Line M: vertical line from P down to x-axis (at x=1)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
+                \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
+
+                % Line N: horizontal line from P to x=2 (parallel to x-axis)
+                \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
+
+                % Vertical line at x=2 from x-axis up
+                % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
+                \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
+
+                % Mark intersection points
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
+                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
+
+                % Label dy: from N (y=1) to tangent (y=3) at x=2
+                \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
+                \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
+
+                % Label delta y: from N (y=1) to curve (y=4) at x=2
+                \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
+                \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
+
+                % Label x: from origin to where M hits x-axis (x=1)
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.55) -- (axis cs:1,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.75) {$x$};
+
+                % Label delta x = dx: from M (x=1) to x=2
+                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.55) -- (axis cs:2,-0.55);
+                \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.7) {$\Delta x = dx$};
+
+                % Angle alpha where tangent crosses x-axis
+                % Tangent y=2x-1 crosses x-axis at x=0.5
+                % where A, B, and C are the vertices, and B is the apex
+                \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
+                % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
+                % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
+
+            \end{axis}
+        \end{tikzpicture}
+        \captionof{figure}{Graph of example function $f(x) = y = x^2$ with first derivative $f'(x) = 2x$, hence with tangent $y = mx + b = 2x - 1$ at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
+
+\end{v3topic}
+
+\begin{v3topic}{Integration}
+        The \emph{indefinite integral} is the anti-derivative: if $F'(x) = f(x)$, then $\int f(x)\,dx = F(x) + C$, where $C$ is an arbitrary constant. The \emph{definite integral} over $[a,b]$ gives the signed area under the curve\textsuperscript{\cite{yangMathematicsCivilEngineers2018}}.
+\visualseparator
+        \begin{equation}
+            \int_a^b f(x)\,dx = F(b) - F(a)
+        \end{equation}
+        The \textbf{Fundamental Theorem of Calculus} links differentiation and integration: $\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$. Common rules: $\int x^n\,dx = \frac{x^{n+1}}{n+1} + C$ (power rule); $\int e^x\,dx = e^x + C$.
+
+\end{v3topic}
+\begin{v3topic}{Partial Differentiation}
+        For a function $f(x_1, x_2, \ldots, x_n)$ of several variables, the \emph{partial derivative} $\frac{\partial f}{\partial x_i}$ measures the rate of change with respect to $x_i$ while all other variables are held constant\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
+\visualseparator
+        \begin{equation}
+            \frac{\partial f}{\partial x_i} = \lim_{\Delta x_i \to 0} \frac{f(\ldots, x_i + \Delta x_i, \ldots) - f(\ldots, x_i, \ldots)}{\Delta x_i}
+        \end{equation}
+        The \textbf{gradient vector} collects all partial derivatives: $\nabla f = \left(\frac{\partial f}{\partial x_1}, \ldots, \frac{\partial f}{\partial x_n}\right)^\top$. In ML, the \textbf{chain rule} is essential for backpropagation: $\frac{\partial \ell}{\partial w} = \frac{\partial \ell}{\partial a}\cdot\frac{\partial a}{\partial z}\cdot\frac{\partial z}{\partial w}$.
+
+\end{v3topic}
+\begin{v3topic}{Vector Analysis: div, curl, Laplacian}
+        Three key differential operators act on scalar and vector fields\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The \textbf{divergence} of a vector field $\vec{F}$ measures net outward flux at a point. The \textbf{curl} measures rotation. The \textbf{Laplacian} $\Delta f$ generalises the second derivative to multiple dimensions and appears in diffusion processes and regularisation.
+\visualseparator
+        \begin{equation}
+            \operatorname{div}\vec{F} = \nabla \cdot \vec{F} = \sum_i \frac{\partial F_i}{\partial x_i}, \quad
+            \operatorname{curl}\vec{F} = \nabla \times \vec{F}, \quad
+            \Delta f = \nabla^2 f = \sum_i \frac{\partial^2 f}{\partial x_i^2}
+        \end{equation}
+
+\end{v3topic}
+
+    \subsection{Integral Transformations}
+
+\begin{v3topic}{Convolution}
+        Convolution $(f * g)(t)$ blends two functions by sliding one over the other and integrating their pointwise product\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. Intuitively: each output value is a weighted sum of past input values. In CNNs, learnable filters are convolved with input feature maps to detect local patterns such as edges or textures.
+\visualseparator
+        \begin{equation}
+            (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau
+        \end{equation}
+        Discrete convolution (used in practice): $(f * g)[n] = \sum_{k} f[k]\, g[n-k]$.
+
+\end{v3topic}
+\begin{v3topic}{Fourier Transformation}
+        The Fourier Transform decomposes a signal $f(t)$ into its constituent frequencies, transforming from the time domain into the frequency domain\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The inverse transform reconstructs the original signal. In deep learning, the convolution theorem states that convolution in the time domain equals pointwise multiplication in the frequency domain, enabling fast computation via FFT.
+\visualseparator
+        \begin{equation}
+            \hat{f}(\xi) = \int_{-\infty}^{\infty} f(t)\, e^{-2\pi i \xi t}\, dt, \qquad
+            f(t) = \int_{-\infty}^{\infty} \hat{f}(\xi)\, e^{2\pi i \xi t}\, d\xi
+        \end{equation}
+        The \textbf{Discrete Fourier Transform (DFT)}: $X_k = \sum_{n=0}^{N-1} x_n\, e^{-2\pi i kn/N}$.
+
+\end{v3topic}
+
+    \subsection{Vector Algebra}
+    \subsubsection{Scalars and Vectors}
+
+\begin{v3topic}{N-Dimensional Vector}
+        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition\textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters.
+
+        \begin{equation}
+            \vec{v} =
+            \begin{pNiceMatrix}
+                a_1 \\ a_2 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+            \neq
+            \begin{pNiceMatrix}
+                \CodeBefore
+                \cellcolor[HTML]{FFFF88}{1-1,2-1}
+                \Body
+                a_2 \\ a_1 \\ \vdots \\ a_n
+            \end{pNiceMatrix}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Length (Magnitude)}
+        Length (magnitude) of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+\visualseparator
+        \begin{equation}
+            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Normalized vector (unit vector)}
+        Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
+\visualseparator
+        \begin{equation}
+            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} =
+            \begin{pNiceMatrix}
+                \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
+            \end{pNiceMatrix}
+        \end{equation}
+
+\end{v3topic}
+
+    \subsubsection{Addition and Subtraction of Vectors}
+    \subsubsection{Multiplication of Vectors, Vector Product, Scalar Product}
+
+\begin{v3topic}{Scalar Product (dot product)}
+        Scalar product (dot product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
+\visualseparator
+        \begin{equation}
+            \vec{v} \cdot \vec{u} =
+            \begin{pNiceMatrix}
+                v_1 \\ v_2 \\ \vdots \\ v_n
+            \end{pNiceMatrix}
+            \cdot
+            \begin{pNiceMatrix}
+                u_1 \\ u_2 \\ \vdots \\ u_n
+            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Angle and Cosine Similarity}
+        The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
+
+        \begin{equation}
+            \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
+            \Rightarrow
+            \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
+            \Rightarrow
+            \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
+        \end{equation}
+
+        \vspace{2ex}
+
+        Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
+        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
+
+\end{v3topic}
+
+    \subsection{Vector Calculus}
+
+\begin{v3topic}{Jacobian Matrix}
+        When a vector-valued function $\vec{f}: \mathbb{R}^n \to \mathbb{R}^m$ is differentiated, the result is the \textbf{Jacobian matrix} $\mathbf{J}$, whose entry $J_{ij} = \frac{\partial f_i}{\partial x_j}$ gives the partial derivative of the $i$-th output with respect to the $j$-th input\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The Jacobian generalises the scalar derivative and the gradient. In backpropagation, Jacobians describe how errors propagate through layer transformations.
+\visualseparator
+        \begin{equation}
+            \mathbf{J} =
+            \begin{pNiceMatrix}
+                \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+                \vdots & \ddots & \vdots \\
+                \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n}
+            \end{pNiceMatrix}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Scalar and Vector Fields}
+        A \textbf{scalar field} assigns a single number to every point in space, e.g.\ temperature $T(x,y,z)$. A \textbf{vector field} assigns a vector to every point, e.g.\ wind velocity $\vec{v}(x,y,z)$. The \textbf{gradient} of a scalar field $\nabla f$ is itself a vector field pointing in the direction of steepest ascent — exactly what gradient descent follows (in the negative direction)\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
+\visualseparator
+        \begin{equation}
+            \nabla f(x_1, \ldots, x_n) =
+            \begin{pNiceMatrix}
+                \frac{\partial f}{\partial x_1} \\ \vdots \\ \frac{\partial f}{\partial x_n}
+            \end{pNiceMatrix}
+        \end{equation}
+        Gradient descent update: $\vec{x} \leftarrow \vec{x} - \eta\, \nabla_{\vec{x}} \mathcal{L}$.
+
+\end{v3topic}
+
+    \subsection{Matrices and Vector Spaces}
+
+\begin{v3topic}{Basic Matrix Algebra}
+        A matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ has $m$ rows and $n$ columns. Matrix multiplication $\mathbf{C} = \mathbf{AB}$ is defined when $\mathbf{A} \in \mathbb{R}^{m \times k}$ and $\mathbf{B} \in \mathbb{R}^{k \times n}$; entry $C_{ij} = \sum_{l=1}^k A_{il} B_{lj}$\textsuperscript{\cite{cherneyLinearAlgebra2013}}. A system of linear equations $\mathbf{Ax} = \mathbf{b}$ is the backbone of linear regression, neural network layers, and many optimisation problems.
+\visualseparator
+        \begin{equation}
+            \mathbf{A}\mathbf{x} = \mathbf{b}
+            \quad \Longleftrightarrow \quad
+            \begin{pNiceMatrix}
+                a_{11} & \cdots & a_{1n} \\
+                \vdots & \ddots & \vdots \\
+                a_{m1} & \cdots & a_{mn}
+            \end{pNiceMatrix}
+            \begin{pNiceMatrix} x_1 \\ \vdots \\ x_n \end{pNiceMatrix}
+            =
+            \begin{pNiceMatrix} b_1 \\ \vdots \\ b_m \end{pNiceMatrix}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Transpose, Trace, Determinant, Inverse}
+        Four fundamental matrix properties\textsuperscript{\cite{cherneyLinearAlgebra2013}}:
+        \begin{itemize}
+            \item \textbf{Transpose} $\mathbf{A}^\top$: rows become columns; $(\mathbf{AB})^\top = \mathbf{B}^\top\mathbf{A}^\top$.
+            \item \textbf{Trace} $\operatorname{tr}(\mathbf{A}) = \sum_i A_{ii}$: sum of diagonal elements; equals sum of eigenvalues.
+            \item \textbf{Determinant} $\det(\mathbf{A})$: scalar measuring volume scaling; $\det(\mathbf{A}) = 0$ iff $\mathbf{A}$ is singular.
+            \item \textbf{Inverse} $\mathbf{A}^{-1}$: exists iff $\det(\mathbf{A}) \neq 0$; satisfies $\mathbf{A}\mathbf{A}^{-1} = \mathbf{I}$.
+        \end{itemize}
+\visualseparator
+        \begin{equation}
+            \text{For } \mathbf{A} = \begin{pNiceMatrix} a & b \\ c & d \end{pNiceMatrix}:
+            \quad \det(\mathbf{A}) = ad - bc, \quad
+            \mathbf{A}^{-1} = \frac{1}{ad-bc}\begin{pNiceMatrix} d & -b \\ -c & a \end{pNiceMatrix}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Eigenvalues and Eigenvectors}
+        A non-zero vector $\vec{v}$ is an \textbf{eigenvector} of $\mathbf{A}$ with \textbf{eigenvalue} $\lambda$ if it satisfies $\mathbf{A}\vec{v} = \lambda\vec{v}$ — the matrix only scales $\vec{v}$, it does not rotate it\textsuperscript{\cite{cherneyLinearAlgebra2013}}. Eigenvalues are found by solving $\det(\mathbf{A} - \lambda\mathbf{I}) = 0$. In \textbf{PCA}, the eigenvectors of the covariance matrix are the principal components; eigenvalues encode the explained variance along each direction.
+\visualseparator
+        \begin{equation}
+            \mathbf{A}\vec{v} = \lambda\vec{v}
+            \quad \Longrightarrow \quad
+            (\mathbf{A} - \lambda\mathbf{I})\vec{v} = \vec{0}
+            \quad \Longrightarrow \quad
+            \det(\mathbf{A} - \lambda\mathbf{I}) = 0
+        \end{equation}
+        Geometric meaning: eigenvectors define the invariant axes of the linear transformation; eigenvalues give the stretch factor along each axis.
+
+\end{v3topic}
+
+    \subsection{Information Theory}
+
+\begin{v3topic}{MSE and Linear Regression}
+        \textbf{Mean Squared Error (MSE)} is the most common regression loss function. For predictions $\hat{y}_i$ and targets $y_i$, it penalises large errors quadratically. \textbf{Simple linear regression} $\hat{y} = w_0 + w_1 x$ minimises MSE to find the best-fit line\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}.
+\visualseparator
+        \begin{equation}
+            \operatorname{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2
+        \end{equation}
+        Optimal coefficients via \textbf{Normal Equations}: $\hat{\mathbf{w}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}$, requiring $\mathbf{X}^\top\mathbf{X}$ to be invertible.
+
+\end{v3topic}
+\begin{v3topic}{Shannon Entropy}
+        \textbf{Entropy} $H(X)$ quantifies the average uncertainty or information content of a random variable $X$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. A uniform distribution has maximum entropy; a deterministic outcome has zero entropy. The unit is \emph{bits} (base-2 logarithm) or \emph{nats} (natural logarithm). Entropy is a foundational quantity for decision trees (information gain) and compression.
+\visualseparator
+        \begin{equation}
+            H(X) = -\sum_{x} p(x) \log_2 p(x)
+        \end{equation}
+        Example: a fair coin has $H = -2 \times 0.5 \log_2 0.5 = 1$ bit. A biased coin ($p=0.9$) has $H \approx 0.47$ bits — less uncertainty.
+
+\end{v3topic}
+\begin{v3topic}{Cross-Entropy Loss}
+        \textbf{Cross-entropy} $H(p, q)$ measures how many bits are needed to encode samples from the true distribution $p$ using an estimated distribution $q$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. Minimising cross-entropy is equivalent to maximising log-likelihood. It is the standard loss function for classification in deep learning.
+\visualseparator
+        \begin{equation}
+            H(p, q) = -\sum_{x} p(x) \log q(x)
+        \end{equation}
+        For binary classification: $\mathcal{L} = -\left[y \log \hat{y} + (1-y) \log(1 - \hat{y})\right]$. Note: $H(p,q) = H(p) + D_{\mathrm{KL}}(p\,\|\,q)$, where $D_{\mathrm{KL}} \geq 0$ is the Kullback–Leibler divergence.
+
+\end{v3topic}
+
+    \section{Advanced Statistics}
+    \subsection{Introduction to Statistics}
+
+\begin{v3topic}{Random Variables}
+        A \textbf{random variable} $X$ is a function mapping outcomes of a random experiment to real numbers\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. \textbf{Discrete} random variables take countable values (e.g.\ number of heads in $n$ coin flips); \textbf{continuous} random variables take values in an uncountable range (e.g.\ height of a person). The three Kolmogorov axioms define a valid probability measure: (1) $P(A) \geq 0$; (2) $P(\Omega) = 1$; (3) $P(A \cup B) = P(A) + P(B)$ for disjoint $A, B$.
+
+\end{v3topic}
+\begin{v3topic}{Probability Distributions}
+        A \textbf{PMF} (probability mass function) gives $P(X = x)$ for discrete $X$. A \textbf{PDF} (probability density function) $f(x)$ satisfies $P(a \leq X \leq b) = \int_a^b f(x)\,dx$ for continuous $X$; note $f(x) \geq 0$ and $\int_{-\infty}^{\infty} f(x)\,dx = 1$. The \textbf{CDF} (cumulative distribution function) $F(x) = P(X \leq x)$ is monotonically non-decreasing and applies to both discrete and continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}. For a continuous variable with density $f$, it is given by the integral below; for a discrete variable it is a cumulative sum of probability masses.
+\visualseparator
+        \begin{equation}
+            F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Expectation Values and Moments}
+        The \textbf{expected value} (mean) $\mu = \mathbb{E}[X]$ is the probability-weighted average. The \textbf{variance} $\operatorname{Var}(X) = \mathbb{E}[(X-\mu)^2]$ measures spread; its square root is the standard deviation $\sigma$. Higher moments characterise shape: \textbf{skewness} (asymmetry) and \textbf{kurtosis} (tail heaviness)\textsuperscript{\cite{downeyThinkStatsExploratory2015}}.
+\visualseparator
+        \begin{equation}
+            \mathbb{E}[X] = \sum_x x\,P(X=x), \quad
+            \operatorname{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Central Limit Theorem}
+        The \textbf{Central Limit Theorem (CLT)} states that the properly standardised mean of $n$ independent, identically distributed random variables with finite mean $\mu$ and non-zero finite variance $\sigma^2$ converges in distribution to a standard Normal variable as $n \to \infty$\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. This supports Normal approximations for many sample means, but it does not make the original observations Gaussian and convergence can be slow for heavy-tailed or highly skewed distributions.
+\visualseparator
+        \begin{equation}
+            \frac{\sqrt{n}(\bar{X}_n-\mu)}{\sigma}
+            \;\xrightarrow{d}\; \mathcal{N}(0,1)
+            \quad \text{as } n \to \infty,
+            \qquad
+            \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i
+        \end{equation}
+        Practical implication: standard error of the mean $= \sigma / \sqrt{n}$ shrinks with sample size.
+
+\end{v3topic}
+\begin{v3topic}{Bayes’ Theorem}
+        \textbf{Bayes’ Theorem} relates the conditional and marginal probabilities of events, allowing one to update beliefs given new evidence\textsuperscript{\cite{downeyThinkBayes2016}}. $P(H)$ is the \emph{prior} (belief before evidence), $P(D|H)$ is the \emph{likelihood} (how probable the data is under hypothesis $H$), $P(D)$ is the \emph{marginal likelihood} (normalisation constant), and $P(H|D)$ is the \emph{posterior}.
+\visualseparator
+        \begin{equation}
+            P(H \mid D) = \frac{P(D \mid H)\, P(H)}{P(D)}
+        \end{equation}
+        Verbal form: \emph{posterior} $\propto$ \emph{likelihood} $\times$ \emph{prior}.
+
+\end{v3topic}
+
+    \subsection{Important Probability Distributions and their Applications}
+
+\begin{v3topic}{Normal (Gaussian) Distribution}
+        The \textbf{Normal distribution} $\mathcal{N}(\mu, \sigma^2)$ is the most important continuous distribution in statistics and ML. Its bell-shaped PDF is symmetric about the mean $\mu$; the standard deviation $\sigma$ controls the width\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{68-95-99.7 rule}: approximately 68\%, 95\%, and 99.7\% of values lie within 1, 2, and 3 standard deviations of the mean, respectively.
+\visualseparator
+        \begin{equation}
+            f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+        \end{equation}
+        The standard Normal $\mathcal{N}(0,1)$ has $\mu=0$, $\sigma=1$. Standardisation: $z = (x - \mu)/\sigma$.
+
+\end{v3topic}
+\begin{v3topic}{Binomial Distribution}
+        The \textbf{Binomial distribution} $B(n, p)$ models the number of successes $k$ in $n$ independent Bernoulli trials each with success probability $p$\textsuperscript{\cite{downeyThinkBayes2016}}. Use when: fixed number of trials, each trial has exactly two outcomes, trials are independent, and $p$ is constant.
+\visualseparator
+        \begin{equation}
+            P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \ldots, n
+        \end{equation}
+        Mean $\mu = np$; variance $\sigma^2 = np(1-p)$. For large $n$: approximated by $\mathcal{N}(np,\, np(1-p))$ (CLT).
+
+\end{v3topic}
+
+    \subsection{Bayesian Statistics}
+
+\begin{v3topic}{Bayes’ Rule in Practice}
+        Bayesian inference updates a prior distribution $P(\theta)$ over model parameters $\theta$ using observed data $D$ to obtain the posterior $P(\theta \mid D)$\textsuperscript{\cite{downeyThinkBayes2016}}. The likelihood $P(D \mid \theta)$ encodes how well the model explains the data. Unlike point estimates, the posterior is a full distribution capturing remaining uncertainty.
+\visualseparator
+        \begin{equation}
+            P(\theta \mid D) = \frac{P(D \mid \theta)\,P(\theta)}{P(D)}, \qquad P(D) = \int P(D \mid \theta)\,P(\theta)\,d\theta
+        \end{equation}
+        In practice, $P(D)$ is often intractable; methods such as MCMC or variational inference are used to approximate the posterior.
+
+\end{v3topic}
+\begin{v3topic}{Bayesian vs.\ Frequentist Approach}
+        Two fundamentally different philosophies of probability\textsuperscript{\cite[][p.~9]{barberBayesianReasoningMachine2012}}:
+\visualseparator
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+        }
+            Aspect & Frequentist & Bayesian \\
+            Probability & Long-run frequency of events & Degree of belief / plausibility \\
+            Parameters & Fixed but unknown constants & Random variables with prior \\
+            Inference & Confidence intervals, $p$-values & Posterior distributions \\
+            Data use & Repeat-experiment model & Condition on observed data \\
+            Prior & Not used & Explicitly encoded \\
+        \end{tblr}
+\captionof{table}{Bayesian Statistics: Bayesian vs.\ Frequentist Approach.}
+\label{tab:ch02-mathematical-foundations-inline-01}
+
+\end{v3topic}
+
+    \subsection{Descriptive Statistics}
+
+\begin{v3topic}{Central Tendency}
+        Measures of \textbf{central tendency} summarise a dataset with a single representative value\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{mean} $\bar{x} = \frac{1}{n}\sum x_i$ is sensitive to outliers. The \textbf{median} is the middle value after sorting; robust to outliers. The \textbf{mode} is the most frequent value; useful for categorical data. For symmetric distributions, mean = median = mode; for right-skewed data, mean $>$ median.
+\visualseparator
+        \begin{equation}
+            \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i, \qquad
+            \tilde{x} = \begin{cases} x_{(m+1)} & n = 2m+1 \\ \frac{x_{(m)} + x_{(m+1)}}{2} & n = 2m \end{cases}
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Spread}
+        Measures of \textbf{spread} quantify variability around the centre\textsuperscript{\cite{brucePracticalStatisticsData2017}}. \textbf{Variance} $s^2$ and \textbf{standard deviation} $s$ are scale-dependent. The \textbf{Interquartile Range (IQR)} $= Q_3 - Q_1$ is robust to outliers; it spans the middle 50\% of data and forms the basis for box plots.
+\visualseparator
+        \begin{equation}
+            s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2, \quad
+            s = \sqrt{s^2}, \quad
+            \mathrm{IQR} = Q_3 - Q_1
+        \end{equation}
+        Outlier rule of thumb: observations beyond $Q_1 - 1.5\,\mathrm{IQR}$ or $Q_3 + 1.5\,\mathrm{IQR}$ are flagged as potential outliers.
+
+\end{v3topic}
+
+    \subsection{Data Visualization}
+
+\begin{v3topic}{Chart Types Overview}
+        Choosing the right chart type is key to clear visual communication\textsuperscript{\cite{brucePracticalStatisticsData2017}}:
+\visualseparator
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+        }
+            Chart & Purpose & Key features \\
+            Histogram & Distribution of one continuous variable & Bin width critical; reveals shape, skew, outliers \\
+            Box plot & Summarise distribution; compare groups & Shows median, IQR, whiskers, outliers \\
+            Scatter plot & Relationship between two continuous variables & Reveals correlation, clusters, non-linearity \\
+            Bar chart & Compare discrete categories & Heights encode quantity; grouped or stacked \\
+            Heat map & 2D matrix of values & Colour encodes magnitude; useful for correlation matrices \\
+        \end{tblr}
+\captionof{table}{Data Visualization: Chart Types Overview.}
+\label{tab:ch02-mathematical-foundations-inline-02}
+
+\end{v3topic}
+
+    \subsection{Parameter Estimation}
+
+\begin{v3topic}{Maximum Likelihood Estimation}
+        \textbf{Maximum Likelihood Estimation (MLE)} finds the parameter values $\hat{\theta}$ that make the observed data $\mathcal{D}$ most probable under the model\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}. In practice, the \textbf{log-likelihood} $\ell(\theta)$ is maximised (log turns products into sums and is monotone). MLE is the foundation for training most supervised models.
+\visualseparator
+        \begin{equation}
+            \hat{\theta}_{\mathrm{MLE}} = \operatorname*{arg\,max}_\theta \prod_{i=1}^n p(x_i \mid \theta)
+            = \operatorname*{arg\,max}_\theta \sum_{i=1}^n \log p(x_i \mid \theta)
+        \end{equation}
+        Example: MLE for a Gaussian gives $\hat{\mu} = \bar{x}$ and $\hat{\sigma}^2 = \frac{1}{n}\sum(x_i - \bar{x})^2$.
+
+\end{v3topic}
+\begin{v3topic}{Ordinary Least Squares}
+        \textbf{Ordinary Least Squares (OLS)} estimates linear regression coefficients $\hat{\mathbf{w}}$ by minimising the sum of squared residuals\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}. Geometrically, OLS projects the response vector $\mathbf{y}$ onto the column space of $\mathbf{X}$; the fitted values $\hat{\mathbf{y}} = \mathbf{H}\mathbf{y}$ with hat matrix $\mathbf{H} = \mathbf{X}(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top$.
+\visualseparator
+        \begin{equation}
+            \hat{\mathbf{w}} = \operatorname*{arg\,min}_{\mathbf{w}} \|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2_2
+            = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
+        \end{equation}
+        OLS is BLUE (Best Linear Unbiased Estimator) under Gauss-Markov conditions. When $\mathbf{X}^\top\mathbf{X}$ is ill-conditioned, Ridge regression adds $\lambda\mathbf{I}$ to stabilise the inverse.
+
+\end{v3topic}
+
+    \subsection{Hypothesis Test}
+
+\begin{v3topic}{Type I and Type II Errors}
+        Statistical hypothesis tests can make two kinds of errors\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. The \textbf{significance level} $\alpha$ controls the Type I error rate; common choice $\alpha = 0.05$. \textbf{Statistical power} $1 - \beta$ is the probability of correctly detecting a true effect; increasing sample size raises power.
+\visualseparator
+        \begin{tblr}{
+            colspec = {X[2,l] X[3,l] X[3,l]},
+            hlines, vlines,
+            row{1} = {font=\bfseries, bg=gray!20},
+            column{1} = {font=\bfseries},
+        }
+            & $H_0$ true & $H_0$ false \\
+            Reject $H_0$ & Type I error ($\alpha$, false positive) & Correct (power $= 1-\beta$) \\
+            Fail to reject $H_0$ & Correct (true negative) & Type II error ($\beta$, false negative) \\
+        \end{tblr}
+\captionof{table}{Hypothesis Test: Type I and Type II Errors.}
+\label{tab:ch02-mathematical-foundations-inline-03}
+
+\end{v3topic}
+\begin{v3topic}{p-Value}
+        The \textbf{p-value} is the probability of observing a test statistic at least as extreme as the one computed, \emph{assuming the null hypothesis $H_0$ is true}\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. A small $p$-value (typically $< 0.05$) means the observed data would be rare under $H_0$, providing evidence against it. Common thresholds: $p < 0.05$ (significant), $p < 0.01$ (highly significant), $p < 0.001$ (very highly significant).
+
+        \textbf{Common misinterpretations:} The $p$-value is \emph{not} the probability that $H_0$ is true, nor the probability that the result is due to chance. It also does not measure effect size or practical significance — a very large sample can yield $p < 0.05$ for a negligible effect.
+\visualseparator
+        \begin{equation}
+            p = P\!\left(T \geq t_{\mathrm{obs}} \mid H_0\right)
+        \end{equation}
+        If $p < \alpha$: reject $H_0$. Statistical significance $\neq$ practical significance.
+
+\end{v3topic}
+
+    \section{Literature}
+    \begin{itemize}
+        \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
+        \item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
+        \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
+        \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
+        \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
+        \item Downey, A. (2014). Think stats. O’Reilley Publishing.
+        \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
+        \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
+    \end{itemize}
+
+%
+\section{Deep Dive: Numerical Stability and Honest Uncertainty}
+\begin{v3topic}{Conditioning Before Optimisation}
+An algorithm can be mathematically correct and numerically unreliable.
+Inspect scale, units, rank, and condition number before interpreting a large
+gradient or unstable coefficient.
+Standardisation, orthogonal decompositions, and regularisation often improve
+the problem being solved rather than merely speeding up a solver.
+
+\end{v3topic}
+\begin{v3topic}{Log-Sum-Exp}
+Directly computing $\log\sum_i e^{x_i}$ may overflow.
+With $m=\max_i x_i$,
+\begin{equation}
+  \log\sum_i e^{x_i}=m+\log\sum_i e^{x_i-m}.
+\end{equation}
+Subtracting $m$ changes neither the result nor softmax ratios, while keeping
+exponents in a representable range.
+
+\end{v3topic}
+\begin{v3topic}{Intervals Need Assumptions}
+A confidence, credible, bootstrap, prediction, or conformal interval answers a
+different question under different assumptions.
+For every interval, state the random object, conditioning information,
+coverage target, data-dependence assumptions, and whether tuning reused the
+calibration data.
+Check empirical coverage on relevant slices rather than trusting the nominal
+percentage by name.
+\end{v3topic}
+
+\chapterreview{Objects}{Transform}{Estimate}{Optimise}

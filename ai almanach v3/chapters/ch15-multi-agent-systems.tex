@@ -1,0 +1,849 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Multi-Agent Systems =============================================================================
+\chapter{Multi-Agent Systems}
+
+\chapterlead{How can autonomous components coordinate without losing control?}{Architect}{Communicate}{Coordinate}{Verify}{multi-agent-systems}
+
+% -------------------------------------------------------
+\section{Agent Technology}
+
+\subsection{Concepts of Agents and Multi-Agent Systems}
+
+\begin{v3topic}{What is an Agent?}
+    An \textbf{agent} is a computer system situated in some environment that is
+    capable of \emph{autonomous action} in that environment in order to meet its
+    design objectives.\textsuperscript{\cite[][p.~28]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    Four key properties (RAPS):
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Reactivity}] Perceives its environment and responds in a timely fashion
+        \item[\textbf{Autonomy}] Operates without direct human intervention; controls its own actions
+        \item[\textbf{Proactivity}] Takes initiative; pursues goals, not just reactions
+        \item[\textbf{Social ability}] Interacts with other agents (and humans) via some communication language
+    \end{description}
+
+\end{v3topic}
+\begin{v3topic}{Multi-Agent System (MAS)}
+    A \textbf{Multi-Agent System} (MAS) is a collection of agents that perceive
+    and act in a shared environment. No single agent has full knowledge or control
+    of the global
+    system.\textsuperscript{\cite[][p.~2]{weissMultiagentSystems2013}}
+
+    Key structural concepts:
+    \begin{itemize}
+        \item \textbf{Environment}: shared space agents act in (physical or virtual)
+        \item \textbf{Interaction}: coordination, cooperation, competition
+        \item \textbf{Organisation}: roles, norms, institutions governing agent behaviour
+        \item \textbf{Emergence}: global behaviour arises from local interactions
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Environment Types}
+    Russell \& Norvig classify environments along five dimensions that determine agent design
+    complexity:\textsuperscript{\cite[][p.~47]{wooldridgeIntroductionMultiAgentSystems2009}}
+    \begin{center}
+    \begin{tblr}{
+        colspec={X[l]X[l]X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Dimension & Easier for agent & Harder for agent \\
+        Observability & Fully observable & Partially observable \\
+        Determinism & Deterministic (action outcome known) & Stochastic (uncertain outcomes) \\
+        Episode structure & Episodic (no past dependence) & Sequential (history matters) \\
+        Dynamics & Static (world waits) & Dynamic (world changes while deciding) \\
+        Action/state space & Discrete & Continuous \\
+    \end{tblr}
+\captionof{table}{Concepts of Agents and Multi-Agent Systems: Environment Types.}
+\label{tab:ch15-multi-agent-systems-inline-01}
+    \end{center}
+
+\end{v3topic}
+
+\subsection{Agent Applications}
+
+\begin{v3topic}{Application Domains}
+    MAS have been successfully deployed across many real-world
+    domains:\textsuperscript{\cite[][p.~6]{weissMultiagentSystems2013}}
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Autonomous vehicles}] Fleets coordinate merging, intersection clearing,
+              platooning; each vehicle is an agent with perception--action loops
+        \item[\textbf{Electronic trading}] Automated market-making, algorithmic portfolio agents
+              competing and clearing on exchanges in milliseconds
+        \item[\textbf{Game AI}] Non-player character squads, real-time strategy games (StarCraft),
+              cooperative/adversarial game-playing
+        \item[\textbf{Smart grid}] Demand-response agents balance load; prosumer agents trade
+              surplus renewable energy peer-to-peer
+        \item[\textbf{Manufacturing}] Scheduling agents allocate machines and workers; holonic
+              agents organise self-reconfiguring production cells
+        \item[\textbf{Logistics}] Route planning, warehouse robot swarms, container port scheduling
+    \end{description}
+
+\end{v3topic}
+\begin{v3topic}{Why MAS?}
+    MAS are the natural architecture when:
+    \begin{itemize}
+        \item The problem is \textbf{too large} for a single centralised solution
+        \item Sub-systems are \textbf{geographically distributed}
+        \item Multiple \textbf{autonomous stakeholders} must cooperate or compete
+        \item \textbf{Robustness} to failures is required (no single point of failure)
+        \item \textbf{Scalability} matters: adding new agents is incremental
+    \end{itemize}
+    \textsuperscript{\cite[][p.~3]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+\end{v3topic}
+
+\subsection{Agent-Oriented Design}
+
+\begin{v3topic}{BDI Architecture}
+    The \textbf{Beliefs--Desires--Intentions} (BDI) model is the dominant
+    deliberative agent architecture, inspired by folk psychology of rational
+    action:\textsuperscript{\cite[][p.~73]{wooldridgeIntroductionMultiAgentSystems2009}}
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Beliefs}] Agent's knowledge about itself and the world (possibly incomplete/incorrect)
+        \item[\textbf{Desires}] Motivational states; goals the agent would like to achieve
+        \item[\textbf{Intentions}] Commitments to pursue: current goals the agent has decided to act upon
+    \end{description}
+    The agent \emph{deliberates} to select intentions from desires, then
+    \emph{plans} to find action sequences that achieve them.
+    Practical implementations include \textbf{AgentSpeak} and \textbf{Jason}.
+
+\end{v3topic}
+\begin{v3topic}{FIPA Standards}
+    \textbf{FIPA} (Foundation for Intelligent Physical Agents) defined
+    interoperability standards still widely used:\textsuperscript{\cite[][Ch.~2]{bellifeministeDevelopingMultiAgentSystems2007}}
+    \begin{itemize}
+        \item \textbf{FIPA-ACL}: Agent Communication Language with performatives
+              (inform, request, propose, agree, refuse, \ldots)
+        \item \textbf{Abstract Architecture}: platform services — Agent Management
+              System (AMS), Directory Facilitator (DF), Message Transport System (MTS)
+        \item \textbf{Interaction Protocols}: standardised multi-step conversation patterns
+              (FIPA Request, Contract Net, Auctions)
+        \item \textbf{JADE}: open-source Java middleware fully compliant with FIPA
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Agent-Oriented Methodologies}
+    Several methodologies guide the \emph{analysis and design} of MAS, analogous to
+    UML for object-oriented
+    systems:\textsuperscript{\cite[][p.~9]{weissMultiagentSystems2013}}
+    \begin{center}
+    \begin{tblr}{
+        colspec={X[l]X[l]X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Methodology & Key Abstraction & Outputs \\
+        \textbf{Gaia} & Roles \& protocols & Role model, interaction model \\
+        \textbf{Prometheus} & Goals, percepts, actions & System overview, detailed design \\
+        \textbf{MaSE} (Multi-Agent SE) & Use cases $\to$ agents & Deployment, sequence diagrams \\
+        \textbf{Tropos} & Social dependencies & Goal model, agent capabilities \\
+    \end{tblr}
+\captionof{table}{Agent-Oriented Design: Agent-Oriented Methodologies.}
+\label{tab:ch15-multi-agent-systems-inline-02}
+    \end{center}
+    All start from a \emph{societal} view (roles, norms, dependencies) and
+    progressively refine down to individual agent implementation.
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{Types of Intelligent Agents}
+
+\subsection{Reasoning (Deliberative) Agents}
+
+\begin{v3topic}{Symbolic Reasoning Agents}
+    \textbf{Deliberative agents} maintain an explicit internal symbolic model
+    of the world and use logical \emph{inference} to decide on
+    actions.\textsuperscript{\cite[][p.~58]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    Core components:
+    \begin{itemize}
+        \item \textbf{World model}: first-order logic or state-space representation
+        \item \textbf{Goal representation}: explicit target states or utility functions
+        \item \textbf{Planner}: finds action sequences leading to goal states
+        \item \textbf{Deliberation loop}: perceive $\to$ update beliefs $\to$ select goal $\to$ plan $\to$ execute
+    \end{itemize}
+    Strength: principled, explainable.
+    Weakness: computational cost (symbol grounding, planning is PSPACE-hard); brittle under incomplete information.
+
+\end{v3topic}
+\begin{v3topic}{Planning: STRIPS \& PDDL}
+    \textbf{STRIPS} (Stanford Research Institute Problem Solver) is the classical
+    planning formalism: actions described by \emph{preconditions} and
+    \emph{effects}.\textsuperscript{\cite[][p.~62]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \begin{itemize}
+        \item State = set of ground atoms (fluents)
+        \item Action: \texttt{Pre} (must hold), \texttt{Add} (set true), \texttt{Del} (set false)
+        \item Plan: sequence of actions that transitions initial state to goal state
+    \end{itemize}
+    \textbf{PDDL} (Planning Domain Definition Language) generalises STRIPS to
+    typed objects, numeric fluents, durative actions, and temporal constraints.
+    Used in international planning competitions (IPC).
+
+\end{v3topic}
+
+\subsection{Reactive Agents}
+
+\begin{v3topic}{Subsumption Architecture (Brooks)}
+    Rodney Brooks argued against explicit models: intelligence emerges from
+    \emph{embodied} interaction with the physical
+    world.\textsuperscript{\cite[][p.~66]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \textbf{Subsumption architecture}:
+    \begin{itemize}
+        \item Behaviour is decomposed into a \textbf{hierarchy of layers}
+        \item Each layer is a simple \textbf{stimulus--response rule}: percept $\to$ action
+        \item Higher layers \emph{subsume} (override) lower layers
+        \item No internal world model, no planning
+        \item Example layers (bottom-up): \emph{avoid obstacles} $\to$ \emph{wander} $\to$ \emph{explore}
+    \end{itemize}
+    Reactive agents are fast and robust but cannot reason about goals not
+    immediately achievable by current percepts.
+
+\end{v3topic}
+\begin{v3topic}{Reactive vs.\ Deliberative}
+    \begin{tblr}{
+        colspec={X[l]X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Reactive & Deliberative \\
+        No internal model & Explicit world model \\
+        Stimulus--response rules & Planning \& reasoning \\
+        Fast response & May be slow (planning cost) \\
+        Robust to noise & Brittle if model wrong \\
+        Limited to present percepts & Can pursue long-horizon goals \\
+        Simple to implement & Complex engineering \\
+    \end{tblr}
+\captionof{table}{Reactive Agents: Reactive vs.\ Deliberative.}
+\label{tab:ch15-multi-agent-systems-inline-03}
+    \textsuperscript{\cite[][p.~67]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+\end{v3topic}
+
+\subsection{Hybrid Agents}
+
+\begin{v3topic}{Layered Hybrid Architectures}
+    \textbf{Hybrid agents} combine a reactive layer for fast sensor-motor responses
+    with a deliberative layer for goal reasoning and planning --- each layer
+    operates at a different time
+    scale.\textsuperscript{\cite[][p.~71]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \textbf{TouringMachines} (Ferguson, 1992): three concurrent layers
+    connected by a control subsystem:
+    \begin{enumerate}
+        \item \textbf{Reactive}: immediate reflexes
+        \item \textbf{Planning}: achieve current goals
+        \item \textbf{Modelling}: predict and reason about other agents
+    \end{enumerate}
+    The control subsystem mediates which layer's action is actually executed.
+
+\end{v3topic}
+\begin{v3topic}{InteRRaP Architecture}
+    \textbf{InteRRaP} (Müller, 1996) is a three-layer vertical control
+    architecture:\textsuperscript{\cite[][p.~72]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \begin{enumerate}
+        \item \textbf{Behaviour-based layer}: reactive, environment model
+        \item \textbf{Local planning layer}: goal-directed planning, mental model of self
+        \item \textbf{Cooperative planning layer}: social model of other agents; negotiation
+    \end{enumerate}
+    Control flows \emph{bottom-up} when lower layers fail; higher layers can
+    activate lower-layer behaviours \emph{top-down}.
+    This architecture is prototypical for warehouse and manufacturing agents.
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{Agent Communication}
+
+\subsection{Ontologies}
+
+\begin{v3topic}{Ontologies in MAS}
+    Agents must share a common vocabulary to communicate meaningfully.
+    An \textbf{ontology} formally specifies concepts, relationships, and
+    constraints in a domain.\textsuperscript{\cite[][p.~198]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{RDF}] Resource Description Framework: subject--predicate--object triples
+        \item[\textbf{OWL}] Web Ontology Language: builds on RDF; supports classes, properties,
+              axioms, description logic reasoning
+        \item[\textbf{SPARQL}] Query language for RDF triple stores
+    \end{description}
+    Domain ontologies (e.g., SUMO, BioPortal medical ontologies) enable
+    interoperability between heterogeneous agents: agents can translate
+    between their local representations using shared ontology terms.
+
+\end{v3topic}
+\begin{v3topic}{Knowledge Representation Levels}
+    Shared understanding in MAS requires grounding at multiple levels:
+    \begin{enumerate}
+        \item \textbf{Lexical}: same symbols used
+        \item \textbf{Semantic}: same meaning attached to symbols
+        \item \textbf{Pragmatic}: same inferences drawn from symbols
+    \end{enumerate}
+    Without semantic alignment, agents may use the same word (\texttt{Price})
+    with conflicting definitions (inclusive/exclusive VAT).
+
+    \textbf{Ontology alignment} and \textbf{ontology mapping} tools (e.g., PROMPT,
+    GLUE) automatically match concepts across ontologies, enabling federation
+    of heterogeneous agent knowledge
+    bases.\textsuperscript{\cite[][p.~201]{weissMultiagentSystems2013}}
+
+\end{v3topic}
+
+\subsection{Communication Languages}
+
+\begin{v3topic}{Speech Act Theory}
+    Agent communication languages are grounded in Austin and Searle's
+    \textbf{speech act theory}: utterances are \emph{actions} with
+    intentional content.\textsuperscript{\cite[][p.~184]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    A message has three layers:
+    \begin{itemize}
+        \item \textbf{Locution}: the literal content of the message
+        \item \textbf{Illocution}: the speech act performed (\emph{performative}):
+              \texttt{inform}, \texttt{request}, \texttt{propose}, \texttt{agree},
+              \texttt{refuse}, \texttt{query-if}, \ldots
+        \item \textbf{Perlocution}: the intended effect on the receiver's mental state
+    \end{itemize}
+    Both KQML and FIPA-ACL build on this model by wrapping content in a
+    performative envelope.
+
+\end{v3topic}
+\begin{v3topic}{FIPA-ACL Message Structure}
+    A \textbf{FIPA-ACL} message carries:\textsuperscript{\cite[][Ch.~3]{bellifeministeDevelopingMultiAgentSystems2007}}
+    \begin{itemize}
+        \item \texttt{performative}: illocutionary force (e.g., \texttt{INFORM})
+        \item \texttt{sender} / \texttt{receiver}: agent identifiers
+        \item \texttt{content}: domain-specific payload (string, fipa-sl expression, \ldots)
+        \item \texttt{language}: content encoding language (e.g., FIPA-SL)
+        \item \texttt{ontology}: shared vocabulary identifier
+        \item \texttt{conversation-id}: ties messages into an interaction protocol
+        \item \texttt{reply-with} / \texttt{in-reply-to}: threading
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Interaction Protocols}
+    Interaction protocols define the expected \emph{sequence of messages}
+    between agents --- the agent-level analogue of network protocols.
+    \textsuperscript{\cite[][Ch.~4]{bellifeministeDevelopingMultiAgentSystems2007}}
+    \begin{center}
+    \begin{tblr}{
+        colspec={X[l]X[l]X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Protocol & Flow & Typical Use \\
+        FIPA Request & REQUEST $\to$ AGREE/REFUSE $\to$ INFORM/FAILURE & Simple service invocation \\
+        Contract Net & Announce $\to$ bids $\to$ award & Task allocation to best bidder \\
+        Iterated Contract Net & Multiple rounds & Progressive negotiation \\
+        English Auction & Ascending bids until timeout & Resource allocation \\
+        Dutch Auction & Price decreasing until acceptance & Perishable goods allocation \\
+        Brokering / Recruiting & Mediator finds capable agents & Service discovery \\
+    \end{tblr}
+\captionof{table}{Communication Languages: Interaction Protocols.}
+\label{tab:ch15-multi-agent-systems-inline-04}
+    \end{center}
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{Agent Cooperation}
+
+\subsection{Distributed Problem Solving}
+
+\begin{v3topic}{Task Decomposition and Sharing}
+    \textbf{Distributed Problem Solving} (DPS): a problem too large for one
+    agent is decomposed into sub-tasks distributed across cooperating agents.
+    \textsuperscript{\cite[][p.~154]{weissMultiagentSystems2013}}
+
+    Two fundamental patterns:
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Task sharing}] Work is divided among agents; each solves a sub-problem.
+              Requires task allocation (Contract Net, market-based)
+        \item[\textbf{Result sharing}] All agents partially observe the problem; they share
+              partial results to produce a combined solution (sensor fusion, evidence aggregation)
+    \end{description}
+    Combination: agents solve different sub-tasks \emph{and} share intermediate
+    results to correct each other.
+
+\end{v3topic}
+\begin{v3topic}{Blackboard Systems}
+    A \textbf{blackboard system} is a shared data structure (the
+    \emph{blackboard}) on which specialist agents post and read partial
+    results.\textsuperscript{\cite[][p.~157]{weissMultiagentSystems2013}}
+
+    Architecture:
+    \begin{enumerate}
+        \item \textbf{Blackboard}: hierarchically structured global memory
+        \item \textbf{Knowledge Sources} (KS): specialist agents that read/write blackboard entries
+        \item \textbf{Control}: scheduler selects which KS fires next
+    \end{enumerate}
+    The blackboard mediates all inter-agent communication --- agents are
+    decoupled; they only know the shared data structure, not each other.
+    Classic application: Hearsay-II speech understanding system (1970s).
+
+\end{v3topic}
+
+\subsection{Coordination Mechanisms}
+
+\begin{v3topic}{Coordination and Inconsistency}
+    In a MAS, agents may develop \textbf{conflicting plans} or
+    \textbf{redundant work} without coordination.
+    \textsuperscript{\cite[][p.~172]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    Sources of inconsistency:
+    \begin{itemize}
+        \item \textbf{Resource conflicts}: multiple agents need the same resource simultaneously
+        \item \textbf{Effect conflicts}: agent A's action undoes agent B's effect
+        \item \textbf{Incomplete knowledge}: agents hold contradictory beliefs
+    \end{itemize}
+    Mechanisms to handle them:
+    \begin{itemize}
+        \item \textbf{Commitment protocols}: agents announce and respect published intentions
+        \item \textbf{Partial Global Planning} (PGP): exchange local plans and merge globally
+        \item \textbf{Synchronisation primitives}: lock-like coordination on shared resources
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Asynchronous Teams}
+    \textbf{Asynchronous Teams} (A-Teams, Talukdar et al.) are networks of agents
+    that cooperate by \emph{improving a shared set of solutions} stored in a
+    common memory.\textsuperscript{\cite{talukdarASYNCHRONOUSTEAMSCOOPERATION}}
+
+    Key properties:
+    \begin{itemize}
+        \item Agents operate \textbf{asynchronously}: no synchronisation required
+        \item Agents are \textbf{autonomous}: each applies its own heuristic to solutions
+        \item Agents communicate \textbf{indirectly}: by writing improved solutions to shared memory
+        \item Effective for combinatorial optimisation (routing, scheduling)
+    \end{itemize}
+    A-Teams combine the diversity of multi-heuristic search with the
+    accumulated improvement of cooperative evolution.
+
+\end{v3topic}
+
+\subsection{Negotiation}
+
+\begin{v3topic}{Bargaining and Monotonic Concession}
+    \textbf{Negotiation} is a process by which agents reach mutually acceptable
+    agreements on the division of tasks or
+    resources.\textsuperscript{\cite[][p.~185]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \textbf{Monotonic Concession Protocol} (Zeuthen strategy):
+    \begin{enumerate}
+        \item Each agent opens with its preferred proposal
+        \item At each round, at least one agent \emph{concedes}: moves to a proposal
+              less preferred by itself but closer to the other agent's position
+        \item No agent ever proposes an option worse than its previous proposal
+        \item Agreement when proposals coincide, or one agent accepts
+    \end{enumerate}
+    Pareto-optimal outcomes are reached when agents concede efficiently.
+
+\end{v3topic}
+\begin{v3topic}{Argumentation-Based Negotiation}
+    Beyond simple proposals, agents can use \textbf{argumentation} to justify
+    positions and challenge counter-proposals:\textsuperscript{\cite[][p.~191]{wooldridgeIntroductionMultiAgentSystems2009}}
+
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Threats}]: ``If you do not concede on price, I will leave''
+        \item[\textbf{Rewards}]: ``If you agree to this price, I offer future business''
+        \item[\textbf{Appeal to precedent}]: ``We agreed to similar terms last time''
+        \item[\textbf{Appeal to self-interest}]: explaining why agreement benefits receiver
+    \end{description}
+    Argumentation-based negotiation allows agents to \emph{change each other's beliefs},
+    not just exchange proposals, leading to richer outcomes than pure bargaining.
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{Multi-Agent Decision-Making}
+
+\subsection{Game Theory for Agents}
+
+\begin{v3topic}{Normal-Form Games}
+    A \textbf{normal-form game} is the basic model of strategic interaction:
+    \textsuperscript{\cite[][Ch.~3]{shohamMultiagentSystemsAlgorithmic2009}}
+    \[
+        G = (N,\, A_1 \times \cdots \times A_n,\, u_1, \ldots, u_n)
+    \]
+    where $N$ is the set of agents, $A_i$ the action set of agent $i$, and
+    $u_i: A_1 \times \cdots \times A_n \to \mathbb{R}$ the utility function.
+    Agents choose actions \emph{simultaneously}; payoffs depend on the joint action.
+
+    Classic examples:
+    \begin{itemize}
+        \item \textbf{Prisoner's Dilemma}: rational self-interest leads to a
+              collectively suboptimal outcome
+        \item \textbf{Coordination Game}: multiple equilibria; agents must align
+        \item \textbf{Zero-sum}: one agent's gain is another's loss
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Nash Equilibrium}
+    A \textbf{Nash Equilibrium} is a joint strategy profile $\sigma^* =
+    (\sigma_1^*, \ldots, \sigma_n^*)$ such that no agent can improve its payoff
+    by unilaterally deviating:\textsuperscript{\cite[][p.~67]{shohamMultiagentSystemsAlgorithmic2009}}
+    \begin{equation}
+        u_i(\sigma_i^*,\, \sigma_{-i}^*) \;\geq\; u_i(\sigma_i,\, \sigma_{-i}^*)
+        \quad \forall\, \sigma_i,\; \forall\, i \in N
+    \end{equation}
+    where $\sigma_{-i}^*$ denotes all agents' strategies except agent $i$.
+    \begin{itemize}
+        \item \textbf{Pure NE}: each agent plays one action with certainty
+        \item \textbf{Mixed NE}: agents randomise over actions (Nash's theorem guarantees
+              at least one mixed NE in every finite game)
+        \item NE does not imply efficiency: Prisoner's Dilemma NE is Pareto-inferior
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Dominant Strategies \& Pareto Optimality}
+    Two key solution concepts complement Nash Equilibrium:\textsuperscript{\cite[][p.~64]{shohamMultiagentSystemsAlgorithmic2009}}
+
+    \textbf{Dominant strategy}: action $a_i^*$ that is best for agent $i$ \emph{regardless}
+    of what others do:
+    \begin{equation}
+        u_i(a_i^*, a_{-i}) \;\geq\; u_i(a_i, a_{-i})
+        \quad \forall\, a_i \in A_i,\; \forall\, a_{-i}
+    \end{equation}
+    When every agent has a dominant strategy, those strategies form a
+    \emph{dominant strategy equilibrium} (often unique and robust).
+
+    \textbf{Pareto optimality}: outcome $o$ is Pareto optimal if no other outcome
+    $o'$ makes \emph{every} agent at least as well off and at least one agent
+    strictly better off.
+    A Nash equilibrium need not be Pareto optimal (Prisoner's Dilemma);
+    mechanism design seeks to align the two.
+
+\end{v3topic}
+
+\subsection{Social Choice and Coalitions}
+
+\begin{v3topic}{Voting Mechanisms}
+    \textbf{Social choice} aggregates individual preferences into a collective
+    decision:\textsuperscript{\cite[][Ch.~9]{shohamMultiagentSystemsAlgorithmic2009}}
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Plurality}] Each agent votes for one option; most votes wins
+        \item[\textbf{Borda count}] Each agent ranks all options; points awarded by rank
+        \item[\textbf{Condorcet}] Option that beats all others in pairwise majority
+        \item[\textbf{Approval voting}] Agents approve any number; most approvals wins
+    \end{description}
+    Arrow's Impossibility Theorem shows no deterministic voting rule simultaneously
+    satisfies unanimity, independence of irrelevant alternatives, and non-dictatorship.
+
+\end{v3topic}
+\begin{v3topic}{Coalition Formation and Shapley Value}
+    A \textbf{coalition} is a subset $C \subseteq N$ of agents that agree to
+    coordinate. \textbf{Coalition formation} is the process of deciding which
+    coalitions form and how to distribute the
+    value.\textsuperscript{\cite[][Ch.~12]{shohamMultiagentSystemsAlgorithmic2009}}
+
+    The \textbf{Shapley value} provides a fair allocation of coalition payoff
+    $v(N)$ to agent $i$:
+    \begin{equation}
+        \phi_i(v) = \sum_{S \subseteq N \setminus \{i\}}
+        \frac{|S|!\,(|N|-|S|-1)!}{|N|!}
+        \bigl[v(S \cup \{i\}) - v(S)\bigr]
+    \end{equation}
+    This is the average marginal contribution of agent $i$ over all possible
+    orderings of agents joining the coalition.
+    Properties: efficiency ($\sum_i \phi_i = v(N)$), symmetry, dummy player, additivity.
+
+\end{v3topic}
+
+\subsection{Auction Mechanisms}
+
+\begin{v3topic}{Auction Types}
+    Auctions are \textbf{resource allocation mechanisms} with built-in incentive
+    properties:\textsuperscript{\cite[][Ch.~11]{shohamMultiagentSystemsAlgorithmic2009}}
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{English (ascending)}] Open cry; price rises; last bidder wins.
+              Dominant strategy: bid up to true value
+        \item[\textbf{Dutch (descending)}] Price falls from high; first bidder wins.
+              Fast but requires strategic timing
+        \item[\textbf{First-price sealed-bid}] Highest sealed bid wins at own bid.
+              Bidders shade below true value
+        \item[\textbf{Vickrey (second-price sealed-bid)}] Highest bid wins but pays
+              \emph{second}-highest bid. \textbf{Dominant strategy}: truthful bidding
+              (incentive-compatible)
+    \end{description}
+
+\end{v3topic}
+\begin{v3topic}{Mechanism Design}
+    \textbf{Mechanism design} (``reverse game theory'') asks: given a desired
+    social outcome, what rules of the game achieve it as an
+    equilibrium?\textsuperscript{\cite[][p.~280]{shohamMultiagentSystemsAlgorithmic2009}}
+
+    Key desiderata:
+    \begin{itemize}
+        \item \textbf{Incentive compatibility}: truthful reporting is dominant strategy
+        \item \textbf{Individual rationality}: agents voluntarily participate
+        \item \textbf{Efficiency}: total welfare maximised
+        \item \textbf{Budget balance}: no external subsidy required
+    \end{itemize}
+    The \textbf{Vickrey--Clarke--Groves} (VCG) mechanism achieves
+    efficiency and incentive compatibility; combinatorial auctions use VCG
+    for multi-item allocation.
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{Multi-Agent Reinforcement Learning}
+
+\subsection{From Single-Agent to Multi-Agent RL}
+
+\begin{v3topic}{The Non-Stationarity Problem}
+    In single-agent RL the environment is stationary: the agent's policy
+    does not change the transition or reward function.
+    In a MAS, each agent's \emph{learning} changes the effective environment
+    of every other agent, creating
+    \textbf{non-stationarity}.\textsuperscript{\cite[][Ch.~17]{suttonReinforcementLearningIntroduction2018}}
+
+    Consequence: the Markov property is violated from each agent's perspective.
+    \begin{itemize}
+        \item \textbf{Independent Q-Learners} (IQL): each agent runs Q-learning
+              treating others as part of the environment; simple but convergence
+              not guaranteed due to non-stationarity
+        \item \textbf{Joint action learners}: track all agents' actions but suffer
+              from exponential action space growth
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Centralised Training, Decentralised Execution (CTDE)}
+    \textbf{CTDE} is the dominant MARL paradigm:
+    during \emph{training} a centralised critic has access to global state and
+    all agents' actions; during \emph{execution} each agent acts using only
+    its local observation.\textsuperscript{\cite[][p.~450]{weissMultiagentSystems2013}}
+
+    Benefits:
+    \begin{itemize}
+        \item Centralised critic resolves non-stationarity at training time
+        \item Decentralised execution is scalable and robust (no communication needed)
+        \item Natural fit for cooperative tasks (factory robots, drone swarms)
+    \end{itemize}
+    Key challenge: \textbf{credit assignment} --- how much did each agent
+    contribute to the shared reward?
+
+\end{v3topic}
+
+\subsection{Key MARL Algorithms}
+
+\begin{v3topic}{Value Decomposition: QMIX}
+    \textbf{QMIX} (Rashid et al., 2018) addresses cooperative MARL with a shared
+    reward by learning individual agent Q-values $Q_i(o_i, a_i)$ that combine
+    into a global $Q_{tot}$ via a \emph{mixing
+    network}:\textsuperscript{\cite[][p.~452]{weissMultiagentSystems2013}}
+
+    \begin{equation}
+        Q_{tot}(\boldsymbol{\tau}, \mathbf{a}) = f_{\text{mix}}\bigl(Q_1(\tau_1, a_1), \ldots, Q_n(\tau_n, a_n);\, s\bigr)
+    \end{equation}
+    The mixing network has \emph{non-negative weights} (monotonicity constraint),
+    ensuring the individual-global-max (IGM) principle:
+    \[
+        \arg\max_{\mathbf{a}} Q_{tot} = \bigl(\arg\max_{a_1} Q_1, \ldots, \arg\max_{a_n} Q_n\bigr)
+    \]
+    Each agent can act greedily without needing others' information.
+
+\end{v3topic}
+\begin{v3topic}{MADDPG and MAPPO}
+    \textbf{MADDPG} (Lowe et al., 2017) extends DDPG to the multi-agent setting
+    via CTDE: each agent has a centralised critic that receives all agents'
+    observations and actions, but a decentralised actor that uses only local
+    observation.\textsuperscript{\cite[][p.~455]{weissMultiagentSystems2013}}
+    Supports cooperative, competitive, and mixed environments.
+
+    \textbf{MAPPO} applies PPO (Proximal Policy Optimisation) in the CTDE
+    framework with a shared or individual centralised value function.
+    Empirically strong on cooperative benchmarks:
+    \begin{itemize}
+        \item Simple and stable training
+        \item On-policy: less sample efficient but more stable than off-policy methods
+        \item State-of-the-art on SMAC (StarCraft Multi-Agent Challenge)
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Cooperative vs.\ Competitive vs.\ Mixed}
+    MARL environments differ in the structure of the reward
+    function:\textsuperscript{\cite[][p.~440]{weissMultiagentSystems2013}}
+    \begin{center}
+    \begin{tblr}{
+        colspec={X[l]X[l]X[l]X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Setting & Reward structure & Challenge & Example \\
+        Cooperative & Shared team reward & Credit assignment, coordination & Drone rescue swarm \\
+        Competitive & Zero-sum (opponents) & Equilibrium finding; opponent modelling & Chess, StarCraft 1v1 \\
+        Mixed (general-sum) & Individual rewards & Balance self-interest \& cooperation & Trading agents, autonomous driving \\
+        Team competition & Teams share within, compete across & Both challenges combined & AlphaStar, RoboCup \\
+    \end{tblr}
+\captionof{table}{Key MARL Algorithms: Cooperative vs.\ Competitive vs.\ Mixed.}
+\label{tab:ch15-multi-agent-systems-inline-05}
+    \end{center}
+
+\end{v3topic}
+
+\subsection{Applications of MARL}
+
+\begin{v3topic}{StarCraft and AlphaStar}
+    \textbf{AlphaStar} (Vinyals et al., DeepMind, 2019) achieved Grandmaster
+    level in StarCraft II using a multi-agent league of agents that
+    train against each other through \emph{self-play and fictitious
+    self-play}.\textsuperscript{\cite[][Ch.~18]{weissMultiagentSystems2013}}
+
+    Key techniques:
+    \begin{itemize}
+        \item \textbf{League training}: diverse pool of agents with different strategies
+              prevents collapse to a single strategy
+        \item \textbf{Transformer-based} memory over long game trajectories
+        \item \textbf{Pointer networks} for selecting units from variable-size sets
+        \item Demonstrated that MAS with RL can master complex imperfect-information games
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Multi-Robot Coordination \& Traffic}
+    Practical MARL applications beyond games:
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Warehouse robots}] MARL agents allocate picking tasks and
+              avoid collisions in large flat warehouses (Amazon Robotics)
+        \item[\textbf{Multi-UAV mission}] Drone swarms cooperatively search areas,
+              track targets, and maintain communication relays
+        \item[\textbf{Traffic signal control}] Each intersection is an agent;
+              MARL coordinates green phases globally to reduce
+              congestion --- outperforms hand-tuned timings by 20--30\%
+        \item[\textbf{Energy grid}] Demand-response agents cooperatively balance
+              supply from intermittent renewables
+    \end{description}
+
+\end{v3topic}
+
+% -------------------------------------------------------
+\section{MAS in Supply Chains and Industry}
+
+\subsection{Strategic and Operational Applications}
+
+\begin{v3topic}{Supply Chain Coordination}
+    A supply chain is a natural MAS: manufacturers, suppliers, distributors, and
+    retailers are autonomous agents with local information and individual
+    objectives.\textsuperscript{\cite[][p.~22]{chopraSupplyChainManagement2019}}
+
+    MAS capabilities applied at each planning horizon:
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Strategic}] Supplier selection, network design, make-or-buy
+              (negotiating agents run auction-based procurement)
+        \item[\textbf{Tactical}] Inventory planning, capacity booking, demand
+              coordination (blackboard agents share demand signals)
+        \item[\textbf{Operational}] Order fulfilment, routing, exception handling
+              (reactive agents reschedule in real time on disruption)
+    \end{description}
+    MAS mitigate the \textbf{bullwhip effect} by sharing point-of-sale data
+    up the chain and coordinating replenishment decisions.
+
+\end{v3topic}
+\begin{v3topic}{Production Scheduling}
+    \textbf{Job-shop scheduling} --- assigning jobs to machines while minimising
+    makespan --- is NP-hard. Agent-based approaches decompose the problem:
+    \textsuperscript{\cite[][p.~4]{paolucciAgentBasedManufacturing2005}}
+    \begin{itemize}
+        \item \textbf{Job agents}: bid for machine time through a Contract Net
+        \item \textbf{Machine agents}: accept bids, publish schedules
+        \item \textbf{Supervisor agent}: resolves conflicts and enforces deadlines
+    \end{itemize}
+    RL-based scheduling (e.g., using MAPPO or DQN agents per machine) has shown
+    competitive performance with classical solvers on dynamic variants where
+    job arrival times are
+    stochastic.\textsuperscript{\cite{panJobShopSchedulingRL2021}}
+
+\end{v3topic}
+
+\subsection{MAS in Cyber-Physical Systems}
+
+\begin{v3topic}{Agent-Based Manufacturing and JADE}
+    \textbf{Cyber-Physical Systems} (CPS) embed software agents in physical
+    machines, enabling them to negotiate work allocation
+    dynamically.\textsuperscript{\cite[][Ch.~3]{paolucciAgentBasedManufacturing2005}}
+
+    \textbf{JADE} (Java Agent DEvelopment Framework) is the reference FIPA-compliant
+    middleware for industrial MAS:
+    \begin{itemize}
+        \item Provides AMS, DF, and MTS out of the box
+        \item Supports distributed deployment across JVM nodes
+        \item GUI tool (\texttt{Sniffer}) traces message exchanges
+        \item Used in logistics, healthcare records, and smart factory pilots
+    \end{itemize}
+    Agent containers can run on embedded PLCs and communicate over OPC-UA,
+    bridging MAS protocols with industrial automation standards.
+
+\end{v3topic}
+\begin{v3topic}{Holonic Manufacturing Systems}
+    A \textbf{holon} (Koestler, 1967) is an entity that is simultaneously a
+    \emph{whole} (autonomous unit) and a \emph{part} (component of a larger
+    system).\textsuperscript{\cite[][p.~102]{paolucciAgentBasedManufacturing2005}}
+
+    \textbf{Holonic Manufacturing Systems} (HMS) model production as a
+    hierarchy of holons:
+    \begin{description}[leftmargin=0.6cm, labelindent=0pt]
+        \item[\textbf{Order holons}] Represent customer orders; negotiate with
+              resources to fulfil themselves
+        \item[\textbf{Resource holons}] Represent machines or robots; advertise
+              their capabilities and accept workloads
+        \item[\textbf{Product holons}] Carry manufacturing knowledge of how to produce
+              themselves
+    \end{description}
+    HMS achieves \textbf{plug-and-produce} reconfigurability: adding a new machine
+    simply adds a new resource holon to the system.
+
+\end{v3topic}
+
+% -------------------------------------------------------
+%
+\section{Deep Dive: LLM Agents as Distributed Systems}
+\begin{v3topic}{Distinguish Three Agent Traditions}
+Classical BDI agents execute explicit beliefs, desires, and intentions.
+MARL agents learn policies through interaction.
+LLM agents generate plans and tool calls from context.
+The three can be combined, but their state, guarantees, and failure modes are
+not interchangeable.
+
+\end{v3topic}
+\begin{v3topic}{Protocols Need Semantics}
+A message schema states syntax; an interaction protocol also defines allowed
+states, idempotency, timeouts, authorization, conflict resolution, and recovery.
+Use correlation identifiers and explicit ownership so retries do not create
+duplicate consequential actions.
+
+\end{v3topic}
+\begin{v3topic}{Evaluate Trajectories and Emergence}
+Measure task success, steps, tool errors, communication cost, latency,
+permission violations, deadlocks, loops, and human interventions.
+Test adversarial messages and collusion as well as cooperative examples.
+Local pass rates do not prove stable collective behaviour.
+\end{v3topic}
+
+\chapterreview{Architect}{Communicate}{Coordinate}{Verify}
+
+\section{Further Reading}
+
+\begin{itemize}
+    \item \fullcite{wooldridgeIntroductionMultiAgentSystems2009} --- The standard introductory textbook: agent architectures, BDI, communication, cooperation, game theory, and mechanism design.
+    \item \fullcite{weissMultiagentSystems2013} --- Comprehensive MIT Press reference covering agent types, learning, coordination, and MAS applications.
+    \item \fullcite{shohamMultiagentSystemsAlgorithmic2009} --- Rigorous treatment of game-theoretic and logical foundations: Nash equilibria, mechanism design, auctions, and social choice.
+    \item \fullcite{bellifeministeDevelopingMultiAgentSystems2007} --- Practical guide to building FIPA-compliant MAS with JADE: architecture, interaction protocols, and deployment.
+    \item \fullcite{bordiniMultiAgentProgramming2009} --- Languages, tools, and applications for programming MAS: AgentSpeak, Jason, 2APL, and case studies.
+    \item \fullcite{paolucciAgentBasedManufacturing2005} --- Application-focused: agent-based manufacturing, holonic systems, and CPS integration.
+    \item \fullcite{lanhamAIAgentsAction2025} --- Modern perspective on building production multi-agent systems with LLM-based frameworks (LangChain, AutoGen, CrewAI).
+    \item \fullcite{talukdarASYNCHRONOUSTEAMSCOOPERATION} --- Original paper on Asynchronous Teams: cooperation schemes for autonomous agents solving combinatorial optimisation.
+    \item \fullcite{suttonReinforcementLearningIntroduction2018} --- Foundational RL textbook; Chapter 17 extends to multi-agent settings.
+    \item \fullcite{chopraSupplyChainManagement2019} --- Supply chain management strategy and operations; context for agent-based coordination applications.
+\end{itemize}

@@ -1,0 +1,1074 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Natural Language Processing and Generative AI =============================================
+\chapter{Natural Language Processing and Generative AI}
+
+\chapterlead{How can language systems be evaluated rather than merely admired?}{Tokenise}{Represent}{Generate}{Evaluate}{nlp-generative-ai}
+
+% ==== Section 1: Natural Language Processing Foundations =====================================
+\section{Natural Language Processing Foundations}
+
+% ---- 12.1.1 What is NLP? -------------------------------------------------------------------
+\subsection{What is NLP?}
+
+\begin{v3topic}{Natural Language Processing}
+    \textbf{Natural Language Processing (NLP)} is the field at the intersection of computer science and linguistics concerned with building machines that can understand, manipulate, and generate human language\textsuperscript{\cite[][p.~3]{dhamaniIntroductionGenerativeAI2024}}.
+    The primary task drivers are:
+    \begin{itemize}
+        \item \textbf{Understanding}: extract meaning from text or speech
+        \item \textbf{Generation}: produce grammatically correct, coherent text
+        \item \textbf{Translation}: map between languages
+        \item \textbf{Dialogue}: maintain coherent multi-turn conversation
+    \end{itemize}
+    NLP is positioned within AI as a subfield of machine learning, itself enabled by deep learning.
+    Large language models (LLMs) are the current dominant NLP technology.
+
+\end{v3topic}
+\begin{v3topic}{Core Challenges in NLP}
+    Human language is inherently ambiguous and context-dependent\textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{Lexical ambiguity}: ``bank'' can mean financial institution or river bank
+        \item \textbf{Syntactic ambiguity}: ``I saw the man with the telescope'' --- who has the telescope?
+        \item \textbf{Co-reference}: ``Julia said she arrived'' --- who is ``she''?
+        \item \textbf{Pragmatics}: ``Can you pass the salt?'' is a request, not a yes/no question
+        \item \textbf{World knowledge}: ``The trophy did not fit because it was too big'' --- what is ``it''?
+    \end{itemize}
+    Humans resolve these effortlessly through context; teaching machines to do so remains central to NLP research.
+
+\end{v3topic}
+\begin{v3topic}{A Brief History of NLP}
+    NLP development spans three eras\textsuperscript{\cite[][pp.~3--9]{dhamaniIntroductionGenerativeAI2024}}:
+
+    \begin{tblr}{
+        colspec = {X[1.2]X[3.5]},
+        hlines, vlines,
+        row{1} = {font=\bfseries\small, bg=LimeGreen!30},
+        rows = {font=\small},
+    }
+        Period & Milestone \\
+        1940s--1960s & Machine translation as first NLP goal; ELIZA chatbot (Weizenbaum, 1966) uses rule-based pattern matching \\
+        1970s--1980s & Symbolic / rule-based NLP; ``AI winter'' limits progress \\
+        1990s & Statistical methods dominate; models learn from data rather than hand-coded rules \\
+        2006 & Google Translate --- first commercially successful NLP product \\
+        2013 & Word2Vec (Google) --- dense word embeddings trained from text \\
+        2017 & Transformer architecture (Vaswani et al.) --- foundation of modern NLP \\
+        2018--2019 & GPT-1 (OpenAI) and BERT (Google) --- pre-trained large language models \\
+        2020--2023 & GPT-3 (175B), ChatGPT, GPT-4 --- conversational AI at scale \\
+    \end{tblr}
+\captionof{table}{What is NLP?: A Brief History of NLP.}
+\label{tab:ch12-nlp-voice-assistants-inline-01}
+\end{v3topic}
+
+% ---- 12.1.2 Linguistic Building Blocks -----------------------------------------------------
+\subsection{Linguistic Building Blocks}
+
+\begin{v3topic}{Levels of Linguistic Analysis}
+    Language is analysed at multiple levels\textsuperscript{\cite[][pp.~3--4]{dhamaniIntroductionGenerativeAI2024}}.
+    Each level provides different information for NLP tasks:
+
+    \begin{tblr}{
+        colspec = {Q[2.5cm]X[2]X[4]},
+        hlines, vlines,
+        row{1} = {font=\bfseries\small, bg=LimeGreen!30},
+        rows = {font=\small},
+    }
+        Level & Studies & Example \\
+        \textbf{Morphology} & Word forms & \emph{run} $\to$ \emph{ran}, \emph{running}; \emph{happy} $\to$ \emph{unhappiness} \\
+        \textbf{Syntax} & Sentence structure & Parse tree; subject-verb-object order; dependency relations \\
+        \textbf{Semantics} & Meaning & Word sense: ``bank'' (finance vs.\ river); compositionality \\
+        \textbf{Pragmatics} & Language in context & Speaker intent; indirect requests; discourse coherence \\
+        \textbf{Phonology} & Sound patterns & Stress, intonation, phoneme inventories (for speech) \\
+    \end{tblr}
+\captionof{table}{Linguistic Building Blocks: Levels of Linguistic Analysis.}
+\label{tab:ch12-nlp-voice-assistants-inline-02}
+
+    NLP systems typically must handle all levels: a machine translation system requires morphological analysis, syntactic parsing, semantic understanding, and pragmatic coherence.
+\end{v3topic}
+
+% ---- 12.1.3 Tokenization -------------------------------------------------------------------
+\subsection{Tokenization}
+
+\begin{v3topic}{Tokens: The Atoms of Language}
+    Neural language models cannot process raw text directly; they require numeric inputs.
+    A \textbf{token} is the smallest unit of text a model processes --- the ``atom'' of language\textsuperscript{\cite[][p.~15]{farrisHowLargeLanguage2025}}.
+    \textbf{Tokenization} converts a text string into a sequence of integer token IDs:
+    \[
+        \text{``Hello World!''} \xrightarrow{\text{tokenize}} [4944,\ 3574,\ 0]
+    \]
+    Tokens are not necessarily words --- they are subword units that represent the \emph{minimum meaningful semantic unit} that the tokenizer has learned from training data.
+    GPT-3 uses a vocabulary of 50{,}257 tokens; most common English words map to a single token, while rare words are decomposed into several subword tokens.
+
+\end{v3topic}
+\begin{v3topic}{The Tokenization Pipeline}
+    The tokenization process follows four steps\textsuperscript{\cite[][p.~17]{farrisHowLargeLanguage2025}}:
+    \begin{enumerate}
+        \item \textbf{Input}: receive text string from user or document source
+        \item \textbf{Normalization}: transform string --- convert to lowercase, handle Unicode (homoglyphs), remove or preserve punctuation
+        \item \textbf{Segmentation}: split normalised string into subword tokens
+        \item \textbf{Output}: map each token to its unique integer ID in the vocabulary
+    \end{enumerate}
+    The vocabulary is fixed after training: any token not seen during training must be decomposed from known subwords (the \textbf{out-of-vocabulary} problem).
+    Normalization choices create a trade-off: aggressive lowercasing reduces vocabulary size but loses information (e.g.,\ \emph{Bill} vs.\ \emph{bill}).
+
+\end{v3topic}
+\begin{v3topic}{Byte Pair Encoding (BPE)}
+    \textbf{BPE} is the dominant subword tokenization algorithm, used in GPT (via \texttt{tiktoken}), RoBERTa, and others\textsuperscript{\cite[][pp.~20--22]{farrisHowLargeLanguage2025}}:
+    \begin{enumerate}
+        \item Initialise vocabulary with individual characters $\{a, b, \ldots, z\}$
+        \item Find the most frequently co-occurring adjacent byte pair in the corpus
+        \item Merge that pair into a new subword token; add to vocabulary
+        \item Repeat until vocabulary reaches target size
+    \end{enumerate}
+    Result: common words become single tokens; rare words decompose.
+    \emph{loquacious} $\to$ \texttt{lo} + \texttt{qu} + \texttt{acious}.
+    \emph{schoolhouse} $\to$ \texttt{school} + \texttt{house}.
+    Alternative algorithms: \textbf{WordPiece} (BERT, Google) and \textbf{SentencePiece} (multilingual models, preserves whitespace).
+
+\end{v3topic}
+\begin{v3topic}{Why Subword Tokenization Dominates}
+    Subword tokenization solves three fundamental NLP problems\textsuperscript{\cite[][pp.~15--16]{farrisHowLargeLanguage2025}}:
+    \begin{itemize}
+        \item \textbf{OOV handling}: unknown words decompose into known subwords rather than failing entirely
+        \item \textbf{Morphological awareness}: prefixes and suffixes become reusable tokens (\emph{un-}, \emph{-ness}, \emph{-ing})
+        \item \textbf{Multilingual coverage}: any Unicode text can be represented; no whitespace required (works for Chinese, Japanese)
+    \end{itemize}
+    \textbf{Vocabulary size trade-off}: a larger vocabulary often yields fewer tokens per text and more specific fragments, but enlarges the embedding and output matrices; a smaller vocabulary usually creates longer sequences from more reusable fragments.
+    BPE is greedy: ``I'm running'' tokenises to 3 tokens; ``I'm runnin'' (missing \emph{g}) tokenises to 4 tokens because \emph{runnin} is not in the learned vocabulary.
+\end{v3topic}
+
+% ---- 12.1.4 Evaluation of NLP Systems ------------------------------------------------------
+\subsection{Evaluation of NLP Systems}
+
+\begin{v3topic}{Automatic NLP Metrics}
+    NLP systems are evaluated with a mix of automatic metrics and human judgment\textsuperscript{\cite[][pp.~11--12]{dhamaniIntroductionGenerativeAI2024}}:
+
+    \begin{tblr}{
+        colspec = {Q[3cm]X[2.5]X[4]},
+        hlines, vlines,
+        row{1} = {font=\bfseries\small, bg=LimeGreen!30},
+        rows = {font=\small},
+    }
+        Metric & Task & Key formula / idea \\
+        \textbf{Perplexity} & Language modelling & $\mathrm{PP} = \exp\!\left(-\frac{1}{N}\sum_{i=1}^{N}\log P(w_i|\text{context})\right)$; lower = better \\
+        \textbf{BLEU} & Machine translation & Precision of $n$-gram overlaps between hypothesis and reference; brevity penalty \\
+        \textbf{ROUGE-N} & Summarisation & Recall of $n$-gram overlaps: $\frac{\text{matched }n\text{-grams}}{\text{reference }n\text{-grams}}$ \\
+        \textbf{F1} & NER, QA, classification & Harmonic mean of precision and recall: $\frac{2\,P\,R}{P+R}$ \\
+        \textbf{GLUE / SuperGLUE} & General NLU & Multi-task benchmark suite; BERT$_\mathrm{LARGE}$ scores 82.1 \\
+        \textbf{Human evaluation} & Fluency, coherence, factuality & Gold standard; expensive; high inter-annotator variance \\
+    \end{tblr}
+\captionof{table}{Evaluation of NLP Systems: Automatic NLP Metrics.}
+\label{tab:ch12-nlp-voice-assistants-inline-03}
+
+    Automatic metrics correlate imperfectly with human judgment: a translation can score high on BLEU while being pragmatically awkward.
+    Human evaluation remains the gold standard for high-stakes NLP applications.
+\end{v3topic}
+
+% ==== Section 2: Text Processing and Representation ==========================================
+\section{Text Processing and Representation}
+
+% ---- 12.2.1 Word Vectors and Embeddings ----------------------------------------------------
+\subsection{Word Vectors and Embeddings}
+
+\begin{v3topic}{Classical Text Representations}
+    Before neural embeddings, text was represented with sparse, count-based vectors\textsuperscript{\cite[][p.~34]{farrisHowLargeLanguage2025}}:
+    \begin{itemize}
+        \item \textbf{Bag-of-Words (BoW)}: document as a vector of word counts; ignores word order; vocabulary size can exceed 100k dimensions
+        \item \textbf{TF-IDF} (Term Frequency -- Inverse Document Frequency): weights terms by how distinctive they are across the corpus:
+    \end{itemize}
+    \begin{equation}
+        \mathrm{tfidf}(t, d) = \underbrace{\frac{\text{count}(t,d)}{|d|}}_{\text{TF}} \times \underbrace{\log\frac{N}{\text{df}(t)}}_{\text{IDF}}
+    \end{equation}
+    Common words like ``the'' get low IDF weight; rare but discriminative words get high weight.
+    TF-IDF remains useful for information retrieval and keyword extraction but cannot capture semantic similarity.
+
+\end{v3topic}
+\begin{v3topic}{Word2Vec: Learning Dense Embeddings}
+    \textbf{Word2Vec} (Mikolov et al., Google, 2013) learns dense, low-dimensional word vectors from large corpora using two architectures\textsuperscript{\cite[][p.~36]{farrisHowLargeLanguage2025}}:
+    \begin{itemize}
+        \item \textbf{CBOW} (Continuous Bag-of-Words): predict center word from surrounding context words
+        \item \textbf{Skip-gram}: predict surrounding context words given the center word
+    \end{itemize}
+    Training signal: maximise $P(\text{context}|\text{word})$ via negative sampling.
+    Result: 300-dimensional vectors that encode semantic relationships geometrically.
+    The famous analogy holds:
+    \begin{equation}
+        \vec{v}(\text{king}) - \vec{v}(\text{man}) + \vec{v}(\text{woman}) \approx \vec{v}(\text{queen})
+    \end{equation}
+    Word2Vec vectors are \emph{static}: the same vector is assigned to ``bank'' regardless of context.
+
+\end{v3topic}
+\begin{v3topic}{GloVe and the Embedding Geometry}
+    \textbf{GloVe} (Global Vectors, Pennington et al., Stanford 2014) learns embeddings from global co-occurrence statistics rather than local context windows\textsuperscript{\cite[][p.~35]{farrisHowLargeLanguage2025}}.
+    Objective: $\vec{v}_i \cdot \vec{v}_j + b_i + b_j = \log X_{ij}$ where $X_{ij}$ is the co-occurrence count.
+    GloVe captures corpus-wide statistics more efficiently than Word2Vec on large corpora.
+\visualseparator
+    \textbf{Embedding space interpretation}: synonyms cluster nearby; analogies follow vector arithmetic.
+    Words with similar meaning are close in cosine similarity.
+    \emph{Limitation}: static embeddings assign a single vector per word token, ignoring polysemy --- ``bank'' (finance) and ``bank'' (river) get the same representation.
+
+\end{v3topic}
+\begin{v3topic}{Contextual Embeddings}
+    Static embeddings (Word2Vec, GloVe) fail for polysemous words.
+    \textbf{Contextual embeddings} produce a different vector for the same word depending on its sentence context\textsuperscript{\cite[][p.~35]{farrisHowLargeLanguage2025}}:
+    \begin{itemize}
+        \item \textbf{ELMo} (Peters et al., 2018): bidirectional LSTM; concatenates forward and backward representations
+        \item \textbf{BERT} embeddings: transformer-based; full bidirectional context at every layer
+        \item \textbf{GPT embeddings}: left-to-right context only (causal)
+    \end{itemize}
+    Modern NLP systems no longer treat embeddings as a pre-processing step; the entire transformer is fine-tuned end-to-end, and the contextual representations emerge from pre-training on massive corpora.
+\end{v3topic}
+
+% ---- 12.2.2 Statistical and Classical Approaches ------------------------------------------
+\subsection{Statistical and Classical Approaches}
+
+\begin{v3topic}{N-gram Language Models}
+    An \textbf{$N$-gram language model} estimates word probabilities using the Markov assumption --- only the previous $N-1$ words matter\textsuperscript{\cite[][]{bengioNeuralProbabilisticLanguage}}:
+    \begin{equation}
+        P(w_t \mid w_1, \ldots, w_{t-1})
+        \approx
+        P(w_t \mid w_{t-N+1}, \ldots, w_{t-1})
+    \end{equation}
+    Counts in a training corpus estimate these probabilities.
+    Smoothing (Laplace, Kneser-Ney) handles unseen $n$-grams.
+    Bengio et al.\ (2003) introduced the \textbf{neural probabilistic language model}: replace the count-based estimate with a feed-forward neural network that maps word embeddings to the next-word distribution.
+    This was the conceptual precursor to modern LLMs.
+
+\end{v3topic}
+\begin{v3topic}{Sequence Models: HMM and CRF}
+    Classical NLP used probabilistic sequence models for structured prediction (POS tagging, NER)\textsuperscript{\cite[][p.~6]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{Hidden Markov Model (HMM)}: generative model; hidden states = POS tags; observed outputs = words.
+              Computes $P(\text{tags}|\text{words})$ via Viterbi decoding.
+        \item \textbf{Naive Bayes}: fast generative classifier that models class priors and class-conditional features;
+              $P(c \mid \mathbf{x}) \propto P(c) \prod_i P(x_i \mid c)$.
+              Still competitive for sentiment analysis with sparse features.
+        \item \textbf{Conditional Random Field (CRF)}: discriminative sequence model; models $P(\mathbf{y}|\mathbf{x})$ directly; avoids HMM's independence assumptions.
+              State-of-the-art for NER before transformers.
+    \end{itemize}
+    These models are now largely superseded by transformer-based approaches but remain important baselines and are still used in low-resource settings.
+\end{v3topic}
+
+% ---- 12.2.3 RNN-based Approaches ----------------------------------------------------------
+\subsection{RNN-based Approaches}
+
+\begin{v3topic}{Seq2Seq: Encoder-Decoder for NLP}
+    The \textbf{sequence-to-sequence (seq2seq)} architecture (Sutskever et al., 2014) enables NLP tasks with variable-length inputs and outputs\textsuperscript{\cite[][p.~8]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{enumerate}
+        \item \textbf{Encoder} (LSTM/GRU): reads input sequence and compresses it into a fixed context vector $\mathbf{c}$
+        \item \textbf{Decoder} (LSTM/GRU): autoregressively generates output conditioned on $\mathbf{c}$ and previously generated tokens
+    \end{enumerate}
+    Applications: machine translation, summarisation, dialogue, question answering.
+    \textbf{Limitation}: the fixed-size context vector becomes a bottleneck for long sequences; the encoder must compress arbitrary input length into a single vector, losing detail.
+
+\end{v3topic}
+\begin{v3topic}{Attention in RNNs}
+    The \textbf{attention mechanism} (Bahdanau et al., 2014) overcomes the seq2seq bottleneck by allowing the decoder to selectively attend to all encoder hidden states at each generation step\textsuperscript{\cite[][p.~8]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{equation}
+        \mathbf{c}_t = \sum_{i} \alpha_{t,i}\, \mathbf{h}_i, \quad \alpha_{t,i} = \mathrm{softmax}(e_{t,i})
+    \end{equation}
+    where $e_{t,i} = \mathrm{score}(\mathbf{s}_{t-1}, \mathbf{h}_i)$ is an alignment score between the current decoder state $\mathbf{s}_{t-1}$ and encoder hidden state $\mathbf{h}_i$.
+    The model learns \emph{which} source tokens to focus on when generating each target token.
+    This was a major breakthrough for machine translation and inspired the transformer's self-attention.
+    \textbf{Key limit}: RNNs are inherently sequential and cannot be parallelised --- making them slow to train on large corpora.
+\end{v3topic}
+
+% ---- 12.2.4 Transformer-based Approaches ---------------------------------------------------
+\subsection{Transformer-based Approaches}
+
+\begin{v3topic}{The Transformer for NLP}
+    The \textbf{Transformer} (Vaswani et al., 2017) replaced recurrence with \emph{self-attention}, enabling full parallelisation during training\textsuperscript{\cite[][]{vaswaniAttentionAllYou2023}}.
+    See Ch.~6 for the full architecture. The self-attention operator is:
+    \begin{equation}
+        \mathrm{att}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{D^{\mathrm{qk}}}}\right)\!V
+    \end{equation}
+    where $Q$, $K$, $V$ are queries, keys, values derived from the input\textsuperscript{\cite[][eq.~4.3]{fleuretLittleBookDeep}}.
+    Three transformer variants serve different NLP tasks:
+    \begin{itemize}
+        \item \textbf{Encoder-only} (BERT, RoBERTa): bidirectional context; best for classification, NER, QA
+        \item \textbf{Decoder-only} (GPT, Gemini): causal/autoregressive; best for generation
+        \item \textbf{Encoder-decoder} (T5, Google Translate): seq2seq tasks (translation, summarisation)
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{BERT: Pre-training for NLU}
+    \textbf{BERT} (Bidirectional Encoder Representations from Transformers; Devlin et al., 2019) introduced self-supervised pre-training for language understanding\textsuperscript{\cite[][pp.~1--4]{devlinBERTPretrainingDeep2019}}:
+
+    \textbf{Pre-training tasks} (unsupervised, on BooksCorpus + Wikipedia):
+    \begin{itemize}
+        \item \textbf{Masked Language Model (MLM)}: randomly mask 15\% of input tokens; predict masked tokens from bidirectional context
+        \item \textbf{Next Sentence Prediction (NSP)}: classify whether sentence B follows sentence A
+    \end{itemize}
+    \textbf{Tokenizer}: WordPiece; vocabulary size 30{,}000.
+    \textbf{Scale}: BERT$_\mathrm{BASE}$ (110M parameters, 12 layers); BERT$_\mathrm{LARGE}$ (340M parameters, 24 layers).
+    \textbf{Fine-tuning}: add a single task-specific output layer; fine-tune all parameters end-to-end.
+    Result: GLUE score 82.1 (BERT$_\mathrm{LARGE}$) vs 74.0 (pre-BERT SOTA) --- a landmark result\textsuperscript{\cite[][p.~5]{devlinBERTPretrainingDeep2019}}.
+
+\end{v3topic}
+\begin{v3topic}{GPT: Pre-training for Generation}
+    The \textbf{GPT} family (Generative Pre-trained Transformers; OpenAI, 2018--) uses decoder-only transformers trained autoregressively to predict the next token\textsuperscript{\cite[][pp.~8--9]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{GPT-1} (2018): pre-trained on BooksCorpus; fine-tuned per task
+        \item \textbf{GPT-2} (2019): 1.5B parameters; delayed release due to misuse concerns
+        \item \textbf{GPT-3} (2020): 175B parameters; \emph{few-shot in-context learning} without fine-tuning
+        \item \textbf{GPT-4} (2023): multimodal; state-of-art on most NLP benchmarks\textsuperscript{\cite[][]{openaiGPT4TechnicalReport2023}}
+    \end{itemize}
+    The key insight: pre-training on massive unlabelled text followed by fine-tuning or prompting is far more data-efficient than training task-specific models from scratch.
+    BERT (encoder) and GPT (decoder) are complementary: BERT excels at understanding; GPT at generation.
+\end{v3topic}
+
+% ==== Section 3: Speech Processing ===========================================================
+\section{Speech Processing}
+
+% ---- 12.3.1 Speech Recognition (ASR) -------------------------------------------------------
+\subsection{Speech Recognition (ASR)}
+
+\begin{v3topic}{Classical ASR Pipeline}
+    Classical \textbf{Automatic Speech Recognition (ASR)} decomposes recognition into three components combined via Bayes' theorem\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{equation}
+        P(\mathbf{w} \mid \mathbf{a}) \propto \underbrace{P(\mathbf{a} \mid \mathbf{w})}_{\text{acoustic model}} \times \underbrace{P(\mathbf{w})}_{\text{language model}}
+    \end{equation}
+    \begin{itemize}
+        \item \textbf{Acoustic model}: maps audio features (MFCC) to phoneme probabilities; classically HMM-GMM, later deep neural networks
+        \item \textbf{Language model}: $n$-gram or neural LM providing prior over word sequences
+        \item \textbf{Pronunciation lexicon}: maps phoneme sequences to words
+    \end{itemize}
+    These components were trained separately and combined at inference.
+    \textbf{CTC (Connectionist Temporal Classification)}: end-to-end objective (Graves et al., 2006) that allows the network to produce output sequences without frame-by-frame alignment; introduces a blank symbol to handle alignment ambiguity.
+
+\end{v3topic}
+\begin{v3topic}{End-to-End ASR: Whisper}
+    \textbf{Whisper} (Radford et al., OpenAI 2022) is a transformer encoder-decoder trained end-to-end on 680{,}000 hours of diverse, weakly labelled multilingual audio\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{Encoder}: processes 30-second log-mel spectrogram windows; generates contextual audio representations
+        \item \textbf{Decoder}: autoregressively generates text tokens conditioned on encoder output
+        \item No separate acoustic model, language model, or lexicon required
+        \item Handles 99 languages, punctuation, timestamps, and language identification natively
+    \end{itemize}
+    Whisper demonstrates that scale and diversity of training data can replace carefully engineered pipeline components.
+    It is robust to accents, background noise, and domain shift to a degree that classical pipelines struggle to achieve.
+\end{v3topic}
+
+% ---- 12.3.2 Speech Synthesis (TTS) ---------------------------------------------------------
+\subsection{Speech Synthesis (TTS)}
+
+\begin{v3topic}{Classical and Neural TTS}
+    \textbf{Text-to-Speech (TTS)} converts written text into natural-sounding audio.
+    Three generations of TTS systems exist\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{Concatenative TTS}: stitch together pre-recorded speech units (diphones, triphones) from a large database; high naturalness but inflexible; requires new recordings per voice
+        \item \textbf{Parametric TTS (HMM-based)}: generate speech by predicting vocal tract parameters from text via HMM; flexible but robotic quality
+        \item \textbf{Neural TTS}: end-to-end neural synthesis; dramatically improves naturalness
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Neural TTS: WaveNet and Tacotron}
+    Neural TTS systems operate in two stages: text $\to$ acoustic features $\to$ waveform\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
+    \begin{itemize}
+        \item \textbf{WaveNet} (van den Oord et al., DeepMind, 2016): dilated causal convolutional network that generates raw audio waveforms sample-by-sample at 16kHz; produces natural prosody and voice quality; very slow at inference (autoregressive)
+        \item \textbf{Tacotron 2} (Google, 2018): seq2seq RNN that maps text to mel spectrograms; coupled with a WaveNet vocoder to synthesise audio from the spectrogram
+        \item \textbf{FastSpeech 2}: transformer-based non-autoregressive model; fast inference, controllable speaking rate and pitch
+        \item \textbf{Modern vocoders}: diffusion-based (DiffWave) or GAN-based (HiFi-GAN) waveform synthesisers replace WaveNet for real-time applications
+    \end{itemize}
+\end{v3topic}
+
+% ==== Section 4: Large Language Models and Generative AI =====================================
+\section{Large Language Models and Generative AI}
+
+% ---- 12.4.1 Pre-training and Fine-tuning ----------------------------------------------------
+\subsection{Pre-training and Fine-tuning}
+
+
+\begin{v3topic}{Pre-training Objectives}
+    LLMs are initialised by \textbf{pre-training} on vast unlabelled corpora using
+    \emph{self-supervised} objectives that require no manual
+    annotation.\textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
+
+    Two dominant objectives:
+    \begin{itemize}
+        \item \textbf{Masked Language Modelling (MLM):} randomly mask tokens; predict
+              the original from bidirectional context --- used by BERT.
+        \item \textbf{Causal (autoregressive) LM:} predict the \emph{next} token given
+              all preceding tokens --- used by GPT.
+    \end{itemize}
+
+    Both are \emph{pretext tasks}: solving them forces the model to build rich internal
+    representations of grammar, facts, and
+    reasoning.\textsuperscript{\cite[][p.~5]{raschkaBuildLargeLanguage2025}}
+
+\end{v3topic}
+\begin{v3topic}{Transfer Learning}
+    \textbf{Transfer learning} reuses representations learnt during pre-training for new
+    downstream tasks. The pre-trained model acts as a universal \emph{feature extractor}
+    of language.\textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
+
+    Key insight: a model trained to predict masked or next tokens on billions of words
+    implicitly learns syntax, semantics, world knowledge, and reasoning patterns. These
+    representations \emph{generalise} to tasks the model was never explicitly trained on.
+
+    Fine-tuning then adapts these representations to a specific task with a small labelled
+    dataset, dramatically reducing the amount of task-specific data required compared to
+    training from
+    scratch.\textsuperscript{\cite[][p.~70]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+\begin{v3topic}{Pre-training vs.\ Fine-tuning vs.\ Prompting}
+    \begin{tblr}{
+        colspec={X[l,2] X[l,3] X[l,3]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Strategy & Description & When to Use \\
+        Pre-training & Train on large unlabelled corpus from scratch &
+            Foundation model; requires enormous compute \\
+        Fine-tuning (SFT) & Update all (or most) weights on labelled task data &
+            Sufficient labelled data; dedicated deployment \\
+        Few-shot prompting & Provide $k$ examples in context; no weight update &
+            Limited labelled data; rapid prototyping \\
+        Zero-shot prompting & Task description only; no examples &
+            Testing generalisation; minimal setup \\
+        RAG & Retrieve relevant documents; inject into prompt &
+            Knowledge-intensive tasks; up-to-date information \\
+    \end{tblr}
+\captionof{table}{Pre-training and Fine-tuning: Pre-training vs.\ Fine-tuning vs.\ Prompting.}
+\label{tab:ch12-nlp-voice-assistants-inline-04}
+    \vspace{2pt}
+    \textsuperscript{\cite[][p.~70]{farrisHowLargeLanguage2025}}
+    \textsuperscript{\cite[][p.~5]{raschkaBuildLargeLanguage2025}}
+
+\end{v3topic}
+
+% ---- 12.4.2 BERT ---------------------------------------------------------------------------
+\subsection{BERT}
+
+
+\begin{v3topic}{BERT Architecture}
+    \textbf{BERT} (\emph{Bidirectional Encoder Representations from Transformers}) is a
+    Transformer \emph{encoder} that conditions on \textbf{both left and right context} at
+    every layer --- unlike GPT, which is left-to-right
+    only.\textsuperscript{\cite[][p.~2]{devlinBERTPretrainingDeep2019}}
+
+    Every input sequence begins with a special \texttt{[CLS]} token; its final hidden
+    state $C \in \mathbb{R}^{H}$ serves as the aggregate \emph{sentence representation}
+    for classification. A \texttt{[SEP]} token separates paired sentences.
+
+    Input embedding $=$ token emb.~$+$ segment emb.~$+$ position emb.
+
+    \begin{tblr}{colspec={X[l]X[l]X[l]}, hlines, vlines,
+                 row{1}={font=\bfseries\scriptsize, bg=LimeGreen!20},
+                 row{2-Z}={font=\scriptsize}}
+        & BERT\textsubscript{BASE} & BERT\textsubscript{LARGE} \\
+        Layers $L$ & 12 & 24 \\
+        Hidden $H$ & 768 & 1024 \\
+        Heads $A$ & 12 & 16 \\
+        Parameters & 110M & 340M \\
+    \end{tblr}
+\captionof{table}{BERT: BERT Architecture.}
+\label{tab:ch12-nlp-voice-assistants-inline-05}
+
+\end{v3topic}
+\begin{v3topic}{Pre-training: MLM and NSP}
+    BERT is pre-trained with two unsupervised
+    tasks:\textsuperscript{\cite[][p.~3-4]{devlinBERTPretrainingDeep2019}}
+
+    \textbf{Task 1 --- Masked LM (MLM):} 15\,\% of WordPiece tokens are selected at
+    random. Of these, 80\,\% are replaced with \texttt{[MASK]}, 10\,\% with a random
+    token, and 10\,\% left unchanged. The model predicts the original vocabulary item
+    from bidirectional context, forcing it to build a \emph{distributional contextual
+    representation} of every token.
+
+    \textbf{Task 2 --- Next Sentence Prediction (NSP):} Given sentence pairs $(A, B)$,
+    predict \texttt{IsNext} (50\,\%) or \texttt{NotNext} (50\,\%). This teaches
+    inter-sentence relationships, benefiting QA and NLI.
+
+    Pre-training data: BooksCorpus (800M words) + English Wikipedia (2,500M words).
+
+\end{v3topic}
+\begin{v3topic}{Fine-tuning BERT for Downstream Tasks}
+    Fine-tuning is straightforward: add one task-specific output layer, then fine-tune
+    \emph{all} parameters end-to-end on labelled
+    data.\textsuperscript{\cite[][p.~4-5]{devlinBERTPretrainingDeep2019}}
+
+    \begin{tblr}{
+        colspec={X[l,2] X[l,2] X[l,4]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Task Type & Input & Output \\
+        Sentence classification & \texttt{[CLS]} + sentence & Softmax over classes on $C$ \\
+        Sentence-pair classification & \texttt{[CLS]} + sent.~A + \texttt{[SEP]} + sent.~B & Softmax on $C$ \\
+        QA (SQuAD) & \texttt{[CLS]} + question + \texttt{[SEP]} + passage & Start/end token positions \\
+        Named Entity Recognition & \texttt{[CLS]} + sentence & Per-token label from $T_i$ \\
+    \end{tblr}
+\captionof{table}{BERT: Fine-tuning BERT for Downstream Tasks.}
+\label{tab:ch12-nlp-voice-assistants-inline-06}
+
+    BERT achieved state-of-the-art on 11 NLP tasks at release, including GLUE
+    (+7.7\,\%), SQuAD~1.1 F1~93.2, and CoNLL-2003 NER F1~92.8.
+
+\end{v3topic}
+
+% ---- 12.4.3 GPT Family ----------------------------------------------------------------------
+\subsection{GPT Family}
+
+
+\begin{v3topic}{GPT: Decoder-Only Architecture}
+    GPT (\emph{Generative Pretrained Transformer}) is a \textbf{decoder-only} Transformer
+    using \emph{causal} (left-to-right) self-attention: each token can only attend to
+    preceding tokens.\textsuperscript{\cite[][p.~12]{raschkaBuildLargeLanguage2025}}
+
+    Generation is \textbf{autoregressive}: the model produces one token at a time,
+    appending each output to the input before predicting the next. The pre-training
+    objective maximises the conditional log-likelihood:
+    \begin{equation}
+        \ell(\theta) = \sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1};\,\theta)
+    \end{equation}
+    Equivalently, training minimises the negative log-likelihood $\mathcal{L}(\theta)=-\ell(\theta)$. This is next-token prediction on large unlabelled
+    corpora.\textsuperscript{\cite[][p.~129]{raschkaBuildLargeLanguage2025}}
+
+\end{v3topic}
+\begin{v3topic}{GPT Evolution and Scaling Laws}
+    \begin{tblr}{
+        colspec={X[l] X[l] X[l]},
+        hlines, vlines,
+        row{1}={font=\bfseries\scriptsize, bg=LimeGreen!20},
+        row{2-Z}={font=\scriptsize},
+    }
+        Model & Year & Scale / Notes \\
+        GPT-1 & 2018 & 117M params; fine-tuned on downstream tasks \\
+        GPT-2 & 2019 & 1.5B params; release withheld (misuse risk) \\
+        GPT-3 & 2020 & 175B params; few-shot in-context learning \\
+        GPT-4 & 2023 & Multimodal; strong reasoning and coding \\
+    \end{tblr}
+\captionof{table}{GPT Family: GPT Evolution and Scaling Laws.}
+\label{tab:ch12-nlp-voice-assistants-inline-07}
+    \vspace{2pt}
+    \textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
+
+    \textbf{Scaling laws} (Kaplan et al.\ 2020): model performance improves
+    predictably as a power law with (i) number of parameters, (ii) training compute, and
+    (iii) dataset size. ``Bigger is better'' largely replaced careful architectural
+    engineering.\textsuperscript{\cite[][p.~10]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+\begin{v3topic}{Emergent Abilities of Large Models}
+    \textbf{Emergent abilities} are capabilities that appear only above a certain model
+    scale and are \emph{not} present in smaller models --- they cannot be predicted by
+    extrapolating smaller-scale
+    behaviour.\textsuperscript{\cite[][p.~107]{farrisHowLargeLanguage2025}}
+
+    Examples observed in GPT-3 and beyond:
+    \begin{itemize}
+        \item \textbf{Few-shot in-context learning:} solving tasks from a handful of
+              examples in the prompt with no weight updates.
+        \item \textbf{Chain-of-thought reasoning:} multi-step arithmetic and logical
+              deduction when prompted to ``think step by step.''
+        \item \textbf{Code generation:} producing syntactically and semantically correct
+              programs in dozens of languages.
+        \item \textbf{Instruction following:} executing complex, multi-part natural
+              language instructions without explicit training on those instruction formats.
+    \end{itemize}
+    These emergent properties make LLMs qualitatively different from smaller
+    pre-transformer NLP
+    models.\textsuperscript{\cite[][p.~114]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+
+% ---- 12.4.4 Prompt Engineering --------------------------------------------------------------
+\subsection{Prompt Engineering}
+
+
+\begin{v3topic}{Prompting Strategies}
+    \textbf{Prompting} shapes LLM behaviour without changing model
+    weights.\textsuperscript{\cite[][p.~82]{farrisHowLargeLanguage2025}}
+
+    \begin{description}[leftmargin=0.4cm, labelindent=0pt]
+        \item[\textbf{Zero-shot}] Task description only; no examples.
+              Tests the model's built-in generalisation.
+        \item[\textbf{Few-shot}] $k$ input--output examples in the context window
+              ($k=1$--$8$ typical). The model infers the task pattern without gradient
+              updates --- \emph{in-context learning}.
+        \item[\textbf{Chain-of-Thought (CoT)}] Adding ``Let's think step by step'' or
+              worked reasoning traces dramatically improves multi-step arithmetic, logic,
+              and science problems.
+        \item[\textbf{Self-consistency}] Generate multiple CoT paths; majority-vote over
+              answers for improved reliability.
+    \end{description}
+
+\end{v3topic}
+\begin{v3topic}{System Prompts and Prompt Templates}
+    A \textbf{system prompt} is prepended text that sets the model's \emph{persona},
+    output format, and behavioural
+    constraints.\textsuperscript{\cite[][p.~68]{farrisHowLargeLanguage2025}}
+
+    \begin{itemize}
+        \item \emph{``You are a helpful medical assistant. Always recommend consulting a
+              doctor.''} --- sets persona and safety constraint.
+        \item \emph{``Respond only in JSON with keys: \{result, confidence\}.''} ---
+              enforces structured output.
+    \end{itemize}
+
+    \textbf{Prompt templates} are reusable structures with variable placeholders,
+    enabling systematic evaluation and deployment:
+    \begin{center}
+        \texttt{Translate the following \{lang\} text to English: \{text\}}
+    \end{center}
+
+    Good prompt design requires clear instructions, relevant context, and explicit output
+    format
+    requirements.\textsuperscript{\cite[][p.~70]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+
+% ---- 12.4.5 Retrieval-Augmented Generation --------------------------------------------------
+\subsection{Retrieval-Augmented Generation}
+
+
+\begin{v3topic}{RAG: Motivation and Pipeline}
+    \textbf{Retrieval-Augmented Generation (RAG)} addresses two core LLM limitations:
+    (1) \emph{knowledge cutoff} --- the model cannot know events after training, and
+    (2) \emph{hallucination} --- the model generates plausible but factually wrong
+    content.\textsuperscript{\cite[][p.~82]{farrisHowLargeLanguage2025}}
+
+    RAG augments the LLM with an external \emph{knowledge base} retrieved at inference
+    time. The pipeline:
+
+    \begin{enumerate}
+        \item \textbf{Index:} split documents into chunks; compute dense vector
+              embeddings; store in a vector database.
+        \item \textbf{Retrieve:} embed the user query; perform approximate
+              nearest-neighbour (ANN) search; return top-$k$ chunks.
+        \item \textbf{Augment:} inject retrieved chunks into the LLM prompt as context
+              alongside the original query.
+        \item \textbf{Generate:} the LLM produces a grounded answer conditioned on the
+              retrieved context, with citations if desired.
+    \end{enumerate}
+
+    RAG can be combined with fine-tuning or used with an unmodified base model. It is
+    particularly effective for enterprise knowledge bases, document QA, and keeping
+    responses up-to-date.\textsuperscript{\cite[][p.~83]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+\begin{v3topic}{Vector Databases and Chunking}
+    The retrieval step depends on \textbf{dense vector embeddings}: each text chunk is
+    encoded as a high-dimensional vector by an embedding model (e.g.\ a BERT-based
+    sentence encoder). Similarity is measured by cosine distance or inner product.
+
+    \textbf{Vector databases} (FAISS, Pinecone, Weaviate, ChromaDB) provide efficient ANN
+    search over millions of embeddings at low
+    latency.\textsuperscript{\cite[][p.~83]{farrisHowLargeLanguage2025}}
+
+    \textbf{Chunking strategy} matters significantly:
+    \par\smallskip\noindent
+    \begin{tblr}{
+        width=\linewidth,
+        colspec={X[l,2] X[l,4]},
+        hlines, vlines,
+        row{1}={font=\bfseries\small, bg=LimeGreen!20},
+        row{2-Z}={font=\small},
+    }
+        Strategy & Description \\
+        Fixed-size & Split every $N$ tokens; fast and simple; may cut mid-sentence \\
+        Sentence / paragraph & Split on natural boundaries; preserves semantic coherence \\
+        Semantic chunking & Embed and cluster sentences by similarity; highest quality \\
+        Recursive splitting & Hierarchically split: paragraph $\to$ sentence $\to$ token \\
+    \end{tblr}
+\captionof{table}{Retrieval-Augmented Generation: Vector Databases and Chunking.}
+\label{tab:ch12-nlp-voice-assistants-inline-08}
+    Chunk size trades off recall (larger $=$ more context per chunk) against precision
+    (smaller $=$ more focused retrieval).
+
+\end{v3topic}
+
+% ==== Section 5: Application Scenarios =======================================================
+\section{Application Scenarios}
+
+% ---- 12.5.1 Machine Translation -------------------------------------------------------------
+\subsection{Machine Translation}
+
+
+\begin{v3topic}{Machine Translation}
+    \textbf{Neural Machine Translation (NMT)} maps a source-language sequence to a
+    target-language sequence using an encoder--decoder
+    Transformer.\textsuperscript{\cite[][p.~7]{dhamaniIntroductionGenerativeAI2024}}
+
+    Evolution: rule-based (1950s--1980s) $\to$ statistical MT (IBM models, phrase-based)
+    $\to$ seq2seq + attention (Bahdanau 2014) $\to$ Transformer-based NMT (Vaswani 2017).
+
+    \textbf{Google NMT} (Wu et al.\ 2016) was the first large-scale production
+    transformer-based MT system, reducing translation errors by $\sim$60\,\% relative to
+    phrase-based
+    SMT.\textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
+
+    Key quality metric: \textbf{BLEU score} measures $n$-gram overlap between hypothesis
+    and reference translation. Imperfect proxy for human judgment but standard for
+    benchmarking.
+
+\end{v3topic}
+\begin{v3topic}{Sequence-to-Sequence with Attention}
+    Encoder--decoder architecture for
+    MT:\textsuperscript{\cite[][p.~7-8]{dhamaniIntroductionGenerativeAI2024}}
+    \begin{enumerate}
+        \item \textbf{Encoder:} reads source sequence $x_1,\ldots,x_S$; outputs
+              contextual representations $h_1,\ldots,h_S$.
+        \item \textbf{Attention:} for each target position $t$, computes a weighted sum
+              over encoder states:
+              $c_t = \sum_s \alpha_{ts}\,h_s$.
+        \item \textbf{Decoder:} generates target tokens autoregressively conditioned
+              on $c_t$ and previous outputs.
+    \end{enumerate}
+    The Transformer replaces recurrence entirely with \emph{self-attention}, enabling
+    full parallelisation and capturing long-range dependencies more effectively than
+    LSTMs.\textsuperscript{\cite[][]{vaswaniAttentionAllYou2023}}
+
+\end{v3topic}
+
+% ---- 12.5.2 Information Extraction and Text Understanding -----------------------------------
+\subsection{Information Extraction and Text Understanding}
+
+
+\begin{v3topic}{Named Entity Recognition and Sentiment Analysis}
+    \textbf{Named Entity Recognition (NER):} identify and classify spans in text as
+    persons, organisations, locations, dates, etc. BERT fine-tuned on CoNLL-2003 achieved
+    F1\,=\,92.8, outperforming task-specific
+    models.\textsuperscript{\cite[][p.~6]{devlinBERTPretrainingDeep2019}}
+
+    NER is fundamental for knowledge-graph construction, information retrieval, and
+    document classification.
+
+    \textbf{Sentiment Analysis:} classify the opinion polarity of text (positive /
+    negative / neutral). Fine-tuned transformers achieve high accuracy on product
+    reviews, social media, and financial news. Fine-grained \emph{aspect-based} sentiment
+    analysis identifies sentiment towards specific entities within a
+    text.\textsuperscript{\cite[][p.~12]{dhamaniIntroductionGenerativeAI2024}}
+
+\end{v3topic}
+\begin{v3topic}{Text Summarisation and Question Answering}
+    \textbf{Summarisation} reduces a document to its essential content:
+    \begin{itemize}
+        \item \textbf{Extractive:} select and concatenate key sentences from the source.
+        \item \textbf{Abstractive:} generate new text that paraphrases the content;
+              requires seq2seq or LLM.
+    \end{itemize}
+
+    \textbf{Question Answering (QA)}
+    types:\textsuperscript{\cite[][p.~13]{dhamaniIntroductionGenerativeAI2024}}
+    \begin{itemize}
+        \item \textbf{Extractive QA (SQuAD):} predict answer span start/end positions
+              within a given passage.
+        \item \textbf{Open-book generative QA:} generate a free-text answer using
+              provided context.
+        \item \textbf{Closed-book generative QA:} generate answers from model weights
+              only (no external context).
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 12.5.3 Chatbots and Voice Assistants ---------------------------------------------------
+\subsection{Chatbots and Voice Assistants}
+
+
+\begin{v3topic}{Task-Oriented Dialogue Systems}
+    \textbf{Task-oriented} systems (booking, customer service) use a structured
+    pipeline:\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+    \begin{enumerate}
+        \item \textbf{NLU:} intent detection + slot filling from user utterance.
+        \item \textbf{Dialogue State Tracking:} maintain a belief state over unfilled
+              slots across turns.
+        \item \textbf{Policy:} select the next system action given the current state
+              (e.g.\ query database, ask for clarification).
+        \item \textbf{NLG:} surface the response as natural language.
+    \end{enumerate}
+    Frameworks: Rasa (open-source) and Microsoft LUIS provide modular pipelines for
+    task-oriented
+    dialogue.\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+
+\end{v3topic}
+\begin{v3topic}{Open-Domain and LLM-Based Assistants}
+    \textbf{Open-domain} chatbots engage in free-form conversation. GPT-based systems
+    (ChatGPT, Claude, Gemini) became the dominant paradigm from
+    2022.\textsuperscript{\cite[][p.~1]{farrisHowLargeLanguage2025}}
+
+    Key properties of LLM-based assistants:
+    \begin{itemize}
+        \item \textbf{Multi-turn context:} the full conversation history is included in
+              the context window.
+        \item \textbf{RLHF alignment:} shapes tone, helpfulness, and safety.
+        \item \textbf{Tool use:} modern agents can call external APIs, execute code, or
+              search the web.
+    \end{itemize}
+
+    Voice assistants (Siri, Alexa, Google Assistant) add ASR and TTS modules around an
+    NLU/NLG
+    core.\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+
+\end{v3topic}
+
+% ---- 12.5.4 NLP in Education ----------------------------------------------------------------
+\subsection{NLP in Education}
+
+
+\begin{v3topic}{NLP Applications in Education}
+    NLP enables personalised and scalable educational tools:
+    \begin{itemize}
+        \item \textbf{Automated Short-Answer Grading (ASAG):} transformers compare
+              student responses to model answers; enables instant feedback at scale.
+        \item \textbf{Intelligent Tutoring Systems (ITS):} systems such as ASSISTments
+              adapt question difficulty to student performance using NLP-based knowledge
+              tracing.
+        \item \textbf{Essay scoring:} automated evaluation of coherence, grammar, and
+              argumentation.
+        \item \textbf{Language learning:} conversational AI for L2 practice;
+              multilingual cross-lingual grading systems.
+    \end{itemize}
+    Key challenge: ensuring \emph{construct validity} --- measuring the intended
+    competency, not surface
+    features.\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+
+\end{v3topic}
+\begin{v3topic}{LLMs as Educational Assistants}
+    LLMs such as GPT-4 are increasingly used as \textbf{AI tutors}: Socratic
+    questioning, step-by-step explanation, and personalised hints on
+    demand.\textsuperscript{\cite[][p.~2]{farrisHowLargeLanguage2025}}
+
+    Opportunities:
+    \begin{itemize}
+        \item Instant, 24/7 feedback on exercises.
+        \item Adaptive difficulty and content personalisation.
+        \item Support for students who lack access to human tutors.
+    \end{itemize}
+
+    Risks:
+    \begin{itemize}
+        \item Over-reliance may reduce deep learning and independent thinking.
+        \item Detection of LLM-generated student submissions is an active challenge.
+        \item Hallucination can mislead learners; accuracy is not guaranteed.
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 12.5.5 NLP for Accessibility -----------------------------------------------------------
+\subsection{NLP for Accessibility}
+
+
+\begin{v3topic}{Text Simplification}
+    \textbf{Text simplification} transforms complex text into a linguistically simpler
+    version without losing core meaning, targeting low-literacy readers, language
+    learners, and people with cognitive
+    disabilities.\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+
+    Approaches:
+    \begin{itemize}
+        \item \textbf{Lexical simplification:} replace difficult words with simpler
+              synonyms (\emph{utilise} $\to$ \emph{use}).
+        \item \textbf{Syntactic simplification:} split complex sentences; reduce
+              embedded clauses.
+        \item \textbf{Neural simplification:} seq2seq and LLM-based generation trained
+              on parallel corpora (Wikipedia and Simple Wikipedia).
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Captioning and Speech Accessibility}
+    NLP and speech processing combine to improve accessibility for deaf and hard-of-hearing
+    users:\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}
+
+    \begin{itemize}
+        \item \textbf{Automatic captioning:} real-time ASR (Whisper) produces closed
+              captions; quality degrades with accents, fast speech, and background noise.
+        \item \textbf{Screen readers:} TTS engines render digital content audibly for
+              visually impaired users.
+        \item \textbf{Augmentative and Alternative Communication (AAC):} language models
+              predict next intended words from abbreviated input to support users with
+              motor impairments.
+        \item \textbf{Sign language recognition:} computer-vision-based gesture
+              recognition for deaf communication.
+    \end{itemize}
+
+\end{v3topic}
+
+% ==== Section 6: Challenges in NLP ===========================================================
+\section{Challenges in NLP}
+
+% ---- 12.6.1 Data Quality and Bias -----------------------------------------------------------
+\subsection{Data Quality and Bias}
+
+
+\begin{v3topic}{Training Data Bias}
+    LLMs trained on web-scale data absorb and amplify the biases present in
+    human-generated
+    text.\textsuperscript{\cite[][p.~xii]{dhamaniIntroductionGenerativeAI2024}}
+
+    Sources of bias:
+    \begin{itemize}
+        \item \textbf{Representation bias:} certain groups, languages, and viewpoints
+              are over- or under-represented in training corpora.
+        \item \textbf{Measurement bias:} labelling conventions in annotated datasets
+              reflect the cultural assumptions of annotators.
+        \item \textbf{Historical bias:} text reflects past inequalities (e.g.\ gendered
+              job descriptions), which the model learns and reproduces.
+    \end{itemize}
+
+    Impact: biased models produce discriminatory outputs, unfair recommendations, and
+    reinforce stereotypes at
+    scale.\textsuperscript{\cite[][p.~xii]{dhamaniIntroductionGenerativeAI2024}}
+
+\end{v3topic}
+\begin{v3topic}{Fairness and Debiasing}
+    \textbf{Fairness} in NLP requires that model performance does not systematically
+    differ across demographic groups (gender, ethnicity, age,
+    disability).\textsuperscript{\cite[][p.~140]{farrisHowLargeLanguage2025}}
+
+    Mitigation strategies:
+    \begin{itemize}
+        \item \textbf{Data-level:} curate balanced corpora; filter toxic or biased
+              content; augment with underrepresented voices.
+        \item \textbf{Model-level:} adversarial debiasing; counterfactual data
+              augmentation; fairness constraints during fine-tuning.
+        \item \textbf{Output-level:} post-hoc filtering; calibration; red-teaming to
+              identify failure modes.
+    \end{itemize}
+
+    No single approach is sufficient; fairness requires ongoing monitoring in
+    deployment.\textsuperscript{\cite[][p.~140]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+
+% ---- 12.6.2 Domain and Language Adaptation --------------------------------------------------
+\subsection{Domain and Language Adaptation}
+
+
+\begin{v3topic}{Multilingual Models}
+    \textbf{Multilingual} LLMs (mBERT, XLM-R, mT5) are pre-trained on text from 100+
+    languages in a single model, enabling \emph{zero-shot cross-lingual transfer}:
+    fine-tune on English labels, evaluate on other
+    languages.\textsuperscript{\cite[][p.~26]{farrisHowLargeLanguage2025}}
+
+    Challenges:
+    \begin{itemize}
+        \item \textbf{Curse of multilinguality:} adding more languages reduces
+              per-language capacity with fixed model size.
+        \item \textbf{Low-resource languages:} languages with less training data show
+              substantially worse performance (e.g.\ Swahili, Welsh, many indigenous
+              languages).
+        \item \textbf{Tokenizer equity:} BPE vocabularies trained on English-heavy data
+              over-segment morphologically rich languages into many short tokens, wasting
+              context capacity.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Domain Shift and Low-Resource Adaptation}
+    A model pre-trained on general web text may perform poorly on \textbf{specialised
+    domains} such as clinical notes, legal contracts, or scientific
+    papers.\textsuperscript{\cite[][p.~170]{raschkaBuildLargeLanguage2025}}
+
+    \textbf{Domain shift} occurs when the input distribution at inference differs from
+    the training distribution.
+
+    Adaptation strategies:
+    \begin{itemize}
+        \item \textbf{Continued pre-training:} further pre-train the base model on
+              in-domain unlabelled text (e.g.\ PubMed for biomedical NLP; BioMedBERT).
+        \item \textbf{Domain-specific fine-tuning:} fine-tune on labelled in-domain
+              examples.
+        \item \textbf{Parameter-efficient fine-tuning (PEFT):} LoRA, adapters,
+              prefix-tuning --- update a small fraction of parameters to reduce compute
+              cost.\textsuperscript{\cite[][p.~322]{raschkaBuildLargeLanguage2025}}
+    \end{itemize}
+
+\end{v3topic}
+
+% ---- 12.6.3 Explainability and Safety -------------------------------------------------------
+\subsection{Explainability and Safety}
+
+
+\begin{v3topic}{Hallucination in LLMs}
+    \textbf{Hallucination} refers to LLM outputs that are fluent and confident but
+    factually incorrect or
+    fabricated.\textsuperscript{\cite[][p.~xii]{dhamaniIntroductionGenerativeAI2024}}
+
+    Root causes:
+    \begin{itemize}
+        \item Next-token prediction optimises fluency, not factual accuracy.
+        \item Rare or contradictory facts in training data are poorly memorised.
+        \item Models lack a grounding mechanism to verify claims against world state.
+    \end{itemize}
+
+    Mitigation:
+    \begin{itemize}
+        \item \textbf{RAG:} ground generation in retrieved documents.
+        \item \textbf{Self-consistency:} sample multiple outputs and compare.
+        \item \textbf{Factuality fine-tuning:} train on preference pairs where truthful
+              responses are preferred.
+        \item \textbf{Human-in-the-loop:} maintain verification for high-stakes outputs.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Alignment and RLHF}
+    \textbf{Alignment} is the problem of ensuring LLM behaviour matches human values and
+    intentions.\textsuperscript{\cite[][p.~73]{farrisHowLargeLanguage2025}}
+
+    \textbf{RLHF} (Reinforcement Learning from Human Feedback) is the primary alignment
+    technique used in ChatGPT, Claude, and Gemini:
+
+    \begin{enumerate}
+        \item Pre-train or SFT the LLM.
+        \item Collect human \emph{preference data}: raters rank two or more model
+              responses for each prompt.
+        \item Train a \textbf{reward model} $R_\phi$ to predict human preferences.
+        \item Fine-tune the LLM with PPO (Proximal Policy Optimisation) to maximise
+              $R_\phi$ while staying close to the SFT model (KL divergence penalty).
+    \end{enumerate}
+
+    RLHF reduces harmful outputs and improves instruction following, but does not
+    eliminate misuse or
+    hallucination.\textsuperscript{\cite[][p.~73-74]{farrisHowLargeLanguage2025}}
+
+\end{v3topic}
+
+% ==== Section 7: Further Reading =============================================================
+%
+\section{Deep Dive: Retrieval, Tools, and Structured Generation}
+\begin{v3topic}{RAG Has Two Evaluations}
+Evaluate retrieval with relevance, recall, ranking, freshness, permissions, and
+coverage.
+Evaluate generation with grounding, citation correctness, completeness, and
+task success.
+A faithful answer to irrelevant evidence is still a retrieval failure.
+
+\end{v3topic}
+\begin{v3topic}{Structured Output Is a Contract}
+Define a schema, validate every field, reject unknown actions, and separate
+syntactic validity from semantic authorization.
+Repair loops need bounded retries and telemetry; silently accepting a plausible
+but invalid object moves uncertainty into downstream code.
+
+\end{v3topic}
+\begin{v3topic}{Long Context Is Not Perfect Memory}
+More tokens increase cost and can dilute relevant evidence.
+Compare long-context prompting with retrieval, summarisation, and explicit
+state.
+Test information at different positions, conflicting evidence, multilingual
+inputs, and instructions embedded inside retrieved content.
+\end{v3topic}
+
+\chapterreview{Tokenise}{Represent}{Generate}{Evaluate}
+
+\section{Further Reading}
+
+
+\begin{v3topic}{Recommended Sources for NLP and Generative AI}
+    \begin{itemize}
+        \item \fullcite{dhamaniIntroductionGenerativeAI2024} --- Accessible introduction to LLMs and generative AI: how they work, applications, limitations, and responsible use. Recommended starting point.
+        \item \fullcite{farrisHowLargeLanguage2025} --- Clear technical exposition of tokenisation, transformers, learning (RLHF), RAG, and the ethics of LLMs. Ideal for practitioners.
+        \item \fullcite{raschkaBuildLargeLanguage2025} --- Hands-on implementation of a GPT-style LLM from scratch in PyTorch: pre-training, classification fine-tuning, instruction fine-tuning, and LoRA.
+        \item \fullcite{devlinBERTPretrainingDeep2019} --- Original BERT paper: bidirectional pre-training, MLM, NSP, and fine-tuning methodology.
+        \item \fullcite{vaswaniAttentionAllYou2023} --- The foundational transformer paper: multi-head self-attention, positional encoding, encoder--decoder architecture.
+        \item \fullcite{bahreeGenerativeAIAction2024} --- Practical guide to deploying generative AI in enterprise applications: integration patterns, risk management, and governance.
+        \item \fullcite{anticPythonNaturalLanguage2021} --- Python-based NLP cookbook: text processing, named entity recognition, sentiment analysis, and language generation with modern libraries.
+        \item \fullcite{bengioNeuralProbabilisticLanguage} --- Foundational neural language model paper introducing learned word embeddings and probabilistic next-word prediction.
+    \end{itemize}
+
+\end{v3topic}

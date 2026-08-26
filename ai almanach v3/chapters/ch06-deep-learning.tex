@@ -1,0 +1,769 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Deep Learning =============================================================================
+    \chapter{Deep Learning}
+
+\chapterlead{How do layered differentiable models learn representations at scale?}{Represent}{Differentiate}{Optimise}{Scale}{deep-learning}
+
+% ==== Section 1: Introduction to Neural Networks and Deep Learning ===========================
+\section{Introduction to Neural Networks and Deep Learning}
+
+% ---- 6.1.1 The Biological Brain -------------------------------------------------------------
+\subsection{The Biological Brain}
+
+\begin{v3topic}{The Biological Neuron}
+    Artificial neural networks draw inspiration from the structure of biological neurons\textsuperscript{\cite[][pp.~27--35]{Kriesel2007NeuralNetworks}}.
+    A biological neuron consists of:
+    \begin{itemize}
+        \item \textbf{Dendrites}: tree-like input branches that receive signals from other neurons
+        \item \textbf{Soma} (cell body): integrates incoming signals
+        \item \textbf{Axon}: long output fibre that transmits the signal onward
+        \item \textbf{Synapses}: junctions between neurons; neurotransmitter release modulates connection strength
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{From Biology to Computation}
+    The neuron's membrane rests at approximately $-70\,\text{mV}$.
+    When excitatory inputs push the potential above a threshold ($\approx -55\,\text{mV}$), an \textbf{action potential} (spike) propagates down the axon\textsuperscript{\cite[][pp.~29--31]{Kriesel2007NeuralNetworks}}.
+    Chemical synapses strengthen or weaken over time (\textbf{synaptic plasticity}), providing a biological basis for learning.
+\visualseparator
+    The \textbf{100-step rule}: the brain performs complex recognition in ${\sim}500\,\text{ms}$; neurons fire at ${\sim}100\,\text{Hz}$, allowing at most ${\sim}100$ sequential processing steps.
+    This implies massive parallelism --- motivating parallel architectures in artificial networks.
+\end{v3topic}
+
+% ---- 6.1.2 Perceptron and Multi-Layer Perceptrons -------------------------------------------
+\subsection{Perceptron and Multi-Layer Perceptrons}
+
+\begin{v3topic}{The Perceptron}
+    The \textbf{perceptron} (Rosenblatt, 1957) is the simplest artificial neuron\textsuperscript{\cite[][pp.~57--62]{Kriesel2007NeuralNetworks}}.
+    It computes a weighted sum of inputs and applies a binary threshold:
+    \begin{equation}
+        y = \begin{cases} 1 & \text{if } \mathbf{w}^\top \mathbf{x} + b \geq 0 \\ 0 & \text{otherwise} \end{cases}
+    \end{equation}
+    The \textbf{perceptron convergence theorem} guarantees that the learning rule will find a separating hyperplane if the data is linearly separable.
+
+\end{v3topic}
+\begin{v3topic}{The XOR Problem and MLPs}
+    Minsky \& Papert (1969) proved that a single perceptron \emph{cannot} solve the XOR problem --- it can only represent linearly separable functions\textsuperscript{\cite[][pp.~63--65]{Kriesel2007NeuralNetworks}}.
+    This limitation contributed to the first ``AI winter''.
+    The solution is the \textbf{Multi-Layer Perceptron (MLP)}: stacking layers with nonlinear activation functions creates networks that can represent arbitrarily complex decision boundaries.
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.8cm and 1.2cm,
+        neuron/.style={circle, draw, minimum size=0.6cm, font=\scriptsize, inner sep=1pt},
+        arr/.style={-{Stealth[length=1.5mm]}, thick}
+    ]
+        % Input layer
+        \node[neuron, fill=blue!15] (i1) {$x_1$};
+        \node[neuron, fill=blue!15, below=of i1] (i2) {$x_2$};
+        % Hidden layer
+        \node[neuron, fill=orange!20, right=of i1, yshift=-0.4cm] (h1) {$h_1$};
+        \node[neuron, fill=orange!20, below=of h1] (h2) {$h_2$};
+        % Output
+        \node[neuron, fill=green!20, right=of h1, yshift=-0.4cm] (o) {$y$};
+
+        \foreach \i in {i1,i2} \foreach \h in {h1,h2} \draw[arr] (\i) -- (\h);
+        \foreach \h in {h1,h2} \draw[arr] (\h) -- (o);
+
+        \node[below=0.15cm of i2, font=\sffamily\tiny] {Input};
+        \node[below=0.15cm of h2, font=\sffamily\tiny] {Hidden};
+        \node[below=0.55cm of o, font=\sffamily\tiny] {Output};
+    \end{tikzpicture}
+\captionof{figure}{Perceptron and Multi-Layer Perceptrons: The XOR Problem and MLPs.}
+\label{fig:ch06-deep-learning-inline-01}
+    \end{center}
+
+\end{v3topic}
+\begin{v3topic}{From Perceptrons to Deep Learning}
+    The transition from single perceptrons to deep networks involved three key advances\textsuperscript{\cite[][pp.~1--3]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item \textbf{Hebbian learning} $\to$ \textbf{error-correction rules} $\to$ \textbf{backpropagation} (Rumelhart, Hinton \& Williams, 1986): enabled training of multi-layer networks by propagating gradients backward through layers
+        \item \textbf{Nonlinear activations}: sigmoid, tanh, and later ReLU allow hidden layers to learn complex feature hierarchies
+        \item \textbf{Hardware and data}: GPUs and large datasets made training deep networks practical from $\sim$2012 onward
+    \end{itemize}
+    \textbf{Deep learning} refers to neural networks with many hidden layers that learn hierarchical representations --- from low-level features (edges, textures) to high-level concepts (objects, semantics).
+\end{v3topic}
+
+% ---- 6.1.3 Activation Functions -------------------------------------------------------------
+\subsection{Activation Functions}
+
+\begin{v3topic}{Why Activation Functions Matter}
+    Without nonlinear activation functions, a multi-layer network collapses to a single linear transformation\textsuperscript{\cite[][p.~17]{fleuretLittleBookDeep}}.
+    The choice of activation function affects gradient flow, training speed, and representational capacity.
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|X[l]|X[l]|}
+        \hline
+        \textbf{Function} & \textbf{Formula} & \textbf{Range} & \textbf{Key Property} \\
+        \hline
+        Sigmoid & $\sigma(x) = \frac{1}{1+e^{-x}}$ & $(0, 1)$ & Vanishing gradients for $|x| \gg 0$ \\
+        \hline
+        Tanh & $\tanh(x)$ & $(-1, 1)$ & Zero-centred; still saturates \\
+        \hline
+        ReLU & $\max(0, x)$ & $[0, \infty)$ & Fast; can ``die'' (zero gradient for $x < 0$) \\
+        \hline
+        Leaky ReLU & $\max(\alpha x, x)$ & $(-\infty, \infty)$ & Prevents dying neurons ($\alpha \approx 0.01$) \\
+        \hline
+        GELU & $x \cdot \Phi(x)$ & $\approx (-0.17, \infty)$ & Smooth; used in Transformers \\
+        \hline
+        Softmax & $\frac{e^{x_i}}{\sum_j e^{x_j}}$ & $(0, 1)$, sums to 1 & Output layer for classification \\
+        \hline
+    \end{tblr}
+\captionof{table}{Activation Functions: Why Activation Functions Matter.}
+\label{tab:ch06-deep-learning-inline-01}
+
+\end{v3topic}
+\begin{v3topic}{ReLU: The Default Choice}
+    The \textbf{Rectified Linear Unit} $\mathrm{ReLU}(x) = \max(0, x)$ became the default activation after Glorot et al.\ (2011) showed it greatly improves training of deep networks\textsuperscript{\cite[][]{glorotUnderstandingDifficultyTraining}}.
+    Its gradient is either $0$ or $1$ --- avoiding the vanishing gradient problem that plagues sigmoid and tanh in deep architectures.
+\visualseparator
+    The \textbf{dying ReLU problem}: if a neuron's pre-activation is always negative, its gradient is permanently zero and it stops learning.
+    Leaky ReLU and parametric ReLU (PReLU) mitigate this by allowing a small gradient for negative inputs.
+
+\end{v3topic}
+\begin{v3topic}{Softmax for Classification}
+    For multi-class classification, the \textbf{softmax} function converts a vector of raw scores (logits) into a probability distribution\textsuperscript{\cite[][p.~18]{fleuretLittleBookDeep}}:
+    \begin{equation}
+        \mathrm{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{K} e^{x_j}}
+    \end{equation}
+    All outputs are positive and sum to $1$.
+    Combined with cross-entropy loss, softmax provides useful gradients for training classifiers. Its outputs sum to one, but they are not automatically calibrated probabilities; calibration must be evaluated on held-out data.
+\end{v3topic}
+
+
+% ==== Section 2: Network Architectures =======================================================
+\section{Network Architectures}
+
+% ---- 6.2.1 Feed-Forward Networks ------------------------------------------------------------
+\subsection{Feed-Forward Networks}
+
+\begin{v3topic}{Dense Layers}
+    A \textbf{feed-forward network} (also called a \emph{fully connected} or \emph{dense} network) consists of layers where every neuron connects to all neurons in the next layer\textsuperscript{\cite[][pp.~15--17]{fleuretLittleBookDeep}}.
+    Each layer computes:
+    \begin{equation}
+        Y = \sigma(WX + b)
+    \end{equation}
+    where $W$ is the weight matrix, $b$ the bias vector, and $\sigma$ a nonlinear activation.
+    Information flows strictly forward --- there are no cycles or feedback connections.
+
+\end{v3topic}
+\begin{v3topic}{Universal Approximation}
+    The \textbf{Universal Approximation Theorem} (Cybenko, 1989; Hornik, 1991) states that a feed-forward network with a single hidden layer containing sufficiently many neurons can approximate any continuous function on a compact set to arbitrary precision\textsuperscript{\cite[][p.~16]{fleuretLittleBookDeep}}.
+    However, ``sufficiently many'' may be exponentially large.
+    \textbf{Deeper networks} are exponentially more parameter-efficient than wider shallow ones for many function classes\textsuperscript{\cite[][pp.~8--12]{robertsPrinciplesDeepLearning2022}} --- this is the fundamental motivation for \emph{deep} learning.
+\end{v3topic}
+
+% ---- 6.2.2 Convolutional Networks -----------------------------------------------------------
+\subsection{Convolutional Networks}
+
+\begin{v3topic}{The Convolution Operation}
+    A \textbf{Convolutional Neural Network (CNN)} replaces dense matrix multiplications with convolution operations\textsuperscript{\cite[][pp.~43--48]{fleuretLittleBookDeep}}.
+    Small learned \textbf{filters} (kernels) slide across the input, computing dot products at each position.
+    Key properties:
+    \begin{itemize}
+        \item \textbf{Weight sharing}: the same filter is applied everywhere $\to$ translation equivariance
+        \item \textbf{Local connectivity}: each output depends only on a small input region
+        \item \textbf{Parameter efficiency}: far fewer parameters than a dense layer of the same input/output size
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Pooling and Feature Hierarchies}
+    \textbf{Pooling layers} (max or average) reduce spatial dimensions and provide a degree of translation invariance\textsuperscript{\cite[][pp.~49--50]{fleuretLittleBookDeep}}.
+    Stacking convolution and pooling layers creates a \textbf{feature hierarchy}: early layers detect edges and textures; deeper layers detect parts and objects.
+    The \textbf{receptive field} --- the input region that influences a single output unit --- grows with network depth.
+
+\end{v3topic}
+\begin{v3topic}{Landmark CNN Architectures}
+\visualseparator
+    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
+        \hline
+        \textbf{Architecture} & \textbf{Year} & \textbf{Key Innovation} \\
+        \hline
+        LeNet-5 & 1998 & First successful CNN; handwritten digit recognition \\
+        \hline
+        AlexNet & 2012 & ReLU activation, dropout, GPU training; won ImageNet \\
+        \hline
+        VGG & 2014 & Uniform $3\times3$ filters; demonstrated depth matters \\
+        \hline
+        ResNet & 2015 & Skip connections; enabled training of 100+ layer networks \\
+        \hline
+    \end{tblr}
+\captionof{table}{Convolutional Networks: Landmark CNN Architectures.}
+\label{tab:ch06-deep-learning-inline-02}
+\end{v3topic}
+
+% ---- 6.2.3 Recurrent Networks, Memory Cells and LSTMs --------------------------------------
+\subsection{Recurrent Networks, Memory Cells and LSTMs}
+
+\begin{v3topic}{Recurrent Neural Networks}
+    A \textbf{Recurrent Neural Network (RNN)} processes sequential data by maintaining a hidden state $h_t$ that is updated at each time step\textsuperscript{\cite[][pp.~55--58]{fleuretLittleBookDeep}}:
+    \begin{equation}
+        h_t = \sigma(W_h h_{t-1} + W_x x_t + b)
+    \end{equation}
+    Weight sharing across time steps means the same parameters handle sequences of any length.
+    The \textbf{vanishing gradient problem} makes it difficult for standard RNNs to learn long-range dependencies: gradients are multiplied through many time steps and either vanish or explode.
+
+\end{v3topic}
+\begin{v3topic}{LSTM: Long Short-Term Memory}
+    The \textbf{LSTM} (Hochreiter \& Schmidhuber, 1997) solves the vanishing gradient problem with a \textbf{cell state} $c_t$ and three multiplicative gates\textsuperscript{\cite[][pp.~59--61]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item \textbf{Forget gate} $f_t$: decides what to discard from cell state
+        \item \textbf{Input gate} $i_t$: decides what new information to store
+        \item \textbf{Output gate} $o_t$: decides what to output from cell state
+    \end{itemize}
+\visualseparator
+    \begin{equation}
+        c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t, \quad h_t = o_t \odot \tanh(c_t)
+    \end{equation}
+    The cell state provides a ``highway'' for gradients to flow through many time steps unimpeded.
+
+\end{v3topic}
+\begin{v3topic}{GRU: Gated Recurrent Unit}
+    The \textbf{GRU} (Cho et al., 2014) simplifies the LSTM by merging the cell state and hidden state and using only two gates\textsuperscript{\cite[][p.~62]{fleuretLittleBookDeep}}:
+    a \emph{reset gate} $r_t$ (controls how much past state to forget) and an \emph{update gate} $z_t$ (controls the mix of old state and new candidate).
+    GRUs have fewer parameters than LSTMs and often achieve similar performance on many tasks.
+    Both architectures have been largely superseded by Transformer-based models for most sequence tasks, but remain relevant for streaming and low-latency applications.
+\end{v3topic}
+
+
+% ==== Section 3: Neural Network Training =====================================================
+\section{Neural Network Training}
+
+% ---- 6.3.1 Forward Pass and Loss Functions --------------------------------------------------
+\subsection{Forward Pass and Loss Functions}
+
+\begin{v3topic}{The Forward Pass}
+    During the \textbf{forward pass}, input data propagates through the network layer by layer\textsuperscript{\cite[][pp.~20--22]{fleuretLittleBookDeep}}.
+    Each layer applies its learned transformation (weights, bias, activation), producing intermediate representations.
+    The final layer produces a prediction $\hat{y}$ that is compared to the true target $y$ using a \textbf{loss function} $\mathcal{L}(y, \hat{y})$.
+
+\end{v3topic}
+\begin{v3topic}{Common Loss Functions}
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|Q[l,m]|}
+        \hline
+        \textbf{Loss} & \textbf{Formula} & \textbf{Task} \\
+        \hline
+        MSE & $\frac{1}{N}\sum(y_i - \hat{y}_i)^2$ & Regression \\
+        \hline
+        MAE & $\frac{1}{N}\sum|y_i - \hat{y}_i|$ & Regression (robust) \\
+        \hline
+        Cross-entropy & $-\sum y_i \log \hat{y}_i$ & Classification \\
+        \hline
+        Binary CE & $-[y\log\hat{y} + (1{-}y)\log(1{-}\hat{y})]$ & Binary classif. \\
+        \hline
+    \end{tblr}
+\captionof{table}{Forward Pass and Loss Functions: Common Loss Functions.}
+\label{tab:ch06-deep-learning-inline-03}
+\end{v3topic}
+
+% ---- 6.3.2 Weight Initialization and Transfer Function --------------------------------------
+\subsection{Weight Initialization and Transfer Function}
+
+\begin{v3topic}{Why Initialization Matters}
+    Initializing all weights to zero causes a \textbf{symmetry problem}: all neurons in a layer compute the same output and receive the same gradient, so they never differentiate\textsuperscript{\cite[][pp.~8--10]{robertsPrinciplesDeepLearning2022}}.
+    Too-large initial weights cause activations and gradients to explode; too-small weights cause them to vanish.
+    Proper initialization keeps the variance of activations and gradients approximately constant across layers.
+
+\end{v3topic}
+\begin{v3topic}{Xavier and He Initialization}
+    \textbf{Xavier/Glorot initialization}\textsuperscript{\cite[][]{glorotUnderstandingDifficultyTraining}} (for sigmoid/tanh):
+    \begin{equation}
+        W \sim \mathcal{N}\!\left(0,\; \frac{2}{n_{\mathrm{in}} + n_{\mathrm{out}}}\right)
+    \end{equation}
+    \textbf{He initialization} (for ReLU):
+    \begin{equation}
+        W \sim \mathcal{N}\!\left(0,\; \frac{2}{n_{\mathrm{in}}}\right)
+    \end{equation}
+    These schemes ensure that the expected variance of the output of each layer matches the variance of its input, preventing signal degradation in deep networks.
+\end{v3topic}
+
+% ---- 6.3.3 Backpropagation and Gradient Descent ---------------------------------------------
+\subsection{Backpropagation and Gradient Descent}
+
+\begin{v3topic}{Backpropagation}
+    \textbf{Backpropagation} computes the gradient of the loss with respect to every parameter by applying the chain rule layer by layer, from output back to input\textsuperscript{\cite[][pp.~1--4]{lecunTheoreticalFrameworkBack}}.
+    For a network with layers $f_1, f_2, \ldots, f_L$:
+    \begin{equation}
+        \frac{\partial \mathcal{L}}{\partial W_l} = \frac{\partial \mathcal{L}}{\partial a_L} \cdot \frac{\partial a_L}{\partial a_{L-1}} \cdots \frac{\partial a_{l+1}}{\partial a_l} \cdot \frac{\partial a_l}{\partial W_l}
+    \end{equation}
+    Each layer's local Jacobian is computed once and reused --- making the algorithm $O(N)$ in the number of parameters.
+
+\end{v3topic}
+\begin{v3topic}{Gradient Descent Variants}
+    Backpropagation computes gradients; an \textbf{optimiser} uses them to update weights\textsuperscript{\cite[][pp.~22--25]{fleuretLittleBookDeep}}.
+\visualseparator
+    \begin{tblr}{|Q[l,m]|X[l]|}
+        \hline
+        \textbf{Optimiser} & \textbf{Update Rule / Key Idea} \\
+        \hline
+        SGD & $\theta \leftarrow \theta - \eta \nabla\mathcal{L}$ \\
+        \hline
+        SGD + Momentum & Accumulates past gradients; smooths updates \\
+        \hline
+        RMSprop & Per-parameter adaptive learning rate \\
+        \hline
+        Adam & Momentum + RMSprop; default choice\textsuperscript{\cite[][]{kingmaAdamMethodStochastic2017}} \\
+        \hline
+    \end{tblr}
+\captionof{table}{Backpropagation and Gradient Descent: Gradient Descent Variants.}
+\label{tab:ch06-deep-learning-inline-04}
+
+\end{v3topic}
+\begin{v3topic}{Mini-Batch Gradient Descent}
+    In practice, gradients are computed on \textbf{mini-batches} (subsets of the training data, typically 32--512 examples)\textsuperscript{\cite[][p.~23]{fleuretLittleBookDeep}}.
+    This provides a compromise between full-batch gradient descent (low noise, expensive) and single-sample SGD (high noise, cheap).
+    Mini-batch SGD introduces beneficial stochastic noise that helps escape shallow local minima and saddle points.
+    The \textbf{learning rate} $\eta$ is the most important hyperparameter: too large $\to$ divergence; too small $\to$ slow convergence.
+\end{v3topic}
+
+% ---- 6.3.4 Training Loop -------------------------------------------------------------------
+\subsection{Training Loop}
+
+\begin{v3topic}{Epochs and Batches}
+    The training process iterates through the dataset in structured passes\textsuperscript{\cite[][pp.~24--26]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item \textbf{Epoch}: one complete pass through the entire training set
+        \item \textbf{Iteration/step}: one parameter update using a single mini-batch
+        \item \textbf{Batch size}: number of examples per mini-batch; affects gradient quality and memory usage
+    \end{itemize}
+    A typical training run uses tens to hundreds of epochs, with the dataset reshuffled between epochs.
+
+\end{v3topic}
+\begin{v3topic}{Data Splits and Early Stopping}
+    The data is split into \textbf{training}, \textbf{validation}, and \textbf{test} sets (common split: 70/15/15 or 80/10/10)\textsuperscript{\cite[][p.~26]{fleuretLittleBookDeep}}.
+    During training, the model is evaluated on the validation set after each epoch.
+    \textbf{Early stopping}: if validation loss does not improve for a set number of epochs (``patience''), training halts and the model reverts to the best checkpoint.
+    This is one of the most effective and simplest forms of regularisation.
+\visualseparator
+    \textbf{Learning rate scheduling} further improves training:
+    \begin{itemize}
+        \item \emph{Step decay}: reduce $\eta$ by a factor at fixed intervals
+        \item \emph{Cosine annealing}: smoothly decrease $\eta$ following a cosine curve
+        \item \emph{Warmup}: start with a very small $\eta$ and linearly increase it over the first few epochs
+    \end{itemize}
+\end{v3topic}
+
+% ---- 6.3.5 Regularization and Overtraining --------------------------------------------------
+\subsection{Regularization and Overtraining}
+
+\begin{v3topic}{Overfitting}
+    A model \textbf{overfits} when it memorises the training data (low training loss) but generalises poorly to unseen data (high validation loss)\textsuperscript{\cite[][pp.~27--29]{fleuretLittleBookDeep}}.
+    Deep networks with millions of parameters are particularly prone to overfitting when training data is limited.
+    \textbf{Regularisation} techniques constrain the model's capacity to reduce overfitting.
+
+\end{v3topic}
+\begin{v3topic}{Dropout}
+    During each training step, \textbf{dropout} randomly sets a fraction $p$ of neuron activations to zero\textsuperscript{\cite[][p.~28]{fleuretLittleBookDeep}}.
+    This prevents co-adaptation: neurons cannot rely on specific other neurons being active, forcing redundant representations.
+    At test time, dropout is turned off and activations are scaled by $(1 - p)$ to maintain expected values.
+
+\end{v3topic}
+\begin{v3topic}{Weight Regularisation}
+    Adding a penalty term to the loss discourages large weights:
+    \begin{itemize}
+        \item \textbf{L2} (weight decay): $\mathcal{L}_{\mathrm{reg}} = \mathcal{L} + \lambda \sum w_i^2$ --- encourages small, distributed weights
+        \item \textbf{L1}: $\mathcal{L}_{\mathrm{reg}} = \mathcal{L} + \lambda \sum |w_i|$ --- encourages sparsity (many weights exactly zero)
+    \end{itemize}
+    In practice, L2 regularisation (weight decay) is the most commonly used, often built directly into the optimiser.
+
+\end{v3topic}
+\begin{v3topic}{Batch Normalization}
+    \textbf{Batch Normalization} (BN)\textsuperscript{\cite[][]{ioffeBatchNormalizationAccelerating2015}} normalises the activations of each layer across the mini-batch to have zero mean and unit variance, then applies learned scale $\gamma$ and shift $\beta$ parameters.
+    Benefits: stabilises training, allows higher learning rates, and provides a mild regularisation effect.
+    BN is applied between the linear transformation and the activation function.
+
+\end{v3topic}
+\begin{v3topic}{Data Augmentation}
+    \textbf{Data augmentation} artificially expands the training set by applying label-preserving transformations\textsuperscript{\cite[][p.~29]{fleuretLittleBookDeep}}:
+    random flips, rotations, crops, colour jitter, or more advanced techniques like mixup and cutout.
+    This is particularly effective for image tasks and can reduce overfitting significantly without changing the model architecture.
+\end{v3topic}
+
+
+% ==== Section 4: Alternative Training Methods ================================================
+\section{Alternative Training Methods}
+
+% ---- 6.4.1 Attention -----------------------------------------------------------------------
+\subsection{Attention}
+
+\begin{v3topic}{Attention: Why It Matters}
+    Fully connected layers cannot handle variable-length inputs; convolutional layers propagate information only locally.
+    \textbf{Attention layers} address this by computing, for every component of the output, a weighted average over the \emph{entire} input tensor --- regardless of distance\textsuperscript{\cite[][p.~73]{fleuretLittleBookDeep}}.
+    This makes them the key building block for Transformers and modern large language models.
+
+\end{v3topic}
+\begin{v3topic}{Query, Key, Value}
+    The \textbf{attention operator} att$(Q, K, V)$ takes three tensors\textsuperscript{\cite[][pp.~74--76]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item $Q \in \mathbb{R}^{N^q \times D^{qk}}$ --- \emph{Queries}
+        \item $K \in \mathbb{R}^{N^{kv} \times D^{qk}}$ --- \emph{Keys}
+        \item $V \in \mathbb{R}^{N^{kv} \times D^v}$ --- \emph{Values}
+    \end{itemize}
+    For each query $Q_n$, attention scores $A_{n,m}$ measure how well $Q_n$ matches each key $K_m$.
+    The retrieved value $Y_n = \sum_m A_{n,m} V_m$ is a weighted average of all values.
+
+\end{v3topic}
+\begin{v3topic}{Scaled Dot-Product Attention}
+    Attention scores are computed as a scaled softmax of dot-products between queries and keys\textsuperscript{\cite[][p.~3]{vaswaniAttentionAllYou2023}}.
+    The scaling factor $1/\!\sqrt{D^{qk}}$ keeps the dot products in a range where softmax has useful gradients.
+\visualseparator
+    \begin{equation}
+        \mathrm{Attention}(Q, K, V)
+        = \mathrm{softmax}\!\left(\frac{QK^{\!\top}}{\sqrt{D^{qk}}}\right) V
+    \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Self- and Cross-Attention}
+    In a \textbf{self-attention} block, the three input sequences $X^q$, $X^k$, $X^v$ are identical\textsuperscript{\cite[][p.~79]{fleuretLittleBookDeep}}.
+    Every position can gather information from every other position in the same sequence --- enabling global context.
+
+    In a \textbf{cross-attention} block, $X^k$ and $X^v$ come from a different sequence (e.g., the encoder representation), while $X^q$ comes from the current sequence (e.g., the decoder).
+
+\end{v3topic}
+\begin{v3topic}{Multi-Head Attention}
+    A single attention head averages over all value positions and cannot attend to multiple subspaces simultaneously.
+    \textbf{Multi-Head Attention}\textsuperscript{\cite[][pp.~4--5]{vaswaniAttentionAllYou2023}} runs $H$ attention heads in parallel, each with its own learned projections $W^q_h, W^k_h, W^v_h$, then concatenates and projects:
+    \begin{equation}
+        \mathrm{MultiHead}(Q,K,V) = \mathrm{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_H)\,W^O
+    \end{equation}
+    Each head can learn to attend to a different type of relationship (syntactic, semantic, positional).
+\end{v3topic}
+
+% ---- 6.4.2 Transformer Architecture ---------------------------------------------------------
+\subsection{Transformer Architecture}
+
+\begin{v3topic}{Why Transformers Replaced RNNs}
+    Recurrent networks process sequences step-by-step, requiring $O(n)$ sequential operations --- preventing parallelism and making long-range dependencies hard to learn\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
+    Self-attention layers connect all positions with $O(1)$ sequential operations and constant path length between any two positions.
+    Transformers train significantly faster on modern hardware and scale to billions of parameters\textsuperscript{\cite[][p.~93]{fleuretLittleBookDeep}}.
+
+\end{v3topic}
+\begin{v3topic}{Encoder--Decoder Structure}
+    The original Transformer\textsuperscript{\cite[][p.~2]{vaswaniAttentionAllYou2023}} is designed for sequence-to-sequence tasks (e.g., translation):
+    \begin{itemize}
+        \item \textbf{Encoder:} $N$ identical layers, each with (1) multi-head self-attention and (2) position-wise feed-forward network (FFN); residual connections and layer normalisation around each sub-layer
+        \item \textbf{Decoder:} $N$ layers with (1) masked causal self-attention, (2) cross-attention over encoder output, and (3) FFN; causal masking prevents attending to future tokens
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Transformer Block Diagram}
+    The encoder processes the full input in parallel; the decoder generates output tokens autoregressively.
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.25cm and 0.7cm,
+        box/.style={draw, rounded corners=2pt, minimum width=2.8cm, minimum height=0.55cm,
+                    font=\sffamily\scriptsize, align=center, fill=blue!10},
+        addnorm/.style={draw, rounded corners=2pt, minimum width=2.8cm, minimum height=0.45cm,
+                    font=\sffamily\scriptsize, align=center, fill=orange!15},
+        lbl/.style={font=\sffamily\scriptsize, text=gray},
+        arr/.style={-{Stealth[length=2mm]}, thick},
+        brace/.style={decorate, decoration={brace, amplitude=4pt}}
+    ]
+        % ---- ENCODER (left column) ----
+        \node[box] (emb_e)                          {Embedding};
+        \node[box, above=of emb_e] (pe_e)            {+ Pos.\ Encoding};
+        \node[addnorm, above=of pe_e] (an1_e)       {Add \& Norm};
+        \node[box, above=of an1_e] (mha_e)          {Multi-Head\\Self-Attention};
+        \node[addnorm, above=of mha_e] (an2_e)      {Add \& Norm};
+        \node[box, above=of an2_e] (ffn_e)          {Feed Forward};
+        \node[addnorm, above=of ffn_e] (an3_e)      {Add \& Norm};
+        \node[lbl, left=0.15cm of mha_e] {$\times N$};
+
+        % ---- DECODER (right column) ----
+        \node[box, right=2.5cm of emb_e] (emb_d)         {Embedding};
+        \node[box, above=of emb_d] (pe_d)           {+ Pos.\ Encoding};
+        \node[addnorm, above=of pe_d] (an1_d)      {Add \& Norm};
+        \node[box, above=of an1_d] (cmha_d)        {Masked\\Self-Attention};
+        \node[addnorm, above=of cmha_d] (an2_d)    {Add \& Norm};
+        \node[box, above=of an2_d] (xatt_d)        {Cross-Attention};
+        \node[addnorm, above=of xatt_d] (an3_d)    {Add \& Norm};
+        \node[box, above=of an3_d] (ffn_d)         {Feed Forward};
+        \node[addnorm, above=of ffn_d] (an4_d)     {Add \& Norm};
+        \node[lbl, right=0.15cm of cmha_d] {$\times N$};
+
+        % Output
+        \node[box, above=0.3cm of an4_d, fill=green!15] (out) {Linear + Softmax};
+
+        % Encoder arrows
+        \draw[arr] (emb_e) -- (pe_e);
+        \draw[arr] (pe_e) -- (an1_e);
+        \draw[arr] (an1_e) -- (mha_e);
+        \draw[arr] (mha_e) -- (an2_e);
+        \draw[arr] (an2_e) -- (ffn_e);
+        \draw[arr] (ffn_e) -- (an3_e);
+
+        % Decoder arrows
+        \draw[arr] (emb_d) -- (pe_d);
+        \draw[arr] (pe_d) -- (an1_d);
+        \draw[arr] (an1_d) -- (cmha_d);
+        \draw[arr] (cmha_d) -- (an2_d);
+        \draw[arr] (an2_d) -- (xatt_d);
+        \draw[arr] (xatt_d) -- (an3_d);
+        \draw[arr] (an3_d) -- (ffn_d);
+        \draw[arr] (ffn_d) -- (an4_d);
+        \draw[arr] (an4_d) -- (out);
+
+        % Cross-attention connection from encoder
+        \draw[arr, dashed, gray] (an3_e.east) .. controls +(0.4,0.8) and +(-0.4,0) .. (xatt_d.west)
+            node[midway, above, font=\sffamily\tiny, gray] {K, V};
+
+        % Input labels
+        \node[lbl, below=0.1cm of emb_e] {Source tokens};
+        \node[lbl, below=0.1cm of emb_d] {Target tokens (shifted)};
+        \node[lbl, above=0.1cm of out] {Output probs};
+    \end{tikzpicture}
+\captionof{figure}{Transformer Architecture: Transformer Block Diagram.}
+\label{fig:ch06-deep-learning-inline-02}
+    \end{center}
+
+\end{v3topic}
+\begin{v3topic}{Positional Encoding}
+    Attention is permutation-invariant --- it has no notion of sequence order.
+    Position information is injected by adding a \textbf{positional encoding} to the input embeddings\textsuperscript{\cite[][pp.~81--82]{fleuretLittleBookDeep}}.
+    The original Transformer uses sinusoidal encoding:
+    \begin{equation}
+        \mathrm{PE}_{t,2i} = \sin\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right),
+        \quad
+        \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right)
+    \end{equation}
+    The deterministic encoding can be evaluated at positions beyond those observed during training, but useful length extrapolation is an empirical property rather than a mathematical guarantee. Learned positional embeddings performed similarly in the original experiments\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
+
+\end{v3topic}
+\begin{v3topic}{GPT and BERT: Decoder- and Encoder-Only}
+    Modern large language models are typically \emph{decoder-only} or \emph{encoder-only}\textsuperscript{\cite[][pp.~97--99]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item \textbf{GPT} (Radford et al.\ 2018): decoder-only; stacked causal self-attention blocks; trained autoregressively on next-token prediction; scales to hundreds of billions of parameters
+        \item \textbf{BERT}\textsuperscript{\cite[][]{devlinBERTPretrainingDeep2019}} (Devlin et al.\ 2019): encoder-only; bidirectional; trained on masked language modeling and next-sentence prediction
+    \end{itemize}
+\end{v3topic}
+
+% ---- 6.4.3 Feedback Alignment ---------------------------------------------------------------
+\subsection{Feedback Alignment}
+
+\begin{v3topic}{The Weight Transport Problem}
+    Standard backpropagation transmits error signals using the \emph{transpose} of the forward weight matrix $W^\top$\textsuperscript{\cite[][p.~3]{fischerVorlesungGrundlagenNeuronale2024}}.
+    This requires the backward path to have exact knowledge of every forward weight --- a condition with no known biological mechanism, called the \textbf{weight transport problem}.
+
+\end{v3topic}
+\begin{v3topic}{Feedback Alignment}
+    Lillicrap et al.\ (2016) showed that replacing $W^\top$ with a \textbf{fixed random feedback matrix} $B$ still produces learning.
+    The forward weights $W$ gradually align with $B$ during training --- the network effectively ``shapes itself'' to match the random feedback.
+    \textbf{Direct Feedback Alignment} (N{\o}kland, 2016) extends this further: each layer receives error signals \emph{directly} from the output layer via separate random matrices, bypassing the chain entirely.
+\end{v3topic}
+
+% ---- 6.4.4 Synthetic Gradients --------------------------------------------------------------
+\subsection{Synthetic Gradients}
+
+\begin{v3topic}{Decoupled Neural Interfaces}
+    In standard backpropagation, no layer can update until the full forward and backward passes complete --- a constraint called \textbf{update locking}.
+    Jaderberg et al.\ (2017) introduced \textbf{Decoupled Neural Interfaces (DNI)}: a small auxiliary network $M_i$ attached to each layer that \emph{predicts} the gradient $\partial\mathcal{L}/\partial h_i$ without waiting for it to arrive.
+    The layer updates immediately using this synthetic gradient; $M_i$ is itself trained by the true gradient when it eventually arrives.
+    This enables asynchronous, modular training of deep networks --- each layer acts as an independent learning module with a local objective.
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.35cm and 0.5cm,
+        lay/.style={draw, rounded corners, minimum width=1.8cm, minimum height=0.6cm,
+                    font=\sffamily\scriptsize, fill=blue!10},
+        dni/.style={draw, rounded corners, minimum width=1.4cm, minimum height=0.5cm,
+                    font=\sffamily\scriptsize, fill=orange!20},
+        arr/.style={-{Stealth[length=2mm]}, thick},
+        darr/.style={-{Stealth[length=2mm]}, dashed, gray}
+    ]
+        \node[lay] (L1) {Layer 1};
+        \node[lay, right=of L1] (L2) {Layer 2};
+        \node[lay, right=of L2] (L3) {Layer 3};
+        \node[lay, right=of L3] (loss) {Loss};
+
+        \node[dni, below=of L1] (M1) {DNI $M_1$};
+        \node[dni, below=of L2] (M2) {DNI $M_2$};
+
+        \draw[arr] (L1) -- (L2) node[midway, above, font=\sffamily\tiny] {$h_1$};
+        \draw[arr] (L2) -- (L3) node[midway, above, font=\sffamily\tiny] {$h_2$};
+        \draw[arr] (L3) -- (loss);
+
+        \draw[arr] (L1) -- (M1);
+        \draw[arr] (L2) -- (M2);
+
+        \draw[darr] (M1) -- (L1) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_1$};
+        \draw[darr] (M2) -- (L2) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_2$};
+    \end{tikzpicture}
+\captionof{figure}{Synthetic Gradients: Decoupled Neural Interfaces.}
+\label{fig:ch06-deep-learning-inline-03}
+    \end{center}
+\end{v3topic}
+
+% ---- 6.4.5 Decoupled Network Interfaces -----------------------------------------------------
+\subsection{Decoupled Network Interfaces}
+
+\begin{v3topic}{Local Learning Signals}
+    The full Decoupled Neural Interface framework removes both \emph{update locking} (no backward pass needed) and \emph{forward locking} (synthetic activations can substitute for real forward signals).
+    Each module then has a \textbf{local learning signal} and can train asynchronously.
+    This is more aligned with how biological neural circuits are thought to operate --- local Hebbian-like updates rather than a global error signal broadcast through the entire network\textsuperscript{\cite[][p.~2]{fischerVorlesungGrundlagenNeuronale2024}}.
+    In practice, synthetic gradients are primarily a research contribution; standard backpropagation remains the dominant approach.
+\end{v3topic}
+
+
+% ==== Section 5: Further Network Architectures ===============================================
+\section{Further Network Architectures}
+
+% ---- 6.5.1 GANs -----------------------------------------------------------------------------
+\subsection{Generative Adversarial Networks}
+
+\begin{v3topic}{Generator and Discriminator}
+    A \textbf{Generative Adversarial Network (GAN)} introduced by Goodfellow et al.\ (2014) pits two networks against each other\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}:
+    \begin{itemize}
+        \item \textbf{Generator} $G(z)$: takes random noise $z \sim p(z)$ and produces a structured output (e.g., an image) that mimics real data
+        \item \textbf{Discriminator} $D(x)$: takes either a real sample or $G(z)$; outputs probability that the input is real
+    \end{itemize}
+    At equilibrium, $G$ produces samples indistinguishable from real data and $D$ outputs $0.5$ everywhere.
+
+\end{v3topic}
+\begin{v3topic}{The Minimax Objective}
+    Training is formulated as a two-player minimax game\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}: $D$ maximises its ability to distinguish real from fake; $G$ minimises the probability that $D$ identifies its outputs as fake.
+\visualseparator
+    \begin{equation}
+        \min_G \max_D \;\bigl[\,\mathbb{E}[\log D(x)] + \mathbb{E}[\log(1 - D(G(z)))]\,\bigr]
+    \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Training Dynamics and Mode Collapse}
+    GAN training is notoriously unstable.
+    When the discriminator is too strong, gradients to the generator vanish; when it is too weak, the generator does not learn useful structure.
+    A key failure mode is \textbf{mode collapse}: the generator learns to produce a small variety of outputs that fool the discriminator, ignoring most of the real data distribution.
+    As gradients flow from $D$ back to $G$, the discriminator informs the generator about the cues it detects --- the generator then learns to eliminate those cues\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
+    Variants such as Wasserstein GAN (WGAN) and spectral normalisation address training stability.
+\end{v3topic}
+
+% ---- 6.5.2 Autoencoders ---------------------------------------------------------------------
+\subsection{Autoencoders}
+
+\begin{v3topic}{Encoder--Bottleneck--Decoder}
+    An \textbf{autoencoder} consists of an \emph{encoder} $f_\phi$ and a \emph{decoder} $g_\theta$\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
+    The encoder maps the high-dimensional input $x$ to a low-dimensional latent vector $z = f_\phi(x)$; the decoder reconstructs $\hat{x} = g_\theta(z)$.
+    The bottleneck forces the network to learn a compact representation of the data manifold.
+\visualseparator
+    \begin{itemize}
+        \item Loss: $\mathcal{L} = \|x - \hat{x}\|^2$ (MSE) or cross-entropy
+        \item Applications: dimensionality reduction, denoising, anomaly detection, pre-training
+        \item A \textbf{denoising autoencoder} receives corrupted $\tilde{x}$ as input but targets clean $x$, forcing more robust representations
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Variational Autoencoder (VAE)}
+    The \textbf{Variational Autoencoder} (Kingma \& Welling, 2013) imposes a prior distribution on the latent space\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
+    The encoder outputs parameters $(\mu, \sigma)$ of a Gaussian; the \emph{reparameterisation trick} ($z = \mu + \sigma \odot \varepsilon$, $\varepsilon \sim \mathcal{N}(0,I)$) makes sampling differentiable.
+\visualseparator
+    \begin{equation}
+        \mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}\bigl[\log p_\theta(x|z)\bigr]
+        - \mathrm{KL}\bigl(q_\phi(z|x) \,\|\, p(z)\bigr)
+    \end{equation}
+    The KL term regularises the latent space towards $\mathcal{N}(0,I)$, enabling new samples to be drawn by sampling $z \sim \mathcal{N}(0,I)$ and decoding.
+\end{v3topic}
+
+% ---- 6.5.3 Restricted Boltzmann Machines ----------------------------------------------------
+\subsection{Restricted Boltzmann Machines}
+
+\begin{v3topic}{Energy-Based Generative Model}
+    A \textbf{Restricted Boltzmann Machine (RBM)} is a bipartite undirected graphical model with visible units $v$ and hidden units $h$, and no intra-layer connections.
+    The joint probability is defined via an energy function:
+    \begin{equation}
+        E(v, h) = -v^\top W h - b^\top v - c^\top h
+    \end{equation}
+    with $P(v, h) \propto \exp(-E(v,h))$.
+    The restriction to bipartite structure makes conditional distributions tractable: $P(h|v)$ and $P(v|h)$ are independent Bernoulli.
+
+\end{v3topic}
+\begin{v3topic}{Contrastive Divergence Training}
+    Exact maximum-likelihood training requires computing the partition function (intractable).
+    \textbf{Contrastive Divergence (CD-k)} approximates the gradient\textsuperscript{\cite[][]{Kriesel2007NeuralNetworks}}:
+    \begin{itemize}
+        \item \emph{Positive phase}: clamp real data $v$; sample $h \sim P(h|v)$
+        \item \emph{Negative phase}: run $k$ steps of Gibbs sampling to get model sample $(\tilde{v},\tilde{h})$
+        \item Update: $\Delta W \propto \langle vh \rangle_\mathrm{data} - \langle \tilde{v}\tilde{h} \rangle_\mathrm{model}$
+    \end{itemize}
+    RBMs were used for greedy layer-wise pre-training of deep belief networks (Hinton et al., 2006) but have been largely superseded by modern training methods.
+\end{v3topic}
+
+% ---- 6.5.4 Capsule Networks -----------------------------------------------------------------
+\subsection{Capsule Networks}
+
+\begin{v3topic}{Capsules and Dynamic Routing}
+    Proposed by Sabour, Frosst \& Hinton (2017) to address a fundamental limitation of CNNs: pooling operations are viewpoint-invariant but discard spatial and pose information.
+    A \textbf{capsule} is a group of neurons whose \emph{activity vector} encodes both the presence (vector length) and instantiation parameters such as pose, scale, and orientation (vector direction) of an entity.
+    Lower-level capsules send \textbf{votes} to candidate higher-level capsules; an iterative \textbf{dynamic routing} algorithm (3 iterations) selects the higher-level capsule whose pose best agrees with the votes.
+    This enables \textbf{equivariance}: as viewpoint changes, the capsule representation changes predictably, preserving part-whole relationships\textsuperscript{\cite[][]{fleuretLittleBookDeep}}.
+\visualseparator
+    \begin{itemize}
+        \item Advantage: encodes spatial hierarchies, more interpretable than CNNs
+        \item Limitation: $O(n^2)$ routing cost; does not scale well to complex datasets such as ImageNet
+    \end{itemize}
+\end{v3topic}
+
+% ---- 6.5.5 Spiking Networks -----------------------------------------------------------------
+\subsection{Spiking Networks}
+
+\begin{v3topic}{Third-Generation Neural Networks}
+    \textbf{Spiking Neural Networks (SNNs)}, introduced by Maass (1997), are described as the ``third generation'' of neural networks.
+    Rather than communicating through continuous activations, neurons emit discrete \textbf{spike} events.
+    The \textbf{Leaky Integrate-and-Fire (LIF)} neuron model accumulates input in a membrane potential $V(t)$; when $V$ exceeds a threshold $\theta$, a spike is emitted and $V$ resets.
+    Information can be encoded in spike rates or precise spike timing.
+\visualseparator
+    \begin{itemize}
+        \item \textbf{Energy efficiency}: sparse spike events map naturally onto neuromorphic hardware (Intel Loihi, IBM TrueNorth) with orders-of-magnitude lower power than GPU-based ANNs
+        \item \textbf{Biological plausibility}: closer to cortical computation than rate-coded networks
+        \item \textbf{Training challenge}: the spike function is non-differentiable; \emph{surrogate gradients} (smooth approximations) enable gradient-based training
+        \item \textbf{Current status}: promising for edge and embedded AI; not yet competitive with ANNs on standard benchmarks
+    \end{itemize}
+\end{v3topic}
+
+
+% ==== Section 6: Further Reading =============================================================
+%
+\section{Deep Dive: Modern Training and Inference}
+\begin{v3topic}{Residual Pre-Norm Blocks}
+Modern deep networks stabilise optimisation with residual paths and
+normalisation.
+In a pre-norm Transformer block,
+$x' = x + \mathrm{Attention}(\mathrm{Norm}(x))$ and
+$y = x' + \mathrm{MLP}(\mathrm{Norm}(x'))$.
+The residual path carries information and gradients even when a learned branch
+is initially poor.
+
+\end{v3topic}
+\begin{v3topic}{Training Parallelism vs Inference}
+Self-attention can process training positions in parallel, but dense attention
+still has quadratic interaction cost in sequence length.
+Autoregressive generation remains sequential across new tokens.
+A key--value cache avoids recomputing earlier keys and values, trading memory
+for lower per-token latency.
+
+\end{v3topic}
+\begin{v3topic}{Efficiency Is Multi-Dimensional}
+Quantisation, distillation, sparsity, low-rank adaptation, activation
+checkpointing, batching, and distributed sharding reduce different costs and
+introduce different errors.
+Benchmark end-to-end quality, latency, throughput, peak memory, energy, and
+operational complexity under the intended workload; parameter count alone is
+not a deployment metric.
+\end{v3topic}
+
+\chapterreview{Represent}{Differentiate}{Optimise}{Scale}
+
+\section{Further Reading}
+
+\begin{v3topic}{Recommended Sources for Deep Learning}
+    \begin{itemize}
+        \item \fullcite{fleuretLittleBookDeep} — Concise yet comprehensive overview of deep learning: architectures, training, attention, transformers, and generative models.
+        \item \fullcite{Kriesel2007NeuralNetworks} — Thorough introduction to biological foundations, perceptrons, MLPs, and RBMs with historical context.
+        \item \fullcite{robertsPrinciplesDeepLearning2022} — Theoretical perspective on initialization, depth, and why deep networks generalize.
+        \item \fullcite{vaswaniAttentionAllYou2023} — The original Transformer paper: self-attention, multi-head attention, positional encoding, and encoder--decoder architecture.
+        \item \fullcite{devlinBERTPretrainingDeep2019} — BERT: bidirectional pre-training with masked language modelling and next-sentence prediction.
+        \item \fullcite{fischerVorlesungGrundlagenNeuronale2024} — German-language lecture notes covering neural network foundations, feedback alignment, and biological plausibility.
+        \item \fullcite{dhamaniIntroductionGenerativeAI2024} — Practical introduction to generative AI: LLMs, GANs, VAEs, and transformer-based generation.
+    \end{itemize}
+\end{v3topic}

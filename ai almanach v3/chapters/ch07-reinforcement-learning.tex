@@ -1,0 +1,1081 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Reinforcement Learning =============================================================================
+    \chapter{Reinforcement Learning}
+
+\chapterlead{How should an agent learn when its actions change later observations?}{Model}{Act}{Update}{Evaluate}{reinforcement-learning}
+
+    % -------------------------------------------------------
+    \section{Introduction to Reinforcement Learning}
+
+
+\begin{v3topic}{What is Reinforcement Learning?}
+        Reinforcement Learning (RL) is a learning paradigm in which an
+        \textbf{agent} interacts with an \textbf{environment} to maximise
+        cumulative \textbf{reward}. Unlike supervised learning (labelled
+        examples) or unsupervised learning (structure discovery), the agent
+        receives only a scalar reward signal --- often delayed --- and must learn
+        by \emph{trial and error}.\textsuperscript{\cite[][p.~323]{hurbansGrokkingArtificialIntelligence2020}}
+
+        The core challenge is the \textbf{exploration--exploitation trade-off}:
+        should the agent exploit its best-known strategy or explore to
+        discover potentially better ones?
+
+\end{v3topic}
+\begin{v3topic}{The Reward Hypothesis}
+        \textbf{Reward hypothesis}: all goals can be expressed as the
+        maximisation of a scalar cumulative reward signal.
+
+        \begin{itemize}
+            \item Reward encodes the \emph{objective}, not the \emph{strategy}
+            \item Reward may be immediate or heavily delayed
+            \item The agent is not told \emph{how} to act --- only \emph{how well}
+        \end{itemize}
+        \textsuperscript{\cite[][p.~324]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Agent--Environment Interaction Loop}
+        At each discrete timestep $t$ the agent receives state $s_t$, selects
+        action $a_t$, and the environment returns reward $r_{t+1}$ and next
+        state $s_{t+1}$. This produces a \textbf{trajectory}
+        $\tau = (s_0, a_0, r_1, s_1, a_1, r_2, \ldots)$.%
+        \textsuperscript{\cite[][p.~325]{hurbansGrokkingArtificialIntelligence2020}}
+\visualseparator
+        \begin{center}
+        \begin{tikzpicture}[
+            box/.style={draw, rounded corners=4pt, minimum width=2.2cm,
+                        minimum height=0.9cm, align=center, font=\small},
+            arr/.style={-Stealth, thick}
+        ]
+            \node[box, fill=LimeGreen!25] (agent) {Agent};
+            \node[box, fill=orange!20, right=4.5cm of agent] (env) {Environment};
+            \draw[arr] (agent.north) to[bend left=30]
+                node[above, font=\footnotesize]{action $a_t$} (env.north);
+            \draw[arr] (env.south) to[bend left=30]
+                node[below, font=\footnotesize]{state $s_{t+1}$, reward $r_{t+1}$}
+                (agent.south);
+        \end{tikzpicture}
+\captionof{figure}{Introduction to Reinforcement Learning: Agent--Environment Interaction Loop.}
+\label{fig:ch07-reinforcement-learning-inline-01}
+        \end{center}
+
+\end{v3topic}
+\begin{v3topic}{Core Components}
+        \begin{description}[leftmargin=0.5cm, labelindent=0pt]
+            \item[\textbf{Agent}] The learner and decision-maker
+            \item[\textbf{Environment}] Everything external to the agent
+            \item[\textbf{State $s$}] Representation of the current situation
+            \item[\textbf{Action $a$}] A choice available to the agent
+            \item[\textbf{Reward $r$}] Scalar feedback from the environment
+            \item[\textbf{Policy $\pi$}] Mapping: state $\to$ action (or distribution)
+            \item[\textbf{Value $V(s)$}] Expected cumulative future reward from $s$
+            \item[\textbf{Model}] Internal model of environment dynamics (optional)
+        \end{description}
+        \textsuperscript{\cite[][p.~326]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{RL vs.\ Supervised vs.\ Unsupervised}
+        \begin{tblr}{
+            colspec={X[l]X[l]X[l]},
+            hlines, vlines,
+            row{1}={font=\bfseries\small, bg=LimeGreen!20},
+            row{2-Z}={font=\small},
+        }
+            Supervised & Unsupervised & Reinforcement \\
+            Labelled data & Unlabelled data & Interactions \\
+            Immediate answer & No feedback & Delayed reward \\
+            Generalise & Discover structure & Maximise return \\
+            No exploration & No exploration & Exploration essential \\
+        \end{tblr}
+\captionof{table}{Introduction to Reinforcement Learning: RL vs.\ Supervised vs.\ Unsupervised.}
+\label{tab:ch07-reinforcement-learning-inline-01}
+        \textsuperscript{\cite[][p.~323]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+
+
+    % -------------------------------------------------------
+    \section{Markov Decision Processes}
+
+
+\begin{v3topic}{The Markov Property}
+        A state $s_t$ satisfies the \textbf{Markov property} if:
+        \begin{equation}
+            P(s_{t+1} \mid s_t, a_t) = P(s_{t+1} \mid s_0, a_0, \ldots, s_t, a_t)
+        \end{equation}
+        The future depends only on the \emph{current} state and action, not
+        on the full history --- the state is a \emph{sufficient statistic} of
+        the past. This memoryless property enables tractable dynamic
+        programming solutions.\textsuperscript{\cite[][p.~140]{barberBayesianReasoningMachine2012}}
+
+\end{v3topic}
+\begin{v3topic}{MDP: Formal Definition}
+        A \textbf{Markov Decision Process} is the tuple
+        $\mathcal{M} = (\mathcal{S}, \mathcal{A}, P, R, \gamma)$:
+        \begin{itemize}
+            \item $\mathcal{S}$: finite state space
+            \item $\mathcal{A}$: finite action space
+            \item $P(s' \mid s, a)$: transition probability
+            \item $R(s, a)$: expected immediate reward
+            \item $\gamma \in [0,1]$: discount factor
+        \end{itemize}
+        The agent's goal is to find policy $\pi^*$ that maximises expected
+        discounted return from every starting
+        state.\textsuperscript{\cite[][p.~141]{barberBayesianReasoningMachine2012}}
+
+\end{v3topic}
+\begin{v3topic}{Cumulative Discounted Return $G_t$}
+        The \textbf{return} at time $t$ is the discounted sum of all future
+        rewards:\textsuperscript{\cite[][p.~142]{barberBayesianReasoningMachine2012}}
+\visualseparator
+        \begin{equation}
+            G_t = \sum_{k=0}^{\infty} \gamma^k\, r_{t+k+1}
+                = r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + \cdots
+        \end{equation}
+        Discount factor $\gamma$ controls the time-horizon:
+        $\gamma = 0$ (myopic, only immediate reward);
+        $\gamma \to 1$ (far-sighted, all future equally weighted).
+        For $\gamma < 1$, the sum converges even for infinite horizons.
+
+\end{v3topic}
+\begin{v3topic}{Value Functions}
+        \textbf{State-value function} under policy $\pi$:
+        \begin{equation}
+            V^{\pi}(s) = \mathbb{E}_{\pi}\!\left[G_t \mid S_t = s\right]
+        \end{equation}
+        \textbf{Action-value (Q) function} under policy $\pi$:
+        \begin{equation}
+            Q^{\pi}(s, a) = \mathbb{E}_{\pi}\!\left[G_t \mid S_t = s, A_t = a\right]
+        \end{equation}
+        $V^{\pi}(s)$ is the expected return following $\pi$ from $s$;
+        $Q^{\pi}(s,a)$ additionally fixes the first action.
+        Optimal: $V^*(s) = \max_\pi V^\pi(s)$.\textsuperscript{\cite[][p.~143]{barberBayesianReasoningMachine2012}}
+
+\end{v3topic}
+\begin{v3topic}{Bellman Equations}
+        \textbf{Bellman expectation} decomposes the value function
+        recursively:\textsuperscript{\cite[][p.~145]{barberBayesianReasoningMachine2012}}
+        \begin{equation}
+            V^{\pi}(s) = \sum_a \pi(a|s) \sum_{s'} P(s'|s,a)
+                         \bigl[R(s,a) + \gamma V^{\pi}(s')\bigr]
+        \end{equation}
+        \textbf{Bellman optimality} characterises the optimal value:
+        \begin{equation}
+            V^*(s) = \max_a \sum_{s'} P(s'|s,a)
+                     \bigl[R(s,a) + \gamma V^*(s')\bigr]
+        \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Value Iteration}
+        A \textbf{dynamic programming} algorithm for finding $V^*$ when the
+        model $(P, R)$ is
+        known:\textsuperscript{\cite[][p.~153]{barberBayesianReasoningMachine2012}}
+        \begin{enumerate}
+            \item Initialise $V(s) \leftarrow 0\ \forall s$
+            \item Repeat until $\|V_{k+1} - V_k\|_\infty < \epsilon$:
+            \begin{equation}
+                V_{k+1}(s) \leftarrow \max_a \sum_{s'} P(s'|s,a)
+                           \bigl[R(s,a) + \gamma V_k(s')\bigr]
+            \end{equation}
+            \item Extract $\pi^*(s) = \arg\max_a \sum_{s'} P(s'|s,a)[R + \gamma V^*]$
+        \end{enumerate}
+        Convergence guaranteed (Bellman operator is a contraction).
+
+\end{v3topic}
+\begin{v3topic}{MDP State Transitions}
+        MDP transitions depend on both state and action. Below: three states
+        with two actions ($a_1, a_2$), illustrating stochastic transitions.
+\visualseparator
+        \begin{center}
+        \begin{tikzpicture}[
+            state/.style={circle, draw, minimum size=0.9cm, font=\small},
+            arr/.style={-Stealth, thick},
+            every node/.style={font=\small}
+        ]
+            \node[state, fill=LimeGreen!20] (s1) {$s_1$};
+            \node[state, fill=orange!20, right=2.5cm of s1] (s2) {$s_2$};
+            \node[state, fill=blue!15, below=1.5cm of s2] (s3) {$s_3$};
+            \draw[arr, bend left=15] (s1) to
+                node[above, font=\footnotesize]{$a_1,\,p{=}0.8$} (s2);
+            \draw[arr] (s1) to
+                node[left, font=\footnotesize]{$a_1,\,p{=}0.2$} (s3);
+            \draw[arr] (s1) to[loop left]
+                node[left, font=\footnotesize]{$a_2$} (s1);
+            \draw[arr] (s2) to
+                node[right, font=\footnotesize]{$a_1$} (s3);
+            \draw[arr, bend right=20] (s3) to
+                node[below, font=\footnotesize]{$a_2$} (s1);
+        \end{tikzpicture}
+\captionof{figure}{Markov Decision Processes: MDP State Transitions.}
+\label{fig:ch07-reinforcement-learning-inline-02}
+        \end{center}
+
+\end{v3topic}
+\begin{v3topic}{Policy Types}
+        \begin{description}[leftmargin=0.5cm]
+            \item[\textbf{Deterministic}] $\pi : \mathcal{S} \to \mathcal{A}$
+                --- one action per state
+            \item[\textbf{Stochastic}] $\pi(a \mid s) = P(A{=}a \mid S{=}s)$
+                --- probability distribution over actions
+            \item[\textbf{Optimal $\pi^*$}] maximises $V^\pi(s)$ for every $s$;
+                always exists as deterministic in finite MDPs
+            \item[\textbf{Greedy}] $\pi(s) = \arg\max_a Q(s,a)$
+                --- exploits current value estimate
+            \item[\textbf{$\epsilon$-greedy}] greedy with probability $1{-}\epsilon$,
+                random with probability $\epsilon$
+        \end{description}
+        \textsuperscript{\cite[][p.~144]{barberBayesianReasoningMachine2012}}
+
+\end{v3topic}
+\begin{v3topic}{Markov Chain Monte Carlo (MCMC)}
+        \textbf{MCMC} uses Markov chains to draw samples from intractable
+        distributions $p(x)$.
+
+        \textbf{Metropolis-Hastings}:
+        \begin{enumerate}
+            \item Propose $x' \sim q(x' \mid x)$
+            \item Compute acceptance ratio:
+                  $\alpha = \min\!\left(1,\,
+                  \frac{p(x')\,q(x \mid x')}{p(x)\,q(x' \mid x)}\right)$
+            \item Accept $x'$ with probability $\alpha$; else stay at $x$
+        \end{enumerate}
+        At stationarity, samples follow $p(x)$.
+        Applications: Bayesian posterior inference, policy
+        evaluation.\textsuperscript{\cite[][p.~160]{barberBayesianReasoningMachine2012}}
+
+\end{v3topic}
+
+
+    % -------------------------------------------------------
+    \section{Bandit Problems}
+
+
+\begin{v3topic}{The Multi-Armed Bandit}
+        The \textbf{multi-armed bandit} (MAB) is an RL setting with
+        \emph{no state transitions}: $k$ actions (arms), each yielding reward
+        from an unknown distribution with mean $\mu_a$.
+
+        Goal: minimise cumulative \textbf{regret}:
+        \begin{equation}
+            R_T = T\,\mu^* - \sum_{t=1}^{T} r_t
+        \end{equation}
+        where $\mu^* = \max_a \mu_a$.
+        The fundamental tension is \textbf{exploration vs.\ exploitation}:
+        exploit the best-known arm or explore to reduce
+        uncertainty.\textsuperscript{\cite[][p.~335]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{$\epsilon$-Greedy Strategy}
+        With probability $\epsilon$ choose a random arm (explore); with
+        probability $1 - \epsilon$ choose $\arg\max_a Q(a)$ (exploit).
+
+        Incremental mean update after observing reward $r$:
+        \begin{equation}
+            Q(a) \leftarrow Q(a) + \frac{1}{n}\bigl[r - Q(a)\bigr]
+        \end{equation}
+        \begin{itemize}
+            \item Simple and robust; $\epsilon$ often decayed over time
+            \item Wastes exploration uniformly across all arms, even
+                  well-understood ones
+        \end{itemize}
+        \textsuperscript{\cite[][p.~336]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Upper Confidence Bound (UCB)}
+        Explore arms with high \emph{uncertainty} rather than randomly.
+        \textbf{UCB1} selects:
+        \begin{equation}
+            A_t = \arg\max_a \left[Q_t(a) + c\,\sqrt{\frac{\ln t}{N_t(a)}}\right]
+        \end{equation}
+        where $N_t(a)$ is the number of times arm $a$ has been pulled.
+        The confidence bonus decreases as an arm is explored more; $c$
+        controls exploration width.
+        UCB1 achieves $O(\ln T)$ regret --- asymptotically
+        optimal.\textsuperscript{\cite[][p.~337]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Thompson Sampling}
+        A \textbf{Bayesian} approach: maintain a prior over arm reward
+        parameters; sample from the posterior; pull the arm with the highest
+        sampled value; update the posterior on the observed reward.
+
+        For Bernoulli rewards, use a $\text{Beta}(\alpha_a, \beta_a)$ prior:
+        \begin{itemize}
+            \item Success: $\alpha_a \leftarrow \alpha_a + 1$
+            \item Failure: $\beta_a \leftarrow \beta_a + 1$
+        \end{itemize}
+        Naturally balances exploration and exploitation via uncertainty.
+        Empirically often outperforms $\epsilon$-greedy and
+        UCB.\textsuperscript{\cite[][p.~338]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+
+
+    % -------------------------------------------------------
+    \section{Q-Learning and Deep Reinforcement Learning}
+
+
+\begin{v3topic}{Temporal Difference Learning}
+        \textbf{TD learning} is \emph{model-free}: learns directly from
+        sampled transitions without a model of $P$ or $R$, and updates
+        \emph{online} after each step.
+
+        \textbf{TD(0)} value update:
+        \begin{equation}
+            V(s_t) \leftarrow V(s_t) + \alpha
+            \underbrace{\bigl[r_{t+1} + \gamma V(s_{t+1}) - V(s_t)\bigr]}_{\text{TD error }\delta_t}
+        \end{equation}
+        TD(0) bootstraps from the current estimate; $\alpha$ is the learning
+        rate.\textsuperscript{\cite[][p.~343]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{SARSA vs.\ Q-Learning}
+        Both learn $Q(s,a)$ via TD updates but differ in the \emph{target}:
+
+        \textbf{SARSA} (on-policy):
+        \begin{equation}
+            Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma Q(s',a') - Q(s,a)\bigr]
+        \end{equation}
+        Uses the \emph{actually taken} next action $a'$.
+
+        \textbf{Q-Learning} (off-policy):
+        \begin{equation}
+            Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma \max_{a'} Q(s',a') - Q(s,a)\bigr]
+        \end{equation}
+        Always bootstraps from the \emph{greedy} action; converges to
+        $Q^*$ regardless of behaviour
+        policy.\textsuperscript{\cite[][p.~346]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Deep Q-Networks (DQN)}
+        For large or continuous state spaces, a Q-table is intractable.
+        \textbf{DQN} approximates the Q-function with a deep neural network
+        $Q(s,a;\theta) \approx Q^*(s,a)$, trained to minimise:
+        \begin{equation}
+            \mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}
+            \Bigl[\bigl(r + \gamma \max_{a'} Q(s',a';\theta^-) - Q(s,a;\theta)\bigr)^2\Bigr]
+        \end{equation}
+        Key innovations: (1)~\textbf{experience replay} buffer $\mathcal{D}$;
+        (2)~\textbf{target network} $\theta^-$ updated periodically (not every
+        step). Achieved human-level performance on 49 Atari
+        games.\textsuperscript{\cite[][p.~350]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Experience Replay}
+        Store each transition $(s, a, r, s')$ in a circular \textbf{replay
+        buffer} $\mathcal{D}$; sample random \emph{mini-batches} to train.
+
+        Benefits:
+        \begin{enumerate}
+            \item \textbf{Decorrelates} temporally adjacent samples, reducing
+                  variance
+            \item \textbf{Sample efficiency}: each transition reused many times
+            \item \textbf{Stabilises} gradient updates by breaking
+                  non-stationarity
+        \end{enumerate}
+        \textsuperscript{\cite[][p.~351]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Double Q-Learning}
+        Standard Q-learning suffers from \textbf{overestimation bias}: the
+        same network selects \emph{and} evaluates the maximum action, biasing
+        targets upward.
+
+        \textbf{Double DQN} decouples selection and evaluation:
+        \begin{equation}
+            y = r + \gamma\, Q\!\left(s',\, \arg\max_{a'} Q(s',a';\theta);\;\theta^-\right)
+        \end{equation}
+        Online network $\theta$ selects; target network $\theta^-$ evaluates.
+        Reduces overestimation, yields more stable training and better
+        policies.\textsuperscript{\cite[][p.~353]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Sparse Rewards and Reward Shaping}
+        Many real tasks only give reward at task completion --- the agent faces
+        a hard \textbf{credit assignment} problem.
+
+        \textbf{Mitigation strategies}:
+        \begin{itemize}
+            \item \textbf{Reward shaping}: add potential-based intermediary
+                  rewards $F(s,s') = \gamma \Phi(s') - \Phi(s)$ without
+                  changing optimal policy
+            \item \textbf{Intrinsic motivation}: curiosity bonus for novel states
+            \item \textbf{Curriculum learning}: start with easier sub-tasks
+            \item \textbf{Hindsight Experience Replay}: relabel failed
+                  trajectories toward a different goal
+        \end{itemize}
+        \textsuperscript{\cite[][p.~357]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Hierarchical Reinforcement Learning}
+        Decomposes a long-horizon task into \textbf{sub-goals} and
+        \textbf{sub-policies} at multiple levels of temporal abstraction.
+
+        \textbf{Options framework}: an option is a triple
+        $(I, \pi_\omega, \beta)$:
+        \begin{itemize}
+            \item $I \subseteq \mathcal{S}$: initiation set
+            \item $\pi_\omega(a|s)$: intra-option policy
+            \item $\beta(s)$: termination probability
+        \end{itemize}
+        A high-level policy selects options; each option executes its
+        sub-policy until termination. Enables reuse of learned
+        skills.\textsuperscript{\cite[][p.~358]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Value-Based vs.\ Policy-Based Methods}
+        \begin{tblr}{
+            colspec={X[l]X[l]},
+            hlines, vlines,
+            row{1}={font=\bfseries\small, bg=LimeGreen!20},
+            row{2-Z}={font=\small},
+        }
+            Value-Based & Policy-Based \\
+            Learn $Q$ or $V$; derive $\pi$ & Learn $\pi$ directly \\
+            Q-learning, DQN & REINFORCE, PPO \\
+            Natural for discrete actions & Handles continuous actions \\
+            Deterministic output & Stochastic policy \\
+            Can be unstable & High variance gradients \\
+        \end{tblr}
+\captionof{table}{Q-Learning and Deep Reinforcement Learning: Value-Based vs.\ Policy-Based Methods.}
+\label{tab:ch07-reinforcement-learning-inline-02}
+        \textsuperscript{\cite[][p.~360]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+\begin{v3topic}{Actor-Critic Methods}
+        Combines value-based and policy-based approaches:
+        \begin{itemize}
+            \item \textbf{Actor} $\pi(a|s;\theta)$: parametric policy, updated
+                  via gradient ascent
+            \item \textbf{Critic} $V(s; w)$: estimates state values, reduces
+                  gradient variance
+        \end{itemize}
+        The \textbf{advantage function} $A(s,a) = Q(s,a) - V(s)$ measures
+        how much better action $a$ is than average, reducing variance.
+
+        \textbf{A2C}: synchronous workers; \textbf{A3C}: asynchronous
+        parallel workers eliminating need for a replay
+        buffer.\textsuperscript{\cite[][p.~362]{hurbansGrokkingArtificialIntelligence2020}}
+
+\end{v3topic}
+    % -------------------------------------------------------
+    \section{Reinforcement Learning Approaches}
+
+    \subsection{Model-Free Learning}
+
+\begin{v3topic}{Model-Free RL}
+    In \textbf{model-free} reinforcement learning the agent learns entirely through
+    interaction with the environment --- no internal model of state transitions or
+    rewards is built. The agent discovers which actions are valuable solely from
+    trial-and-error experience.\textsuperscript{\cite[][p.~348]{hurbansGrokkingArtificialIntelligence2020}}
+
+    Key characteristics:
+    \begin{itemize}
+        \item No explicit environment model required
+        \item Learns from $(s, a, r, s’)$ tuples directly
+        \item More data-hungry than model-based, but robust to model errors
+        \item Examples: Q-learning, SARSA, REINFORCE
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{The Q-Learning Update}
+    \textbf{Q-learning} learns the action-value function $Q(s,a)$ --- the expected
+    cumulative reward from taking action $a$ in state $s$ and following the
+    optimal policy thereafter.\textsuperscript{\cite[][pp.~335--340]{hurbansGrokkingArtificialIntelligence2020}}
+
+    The \textbf{Bellman update rule}:
+    \begin{equation}
+        Q(s,a) \leftarrow (1{-}\alpha)\,Q(s,a)
+                 + \alpha\!\left[r + \gamma \max_{a’} Q(s’,a’)\right]
+    \end{equation}
+    $\alpha$: learning rate; $\gamma$: discount factor; $r$: immediate reward;
+    $s’$: next state.
+
+    The Q-table (rows = states, columns = actions) is initialised to zero and
+    updated incrementally. At inference time: $a^* = \arg\max_a Q(s,a)$.
+
+\end{v3topic}
+\begin{v3topic}{SARSA: On-Policy TD Control}
+    \textbf{SARSA} is \emph{on-policy}: it updates $Q$ using the action $a’$
+    \emph{actually taken} by the current policy, not the greedy
+    maximum.\textsuperscript{\cite[][Ch.~6]{suttonReinforcementLearningIntroduction2018}}
+
+    \begin{equation}
+        Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma\,Q(s’,a’) - Q(s,a)\bigr]
+    \end{equation}
+
+    \begin{itemize}
+        \item On-policy: more conservative, avoids dangerous exploratory actions
+        \item Q-learning: faster convergence, may take risky shortcuts in training
+        \item Both converge to the optimal $Q^*$ given sufficient exploration
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{REINFORCE (Policy Gradient)}
+    \textbf{REINFORCE} directly optimises the policy $\pi_\theta(a|s)$ by
+    gradient ascent on expected
+    return.\textsuperscript{\cite[][Ch.~13]{suttonReinforcementLearningIntroduction2018}}
+
+    \begin{equation}
+        \nabla_\theta J(\theta) = \mathbb{E}_\pi\!\left[
+            \nabla_\theta \ln \pi_\theta(a_t|s_t) \cdot G_t\right]
+    \end{equation}
+
+    where $G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}$ is the return from step $t$.
+
+    \begin{itemize}
+        \item Monte Carlo: updates after complete episodes
+        \item High variance; baseline subtraction (actor-critic) reduces variance
+        \item Natural for continuous action spaces
+    \end{itemize}
+
+\end{v3topic}
+
+    \subsection{Model-Based Learning}
+
+\begin{v3topic}{Model-Based RL}
+    In \textbf{model-based} RL the agent learns or is given an explicit model
+    $\hat{M}(s,a) \to (s’, r)$ of the environment. It can \emph{plan} by
+    simulating experience inside the model without executing every
+    action.\textsuperscript{\cite[][p.~348]{hurbansGrokkingArtificialIntelligence2020}}
+
+    \begin{itemize}
+        \item \textbf{Sample efficient}: plan many steps from few real interactions
+        \item Can reason about counterfactual actions before committing
+        \item Model errors compound over long horizons --- accuracy matters
+        \item Trade-off: model capacity vs.\ model bias
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Dyna-Q: Planning + Learning}
+    \textbf{Dyna-Q} (Sutton, 1991) combines real experience with simulated
+    experience from a learned
+    model:\textsuperscript{\cite[][Ch.~8]{suttonReinforcementLearningIntroduction2018}}
+
+    \begin{enumerate}
+        \item Take action $a$; observe $r$, $s’$ from real environment
+        \item Update Q-table with real transition
+        \item Update model: $\hat{M}(s,a) \leftarrow (s’,r)$
+        \item Repeat $n$ times: sample random past $(s,a)$, simulate
+              $(s’,r)$ from model, update Q
+    \end{enumerate}
+
+    The $n$ planning steps give Dyna-Q major sample-efficiency gains.
+    Planning in imagination is cheap; real experience is expensive.
+
+\end{v3topic}
+\begin{v3topic}{World Models \& MPC}
+    \textbf{World models} (Ha \& Schmidhuber, 2018) learn a compact
+    latent representation of the environment; the agent plans entirely within
+    the latent model.\textsuperscript{\cite[][Ch.~8]{suttonReinforcementLearningIntroduction2018}}
+
+    \textbf{Model Predictive Control (MPC)}: at each step, optimise actions
+    over a finite horizon $H$ using the model, execute only the first action,
+    then re-plan. Naturally handles non-stationary environments.
+
+    \begin{itemize}
+        \item Used in robotics, process control, AlphaZero (MCTS + learned model)
+        \item Horizon $H$ trades off computation vs.\ look-ahead quality
+    \end{itemize}
+
+\end{v3topic}
+
+    \subsection{Exploration vs Exploitation}
+
+\begin{v3topic}{The Exploration--Exploitation Trade-off}
+    The agent must balance:\textsuperscript{\cite[][pp.~338--339]{hurbansGrokkingArtificialIntelligence2020}}
+    \begin{itemize}
+        \item \textbf{Exploitation}: select $\arg\max_a Q(s,a)$ to maximise
+              known reward
+        \item \textbf{Exploration}: try other actions to discover potentially
+              better rewards
+    \end{itemize}
+
+    Purely greedy agents get stuck in local optima; purely random agents
+    never converge. Every RL algorithm must address this tension.
+
+\end{v3topic}
+\begin{v3topic}{$\varepsilon$-Greedy Strategy}
+    The simplest trade-off
+    strategy:\textsuperscript{\cite[][p.~339]{hurbansGrokkingArtificialIntelligence2020}}
+
+    \begin{equation}
+        a_t = \begin{cases}
+            \text{random action} & \text{with prob.\ } \varepsilon \\
+            \arg\max_a Q(s_t,a) & \text{with prob.\ } 1{-}\varepsilon
+        \end{cases}
+    \end{equation}
+
+    \textbf{Decaying $\varepsilon$}: start at $\varepsilon \approx 1.0$ (mostly
+    explore) and anneal to $\varepsilon \approx 0.01$ (mostly exploit) over
+    training:
+    \[ \varepsilon_t = \varepsilon_{\min}
+       + (\varepsilon_{\max} - \varepsilon_{\min})\,e^{-t/\tau} \]
+
+\end{v3topic}
+\begin{v3topic}{Upper Confidence Bound (UCB)}
+    UCB selects actions that are either \emph{estimated good} or
+    \emph{rarely tried}:\textsuperscript{\cite[][Ch.~2]{suttonReinforcementLearningIntroduction2018}}
+
+    \begin{equation}
+        a_t = \arg\max_a \left[ Q(s,a) + c\sqrt{\frac{\ln t}{N_t(s,a)}} \right]
+    \end{equation}
+
+    $N_t(s,a)$ = times action $a$ was taken from state $s$; $c$ controls
+    exploration strength. The confidence bonus shrinks as an action is tried
+    more, automatically directing attention to underexplored options.
+    \textbf{Optimism in the face of uncertainty.}
+
+\end{v3topic}
+\begin{v3topic}{Curiosity-Driven Exploration}
+    When extrinsic rewards are sparse, \textbf{intrinsic motivation} sustains
+    exploration. A \emph{forward model} $f(s_t, a_t) \to \hat{s}_{t+1}$ is
+    learned; its prediction error provides an intrinsic
+    reward:\textsuperscript{\cite[][Ch.~2]{suttonReinforcementLearningIntroduction2018}}
+
+    \begin{equation}
+        r^{\mathrm{int}}_t = \bigl\lVert\hat{s}_{t+1} - s_{t+1}\bigr\rVert^2
+    \end{equation}
+
+    High error signals novel, informative states the model has not yet learned.
+    The agent is intrinsically \emph{curious} about regions where its world
+    model is poor. Successfully applied in Montezuma’s Revenge and robotic
+    manipulation.
+
+\end{v3topic}
+
+
+    % -------------------------------------------------------
+    \section{Inference and Causality}
+
+    \subsection{Statistical Inference}
+
+\begin{v3topic}{Bayesian Inference}
+    Bayesian inference treats model parameters $\theta$ as random variables
+    and updates beliefs upon observing data
+    $\mathcal{D}$:\textsuperscript{\cite[][pp.~14--19]{barberBayesianReasoningMachine2012}}
+
+    \begin{equation}
+        p(\theta|\mathcal{D}) = \frac{p(\mathcal{D}|\theta)\,p(\theta)}{p(\mathcal{D})}
+    \end{equation}
+
+    \begin{itemize}
+        \item \textbf{Prior} $p(\theta)$: belief before seeing data
+        \item \textbf{Likelihood} $p(\mathcal{D}|\theta)$: how probable is the data?
+        \item \textbf{Posterior} $p(\theta|\mathcal{D})$: updated belief
+        \item \textbf{Evidence} $p(\mathcal{D}) = \int p(\mathcal{D}|\theta)\,p(\theta)\,d\theta$
+    \end{itemize}
+
+    Posterior $\propto$ Likelihood $\times$ Prior.
+    The MAP estimate is $\hat{\theta} = \arg\max_\theta p(\theta|\mathcal{D})$.
+
+\end{v3topic}
+\begin{v3topic}{Bayesian vs Frequentist}
+    \begin{itemize}
+        \item \textbf{Frequentist}: $\theta$ is a fixed unknown constant;
+              probability refers to long-run frequencies; provides point
+              estimates and confidence intervals
+        \item \textbf{Bayesian}: $\theta$ is a random variable with a
+              distribution; probability reflects degree of belief; provides
+              full posterior distribution
+    \end{itemize}
+
+    Bayesian inference is naturally sequential: today’s posterior becomes
+    tomorrow’s prior as new data
+    arrives.\textsuperscript{\cite[][Ch.~1]{downeyThinkBayes2016}}
+    Ideal for online learning and decision-making under uncertainty.
+
+\end{v3topic}
+\begin{v3topic}{Bayesian Networks}
+    A \textbf{Bayesian Network} (belief network) is a DAG where each node is
+    a random variable $x_i$ with a conditional probability table (CPT)
+    $p(x_i | \mathrm{pa}(x_i))$. The joint distribution
+    factorises:\textsuperscript{\cite[][pp.~33--40]{barberBayesianReasoningMachine2012}}
+
+    \begin{equation}
+        p(x_1, \ldots, x_D) = \prod_{i=1}^{D} p\bigl(x_i \mid \mathrm{pa}(x_i)\bigr)
+    \end{equation}
+
+    \textbf{Wet Grass example}: $R$ (rain), $S$ (sprinkler), $T$ (Tracey’s
+    grass), $J$ (Jack’s grass). With $p(T|J,R,S)=p(T|R,S)$ and $p(J|R,S)=p(J|R)$:
+    \[p(T,J,R,S) = p(T|R,S)\,p(J|R)\,p(R)\,p(S)\]
+    This compresses 15 parameters to 8. The graph encodes sets of conditional
+    independence relations through d-separation and the local Markov property;
+    an absent edge should not be read as one unconditional independence claim.
+\visualseparator
+    \textbf{Explaining away}: in $A \to C \leftarrow B$, causes $A$ and $B$
+    are independent a priori. Conditioning on the effect $C$ makes them
+    dependent: observing one cause ``explains away’’ the other.
+    This is the collider effect.
+
+\end{v3topic}
+\begin{v3topic}{Probabilistic Modelling}
+    A probabilistic model defines a joint distribution over observed variables
+    $\mathbf{x}$ and latent variables
+    $\mathbf{z}$:\textsuperscript{\cite[][Ch.~1]{barberBayesianReasoningMachine2012}}
+
+    \begin{equation}
+        p(\mathbf{x}, \mathbf{z} | \theta) =
+            p(\mathbf{x} | \mathbf{z}, \theta)\,p(\mathbf{z}|\theta)
+    \end{equation}
+
+    \textbf{Inference}: compute $p(\mathbf{z}|\mathbf{x},\theta)$ given observations.\\
+    \textbf{Learning}: find $\theta$ maximising the marginal likelihood
+    $p(\mathbf{x}|\theta) = \int p(\mathbf{x}|\mathbf{z},\theta)\,p(\mathbf{z}|\theta)\,d\mathbf{z}$.
+
+    The integral is often intractable, motivating approximate methods:
+    MCMC and variational inference.
+
+\end{v3topic}
+\begin{v3topic}{Conditional Independence}
+    $X$ and $Y$ are \textbf{conditionally independent} given $Z$, written
+    $X \perp\!\!\!\perp Y \mid Z$,
+    if:\textsuperscript{\cite[][p.~8]{barberBayesianReasoningMachine2012}}
+
+    \begin{equation}
+        p(X, Y | Z) = p(X|Z)\,p(Y|Z)
+    \end{equation}
+
+    Equivalently, $p(X|Y,Z) = p(X|Z)$: once $Z$ is known, $Y$ contains no
+    additional information about $X$.
+
+    Every absent edge in a Bayesian Network encodes exactly one conditional
+    independence assumption, compressing the representation of the joint
+    distribution.
+
+\end{v3topic}
+
+    \subsection{Introduction to Causality}
+
+\begin{v3topic}{Correlation vs Causation}
+    \textbf{Correlation} is a symmetric statistical association;
+    $\mathrm{Cov}(X,Y) \neq 0$ says nothing about direction or mechanism.
+
+    \textbf{Causation} implies a directional mechanism: intervening on $X$
+    forces a change in $Y$.
+
+    Classic example: ice cream sales and drowning rates are correlated ---
+    both are driven by a common cause (summer heat). Controlling for
+    temperature removes the association. Formally: $p(Y|X) \neq p(Y|\,\mathrm{do}(X))$
+    whenever confounders
+    exist.\textsuperscript{\cite[][Ch.~1]{pearlBookWhyNew2018}}
+
+\end{v3topic}
+\begin{v3topic}{Granger Causality}
+    \textbf{Granger causality} (Granger, 1969): $X$ Granger-causes $Y$ if past
+    values of $X$ provide statistically significant predictive information
+    about $Y$, beyond what past $Y$ alone
+    provides:\textsuperscript{\cite[][Ch.~2]{nessCausalAI2025}}
+
+    \[ Y_t = f(Y_{t-1}, \ldots, X_{t-1}, \ldots) + \varepsilon_t \]
+
+    Test: does adding $X_{t-k}$ significantly reduce prediction error for $Y_t$?
+
+    \textbf{Limitation}: captures temporal precedence, not structural
+    causation. Two variables driven by a hidden common cause can each appear
+    to Granger-cause the other.
+
+\end{v3topic}
+\begin{v3topic}{Directed Acyclic Graphs (DAGs)}
+    A \textbf{DAG} encodes causal structure: directed edges $X \to Y$ mean
+    ``$X$ directly causes $Y$’’. Acyclicity prevents circular
+    causation.\textsuperscript{\cite[][pp.~25--27]{barberBayesianReasoningMachine2012}}
+
+    DAG terminology:
+    \begin{itemize}
+        \item \textbf{Parent}: direct cause, $\mathrm{pa}(Y)$
+        \item \textbf{Ancestor}: any cause along a directed path
+        \item \textbf{Descendant}: any variable causally downstream
+        \item \textbf{Markov blanket}: parents + children + parents of children;
+              screens $X$ from all other variables
+    \end{itemize}
+
+    In causal DAGs, ancestral order corresponds to temporal order.
+
+\end{v3topic}
+\begin{v3topic}{Fork, Chain, and Collider}
+    Three elementary structures determine how information
+    flows:\textsuperscript{\cite[][pp.~43--45]{barberBayesianReasoningMachine2012}}
+
+    \begin{itemize}
+        \item \textbf{Fork} (common cause): $A \leftarrow C \rightarrow B$.
+              $C$ is a confounder; $A \perp\!\!\!\perp B \mid C$ but not marginally.
+        \item \textbf{Chain} (mediation): $A \rightarrow C \rightarrow B$.
+              $A \perp\!\!\!\perp B \mid C$ but not marginally.
+        \item \textbf{Collider}: $A \rightarrow C \leftarrow B$.
+              $A \perp\!\!\!\perp B$ marginally, but $A \not\!\perp\!\!\!\perp B \mid C$.
+              Conditioning opens the path.
+    \end{itemize}
+
+    Conditioning on a collider (or its descendant) creates a \emph{spurious}
+    association between its parents.
+
+\end{v3topic}
+\begin{v3topic}{D-Separation}
+    \textbf{D-separation} (Pearl, 1988) is the formal criterion for reading
+    conditional independence from a
+    DAG.\textsuperscript{\cite[][pp.~45--46]{barberBayesianReasoningMachine2012}}
+
+    A path $U$ between $X$ and $Y$ is \textbf{blocked} by set $\mathcal{Z}$ if:
+    \begin{enumerate}
+        \item There is a \emph{non-collider} $w$ on $U$ with $w \in \mathcal{Z}$, OR
+        \item There is a \emph{collider} $w$ on $U$ such that neither $w$ nor
+              any descendant of $w$ is in $\mathcal{Z}$.
+    \end{enumerate}
+
+    $X$ and $Y$ are \textbf{d-separated} by $\mathcal{Z}$ if every path between
+    them is blocked. D-separation implies $X \perp\!\!\!\perp Y \mid \mathcal{Z}$
+    in any distribution consistent with the DAG structure.
+\visualseparator
+    \textbf{Intuition}: d-separation tells us which conditioning sets render
+    variables independent. It is the key tool for identifying valid adjustment
+    sets without running experiments.
+
+\end{v3topic}
+
+    \subsection{Interventions}
+
+\begin{v3topic}{Seeing vs Doing: The Do-Operator}
+    Pearl’s \textbf{do-operator} distinguishes observation from
+    intervention:\textsuperscript{\cite[][pp.~50--51]{barberBayesianReasoningMachine2012}}
+
+    \begin{itemize}
+        \item \textbf{Seeing}: $p(Y \mid X{=}x)$ --- conditioning on
+              \emph{observing} $X{=}x$; confounders still act
+        \item \textbf{Doing}: $p(Y \mid \mathrm{do}(X{=}x))$ --- \emph{forcing}
+              $X{=}x$ by intervention; removes all incoming arrows to $X$
+    \end{itemize}
+
+    Intervening creates modified graph $\mathcal{G}_{\overline{X}}$ in which
+    all edges \emph{into} $X$ are cut. Post-intervention: only $p(X_j | \mathrm{pa}(X_j))$
+    for non-intervened variables remains; the intervened variable’s CPT is replaced
+    by the unit distribution at the set value.
+
+\end{v3topic}
+\begin{v3topic}{Confounders}
+    A \textbf{confounder} is a variable $C$ that causally affects both
+    treatment $X$ and outcome
+    $Y$:\textsuperscript{\cite[][Ch.~7]{hernanCausalInferenceWhat2020}}
+
+    \[ C \rightarrow X,\quad C \rightarrow Y \]
+
+    Confounders create a \emph{backdoor path} from $X$ to $Y$ that does not
+    represent the causal effect of $X$. Failing to adjust for confounders
+    yields biased estimates.
+
+    \textbf{Examples}: socioeconomic status confounds education and health
+    outcomes; age confounds treatment choice and recovery in clinical data.
+    In a DAG, confounders are identified by backdoor paths.
+
+\end{v3topic}
+\begin{v3topic}{Counterfactuals}
+    A \textbf{counterfactual} asks: ``What would $Y$ have been if $X$ had been
+    $x$, given that we actually observed $X{=}x’$?’’\textsuperscript{\cite[][Ch.~7]{pearlCausalityModelsReasoning2009}}
+
+    Notation: $Y_{X=x}(u)$ = value of $Y$ for unit $u$ under
+    $\mathrm{do}(X{=}x)$.
+
+    Requires a \textbf{Structural Causal Model} (SCM):
+    $X_i = f_i(\mathrm{pa}(X_i), U_i)$.
+    Three steps:
+    \begin{enumerate}
+        \item \textbf{Abduction}: infer exogenous noise $U$ from evidence
+        \item \textbf{Action}: modify SCM to set $X{=}x$
+        \item \textbf{Prediction}: compute $Y$ in the modified model
+    \end{enumerate}
+
+\end{v3topic}
+\begin{v3topic}{Causal Inference vs RCTs}
+    A \textbf{Randomized Controlled Trial (RCT)} randomly assigns treatment,
+    breaking the confounder--treatment
+    link:\textsuperscript{\cite[][Ch.~1]{hernanCausalInferenceWhat2020}}
+
+    \[ \text{Random assignment} \;\Leftrightarrow\; \mathrm{do}(X)
+       \;\Rightarrow\; p(Y|\mathrm{do}(X)) = p(Y|X) \]
+
+    RCTs are the gold standard but often costly, unethical, or impossible.
+
+    \textbf{Observational causal inference} estimates $p(Y|\mathrm{do}(X))$
+    from non-experimental data via:
+    \begin{itemize}
+        \item Backdoor/front-door adjustment (Pearl’s criteria)
+        \item Instrumental variables, regression discontinuity,
+              difference-in-differences
+    \end{itemize}
+
+\end{v3topic}
+
+    \subsection{Do-Calculus}
+
+\begin{v3topic}{Backdoor Criterion}
+    A set $\mathcal{Z}$ satisfies the \textbf{backdoor criterion} for
+    $(X,Y)$ if:\textsuperscript{\cite[][pp.~79--81]{pearlCausalityModelsReasoning2009}}
+    \begin{enumerate}
+        \item No node in $\mathcal{Z}$ is a descendant of $X$
+        \item $\mathcal{Z}$ blocks every backdoor path from $X$ to $Y$
+    \end{enumerate}
+
+    If satisfied, the \textbf{adjustment formula} gives:
+    \begin{equation}
+        p(Y \mid \mathrm{do}(X)) = \sum_{z} p(Y \mid X, \mathcal{Z}{=}z)\,p(\mathcal{Z}{=}z)
+    \end{equation}
+
+    This allows computing causal effects from observational data by conditioning
+    on the confounder set $\mathcal{Z}$.
+
+\end{v3topic}
+\begin{v3topic}{Front-Door Criterion}
+    Used when all confounders are \emph{unobserved} but a mediator $M$ is
+    observed:\textsuperscript{\cite[][pp.~82--84]{pearlCausalityModelsReasoning2009}}
+
+    Conditions: (1) $M$ intercepts all directed paths $X \to Y$; (2) no
+    unblocked backdoor path from $X$ to $M$; (3) all backdoor paths from $M$
+    to $Y$ are blocked by $X$.
+
+    \begin{equation}
+        p(Y|\mathrm{do}(X)) = \sum_m p(M{=}m|X)
+            \sum_{x’} p(Y|M{=}m, X{=}x’)\,p(X{=}x’)
+    \end{equation}
+
+\end{v3topic}
+\begin{v3topic}{Three Rules of Do-Calculus}
+    Pearl’s \textbf{do-calculus} provides three rules that together are
+    \emph{complete}: any identifiable causal query can be derived from
+    observational data + DAG using these
+    transformations.\textsuperscript{\cite[][pp.~85--87]{pearlCausalityModelsReasoning2009}}
+
+    Let $\mathcal{G}_{\overline{X}}$ denote graph with arrows into $X$ removed;
+    $\mathcal{G}_{\underline{X}}$ graph with arrows out of $X$ removed.
+
+    \begin{itemize}
+        \item \textbf{Rule 1 (Observation)} if $(Y \perp\!\!\!\perp Z \mid X,W)_{\mathcal{G}_{\overline{X}}}$:
+            $p(y|\mathrm{do}(x),z,w) = p(y|\mathrm{do}(x),w)$
+        \item \textbf{Rule 2 (Action/observation exchange)} if
+            $(Y \perp\!\!\!\perp Z \mid X,W)_{\mathcal{G}_{\overline{X}\underline{Z}}}$:
+            $p(y|\mathrm{do}(x),\mathrm{do}(z),w) = p(y|\mathrm{do}(x),z,w)$
+        \item \textbf{Rule 3 (Action deletion)} if
+            $(Y \perp\!\!\!\perp Z \mid X,W)_{\mathcal{G}_{\overline{X},\overline{Z(W)}}}$:
+            $p(y|\mathrm{do}(x),\mathrm{do}(z),w) = p(y|\mathrm{do}(x),w)$
+    \end{itemize}
+
+\end{v3topic}
+
+    \subsection{Fallacies}
+
+\begin{v3topic}{Simpson’s Paradox}
+    A statistical trend in \emph{combined} data reverses in every
+    subgroup.\textsuperscript{\cite[][pp.~49--50]{barberBayesianReasoningMachine2012}}
+
+    \textbf{Medical trial example}: A drug appears beneficial overall
+    (recovery: 50\% drug vs.\ 40\% no-drug) but is \emph{harmful} in each
+    subgroup (males: 60\% vs.\ 70\%; females: 20\% vs.\ 30\%).
+
+    \textbf{Resolution}: The paradox conflates $p(R|D)$ (observational)
+    with $p(R|\mathrm{do}(D))$ (interventional). Gender is a confounder
+    affecting both drug choice and recovery. Applying the backdoor
+    adjustment reveals the drug has no net benefit.
+
+\end{v3topic}
+\begin{v3topic}{Collider Bias \& Berkson’s Paradox}
+    \textbf{Collider bias}: conditioning on a common effect of two variables
+    creates a spurious association between
+    them.\textsuperscript{\cite[][p.~43]{barberBayesianReasoningMachine2012}}
+
+    Structure: $A \to C \leftarrow B$. Marginally $A \perp\!\!\!\perp B$, but
+    $A \not\!\perp\!\!\!\perp B \mid C$.
+
+    \textbf{Berkson’s Paradox} (1946): In hospital studies, diseases $A$ and
+    $B$ appear negatively correlated because hospitalisation is a collider.
+    Patients with $A$ seem less likely to also have $B$ --- but only because
+    both independently cause hospitalisation. In the general population, $A$
+    and $B$ are independent.
+
+\end{v3topic}
+\begin{v3topic}{Mediation Fallacy}
+    The \textbf{mediation fallacy} occurs when a researcher adjusts for a
+    mediator $M$ on the causal path $X \to M \to Y$ while intending to
+    estimate the total effect of $X$ on
+    $Y$.\textsuperscript{\cite[][Ch.~9]{pearlCausalityModelsReasoning2009}}
+
+    Adjusting for $M$:
+    \begin{itemize}
+        \item \emph{Blocks} the indirect pathway $X \to M \to Y$
+        \item The estimate captures only the \emph{direct} effect $X \to Y$,
+              not the total effect
+        \item If the goal is the total effect, $M$ must \emph{not} be
+              conditioned on
+    \end{itemize}
+
+    Correct mediation analysis separates direct and indirect effects using
+    counterfactual definitions.
+
+\end{v3topic}
+\begin{v3topic}{Missing Values: Causal View}
+    Standard imputation (mean/median/model) assumes data is Missing At
+    Random (MAR). The causal view requires modelling the
+    \textbf{missingness mechanism}:\textsuperscript{\cite[][Ch.~8]{nessCausalAI2025}}
+
+    \begin{itemize}
+        \item \textbf{MCAR} (Missing Completely At Random): missingness
+              independent of all variables --- safe to impute
+        \item \textbf{MAR} (Missing At Random): missingness depends on
+              observed variables --- adjust for them
+        \item \textbf{MNAR} (Missing Not At Random): missingness depends
+              on the missing value itself --- selection bias; model the
+              mechanism explicitly
+    \end{itemize}
+
+    If the variable with missing values is a collider descendant, naive
+    imputation can introduce collider bias. The DAG determines the
+    correct imputation strategy.
+
+\end{v3topic}
+
+    % -------------------------------------------------------
+    \section{Further Reading}
+
+\begin{v3topic}{Recommended Sources for Reinforcement Learning and Causality}
+    \begin{itemize}
+        \item \fullcite{suttonReinforcementLearningIntroduction2018} --- The definitive RL textbook: MDPs, TD learning, policy gradients, function approximation, and applications.
+        \item \fullcite{hurbansGrokkingArtificialIntelligence2020} --- Accessible introduction to RL with visual examples, Q-learning, and exploration strategies.
+        \item \fullcite{barberBayesianReasoningMachine2012} --- Bayesian inference, graphical models, MDPs, and value iteration with rigorous probabilistic treatment.
+        \item \fullcite{downeyThinkBayes2016} --- Practical Bayesian statistics with Python: conjugate priors, MCMC, and sequential updating.
+        \item \fullcite{pearlCausalityModelsReasoning2009} --- The foundational text on structural causal models, do-calculus, and causal identification.
+        \item \fullcite{pearlBookWhyNew2018} --- Popular-science introduction to the ``ladder of causation'' and the do-operator.
+        \item \fullcite{pearlCausalInferenceStatistics2016} --- Concise primer on causal inference: DAGs, adjustment, frontdoor/backdoor criteria.
+        \item \fullcite{hernanCausalInferenceWhat2020} --- Practical causal inference for health sciences: RCTs, observational studies, time-varying treatments.
+        \item \fullcite{nessCausalAI2025} --- Modern perspective on causal AI, including Granger causality, causal discovery, and missing data.
+    \end{itemize}
+
+\end{v3topic}
+
+%
+\section{Deep Dive: Offline, Safe, and Preference-Based Learning}
+\begin{v3topic}{Offline RL and Coverage}
+Offline RL learns from a fixed behaviour dataset.
+Actions outside that dataset's support can receive optimistic values because
+their outcomes are weakly identified.
+Report behaviour-policy coverage and compare with behaviour cloning and a
+conservative non-learning baseline.
+
+\end{v3topic}
+\begin{v3topic}{Safety Is a Constraint}
+Reward penalties do not guarantee a hard safety limit.
+Constrained policies, shields, action filters, simulators, and independent
+supervisors address different layers.
+Evaluate rare violations, recovery, and reward hacking rather than only mean
+return.
+
+\end{v3topic}
+\begin{v3topic}{Off-Policy Evidence}
+Before deploying a new policy, estimate its value with importance weighting,
+doubly robust estimators, or a validated simulator.
+Large policy shifts create high-variance or biased estimates when action
+probabilities have little overlap.
+Report effective sample size, sensitivity to clipping, and where evaluation
+depends on extrapolation.
+\end{v3topic}
+
+\chapterreview{Model}{Act}{Update}{Evaluate}

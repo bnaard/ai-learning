@@ -1,0 +1,322 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== Scientific Writing ======================================================
+\chapter{Scientific Writing and Reproducible Communication}
+\chapterlead{How can a technical claim become traceable and reproducible?}{Claim}{Method}{Evidence}{Revise}{scientific-writing}
+
+\label{ch:scientific-writing}
+
+\section{A Paper Is a Traceable Argument}
+
+\begin{v3topic}{Question Before Prose}
+State the research question before drafting sections.
+A useful question identifies the system or population, intervention or model,
+comparison, outcome, and conditions under which the answer should hold.
+If the question cannot be falsified or its terms cannot be measured, elegant
+writing will not rescue the study.
+
+\end{v3topic}
+\begin{v3topic}{Contribution Is a Difference}
+A contribution is not ``we used method X on dataset Y.''
+It is the defensible difference between prior knowledge and what the study now
+supports: a method, dataset, measurement, negative result, replication,
+theoretical insight, or system demonstration with stated limits.
+
+\end{v3topic}
+\begin{v3topic}{Claims Have Boundaries}
+Every important claim should expose its evidence, assumptions, uncertainty,
+and scope.
+Replace universal language with the population, dataset, time period, metric,
+and operating conditions actually studied.
+Separate observation (what was measured), interpretation (what it may mean),
+and recommendation (what someone should do).
+\end{v3topic}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=8mm,
+    argument node/.style={draw,rounded corners=1mm,minimum width=3.2cm,
+        minimum height=8mm,align=center,font=\sffamily\scriptsize},
+    argument arrow/.style={-{Stealth[length=2mm]},thick}]
+\node[argument node,fill=RoyalBlue!8] (claim) {Claim\\what is asserted};
+\node[argument node,fill=LimeGreen!10,right=of claim] (evidence)
+    {Evidence\\what was observed};
+\node[argument node,fill=Orange!10,right=of evidence] (caveat)
+    {Caveat\\where it may fail};
+\draw[argument arrow] (evidence) -- node[above,font=\scriptsize]{supports}
+    (claim);
+\draw[argument arrow] (caveat) -- node[above,font=\scriptsize]{bounds}
+    (evidence);
+\end{tikzpicture}
+\caption{A scientific argument connects a bounded claim to evidence and makes
+its caveats visible.}
+\label{fig:scientific-claim-evidence-caveat}
+\end{figure}
+
+\section{Design the Study Before Reporting It}
+
+\begin{v3topic}{Protocol and Preregistration}
+Write the hypotheses, primary outcomes, data exclusions, split logic, metrics,
+sample-size rationale, and analysis plan before inspecting final results.
+Exploratory analysis remains valuable, but label it as exploratory rather than
+rewriting it as a prediction made in advance.
+
+\end{v3topic}
+\begin{v3topic}{Unit of Analysis}
+Name the independent unit: person, patient, machine, site, document, session,
+or time interval.
+Multiple rows from one unit are not automatically independent observations.
+Split and resample at the level needed to prevent leakage and
+pseudoreplication.
+
+\end{v3topic}
+\begin{v3topic}{Baselines and Ablations}
+Compare against a naive baseline, a strong established method, and the current
+production system when one exists.
+An ablation removes or changes one component to test the explanation for an
+improvement.
+It is not a tournament of arbitrary variants.
+
+\end{v3topic}
+\begin{v3topic}{Uncertainty and Multiplicity}
+Report effect sizes and uncertainty, not only a point estimate or thresholded
+$p$-value.
+Account for repeated seeds, hyperparameter search, many metrics, many slices,
+and repeated peeking at the test set.
+The selection process is part of the experiment.
+\end{v3topic}
+
+\begin{cautionbox}[The test set is not a writing assistant]
+Do not repeatedly modify the system after reading final test failures and then
+report the same test set as untouched evidence.
+Create a new development set, version every evaluation exposure, or collect a
+fresh final set whose independence can be defended.
+\end{cautionbox}
+
+\section{Paper Architecture}
+
+\begin{table}[htbp]
+\centering
+\caption{Questions answered by the major parts of an empirical AI paper.}
+\label{tab:scientific-paper-architecture}
+\begin{tblr}{
+    width=\textwidth,
+    colspec={Q[l,0.16\textwidth]X[l]X[l]},
+    row{1}={font=\bfseries,bg=LimeGreen!15},
+    hlines,
+    vlines}
+Part & Reader's question & Minimum content \\
+Title and abstract & What was studied, how, and what was found? & Specific
+task, method, comparison, principal result, and limitation \\
+Introduction & Why is the question worth answering? & Context, gap, research
+question, contributions, and scope \\
+Related work & What is already known? & Organised comparison, not a citation
+inventory \\
+Methods & Could a competent team reproduce the study? & Data, preprocessing,
+models, baselines, protocol, compute, code, and analysis \\
+Results & What was observed? & Primary outcomes, uncertainty, robustness,
+ablations, errors, and negative findings \\
+Discussion & What do the results mean and not mean? & Interpretation,
+alternative explanations, validity threats, implications, and limits \\
+Artifacts & What can be inspected or rerun? & Code, data or access path,
+configurations, licences, checksums, and instructions \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}[Write in evidence order]
+Draft the figures and tables, then the results that describe them, then the
+methods needed to understand the results.
+Write the introduction and abstract after the claim boundaries are stable.
+This order reduces the temptation to promise a broader story than the evidence
+supports.
+\end{engineernote}
+
+\section{Methods That Can Be Reproduced}
+
+\begin{v3topic}{Data}
+Report origin, collection dates, inclusion and exclusion rules, licences,
+consent or legal basis, unit of analysis, label process, missingness,
+preprocessing, deduplication, and split construction.
+A datasheet makes assumptions and lifecycle decisions inspectable
+\textsuperscript{\cite{gebruDatasheetsDatasets2021}}.
+
+\end{v3topic}
+\begin{v3topic}{Models and Training}
+Name architecture, parameter count, initialization, objective, optimizer,
+schedule, batch size, stopping rule, hyperparameter search, random seeds,
+precision, hardware, software versions, and total compute.
+Distinguish settings selected before evaluation from those selected after
+examining results.
+
+\end{v3topic}
+\begin{v3topic}{Evaluation}
+Define every metric mathematically or by a stable reference.
+State aggregation, thresholds, slices, confidence intervals, statistical
+tests, judge models or human raters, contamination checks, and how missing or
+invalid outputs were handled.
+
+\end{v3topic}
+\begin{v3topic}{Artifacts and Environment}
+Provide a lockfile or environment image, executable commands, configurations,
+small test data, expected outputs, model and dataset identifiers, hashes, and
+licences.
+Archive the version used for the paper; a moving branch is not a permanent
+research artifact.
+\end{v3topic}
+
+\begin{workedexample}[From inflated claim to defensible result]
+\textbf{Inflated:} ``Our model significantly outperforms existing methods.''
+
+\textbf{Defensible:} ``On the preregistered temporal test set, the proposed
+model increased macro F1 from $0.712$ to $0.735$ over the tuned gradient-
+boosting baseline (paired bootstrap 95\% interval for the difference:
+$[0.009,0.036]$). Performance decreased below baseline at two small sites;
+external prospective validation was not conducted.''
+
+The revision names the dataset boundary, metric, baseline, effect,
+uncertainty, adverse slice, and the inference the study cannot support.
+\end{workedexample}
+
+\section{Figures, Tables, and Captions as Evidence}
+
+\begin{v3topic}{A Figure Must Answer a Question}
+Choose the visual encoding from the analytical question: comparison,
+distribution, relationship, change, uncertainty, or process.
+Show units, denominators, sample sizes, and uncertainty.
+Use consistent scales for comparisons and do not encode an important
+difference with colour alone.
+
+\end{v3topic}
+\begin{v3topic}{A Caption Must Stand Alone}
+A strong caption states what is shown, data and conditions, encoding, relevant
+aggregation, and the conclusion the reader may draw.
+Define abbreviations and mention important exclusions.
+The caption should not force the reader to search several pages for the sample
+size or meaning of an error bar.
+
+\end{v3topic}
+\begin{v3topic}{Tables Are for Exact Values}
+Use a table when readers need exact values or multiple attributes.
+Align decimals, include units in headers, state whether variation is standard
+deviation, standard error, or an interval, and visually distinguish the
+predeclared primary result from exploratory metrics.
+
+\end{v3topic}
+\begin{v3topic}{Accessibility Is Part of Accuracy}
+Use descriptive captions or alternate text, semantic headings, readable
+contrast, non-colour cues, logical reading order, and vector text where
+possible.
+An inaccessible result is not equally available for scrutiny.
+Validate the generated PDF rather than assuming source-level semantics survive
+typesetting.
+\end{v3topic}
+
+\section{Model and Dataset Reporting}
+
+Model cards document intended use, factors, metrics, evaluation data,
+limitations, and ethical considerations
+\textsuperscript{\cite{mitchellModelCardsModel2019}}.
+They complement rather than replace a paper: the paper argues for a result,
+while a model card supports decisions about a released artifact.
+Update cards when the model, data, policy, or operating environment changes.
+
+For generative or agentic systems, also report prompt and tool interfaces,
+retrieval corpus version, decoding parameters, system instructions where
+disclosure is safe, evaluator configuration, refusal handling, human review,
+cost and latency, safety tests, and known prompt-injection or tool-use limits.
+Treat example conversations as illustrations, not as a statistically valid
+evaluation.
+
+\section{Ethics, Authorship, and AI-Assisted Writing}
+
+\begin{v3topic}{Citation Integrity}
+Read the cited source and verify that it supports the nearby claim.
+Do not cite a search snippet, generated bibliography, or secondary source as
+if it were the primary evidence.
+Record page, section, version, and access date for unstable material.
+
+\end{v3topic}
+\begin{v3topic}{AI Assistance}
+Follow the target venue's disclosure policy.
+Authors remain responsible for accuracy, originality, confidentiality,
+copyright, citations, and authorship criteria.
+Never upload confidential manuscripts, peer-review material, personal data,
+or restricted code to an unapproved service.
+
+\end{v3topic}
+\begin{v3topic}{Negative Results and Limitations}
+Report credible failures, null results, excluded cases, and resource limits.
+Limitations should identify how a result could break and what evidence would
+be needed to extend it; ritual phrases such as ``more research is needed'' do
+not help replication or decision-making.
+
+\end{v3topic}
+\begin{v3topic}{Review and Rebuttal}
+Translate each review comment into a question about evidence or exposition.
+Respond with a change, new analysis, bounded disagreement, or explicit
+limitation.
+Keep a claim--evidence matrix so edits to one result propagate to the abstract,
+figures, discussion, and conclusion.
+\end{v3topic}
+
+\section{Practical Lab: From Experiment to Reproducible Report}
+
+\begin{practicallab}[Write a compact, auditable study]
+Using one experiment from an earlier chapter:
+\begin{enumerate}
+    \item state a falsifiable research question, primary outcome, and protocol;
+    \item freeze data identifiers, splits, environment, configuration, seeds,
+          and baseline before the final run;
+    \item produce one figure and one table with standalone captions;
+    \item report effect size, uncertainty, error slices, resource use, and one
+          negative result;
+    \item write a 150-word abstract containing scope, method, result, and
+          limitation;
+    \item create a reproducibility appendix with commands and expected output;
+    \item exchange artifacts with a peer who attempts a clean rerun and records
+          every missing assumption.
+\end{enumerate}
+Revise the claim--evidence matrix after the rerun.
+Completion means another person can understand what was tested, reproduce the
+main result, and see where the conclusion stops.
+\end{practicallab}
+
+\begin{checkpoint}
+\begin{enumerate}
+    \item What is the independent unit in your last experiment?
+    \item Which sentence in your abstract has the weakest evidence?
+    \item What did model selection learn indirectly from the test data?
+    \item Can every figure caption be understood without the surrounding
+          paragraph?
+    \item Which artifact and licence would a replicator need first?
+\end{enumerate}
+\end{checkpoint}
+
+%
+\section{Deep Dive: Reproducibility Audit}
+\begin{v3topic}{Recompute from a Clean Environment}
+Give the repository and manuscript to a reader who did not create the original
+environment.
+Record missing data, secrets, undocumented preprocessing, manual steps,
+unstable downloads, and discrepancies between figures and reported numbers.
+
+\end{v3topic}
+\begin{v3topic}{Audit the Claim Graph}
+For every abstract and conclusion claim, link the supporting result, method,
+artifact, and limitation.
+Remove orphan claims and propagate changed numbers or caveats through captions,
+tables, discussion, model cards, and supplementary material.
+\end{v3topic}
+
+\chapterreview{Claim}{Method}{Evidence}{Revise}
+
+\section{Further Reading}
+
+Use the venue's current author and artifact instructions as the normative
+source for submission requirements.
+For AI-specific documentation, model cards and datasheets provide practical
+structures for reporting released models and datasets
+\cite{mitchellModelCardsModel2019,gebruDatasheetsDatasets2021}.

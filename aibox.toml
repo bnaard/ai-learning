@@ -71,6 +71,11 @@ name = "ai-almanach"  # CLI name and preview URL slug.
 source = "ai almanach/ai-almanach.tex"  # Main TeX file, relative to the project root.
 output_dir = "ai almanach/out"  # PDF, log, and auxiliary output directory.
 
+[[latex.documents]]
+name = "ai-almanach-v3"  # Clean prose-first reconstruction.
+source = "ai almanach v3/ai-almanach-v3.tex"
+output_dir = "ai almanach v3/out"
+
 [latex.preview]
 # `aibox apply` generates a dedicated Compose sidecar and port mapping. The
 # server listens on port 8765 inside that sidecar; bind/port below control only

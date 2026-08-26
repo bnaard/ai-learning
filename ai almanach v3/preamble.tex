@@ -1,0 +1,268 @@
+\documentclass[10pt,openany]{book}
+\tracinglostchars=2
+
+\makeatletter
+\def\input@path{{ai almanach v3/}{ai almanach/}{./}}
+\makeatother
+
+\usepackage[USenglish]{babel}
+\usepackage{fontspec}
+\IfFontExistsTF{Libertinus Serif}{
+  \setmainfont{Libertinus Serif}
+  \setsansfont{Libertinus Sans}
+}{
+  \setmainfont{TeX Gyre Pagella}
+  \setsansfont{TeX Gyre Heros}
+}
+\IfFontExistsTF{Inconsolata}{
+  \setmonofont{Inconsolata}[Scale=MatchLowercase]
+}{
+  \setmonofont{Latin Modern Mono}
+}
+
+\usepackage[
+  a4paper,
+  inner=28mm,
+  outer=24mm,
+  top=25mm,
+  bottom=27mm,
+  headheight=20pt,
+  headsep=8mm,
+  footskip=12mm
+]{geometry}
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{AlmanachInk}{HTML}{172033}
+\definecolor{AlmanachTeal}{HTML}{167D82}
+\definecolor{AlmanachOchre}{HTML}{B56D28}
+\definecolor{AlmanachMist}{HTML}{EDF3F3}
+\definecolor{AlmanachRed}{HTML}{9C3D35}
+\color{AlmanachInk}
+
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.055}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.54\baselineskip}
+\raggedbottom
+
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily\bfseries\color{AlmanachInk}}
+  {\color{AlmanachTeal}\fontsize{13}{15}\selectfont
+   CHAPTER \thechapter}
+  {0.45em}
+  {\raggedright\fontsize{27}{31}\selectfont}
+\titlespacing*{\chapter}{0pt}{-12pt}{24pt}
+\titleformat{\section}
+  {\Large\sffamily\bfseries\color{AlmanachInk}}
+  {\color{AlmanachTeal}\thesection}{0.65em}{}
+\titleformat{\subsection}
+  {\large\sffamily\bfseries\color{AlmanachInk}}
+  {\color{AlmanachTeal}\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\normalsize\sffamily\bfseries\color{AlmanachInk}}
+  {\color{AlmanachTeal}\thesubsubsection}{0.55em}{}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\sffamily\small\thepage\quad AI Almanach}
+\fancyhead[RO]{\sffamily\small\nouppercase{\leftmark}\quad\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{\hbox to\headwidth{%
+  \color{AlmanachTeal}\leaders\hrule height \headrulewidth\hfill}}
+
+\usepackage{graphicx}
+\usepackage{svg}
+\graphicspath{{figures/}{icons/}{logos/}{ai almanach/figures/}%
+  {ai almanach/icons/}{ai almanach/logos/}}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{
+  arrows.meta,
+  angles,
+  calc,
+  chains,
+  decorations.pathreplacing,
+  fit,
+  matrix,
+  positioning,
+  quotes,
+  shapes.geometric
+}
+\input{shapes/flowchart_styles.tex}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{nicematrix}
+\NiceMatrixOptions{cell-space-limits=1pt}
+\usepackage{siunitx}
+\usepackage{tabularray}
+\usepackage{booktabs}
+\usepackage{caption}
+\captionsetup{
+  font=small,
+  labelfont={bf,sf,color=AlmanachTeal},
+  labelsep=period,
+  justification=raggedright,
+  singlelinecheck=false
+}
+\usepackage{listings}
+\lstdefinelanguage{json}{
+  basicstyle=\ttfamily\small,
+  string=[s]{\"}{\"},
+  stringstyle=\color{AlmanachTeal!75!black},
+  comment=[l]{//},
+  commentstyle=\color{gray},
+  morecomment=[s]{/*}{*/},
+  showstringspaces=false
+}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{AlmanachMist},
+  backgroundcolor=\color{AlmanachMist!45},
+  showstringspaces=false
+}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+\setlist[itemize,1]{label=\textcolor{AlmanachTeal}{--}}
+\usepackage{multicol}
+\usepackage{xparse}
+
+\usepackage[autostyle=true]{csquotes}
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=nyt,
+  maxbibnames=8
+]{biblatex}
+\addbibresource{bibliography/references.bib}
+\renewcommand{\bibfont}{\small}
+
+\newcommand{\maincolor}{AlmanachTeal}
+\newcommand{\maincolspan}{4}
+\newcommand{\graphscale}{0.9}
+\newcommand{\keyterm}[1]{%
+  \textbf{\textcolor{AlmanachTeal!78!black}{#1}}}
+\newcommand{\evidencelevel}[1]{%
+  \textsf{\footnotesize\color{AlmanachTeal}Evidence: #1}}
+
+\NewDocumentEnvironment{v3topic}{m}{%
+  \par\addvspace{0.75\baselineskip}%
+  \begingroup
+  \IfBlankF{#1}{\paragraph{#1}\mbox{}\par\nobreak}%
+}{%
+  \par\endgroup\addvspace{0.35\baselineskip}%
+}
+\newcommand{\visualseparator}{%
+  \par\smallskip\noindent\color{AlmanachTeal!65}%
+  \rule{24mm}{0.6pt}\par\smallskip\color{AlmanachInk}}
+\newcommand{\topicline}[1]{%
+  \par\smallskip{\sffamily\bfseries\color{AlmanachTeal}#1}\par}
+
+\NewDocumentEnvironment{didacticnote}{O{Note}}{%
+  \par\addvspace{0.65\baselineskip}%
+  \begin{quote}\small
+  {\sffamily\bfseries\color{AlmanachTeal}#1.}\quad
+}{%
+  \end{quote}\addvspace{0.25\baselineskip}%
+}
+\NewDocumentEnvironment{plainlanguage}{O{In plain language}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{learningobjectives}{}{%
+  \begin{didacticnote}[Learning objectives]}{\end{didacticnote}}
+\NewDocumentEnvironment{engineernote}{O{Engineer's note}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{workedexample}{O{Worked example}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{checkpoint}{O{Check your understanding}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{practicallab}{O{Practical lab}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{cautionbox}{O{Common trap}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+\NewDocumentEnvironment{v3aside}{O{Context}}{%
+  \begin{didacticnote}[#1]}{\end{didacticnote}}
+
+\NewDocumentCommand{\chapterlead}{m m m m m m}{%
+  \noindent
+  \begin{minipage}[t]{0.50\linewidth}
+    \vspace{0pt}
+    {\sffamily\bfseries\color{AlmanachTeal}Essential question}\par
+    {\large #1}\par
+    \medskip
+    This chapter moves from \emph{#2} through \emph{#3} and \emph{#4}
+    to \emph{#5}. Read the diagram as a dependency map: each later step
+    inherits assumptions and errors from the earlier ones.
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.44\linewidth}
+    \vspace{0pt}\centering
+    \begin{tikzpicture}[
+      roadmap/.style={
+        draw=AlmanachTeal,
+        rounded corners=1mm,
+        fill=AlmanachMist,
+        text width=31mm,
+        minimum height=7mm,
+        align=center,
+        font=\sffamily\small},
+      link/.style={-{Stealth[length=2mm]},AlmanachOchre,thick},
+      node distance=3.7mm]
+      \node[roadmap] (a) {#2};
+      \node[roadmap,below=of a] (b) {#3};
+      \node[roadmap,below=of b] (c) {#4};
+      \node[roadmap,below=of c] (d) {#5};
+      \draw[link] (a) -- (b);
+      \draw[link] (b) -- (c);
+      \draw[link] (c) -- (d);
+    \end{tikzpicture}
+    \captionof{figure}{Chapter roadmap from #2 to #5.}
+    \label{fig:roadmap-#6}
+  \end{minipage}
+  \par\vspace{1.2\baselineskip}
+}
+
+\NewDocumentCommand{\chapterreview}{m m m m}{%
+  \section{Review and transfer}
+  \begin{description}[style=nextline]
+    \item[Reconstruct]
+      Draw the path from \emph{#1} to \emph{#4} from memory. Add the
+      representation, transformation, and assumption at each boundary.
+    \item[Diagnose]
+      Name one plausible failure in #1, #2, #3, and #4. For each one,
+      identify the earliest observable signal that distinguishes it.
+    \item[Verify]
+      Select one equation or algorithm. Check dimensions, calculate a toy
+      case, compare with a baseline, and state what the check cannot prove.
+    \item[Transfer]
+      Move the chapter's reasoning chain to a new domain. State which
+      assumptions survive, which break, and what new evidence is required.
+  \end{description}
+}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+\colorlet{citecolor}{AlmanachTeal!70!black}
+\colorlet{linkcolor}{AlmanachTeal!70!black}
+\colorlet{urlcolor}{AlmanachOchre!85!black}
+\usepackage[
+  bookmarks=true,
+  breaklinks=true,
+  colorlinks=true,
+  citecolor=citecolor,
+  linkcolor=linkcolor,
+  urlcolor=urlcolor,
+  pdfborder={0 0 0}
+]{hyperref}
+\usepackage[capitalise,nameinlink]{cleveref}
+\hypersetup{
+  pdftitle={AI Almanach, third edition},
+  pdfauthor={Bernhard Gerlach},
+  pdfsubject={AI, data science, and intelligent systems for engineers},
+  pdfkeywords={AI, machine learning, data science, engineering, LLMs}
+}

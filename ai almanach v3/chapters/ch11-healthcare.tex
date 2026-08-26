@@ -1,0 +1,643 @@
+% Generated semantic source for AI Almanach v3.
+% Edit v3 directly after initial generation; do not overwrite
+% editorial changes by rerunning the converter casually.
+
+% ==== AI in Healthcare and Medical Imaging =============================================================================
+\chapter{AI in Healthcare and Medical Imaging}
+
+\chapterlead{How can AI improve a workflow without confusing scores with benefit?}{Need}{Evidence}{Integrate}{Monitor}{healthcare}
+
+% ==== Section 1: AI in Healthcare ==========================================
+\section{AI in Healthcare}
+
+% ---- 11.1.1 Healthcare Ecosystem --------------------------------------------------------------
+\subsection{The Healthcare Ecosystem}
+
+\begin{v3topic}{Healthcare Stakeholders}
+    Modern healthcare involves a complex network of actors whose incentives, data, and workflows AI must accommodate\textsuperscript{\cite[][]{costigliolaHealthcareOverviewNew2012}}.
+\visualseparator
+    \begin{tblr}{|Q[l,m,3cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Stakeholder} & \textbf{Primary Role} & \textbf{AI Opportunity} \\
+        \hline
+        \textbf{Hospitals / Clinics} & Acute care, diagnostics, surgery & Scheduling optimisation, diagnostic AI, triage \\
+        \hline
+        \textbf{Insurers / Payers} & Risk pooling, reimbursement & Fraud detection, risk stratification, claim automation \\
+        \hline
+        \textbf{Pharma / Biotech} & Drug discovery, manufacturing & Virtual screening, clinical trial optimisation \\
+        \hline
+        \textbf{Regulators} & Safety, market authorisation & AI-assisted adverse-event surveillance \\
+        \hline
+        \textbf{Patients / Society} & Care recipients, data subjects & Personal health monitoring, informed consent \\
+        \hline
+    \end{tblr}
+\captionof{table}{The Healthcare Ecosystem: Healthcare Stakeholders.}
+\label{tab:ch11-healthcare-inline-01}
+
+\end{v3topic}
+\begin{v3topic}{Digital Health Transformation}
+    Digitisation of healthcare is driven by three converging forces:
+    \begin{enumerate}
+        \item \textbf{EHR adoption}: Electronic Health Records replace paper charts, creating longitudinal patient histories accessible to AI.
+        \item \textbf{Medical device connectivity}: wearables, implants, and bedside monitors stream continuous physiological signals.
+        \item \textbf{Genomic data}: next-generation sequencing costs have fallen $\sim10^6\times$ since 2003, enabling population-scale genotyping.
+    \end{enumerate}
+    Key standard: \textbf{HL7 FHIR} (Fast Healthcare Interoperability Resources) defines APIs for exchanging clinical data between systems.
+
+\end{v3topic}
+\begin{v3topic}{Electronic Health Records (EHR)}
+    An EHR integrates structured (diagnoses, lab values, medications — coded in \textbf{ICD-10}, \textbf{SNOMED-CT}, \textbf{LOINC}) and unstructured (clinical notes, radiology reports) data.
+    \begin{itemize}
+        \item \textbf{Value for AI}: longitudinal records allow survival analysis, complication prediction, and phenotyping at scale.
+        \item \textbf{Challenges}: missing values, inconsistent coding practice, temporal shift, and strict access controls (HIPAA, GDPR).
+        \item \textbf{Representation learning}: pre-trained transformer models (e.g.\ Med-BERT) learn EHR visit sequences analogously to word sequences in NLP.
+    \end{itemize}
+    \textsuperscript{\cite[][p.~464]{juhnArtificialIntelligenceNLP2020}}
+\end{v3topic}
+
+% ---- 11.1.2 Drug Discovery --------------------------------------------------------------------
+\subsection{Drug Discovery}
+
+\begin{v3topic}{Traditional Drug Discovery Pipeline}
+    From initial target identification to market approval takes \textbf{10--15 years} and costs \textbf{\$1--2 billion} on average\textsuperscript{\cite[][pp.~1--20]{blassDrugDiscoveryDevelopment2015}}.
+\visualseparator
+    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Stage} & \textbf{Activity} & \textbf{AI Lever} \\
+        \hline
+        Target identification & Find disease-relevant protein/gene & Genomics, network biology \\
+        \hline
+        Hit discovery & Screen $10^6$--$10^9$ compounds & Virtual screening (ML classifiers) \\
+        \hline
+        Lead optimisation & Improve ADMET properties & Generative molecular design \\
+        \hline
+        Pre-clinical & Animal safety/efficacy & Toxicity prediction models \\
+        \hline
+        Clinical trials (I--III) & Human safety, efficacy & Patient stratification, adaptive design \\
+        \hline
+        Regulatory / market & FDA/EMA approval & Automated documentation \\
+        \hline
+    \end{tblr}
+\captionof{table}{Drug Discovery: Traditional Drug Discovery Pipeline.}
+\label{tab:ch11-healthcare-inline-02}
+
+\end{v3topic}
+\begin{v3topic}{Virtual Screening and Molecular Graphs}
+    \textbf{Virtual screening} applies ML to rank large compound libraries by predicted binding affinity, replacing costly physical assays\textsuperscript{\cite[][pp.~45--70]{brownArtificialIntelligenceDrugDiscovery2020}}.
+    \begin{itemize}
+        \item \textbf{Ligand-based}: similarity to known active compounds (fingerprint similarity, QSAR regression).
+        \item \textbf{Structure-based}: predict binding pose and affinity using 3-D protein structure (docking + ML scoring).
+        \item \textbf{Graph Neural Networks}: represent molecules as graphs ($G = \langle V, E \rangle$ where nodes are atoms, edges are bonds); message passing aggregates neighbourhood features to predict molecular properties.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Generative Molecular Design}
+    Generative models explore chemical space to propose novel drug candidates\textsuperscript{\cite[][pp.~90--120]{brownArtificialIntelligenceDrugDiscovery2020}}:
+    \begin{itemize}
+        \item \textbf{VAE / Junction-Tree VAE}: encode molecule $\to$ latent vector; decode latent vector $\to$ valid molecule; optimise in latent space via Bayesian optimisation.
+        \item \textbf{GANs (MolGAN)}: generator produces molecular graphs; discriminator and reward network enforce validity and desired properties.
+        \item \textbf{Reinforcement learning}: agent generates SMILES strings and receives reward based on predicted activity, synthesisability, and drug-likeness (\textit{QED} score).
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{{AlphaFold: Protein Structure Prediction}}
+    \textbf{AlphaFold 2} (DeepMind, 2021) predicts 3-D protein structure from amino-acid sequence with near-experimental accuracy\textsuperscript{\cite[][p.~583]{jumperHighlyAccurateProtein2021}}.
+    \begin{itemize}
+        \item Input: multiple sequence alignment (MSA) + pairwise residue features.
+        \item Architecture: \textbf{Evoformer} — 48 transformer blocks that jointly update MSA representation and pairwise distance matrix; \textbf{Structure Module} converts pair representations to 3-D frames using invariant point attention.
+        \item Output: all-atom coordinates with per-residue confidence (\textbf{pLDDT} score).
+        \item Impact: $>$200 million structures deposited in AlphaFold DB; accelerated structure-based drug discovery for neglected diseases.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{ADMET Prediction}
+    \textbf{ADMET} (Absorption, Distribution, Metabolism, Excretion, Toxicity) properties determine whether a promising drug candidate is actually viable\textsuperscript{\cite[][pp.~75--88]{blassDrugDiscoveryDevelopment2015}}.
+    ML models (GNN, random forest, gradient boosting) trained on experimental datasets predict:
+    \begin{itemize}
+        \item \textbf{Solubility} (LogS), \textbf{permeability} (Caco-2), \textbf{blood-brain barrier penetration}
+        \item \textbf{CYP450 inhibition} (metabolic drug-drug interactions)
+        \item \textbf{hERG channel toxicity} (cardiac safety)
+    \end{itemize}
+    Early ADMET filtering avoids expensive late-stage failures (\textit{``fail fast, fail cheap''}).
+\end{v3topic}
+
+% ---- 11.1.3 Personalized Medicine -------------------------------------------------------------
+\subsection{Personalized Medicine}
+
+\begin{v3topic}{Precision Medicine}
+    \textbf{Precision medicine} tailors prevention and treatment to individual variability in genes, environment, and lifestyle\textsuperscript{\cite[][pp.~3--18]{bocciaPersonalisedHealthCare2020}}.
+    \begin{itemize}
+        \item \textbf{Stratification}: group patients by molecular subtype (e.g.\ HER2+ vs.\ triple-negative breast cancer) to assign targeted therapies.
+        \item \textbf{Biomarkers}: measurable indicators (protein levels, mutation status, imaging features) that predict treatment response.
+        \item \textbf{Companion diagnostics}: in-vitro test co-approved with a drug to identify the responsive subpopulation.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Pharmacogenomics}
+    \textbf{Pharmacogenomics} studies how genetic variation alters drug response\textsuperscript{\cite[][pp.~50--75]{bocciaPersonalisedHealthCare2020}}:
+    \begin{itemize}
+        \item \textbf{CYP450 polymorphisms}: variants in cytochrome P450 enzymes produce poor, normal, rapid, or ultra-rapid metabolisers — same dose, very different blood levels.
+        \item \textbf{HLA typing}: predict severe adverse reactions (e.g.\ abacavir hypersensitivity) before prescription.
+        \item \textbf{PGx-guided dosing}: ML models combine genomic, clinical, and demographic features to recommend individualised doses (warfarin, tacrolimus).
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Digital Twins in Healthcare}
+    A \textbf{digital twin} is a continuously updated computational model of an individual patient, integrating multi-modal data (genomics, imaging, wearables, EHR)\textsuperscript{\cite[][pp.~110--130]{bocciaPersonalisedHealthCare2020}}.
+    \begin{itemize}
+        \item \textbf{Applications}: simulate disease progression, test hypothetical interventions \textit{in silico} before clinical trial, personalise radiation therapy plans.
+        \item \textbf{Challenges}: requires model calibration to individual data; biological complexity; regulatory framework for simulated outcomes.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Clinical Decision Support Systems}
+    \textbf{CDSS} provide evidence-based recommendations at the point of care:
+    \begin{itemize}
+        \item \textbf{Risk stratification}: sepsis early warning (NEWS2, AI variants), readmission risk, ICU deterioration scores.
+        \item \textbf{Drug-interaction alerts}: automated checking of prescribed polypharmacy against interaction databases.
+        \item \textbf{Differential diagnosis}: symptom-based probabilistic ranking (e.g.\ Isabel DDx).
+        \item \textbf{NLP-driven}: extract problem lists and medication history from free-text notes to feed risk models.\textsuperscript{\cite[][p.~465]{juhnArtificialIntelligenceNLP2020}}
+    \end{itemize}
+\end{v3topic}
+
+% ==== Section 2: Medical Imaging and Diagnostics ==========================================
+\section{Medical Imaging and Diagnostics}
+
+% ---- 11.2.1 Imaging Modalities ----------------------------------------------------------------
+\subsection{Imaging Modalities}
+
+\begin{v3topic}{X-Ray and Computed Tomography}
+    \textbf{Projection X-ray}: X-ray photons attenuate exponentially through tissue (Beer-Lambert law $I = I_0 e^{-\mu x}$); denser structures (bone, calcifications) appear bright\textsuperscript{\cite[][pp.~135--180]{bushbergEssentialPhysicsMedicalImaging2020}}.
+\visualseparator
+    \textbf{CT} rotates the X-ray source and detector around the patient; a \textbf{filtered back-projection} (or iterative) algorithm reconstructs a 3-D volume from projections.
+    Tissue density expressed in \textbf{Hounsfield Units} (HU): water = 0, bone $\approx +1000$, air $= -1000$.
+    Advantage: fast, high spatial resolution, excellent for bone and chest.
+    Disadvantage: ionising radiation dose.
+
+\end{v3topic}
+\begin{v3topic}{Magnetic Resonance Imaging (MRI)}
+    MRI exploits nuclear magnetic resonance of hydrogen protons\textsuperscript{\cite[][pp.~270--320]{bushbergEssentialPhysicsMedicalImaging2020}}:
+    \begin{enumerate}
+        \item Static field $B_0$ aligns spins.
+        \item RF pulse tips spins into transverse plane.
+        \item \textbf{T1 relaxation} (longitudinal recovery) and \textbf{T2 relaxation} (transverse decay) characterise tissue type.
+        \item Gradient fields localise signals spatially; Fourier transform reconstructs the image (\textbf{k-space}).
+    \end{enumerate}
+    Advantages: soft-tissue contrast, no ionising radiation, functional variants (fMRI, DWI, MRS).
+    Disadvantage: slow acquisition, expensive, contraindicated with metal implants.
+
+\end{v3topic}
+\begin{v3topic}{PET and Ultrasound}
+    \textbf{PET} (Positron Emission Tomography): radiotracer (e.g.\ \textsuperscript{18}F-FDG) emits positrons; annihilation produces two 511 keV gamma photons detected in coincidence\textsuperscript{\cite[][pp.~590--630]{bushbergEssentialPhysicsMedicalImaging2020}}.
+    Reveals metabolic activity; combined with CT/MRI (\textbf{PET-CT}, \textbf{PET-MRI}) for anatomical co-registration.
+    Clinical use: oncology staging, Alzheimer's amyloid imaging.
+\visualseparator
+    \textbf{Ultrasound}: high-frequency sound waves ($2$--$15\,\text{MHz}$) reflect at tissue boundaries; B-mode forms 2-D cross-section in real time.
+    Advantages: portable, no radiation, real-time. Disadvantages: operator-dependent, poor penetration through bone/air, limited field of view.
+
+\end{v3topic}
+\begin{v3topic}{Modality Comparison}
+    \begin{tblr}{|Q[l,m,1.8cm]|X[l]|X[l]|X[l]|}
+        \hline
+        \textbf{Modality} & \textbf{Signal} & \textbf{Tissue contrast} & \textbf{Radiation} \\
+        \hline
+        X-Ray & Attenuation & Bone, lung & Ionising \\
+        \hline
+        CT & Attenuation 3-D & Bone, vessels & Ionising \\
+        \hline
+        MRI & T1/T2 relaxation & Soft tissue & None \\
+        \hline
+        PET & Metabolic tracer & Functional & Radiotracer \\
+        \hline
+        Ultrasound & Echo reflection & Soft tissue & None \\
+        \hline
+    \end{tblr}
+\captionof{table}{Imaging Modalities: Modality Comparison.}
+\label{tab:ch11-healthcare-inline-03}
+    \textsuperscript{\cite[][pp.~1--30]{smithIntroductionMedicalImaging2010}}
+\end{v3topic}
+
+% ---- 11.2.2 AI for Medical Image Analysis -----------------------------------------------------
+\subsection{AI for Medical Image Analysis}
+
+\begin{v3topic}{Classification: Skin Cancer and Retinopathy}
+    Two landmark studies demonstrated specialist-level AI performance\textsuperscript{\cite[][p.~115]{estevaSkincancerDeepNeural2017}}\textsuperscript{\cite[][p.~2402]{gulshankumarRetinalFundusImages2016}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|X[l]|}
+        \hline
+        \textbf{Study} & \textbf{Task} & \textbf{Architecture} & \textbf{Key result} \\
+        \hline
+        Esteva et al.\ (2017) & Skin lesion classification (malignant vs.\ benign, 757 classes) & Inception v3, transfer learning & Non-inferior to 21 board-certified dermatologists \\
+        \hline
+        Gulshan et al.\ (2016) & Diabetic retinopathy grading from fundus photos & Inception v3, 128,000 images & AUC $= 0.99$; sensitivity/specificity exceeded human graders \\
+        \hline
+    \end{tblr}
+\captionof{table}{AI for Medical Image Analysis: Classification: Skin Cancer and Retinopathy.}
+\label{tab:ch11-healthcare-inline-04}
+    Both use \textbf{transfer learning}: ImageNet-pretrained CNN fine-tuned on medical dataset; critical when labelled medical data is scarce.
+
+\end{v3topic}
+\begin{v3topic}{Object Detection in Medical Images}
+    Medical detection tasks include \textbf{lesion detection}, \textbf{nodule detection} (lung CT), \textbf{polyp detection} (colonoscopy), and \textbf{anatomy localisation}.
+    \begin{itemize}
+        \item \textbf{RetinaNet / Faster R-CNN}: anchor-based detectors adapted to handle small lesions via \textbf{focal loss} (downweights easy negatives) and multi-scale feature pyramids.
+        \item \textbf{3-D detection}: volumetric CNN processes full CT volume; computationally demanding but preserves 3-D context (e.g.\ lung CAD).
+        \item \textbf{Class imbalance}: foreground lesions are often tiny fractions of image volume; handled via hard negative mining, OHEM, or synthetic augmentation.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{U-Net: Segmentation for Medical Images}
+    \textbf{U-Net} (Ronneberger et al., 2015) is the dominant architecture for biomedical image segmentation\textsuperscript{\cite[][p.~234]{ronnebergerUnetConvolutionalNetworks2015}}:
+    \begin{itemize}
+        \item \textbf{Encoder}: contracting path of convolutions + max-pooling captures context.
+        \item \textbf{Decoder}: expanding path of transposed convolutions restores resolution.
+        \item \textbf{Skip connections}: concatenate encoder feature maps to decoder at each scale — recovers fine spatial detail lost in pooling.
+        \item Works well with \textbf{few labelled examples} (hundreds, not millions) — crucial for medical imaging.
+    \end{itemize}
+    Applications: organ segmentation (liver, prostate), tumour delineation, retinal vessel segmentation.
+
+\end{v3topic}
+\begin{v3topic}{Image Registration}
+    \textbf{Registration} aligns two images of the same anatomy (different time points, modalities, or patients) by finding a spatial transformation $T$ minimising a dissimilarity metric\textsuperscript{\cite[][pp.~315--360]{schweikardMedicalRobotics2015}}:
+    \begin{equation}
+        T^* = \arg\min_T \mathcal{D}(I_\text{fixed},\, T(I_\text{moving})) + \lambda \mathcal{R}(T)
+    \end{equation}
+    where $\mathcal{D}$ is mutual information (for multi-modal) or sum-of-squared differences, and $\mathcal{R}$ is a regulariser.
+    \begin{itemize}
+        \item \textbf{Rigid}: rotation + translation; sufficient for brain, bones.
+        \item \textbf{Deformable}: dense displacement field; required for soft-tissue organs.
+        \item \textbf{Learning-based}: VoxelMorph — CNN predicts deformation field in one forward pass, replacing iterative optimisation.
+    \end{itemize}
+\end{v3topic}
+
+% ---- 11.2.3 Ground Truth and Clinical Integration ---------------------------------------------
+\subsection{Ground Truth and Clinical Integration}
+
+\begin{v3topic}{Annotation Challenges}
+    Labelled medical data is a scarce resource\textsuperscript{\cite[][pp.~232--233]{challenArtificialIntelligenceBias2019}}:
+    \begin{itemize}
+        \item \textbf{Expert time}: radiologists, pathologists, and surgeons are required; annotations are slow and costly.
+        \item \textbf{Inter-rater variability}: expert disagreement on ambiguous cases (e.g.\ early-stage tumour, grey-zone lesion) produces noisy labels.
+        \item \textbf{Mitigation}: consensus labelling with majority vote; \textbf{active learning} (query most uncertain cases); \textbf{weakly supervised} methods using report-level labels (MIL, label propagation); self-supervised pre-training on unlabelled images.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Radiologist-AI Collaboration}
+    AI in radiology is most effective as a \textbf{second reader} or \textbf{triage tool} rather than a replacement:
+    \begin{itemize}
+        \item \textbf{Worklist prioritisation}: automatically elevate urgent cases (stroke, pulmonary embolism) to top of radiologist queue — reduces time-to-treatment.
+        \item \textbf{Detection assistance}: AI marks candidate regions; radiologist confirms or dismisses — reduces miss rate for subtle findings.
+        \item \textbf{Quantity vs.\ quality}: studies show AI alone and radiologists alone both perform worse than the human-AI team.
+        \item \textbf{Alert fatigue}: too many AI suggestions reduce compliance; specificity thresholds must balance sensitivity.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Regulatory Approval: FDA and CE}
+    Medical AI software is regulated as a \textbf{Software as a Medical Device (SaMD)}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,2.2cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Framework} & \textbf{Regulation} & \textbf{Key Requirement} \\
+        \hline
+        \textbf{FDA (US)} & 510(k) pre-market notification or De Novo & Substantial equivalence to predicate; analytical + clinical validation \\
+        \hline
+        \textbf{CE Mark (EU)} & MDR 2017/745 + IVDR 2017/746 & Clinical evidence, post-market surveillance, QMS (ISO 13485) \\
+        \hline
+        \textbf{Both} & Adaptive AI challenge & Locked vs.\ continuously-learning algorithms; change management \\
+        \hline
+    \end{tblr}
+\captionof{table}{Ground Truth and Clinical Integration: Regulatory Approval: FDA and CE.}
+\label{tab:ch11-healthcare-inline-05}
+    Key principle: \textbf{intended use} defines risk class; diagnostic AI imaging tools are typically Class II (FDA) / Class IIa--IIb (EU MDR).
+\end{v3topic}
+
+% ==== Section 3: Medical NLP ==========================================
+\section{Medical NLP}
+
+% ---- 11.3.1 Clinical Text Processing ---------------------------------------------------------
+\subsection{Clinical Text Processing}
+
+\begin{v3topic}{Medical Terminologies and Coding}
+    Clinical NLP must map free text to standardised terminologies to enable structured analysis\textsuperscript{\cite[][p.~463]{juhnArtificialIntelligenceNLP2020}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+        \hline
+        \textbf{System} & \textbf{Scope} & \textbf{Use} \\
+        \hline
+        \textbf{ICD-10} & Disease classification (70,000+ codes) & Billing, epidemiology, cause-of-death \\
+        \hline
+        \textbf{SNOMED-CT} & Clinical concepts (350,000+ terms) & EHR problem lists, semantic interoperability \\
+        \hline
+        \textbf{LOINC} & Laboratory and clinical observations & Lab result standardisation \\
+        \hline
+        \textbf{RxNorm} & Medications and drug interactions & Prescription interoperability \\
+        \hline
+        \textbf{UMLS} & Meta-thesaurus integrating all above & NLP concept extraction backbone \\
+        \hline
+    \end{tblr}
+\captionof{table}{Clinical Text Processing: Medical Terminologies and Coding.}
+\label{tab:ch11-healthcare-inline-06}
+
+\end{v3topic}
+\begin{v3topic}{Clinical Text Characteristics}
+    Clinical notes differ markedly from general text, creating specific NLP challenges\textsuperscript{\cite[][p.~464]{juhnArtificialIntelligenceNLP2020}}:
+    \begin{itemize}
+        \item \textbf{Abbreviations and jargon}: \textit{``pt c/o SOB, hx of CABG''} (patient complains of shortness of breath, history of coronary artery bypass graft).
+        \item \textbf{Negation and uncertainty}: \textit{``no evidence of fracture''}; NLP must detect assertion status (present/absent/uncertain).
+        \item \textbf{Temporal expressions}: \textit{``3 days ago''}, \textit{``since 2018''}; normalisation to timeline is required.
+        \item \textbf{Implicit information}: \textit{``discharged home''} implies stable, but this is never stated.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{De-identification and Privacy}
+    Clinical text contains \textbf{Protected Health Information (PHI)} requiring removal before sharing or model training\textsuperscript{\cite[][pp.~45--60]{itgovernanceprivacyteamEUGDPR2020}}:
+    \begin{itemize}
+        \item \textbf{PHI categories}: names, dates, locations, phone numbers, MRNs, biometric identifiers.
+        \item \textbf{Rule-based}: regex patterns for dates and IDs; fast but brittle.
+        \item \textbf{NER-based}: sequence labelling model (BiLSTM-CRF, BERT) tags PHI spans for replacement.
+        \item \textbf{Synthetic generation}: replace PHI with plausible synthetic values to preserve linguistic structure.
+        \item Regulatory floor: HIPAA Safe Harbor (US); GDPR pseudonymisation/anonymisation (EU).
+    \end{itemize}
+\end{v3topic}
+
+% ---- 11.3.2 Applications of Medical NLP ------------------------------------------------------
+\subsection{Applications of Medical NLP}
+
+\begin{v3topic}{Named Entity Recognition for Clinical Text}
+    \textbf{Medical NER} extracts structured clinical entities from free text: \textit{diseases}, \textit{symptoms}, \textit{medications}, \textit{procedures}, \textit{anatomy}, \textit{dosages}.
+    \begin{itemize}
+        \item \textbf{Rule-based}: dictionary lookup against UMLS; high precision but recall limited by vocabulary.
+        \item \textbf{BioBERT / ClinicalBERT}: BERT pre-trained on PubMed/MIMIC notes; fine-tuned with IOB-tagged spans; state-of-the-art on i2b2 and n2c2 challenges.
+        \item \textbf{Relation extraction}: identify relations between entities (e.g.\ \textit{aspirin} \textit{treats} \textit{chest pain}).
+    \end{itemize}
+    \textsuperscript{\cite[][p.~466]{juhnArtificialIntelligenceNLP2020}}
+
+\end{v3topic}
+\begin{v3topic}{Clinical Summarisation}
+    \textbf{Discharge summary generation}: condense multi-day hospitalisation into structured summary for handoff or billing — one of the most time-consuming writing tasks for clinicians.
+    \begin{itemize}
+        \item \textbf{Extractive}: select most relevant sentences from notes (TextRank, BERT-based scoring).
+        \item \textbf{Abstractive}: seq2seq transformer (BART, T5) generates novel summary text.
+        \item \textbf{Structured templates}: fill-in-the-blank with extracted entities — more controllable than full generation.
+        \item Evaluation: ROUGE, BLEU + \textbf{clinical safety review} (hallucinated facts are dangerous).
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Medical Chatbots and Diagnostic Support}
+    Chatbots in healthcare serve triage, chronic disease management, and mental health support\textsuperscript{\cite[][]{juhnArtificialIntelligenceNLP2020}}:
+    \begin{itemize}
+        \item \textbf{Symptom checkers}: structured dialogue (decision-tree or LLM-based) collects symptoms and returns risk scores or urgency recommendations.
+        \item \textbf{Chronic disease coaching}: reminders, lifestyle advice, adherence tracking (e.g.\ IBD chatbots reduce patient anxiety and unscheduled GP visits).
+        \item \textbf{LLM-based}: GPT-4/Claude queried with patient context; impressive zero-shot performance on MedQA and USMLE-style questions, but prone to hallucination — requires guardrails.
+        \item \textbf{Safety caveat}: medical chatbots must not replace clinical judgement; liability frameworks still developing.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{NLP in Radiology Reports}
+    Radiology reports (free text) contain rich clinical findings not captured in structured fields\textsuperscript{\cite[][p.~639]{sorinDeepLearningNLP2020}}:
+    \begin{itemize}
+        \item \textbf{Report classification}: NLP extracts structured findings (pneumothorax present/absent, tumour size) from impression section; enables large-scale retrospective cohort studies.
+        \item \textbf{Findings-to-code}: automated ICD coding from radiology impression reduces manual coding workload.
+        \item \textbf{Temporal comparison}: detect interval change between serial studies (\textit{``stable compared to prior''} vs.\ \textit{``increased in size''}).
+    \end{itemize}
+\end{v3topic}
+
+% ==== Section 4: Medical Robotics and IoT ==========================================
+\section{Medical Robotics and IoT}
+
+% ---- 11.4.1 Internet of Medical Things -------------------------------------------------------
+\subsection{Internet of Medical Things}
+
+\begin{v3topic}{Wearables and Remote Monitoring}
+    The \textbf{Internet of Medical Things (IoMT)} connects medical devices, wearable sensors, and clinical systems\textsuperscript{\cite[][]{cardonaInternetMedicalThings2021}}:
+    \begin{itemize}
+        \item \textbf{Consumer wearables}: smartwatches (ECG, SpO\textsubscript{2}, accelerometry), CGMs (continuous glucose monitoring), smart inhalers.
+        \item \textbf{Clinical-grade remote monitoring}: patch ECG (2-week Holter), implantable loop recorders, remote ICU cameras.
+        \item \textbf{Data pipeline}: edge processing on device $\to$ gateway $\to$ cloud analytics $\to$ clinician alert or EHR.
+        \item \textbf{AI on signals}: arrhythmia detection (Apple Watch ECG, FDA-cleared), atrial fibrillation screening, fall detection.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{IoMT Cybersecurity}
+    Connected medical devices expand the hospital attack surface\textsuperscript{\cite[][]{cardonaInternetMedicalThings2021}}:
+    \begin{itemize}
+        \item \textbf{Device constraints}: IoMT devices often run outdated OS, have limited compute, and cannot be easily patched.
+        \item \textbf{Threats}: ransomware targeting hospital networks; insulin pump and pacemaker spoofing attacks demonstrated in research.
+        \item \textbf{Defences}: network segmentation, anomaly-based intrusion detection (ML on traffic patterns), device identity management, encrypted firmware updates.
+        \item \textbf{Standards}: IEC 62443 (industrial security), FDA guidance on medical device cybersecurity.
+    \end{itemize}
+\end{v3topic}
+
+% ---- 11.4.2 Surgical Robotics -----------------------------------------------------------------
+\subsection{Surgical Robotics}
+
+\begin{v3topic}{Robotic-Assisted Surgery: da Vinci System}
+    The \textbf{da Vinci Surgical System} (Intuitive Surgical) is the dominant robotic platform for minimally invasive surgery\textsuperscript{\cite[][pp.~1--30]{schweikardMedicalRobotics2015}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|}
+        \hline
+        \textbf{Component} & \textbf{Function} \\
+        \hline
+        \textbf{Surgeon console} & Ergonomic workstation with 3-D HD viewer; finger-actuated masters transmit motion \\
+        \hline
+        \textbf{Patient-side cart} & 4 robot arms holding instruments; $\leq 1\,$mm incisions, 7 degrees of freedom \\
+        \hline
+        \textbf{EndoWrist instruments} & Articulated tools mimicking wrist motion with motion scaling and tremor filtering \\
+        \hline
+        \textbf{Vision system} & Dual-channel laparoscope for stereoscopic 3-D view; AI-overlay for anatomy annotation \\
+        \hline
+    \end{tblr}
+\captionof{table}{Surgical Robotics: Robotic-Assisted Surgery: da Vinci System.}
+\label{tab:ch11-healthcare-inline-07}
+    Benefits: reduced blood loss, shorter hospital stay, finer dexterity in confined spaces. Limitation: haptic feedback limited; high acquisition cost.
+
+\end{v3topic}
+\begin{v3topic}{Navigation and Image Registration in Surgery}
+    Surgical navigation systems track instruments and anatomy in real time to guide procedures\textsuperscript{\cite[][pp.~180--240]{schweikardMedicalRobotics2015}}:
+    \begin{itemize}
+        \item \textbf{Registration}: align pre-operative image (CT/MRI) to intraoperative space using paired point landmarks or surface matching.
+        \item \textbf{Tracking}: optical (stereo IR cameras + reflective markers) or electromagnetic sensors on instruments.
+        \item \textbf{Augmented reality overlay}: project tumour boundary or nerve anatomy onto surgical field.
+        \item \textbf{AI surgical phase recognition}: CNNs on laparoscopic video classify surgical phases (e.g.\ Cholec80 dataset); used for workflow monitoring and trainee assessment.
+    \end{itemize}
+\end{v3topic}
+
+% ==== Section 5: Ethics, Regulation, and Challenges ==========================================
+\section{Ethics, Regulation, and Challenges}
+
+% ---- 11.5.1 Data Privacy and GDPR ------------------------------------------------------------
+\subsection{Data Privacy and GDPR}
+
+\begin{v3topic}{Health Data Sensitivity and GDPR}
+    Health data is a \textbf{Special Category} under GDPR (Art.~9), requiring explicit consent or a specific legal basis for processing\textsuperscript{\cite[][pp.~89--110]{itgovernanceprivacyteamEUGDPR2020}}:
+    \begin{itemize}
+        \item \textbf{Pseudonymisation}: replace direct identifiers with codes; re-identification risk remains if quasi-identifiers (age, gender, postcode) are retained.
+        \item \textbf{Anonymisation}: irreversible removal; GDPR no longer applies — but harder to achieve than often assumed (Sweeney 87\% re-identification from demographics alone).
+        \item \textbf{Data minimisation}: collect only what is necessary; purpose limitation; storage duration limits.
+        \item \textbf{DPIA}: Data Protection Impact Assessment required when processing is likely to result in a high risk to people's rights and freedoms; applicability must be assessed for the concrete health-AI use case.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Federated Learning for Healthcare}
+    \textbf{Federated learning} enables model training across hospitals without sharing raw patient data\textsuperscript{\cite[][p.~51]{liTwoDecadesFederated2020}}:
+    \begin{equation}
+        w^* = \arg\min_w \sum_{k=1}^{K} \frac{n_k}{n} \mathcal{L}_k(w)
+    \end{equation}
+    where each hospital $k$ with $n_k$ patients minimises its local loss $\mathcal{L}_k$; only model gradients (not data) are sent to the central aggregator.
+    \begin{itemize}
+        \item \textbf{Aggregation}: FedAvg averages client weights; FedProx adds proximal term for heterogeneous data.
+        \item \textbf{Remaining risks}: gradient inversion attacks can partially recover training data; differential privacy noise can be added.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Privacy-Preserving ML Techniques}
+    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Technique} & \textbf{Mechanism} & \textbf{Trade-off} \\
+        \hline
+        \textbf{Federated learning} & Train locally, share gradients & Communication overhead; non-IID data \\
+        \hline
+        \textbf{Differential privacy} & Add calibrated noise ($\varepsilon$-DP) & Accuracy degrades with stronger privacy \\
+        \hline
+        \textbf{Secure multi-party computation} & Cryptographic protocols; no raw data shared & High computational cost \\
+        \hline
+        \textbf{Homomorphic encryption} & Compute on encrypted data & Very slow; limited operations \\
+        \hline
+        \textbf{Synthetic data} & GAN/VAE generates privacy-safe surrogates & Quality depends on generator; may not capture rare events \\
+        \hline
+    \end{tblr}
+\captionof{table}{Data Privacy and GDPR: Privacy-Preserving ML Techniques.}
+\label{tab:ch11-healthcare-inline-08}
+    \textsuperscript{\cite[][p.~52]{liTwoDecadesFederated2020}}
+\end{v3topic}
+
+% ---- 11.5.2 Bias and Fairness ----------------------------------------------------------------
+\subsection{Bias and Fairness in Medical AI}
+
+\begin{v3topic}{Sources of Bias in Healthcare AI}
+    Medical AI systems can perpetuate or amplify health disparities\textsuperscript{\cite[][p.~232]{challenArtificialIntelligenceBias2019}}:
+    \begin{itemize}
+        \item \textbf{Dataset bias}: training data over-represents certain demographics (e.g.\ ImageNet-trained models predominantly use Western, lighter-skinned populations for skin lesion benchmarks).
+        \item \textbf{Label bias}: historical clinical decisions (training labels) encode past clinical inequalities.
+        \item \textbf{Deployment shift}: model trained in academic hospital deployed in community clinic with different patient mix.
+        \item \textbf{Proxy variables}: apparently neutral features (zip code, insurance type) may encode race or socioeconomic status.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Racial Identity in Medical Images}
+    Banerjee et al.\ (2021) showed that deep learning models can predict patient \textbf{self-reported racial identity} directly from medical images (X-ray, CT, MRI) with high accuracy, even when the mechanisms are unknown\textsuperscript{\cite[][]{banerjeeReadingRaceAI2021}}.
+    \begin{itemize}
+        \item Performance holds even on images degraded to be unreadable by humans.
+        \item Implication: AI models may silently use race as a feature during diagnosis, introducing bias even when race is not included as an input variable.
+        \item Mitigation: fairness audits stratified by demographic group; adversarial debiasing.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Fairness Metrics and Regulation}
+    \textbf{Fairness cannot be reduced to a single metric} — multiple definitions are mutually incompatible\textsuperscript{\cite[][pp.~2025--2026]{mccradddenPatientSafetyQuality2020}}:
+\visualseparator
+    \begin{tblr}{|Q[l,m,3cm]|X[l]|X[l]|}
+        \hline
+        \textbf{Metric} & \textbf{Definition} & \textbf{Healthcare implication} \\
+        \hline
+        \textbf{Equalised odds} & Equal TPR and FPR across groups & Same miss-rate for disease across demographics \\
+        \hline
+        \textbf{Predictive parity} & Equal PPV across groups & Same positive predictive value (precision) \\
+        \hline
+        \textbf{Calibration} & Predicted probabilities match actual frequencies & Risk scores equally reliable across groups \\
+        \hline
+        \textbf{Individual fairness} & Similar individuals treated similarly & No two patients get opposite decisions for irrelevant reasons \\
+        \hline
+    \end{tblr}
+\captionof{table}{Bias and Fairness in Medical AI: Fairness Metrics and Regulation.}
+\label{tab:ch11-healthcare-inline-09}
+    Regulatory guidance (FDA AI/ML action plan, EU AI Act Art.~9) requires pre-market fairness analysis.
+\end{v3topic}
+
+% ---- 11.5.3 Explainability -------------------------------------------------------------------
+\subsection{Explainability and Clinical Trust}
+
+\begin{v3topic}{Why Explainability Matters in Healthcare}
+    Clinicians and regulators require explanations for AI decisions in safety-critical contexts\textsuperscript{\cite[][pp.~1--10]{molnarInterpretableMachineLearning2019}}:
+    \begin{itemize}
+        \item \textbf{Clinical trust}: a ``black box'' diagnosis recommendation without rationale is unlikely to be adopted; explanation increases willingness to act on AI output.
+        \item \textbf{Error detection}: if the model explains its reasoning, a clinician can spot when it is relying on spurious features (e.g.\ metal ruler in dermatology photo correlated with malignancy in training data).
+        \item \textbf{Regulatory}: EU AI Act (High-Risk AI) and FDA require interpretability documentation; right to explanation under GDPR Art.~22.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{{Grad-CAM for Medical Images}}
+    \textbf{Gradient-weighted Class Activation Mapping (Grad-CAM)} produces a saliency heatmap highlighting which image regions drove the prediction\textsuperscript{\cite[][p.~619]{selvarajuGradCAMVisualExplanations2017}}:
+    \begin{equation}
+        L^c_{\text{Grad-CAM}} = \text{ReLU}\!\left(\sum_k \alpha_k^c A^k\right), \quad
+        \alpha_k^c = \frac{1}{Z}\sum_{i,j} \frac{\partial y^c}{\partial A^k_{ij}}
+    \end{equation}
+    where $A^k$ is the $k$-th feature map of the final convolutional layer, $y^c$ is the class score.
+    Medical use: show which lesion region caused a ``malignant'' classification; enables radiologist verification.
+
+\end{v3topic}
+\begin{v3topic}{{LIME and SHAP in Clinical AI}}
+    Post-hoc model-agnostic methods applicable to tabular clinical data\textsuperscript{\cite[][pp.~85--110]{molnarInterpretableMachineLearning2019}}:
+    \begin{itemize}
+        \item \textbf{LIME}: fit a local linear surrogate around the prediction; feature importance = surrogate coefficients.
+        \item \textbf{SHAP}: Shapley values distribute the prediction among features by marginal contribution; satisfies \textit{efficiency}, \textit{symmetry}, \textit{dummy}, and \textit{additivity} axioms.
+        \item \textbf{Clinical use}: explain which lab values, vital signs, or comorbidities drove a sepsis risk prediction; supports patient-specific explanation for shared decision making.
+    \end{itemize}
+
+\end{v3topic}
+\begin{v3topic}{Responsible AI Deployment Checklist}
+    Before deploying a medical AI system, a structured risk assessment is mandatory\textsuperscript{\cite[][pp.~2025--2027]{mccradddenPatientSafetyQuality2020}}:
+    \begin{itemize}
+        \item \textbf{Clinical validation}: prospective study, not just retrospective holdout; diverse site validation.
+        \item \textbf{Subgroup analysis}: performance stratified by age, sex, ethnicity, comorbidity.
+        \item \textbf{Failure mode analysis}: what happens at distribution shift? Who is harmed by false negatives vs.\ false positives?
+        \item \textbf{Human override}: clinician must be able to override AI; AI should not be sole decision maker.
+        \item \textbf{Post-market surveillance}: continuous monitoring of performance drift and adverse events.
+    \end{itemize}
+\end{v3topic}
+
+% ==== Section 6: Further Reading ==========================================
+%
+\section{Deep Dive: From Retrospective Accuracy to Clinical Utility}
+\begin{v3topic}{External and Prospective Evidence}
+Validate across sites, devices, time periods, workflows, and patient groups.
+A retrospective external set tests transportability; a prospective silent
+study tests current data flow; an impact study tests whether use changes care
+and outcomes.
+
+\end{v3topic}
+\begin{v3topic}{Thresholds Depend on the Pathway}
+Sensitivity and specificity do not determine value without prevalence,
+capacity, downstream tests, delay, and harm.
+Decision-curve or utility analysis makes the intervention threshold explicit
+and should be complemented by calibration and subgroup uncertainty.
+
+\end{v3topic}
+\begin{v3topic}{Change Control for Learning Systems}
+Define which data, preprocessing, model, threshold, interface, or workflow
+changes require revalidation.
+Monitor input and outcome delay, override patterns, incidents, and calibration.
+A safe update plan includes rollback and communication, not only a newer model
+file.
+\end{v3topic}
+
+\chapterreview{Need}{Evidence}{Integrate}{Monitor}
+
+\section{Further Reading}
+
+\begin{v3topic}{Recommended Sources for AI in Healthcare and Medical Imaging}
+    \begin{itemize}
+        \item \fullcite{brownArtificialIntelligenceDrugDiscovery2020} --- Comprehensive overview of ML approaches to virtual screening, molecular generation, and ADMET prediction.
+        \item \fullcite{blassDrugDiscoveryDevelopment2015} --- Authoritative textbook on the full drug discovery and development pipeline from target to market.
+        \item \fullcite{bocciaPersonalisedHealthCare2020} --- Reviews precision medicine, pharmacogenomics, and patient stratification strategies.
+        \item \fullcite{bushbergEssentialPhysicsMedicalImaging2020} --- Standard reference for the physics of X-ray, CT, MRI, PET, and ultrasound.
+        \item \fullcite{smithIntroductionMedicalImaging2010} --- Accessible engineering introduction to all major medical imaging modalities.
+        \item \fullcite{ronnebergerUnetConvolutionalNetworks2015} --- Original U-Net paper; foundational for biomedical image segmentation.
+        \item \fullcite{estevaSkincancerDeepNeural2017} --- Landmark dermatology AI study showing specialist-level skin cancer classification.
+        \item \fullcite{jumperHighlyAccurateProtein2021} --- AlphaFold 2: near-experimental protein structure prediction; transformative for structure-based drug discovery.
+        \item \fullcite{molnarInterpretableMachineLearning2019} --- Practical guide to explainability methods (LIME, SHAP, Partial Dependence Plots).
+        \item \fullcite{schweikardMedicalRobotics2015} --- Springer text covering kinematics, navigation, registration, and treatment planning for medical robots.
+        \item \fullcite{liTwoDecadesFederated2020} --- Survey of federated learning challenges and methods, with healthcare privacy applications.
+        \item \fullcite{itgovernanceprivacyteamEUGDPR2020} --- Implementation guide for GDPR compliance, including special category health data.
+    \end{itemize}
+\end{v3topic}
