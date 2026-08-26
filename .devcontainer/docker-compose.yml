@@ -70,6 +70,47 @@ services:
       TZ: "Europe/Berlin"
     command: sleep infinity
 
+  ai-learning-latex-preview:
+    image: ai-learning-devcontainer:latest
+    container_name: ai-learning-latex-preview
+    hostname: ai-learning-latex-preview
+    user: aibox
+    entrypoint: []
+    init: true
+    working_dir: /workspace
+    read_only: true
+    pids_limit: 64
+    mem_limit: 128m
+    cpus: 0.25
+    restart: "on-failure:3"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    volumes:
+      # The preview can read generated PDFs but cannot mutate the project.
+      - ${WORKSPACE_DIR:-..}:/workspace:ro
+    ports:
+      # Host exposure is explicit and defaults to loopback only.
+      - "127.0.0.1:8766:8765"
+    environment:
+      AIBOX_LATEX_DOCUMENTS_JSON: "[{\"name\":\"ai-dataanalytics-cards\",\"pdf\":\"/workspace/ai and data analytics/out/ai-dataanalytics-cards.pdf\",\"source\":\"ai and data analytics/ai-dataanalytics-cards.tex\"}]"
+      AIBOX_LATEX_PREFERRED_DOCUMENT: "ai-dataanalytics-cards"
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8765/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 2s
+    command:
+      - /usr/local/bin/aibox-latex-preview
+      - --bind
+      - 0.0.0.0
+      - --port
+      - "8765"
+
   ai-learning-diagnostics:
     image: ai-learning-devcontainer:latest
     container_name: ai-learning-diagnostics

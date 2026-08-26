@@ -65,11 +65,11 @@ install = true  # selects the internal audio-voice recipe
 engine = "lualatex"  # Shared engine: lualatex, pdflatex, xelatex, or tectonic (build-only; no watch).
 cache_dir = ".latex-cache"  # Project-local TEXMFVAR/TEXMFCONFIG root; keep this gitignored.
 options = []  # Extra engine/latexmk arguments applied to every document.
-# Repeat this block for every independently built PDF. Names must be unique.
+
 [[latex.documents]]
-name = "ai-dataanalytics-cards"
-source = "ai and data analytics/ai-dataanalytics-cards.tex"
-output_dir = "ai and data analytics/out"
+name = "ai-dataanalytics-cards"  # CLI name and preview URL slug.
+source = "ai and data analytics/ai-dataanalytics-cards.tex"  # Main TeX file, relative to the project root.
+output_dir = "ai and data analytics/out"  # PDF, log, and auxiliary output directory.
 
 [latex.preview]
 # `aibox apply` generates a dedicated Compose sidecar and port mapping. The

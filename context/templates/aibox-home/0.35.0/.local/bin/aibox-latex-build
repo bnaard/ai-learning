@@ -1,0 +1,33 @@
+#!/bin/sh
+# aibox-managed:latex-container-script
+# Build one configured LaTeX document, or all documents when omitted.
+set -eu
+
+workspace=${AIBOX_WORKSPACE:-/workspace}
+cd "$workspace"
+export TEXMFVAR="$workspace/.latex-cache/texmf-var"
+export TEXMFCONFIG="$workspace/.latex-cache/texmf-config"
+
+prepare() {
+  source_path=$1
+  output_dir=$2
+  if [ ! -f "$workspace/$source_path" ]; then
+    printf 'LaTeX source does not exist: %s\n' "$workspace/$source_path" >&2
+    exit 1
+  fi
+  mkdir -p "$workspace/$output_dir" "$TEXMFVAR" "$TEXMFCONFIG"
+}
+
+build_0() {
+  prepare 'ai and data analytics/ai-dataanalytics-cards.tex' 'ai and data analytics/out'
+  printf '%s\n' 'Building LaTeX document '\''ai-dataanalytics-cards'\'''
+  'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai and data analytics/out' 'ai and data analytics/ai-dataanalytics-cards.tex'
+}
+
+case "${1:-all}" in
+  all)
+    build_0
+    ;;
+  'ai-dataanalytics-cards') build_0 ;;
+  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-dataanalytics-cards' >&2; exit 2 ;;
+esac

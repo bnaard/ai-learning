@@ -1,0 +1,29 @@
+#!/bin/sh
+# aibox-managed:latex-container-script
+# Continuously rebuild one configured LaTeX document in this container.
+set -eu
+
+workspace=${AIBOX_WORKSPACE:-/workspace}
+cd "$workspace"
+export TEXMFVAR="$workspace/.latex-cache/texmf-var"
+export TEXMFCONFIG="$workspace/.latex-cache/texmf-config"
+
+prepare() {
+  source_path=$1
+  output_dir=$2
+  if [ ! -f "$workspace/$source_path" ]; then
+    printf 'LaTeX source does not exist: %s\n' "$workspace/$source_path" >&2
+    exit 1
+  fi
+  mkdir -p "$workspace/$output_dir" "$TEXMFVAR" "$TEXMFCONFIG"
+}
+
+document=${1:-'ai-dataanalytics-cards'}
+case "$document" in
+  'ai-dataanalytics-cards')
+    prepare 'ai and data analytics/ai-dataanalytics-cards.tex' 'ai and data analytics/out'
+    printf '%s\n' 'Watching LaTeX document '\''ai-dataanalytics-cards'\'' (Ctrl-C to stop)'
+    exec 'latexmk' '-lualatex' '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' '-outdir=ai and data analytics/out' '-pvc' '-view=none' 'ai and data analytics/ai-dataanalytics-cards.tex'
+    ;;
+  *) printf 'Unknown LaTeX document: %s\nConfigured documents: %s\n' "${1:-}" 'ai-dataanalytics-cards' >&2; exit 2 ;;
+esac

@@ -269,3 +269,15 @@ The `mcp_config_drift` pk-doctor check validates the manifest locally.
 ---
 
 <sub>Scaffolded by processkit `v0.18.1` on `2026-04-17`. Re-rendered on each installer sync.</sub>
+
+<!-- aibox-managed:latex-runtime BEGIN -->
+## LaTeX preview companion
+
+Build and watch LaTeX only inside the development container. The read-only preview sidecar serves completed PDFs and never compiles source files. Check it from the development container with `curl -fsS http://ai-learning-latex-preview:8765/health`. Tell the user to open `http://127.0.0.1:8766/`; the browser refreshes after each completed PDF rebuild.
+
+| Document | Source | Build | Watch | Preview |
+|---|---|---|---|---|
+| `ai-dataanalytics-cards` | `ai and data analytics/ai-dataanalytics-cards.tex` | `aibox-latex-build ai-dataanalytics-cards` | `aibox-latex-watch ai-dataanalytics-cards` | `http://127.0.0.1:8766/documents/ai-dataanalytics-cards/` |
+
+Run `aibox-latex-build` with no argument to build every configured document. Run one `aibox-latex-watch <name>` process per document that should rebuild continuously; stop it with Ctrl-C. Host-side `aibox up` starts the shared Compose preview sidecar when `latex.preview.enabled = true`. Loopback previews on a remote host require SSH port forwarding.
+<!-- aibox-managed:latex-runtime END -->
