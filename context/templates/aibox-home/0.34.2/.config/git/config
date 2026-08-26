@@ -1,0 +1,27 @@
+[core]
+    editor = vim
+    pager = delta
+[init]
+    defaultBranch = main
+[pull]
+    rebase = true
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    syntax-theme = aibox
+    light = true
+    navigate = true
+    line-numbers = true
+    side-by-side = false
+    hunk-header-decoration-style = "#786B5F" box bold
+    file-decoration-style = "#AF3A03" ul bold
+    minus-style = syntax "#ECCAA8"
+    minus-emph-style = syntax "#ECCAA8" bold
+    plus-style = syntax "#E5DCA9"
+    plus-emph-style = syntax "#E5DCA9" bold
+    zero-style = syntax "#EBDAAA"
+[merge]
+    conflictStyle = zdiff3
+
+[include]
+    path = ~/.config/git/aibox-github.inc

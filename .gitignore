@@ -99,3 +99,25 @@ Thumbs.db
 
 .DocumentRevisions-V100
 .fseventsd
+
+# aibox generated
+.aibox/
+.aibox-home/
+.devcontainer/Dockerfile
+.devcontainer/docker-compose.yml
+.devcontainer/devcontainer.json
+.aibox-env/
+.latex-cache/
+.agents/skills/
+.aibox-local.toml
+.aibox-local.env
+context/.cache/
+context/.state/
+context/private/
+context/**/private/
+.mcp.json
+.cursor/mcp.json
+.gemini/settings.json
+.codex/config.toml
+.codex/hooks.json
+.continue/mcpServers/

@@ -1,0 +1,44 @@
+# aibox starship config — default preset
+palette = "aibox"
+
+format = "$directory$git_branch$git_status$python$rust$nodejs$golang$cmd_duration$line_break$character"
+
+[directory]
+style = "bold fg:#AF3A03"
+truncation_length = 3
+
+[git_branch]
+style = "fg:#746F0D"
+
+[git_status]
+style = "fg:#AF3A03"
+
+[python]
+style = "fg:#946110"
+format = "[$symbol$version]($style) "
+
+[rust]
+style = "fg:#AF3A03"
+format = "[$symbol$version]($style) "
+
+[nodejs]
+style = "fg:#746F0D"
+format = "[$symbol$version]($style) "
+
+[golang]
+style = "fg:#417956"
+format = "[$symbol$version]($style) "
+
+[cmd_duration]
+style = "fg:#786B5F"
+min_time = 2_000
+
+[character]
+success_symbol = "[❯](bold fg:#746F0D)"
+error_symbol = "[❯](bold fg:#9D0006)"
+
+[palettes.aibox]
+bg = "#FBF1C7"
+fg = "#3C3836"
+accent = "#AF3A03"
+accent_fill = "#AF3A03"
