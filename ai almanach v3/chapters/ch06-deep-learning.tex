@@ -127,6 +127,9 @@ weighted sum and thresholds the result:
   \end{cases}
   \label{eq:dl-perceptron}
 \end{equation}
+\where{$\mathbf{x}$ is the input feature vector, $\mathbf{w}$ the learned
+weight vector of the same length, and $b$ the bias that shifts the decision
+threshold away from the origin.}
 
 Geometrically, $\mathbf{w}^{\!\top}\mathbf{x} + b = 0$ is a
 \keyterm{hyperplane}. The weight vector $\mathbf{w}$ is its normal direction and
@@ -470,6 +473,9 @@ followed by one activation\textsuperscript{\cite[][pp.~15--17]{fleuretLittleBook
   \end{gathered}
   \label{eq:dl-dense}
 \end{equation}
+\where{$\mathbf{x}$ is the layer's input, $W$ the weight matrix, $\mathbf{b}$
+the bias vector, and $\phi$ the activation applied element-wise;
+$n_{\text{in}}$ and $n_{\text{out}}$ are the input and output widths.}
 Information flows strictly forward; there are no cycles.
 
 \begin{workedexample}[Counting parameters before writing code]
@@ -605,6 +611,10 @@ rule backwards from the output:
     \frac{\partial a_l}{\partial W_l}.
   \label{eq:dl-backprop}
 \end{equation}
+\where{$\mathcal{L}$ is the loss, $W_l$ the weights of layer $l$, $a_l$ the
+activations leaving layer $l$, and $L$ the index of the final layer. Each
+factor is one layer's local derivative, and the product runs backwards from the
+loss to the layer being updated.}
 The algorithmic insight is that each intermediate factor is computed
 \emph{once} and reused by every earlier layer. That reuse is what makes the cost
 of the backward pass a small constant multiple of the forward pass rather than
@@ -884,6 +894,11 @@ restores expressiveness with learned scale $\gamma$ and shift $\beta$:
   y_i = \gamma\hat x_i + \beta .
   \label{eq:dl-batchnorm}
 \end{equation}
+\where{$x_i$ is one activation, $\mu_{\mathcal{B}}$ and
+$\sigma^2_{\mathcal{B}}$ the mean and variance over the current mini-batch
+$\mathcal{B}$, and $\varepsilon$ a small constant preventing division by zero.
+$\gamma$ and $\beta$ are learned, so the layer can undo the normalisation if
+that is what helps.}
 \keyterm{Layer normalisation} performs the same computation but across the
 \emph{features of a single example} rather than across the
 batch\textsuperscript{\cite{baLayerNormalization2016}}. That difference matters
@@ -927,6 +942,9 @@ why this single change made networks with hundreds of layers trainable:
   \frac{\partial y}{\partial x} = I + \frac{\partial F}{\partial x}.
   \label{eq:dl-residual}
 \end{equation}
+\where{$F$ is the learned branch of the block, $x$ its input, and $I$ the
+identity matrix. The $I$ term is the point: it guarantees a gradient path of
+magnitude one regardless of what $F$ does.}
 The identity term guarantees a gradient path of magnitude one straight through
 the block. Even if the learned branch $F$ contributes nothing---at
 initialisation it very nearly does not---the gradient still reaches the layers
@@ -1202,6 +1220,9 @@ For a square input of side $W$, filter side $F$, padding $P$, and stride $S$:
   W_{\text{out}} = \left\lfloor \frac{W - F + 2P}{S} \right\rfloor + 1 .
   \label{eq:dl-conv-size}
 \end{equation}
+\where{$W$ is the input side length, $F$ the filter side length, $P$ the
+padding added to each edge, and $S$ the stride. The floor function accounts for
+a final window that does not fit.}
 
 \begin{workedexample}[Shapes and the parameter saving, with numbers]
 \emph{Output size.} A $32\times32$ input, $3\times3$ filter, padding $1$,
@@ -1287,6 +1308,10 @@ through time\textsuperscript{\cite[][pp.~55--58]{fleuretLittleBookDeep}}:
   h_t = \phi\!\left(W_h h_{t-1} + W_x x_t + b\right).
   \label{eq:dl-rnn}
 \end{equation}
+\where{$x_t$ is the input at step $t$, $h_t$ the hidden state carried
+forward, $W_x$ and $W_h$ the input and recurrent weight matrices, $b$ the bias,
+and $\phi$ the activation. Note that $W_h$ is reused at every step --- which is
+what causes both the parameter efficiency and the gradient problem.}
 The same parameters handle sequences of any length, which is the appeal. The
 repeated multiplication by $W_h$ is also the problem.
 
@@ -1351,6 +1376,9 @@ gates\textsuperscript{\cite{hochreiterLongShortTermMemory1997},
   h_t = o_t\odot\tanh(c_t).
   \label{eq:dl-lstm}
 \end{equation}
+\where{$c_t$ is the cell state, $h_t$ the hidden state, $\tilde c_t$ the
+candidate update, and $f_t,i_t,o_t\in(0,1)$ the forget, input, and output
+gates; $\odot$ is element-wise multiplication.}
 
 The decisive detail is the $+$ in \cref{eq:dl-lstm}. The cell state is
 \emph{added to}, not repeatedly multiplied by a weight matrix, so when the
@@ -1460,6 +1488,10 @@ $V\in\mathbb{R}^{N_{kv}\times d_v}$\textsuperscript{\cite[][pp.~74--76]{fleuretL
   = \mathrm{softmax}\!\left(\frac{QK^{\!\top}}{\sqrt{d_k}}\right)V .
   \label{eq:dl-attention}
 \end{equation}
+\where{$Q$ holds one query vector per output position, $K$ one key per input
+position, and $V$ one value per input position; $d_k$ is the dimension of the
+query and key vectors, and dividing by $\sqrt{d_k}$ keeps the scores in a range
+where softmax still has usable gradients.}
 Read it right to left as four steps: score every query against every key
 ($QK^{\!\top}$), rescale ($/\sqrt{d_k}$), normalise into weights (softmax), then
 mix the values ($\cdot V$).
@@ -1575,6 +1607,9 @@ projects\textsuperscript{\cite[][pp.~4--5]{vaswaniAttentionAllYou2023}}:
   = \mathrm{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_H)\,W^O .
   \label{eq:dl-multihead}
 \end{equation}
+\where{$H$ is the number of heads, each computing
+\cref{eq:dl-attention} on its own projection of the input, and $W^O$ the output
+projection that mixes the concatenated heads back to the model dimension.}
 
 \begin{workedexample}[Multi-head bookkeeping]
 Take $d_{\text{model}} = 512$ and $H = 8$ heads. Each head works in
@@ -1634,6 +1669,9 @@ encoding\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}:
   \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10000^{2i/d}}\right).
   \label{eq:dl-posenc}
 \end{equation}
+\where{$t$ is the token's position in the sequence, $d$ the model dimension,
+and $i$ indexes dimension pairs; each pair oscillates at its own frequency, so
+low $i$ gives fast channels and high $i$ slow ones.}
 
 \begin{figure}[htbp]
 \centering
@@ -1921,6 +1959,9 @@ A continuous linear system, discretised, gives
   y_t = C h_t ,
   \label{eq:dl-ssm}
 \end{equation}
+\where{$x_t$ is the input at step $t$, $h_t$ the hidden state, $y_t$ the
+output, and $\bar A,\bar B,C$ the discretised system matrices. In S4 these are
+fixed; Mamba's contribution is making $\bar B$ and $C$ depend on the input.}
 which is an RNN at inference time --- $O(1)$ state per step, $O(T)$ overall ---
 but, because it is \emph{linear} in $h$, it can also be evaluated as a global
 convolution and therefore trained in
@@ -2082,6 +2123,10 @@ probability that its input is real. They optimise opposite objectives:
   \,\Bigr].
   \label{eq:dl-gan}
 \end{equation}
+\where{$G$ is the generator and $D$ the discriminator, $z$ a noise vector
+drawn from the prior $p(z)$, and $x$ a real sample from the data distribution
+$p_{\text{data}}$. $D(x)\in(0,1)$ is $D$'s estimated probability that its input
+is real.}
 At the theoretical optimum $G$ reproduces the data distribution and $D$ outputs
 $0.5$ everywhere---it can do no better than guessing.
 
@@ -2187,6 +2232,11 @@ Training maximises the evidence lower bound:
   - \mathrm{KL}\bigl(q_\phi(z\mid x)\,\|\,p(z)\bigr).
   \label{eq:dl-elbo}
 \end{equation}
+\where{$x$ is the observation, $z$ the latent code, $q_\phi(z\mid x)$ the
+encoder with parameters $\phi$, and $p_\theta(x\mid z)$ the decoder with
+parameters $\theta$; $p(z)$ is the prior, usually $\mathcal{N}(0,I)$. The first
+term rewards reconstruction, the second keeps the latent distribution close to
+the prior.}
 The first term rewards reconstruction; the second pulls the latent distribution
 towards $\mathcal{N}(0,I)$ so that decoding a fresh sample $z\sim\mathcal{N}(0,I)$
 produces something plausible. A plain autoencoder has no such guarantee---its
@@ -2201,6 +2251,10 @@ hidden units $h$, with no connections inside a layer:
   \qquad P(v,h)\propto e^{-E(v,h)} .
   \label{eq:dl-rbm}
 \end{equation}
+\where{$v$ is the vector of visible units, $h$ the hidden units, $W$ the
+weight matrix coupling them, and $b,c$ the visible and hidden biases. Lower
+energy means higher probability; the missing normalising constant is what makes
+exact training intractable.}
 The bipartite restriction makes $P(h\mid v)$ and $P(v\mid h)$ factorise into
 independent Bernoullis, which is what makes sampling tractable. Exact maximum
 likelihood is not tractable, because it requires the partition function;

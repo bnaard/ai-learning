@@ -117,6 +117,9 @@ argument for looking at data before summarising it.}
     \begin{equation}
         \text{data-ink ratio} = \frac{\text{ink used to display data}}{\text{total ink in graphic}}
     \end{equation}
+\where{``ink'' stands for any marking on the page. Tufte's argument is that the
+ratio should be raised until further removal would destroy information --- not
+that decoration is forbidden.}
     \textbf{Maximize} this ratio by erasing non-data ink (chart borders, redundant tick marks,
     background fills) and by erasing redundant data-ink (repeat labels, heavy gridlines).
     The complementary concept is \textbf{chartjunk}: visual elements that convey no
@@ -430,6 +433,9 @@ argument for looking at data before summarising it.}
     \begin{equation}
         \begin{pmatrix} \text{TN} & \text{FP} \\ \text{FN} & \text{TP} \end{pmatrix}
     \end{equation}
+\where{the four counts of a binary classifier's outcomes. Beware: row/column
+order is not standardised across libraries, so always read the axis labels
+before interpreting someone else's matrix.}
     Visualize as a heatmap with count and row-normalized percentage annotations.
     Normalization reveals class-level error rates independently of class imbalance.
     Common errors visible: systematic confusion between two classes (off-diagonal hot
@@ -444,6 +450,9 @@ argument for looking at data before summarising it.}
         \text{TPR}(\tau) = \frac{\text{TP}}{\text{TP}+\text{FN}}, \quad
         \text{FPR}(\tau) = \frac{\text{FP}}{\text{FP}+\text{TN}}
     \end{equation}
+\where{$\tau$ is the decision threshold; sweeping it from $1$ to $0$ traces the
+ROC curve. TPR is recall; FPR is the fraction of true negatives wrongly
+flagged.}
     \textbf{AUC} (area under the ROC curve) $\in [0.5, 1]$ measures rank-ordering
     ability: $\text{AUC}=1$ is perfect; $0.5$ is random.
     Use ROC/AUC to compare classifiers at all thresholds.
@@ -458,6 +467,9 @@ argument for looking at data before summarising it.}
         \text{Precision} = \frac{\text{TP}}{\text{TP}+\text{FP}}, \quad
         \text{Recall} = \frac{\text{TP}}{\text{TP}+\text{FN}}
     \end{equation}
+\where{the same counts arranged differently: precision divides by what was
+flagged, recall by what should have been. The precision--recall curve is the
+more informative of the two when positives are rare.}
     at every threshold. \textbf{Average Precision (AP)} summarises the area.
     Under class imbalance the PR curve is more informative than ROC because it
     focuses on the minority (positive) class performance. A random classifier achieves

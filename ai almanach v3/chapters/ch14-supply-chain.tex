@@ -175,6 +175,9 @@ safety stock is driven by uncertainty rather than by the central estimate.
     \begin{equation}
         \hat{y}_{t+1} = \alpha\, y_t + (1-\alpha)\,\hat{y}_t
     \end{equation}
+\where{$y_t$ is the actual demand observed at time $t$, $\hat{y}_t$ the
+forecast made for it, and $\alpha\in(0,1]$ the smoothing constant. Large
+$\alpha$ reacts quickly to change; small $\alpha$ ignores noise.}
     Equivalently, $\hat{y}_{t+1} = \alpha \sum_{j=0}^{\infty}(1-\alpha)^j y_{t-j}$ --- an exponentially decaying weighted average.
     Suitable for data with no trend or seasonality. A large $\alpha$ makes the forecast react quickly but noisily; a small $\alpha$ produces smooth but slow-to-adapt forecasts.
 
@@ -261,10 +264,16 @@ safety stock is driven by uncertainty rather than by the central estimate.
     \begin{equation}
         \mathbb{E}[C(Q)] = c_o\,\mathbb{E}[(Q-D)^+] + c_u\,\mathbb{E}[(D-Q)^+]
     \end{equation}
+\where{$Q$ is the order quantity, $D$ the uncertain demand, $c_o$ the
+overage cost per unsold unit and $c_u$ the underage cost per unmet unit;
+$(x)^+$ means $\max(x,0)$.}
     The optimal order quantity satisfies the \textbf{critical ratio} condition:
     \begin{equation}
         F(Q^*) = \frac{c_u}{c_u + c_o} = \text{CR}
     \end{equation}
+\where{$F$ is the cumulative distribution of demand, so $Q^*$ is the demand
+quantile at the critical ratio CR. Read it directly: if a stockout costs three
+times an unsold unit, stock to the $75\,\%$ quantile.}
     i.e.\ $Q^*$ equals the $\text{CR}$-th quantile of the demand distribution $F$.
 
 \end{v3topic}
@@ -298,6 +307,9 @@ safety stock is driven by uncertainty rather than by the central estimate.
     \begin{equation}
         Q^* = \sqrt{\frac{2\lambda K}{h}}
     \end{equation}
+\where{$\lambda$ is the demand rate per period, $K$ the fixed cost of placing
+one order, and $h$ the holding cost per unit per period. The square root is why
+halving order cost does not halve order size.}
     The EOQ is remarkably robust: a 30\% error in $K$ or $h$ leads to only a $\sim$14\% error in $Q^*$ (``square root rule'').
 
 \end{v3topic}

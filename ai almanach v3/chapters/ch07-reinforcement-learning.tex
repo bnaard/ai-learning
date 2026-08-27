@@ -144,6 +144,9 @@ chapter exists to solve.}
         \begin{equation}
             P(s_{t+1} \mid s_t, a_t) = P(s_{t+1} \mid s_0, a_0, \ldots, s_t, a_t)
         \end{equation}
+\where{$s_t$ is the state at time $t$, $a_t$ the action taken there, and
+$s_{t+1}$ the resulting state. The equality says the whole history on the right
+adds nothing beyond the current state and action.}
         The future depends only on the \emph{current} state and action, not
         on the full history --- the state is a \emph{sufficient statistic} of
         the past. This memoryless property enables tractable dynamic
@@ -173,6 +176,9 @@ chapter exists to solve.}
             G_t = \sum_{k=0}^{\infty} \gamma^k\, r_{t+k+1}
                 = r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + \cdots
         \end{equation}
+\where{$G_t$ is the return from time $t$ onward, $r_{t+k+1}$ the reward
+received $k+1$ steps later, and $\gamma\in[0,1)$ the discount factor;
+$1/(1-\gamma)$ is the effective planning horizon.}
         Discount factor $\gamma$ controls the time-horizon:
         $\gamma = 0$ (myopic, only immediate reward);
         $\gamma \to 1$ (far-sighted, all future equally weighted).
@@ -207,10 +213,15 @@ $0.9$ to $0.99$ changes the problem, not just the arithmetic.
         \begin{equation}
             V^{\pi}(s) = \mathbb{E}_{\pi}\!\left[G_t \mid S_t = s\right]
         \end{equation}
+\where{$\pi$ is the policy being followed and $s$ the state being evaluated;
+the expectation runs over all trajectories the policy and environment can
+produce from $s$.}
         \textbf{Action-value (Q) function} under policy $\pi$:
         \begin{equation}
             Q^{\pi}(s, a) = \mathbb{E}_{\pi}\!\left[G_t \mid S_t = s, A_t = a\right]
         \end{equation}
+\where{the difference from $V^{\pi}$ is that the first action $a$ is fixed
+rather than chosen by $\pi$; the policy governs everything after it.}
         $V^{\pi}(s)$ is the expected return following $\pi$ from $s$;
         $Q^{\pi}(s,a)$ additionally fixes the first action.
         Optimal: $V^*(s) = \max_\pi V^\pi(s)$.\textsuperscript{\cite[][p.~143]{barberBayesianReasoningMachine2012}}
@@ -223,6 +234,9 @@ $0.9$ to $0.99$ changes the problem, not just the arithmetic.
             V^{\pi}(s) = \sum_a \pi(a|s) \sum_{s'} P(s'|s,a)
                          \bigl[R(s,a) + \gamma V^{\pi}(s')\bigr]
         \end{equation}
+\where{$\pi(a|s)$ is the probability the policy takes action $a$ in state $s$,
+$P(s'|s,a)$ the environment's transition probability to next state $s'$, and
+$R(s,a)$ the expected immediate reward.}
         \textbf{Bellman optimality} characterises the optimal value:
         \begin{equation}
             V^*(s) = \max_a \sum_{s'} P(s'|s,a)
@@ -307,6 +321,8 @@ distances.}
                 V_{k+1}(s) \leftarrow \max_a \sum_{s'} P(s'|s,a)
                            \bigl[R(s,a) + \gamma V_k(s')\bigr]
             \end{equation}
+\where{$k$ indexes the sweep of value iteration, not time; each sweep updates
+every state using the previous sweep's values $V_k$.}
             \item Extract $\pi^*(s) = \arg\max_a \sum_{s'} P(s'|s,a)[R + \gamma V^*]$
         \end{enumerate}
         Convergence guaranteed (Bellman operator is a contraction).
@@ -406,6 +422,9 @@ choosing the state representation the critical modelling decision.}
         \begin{equation}
             Q(a) \leftarrow Q(a) + \frac{1}{n}\bigl[r - Q(a)\bigr]
         \end{equation}
+\where{$Q(a)$ is the running mean reward for arm $a$, $r$ the newly observed
+reward, and $n$ the number of times $a$ has now been pulled --- so $1/n$ makes
+this an exact incremental average.}
         \begin{itemize}
             \item Simple and robust; $\epsilon$ often decayed over time
             \item Wastes exploration uniformly across all arms, even
@@ -514,6 +533,8 @@ what you do not know, not what a coin tells you to.
             S_t = s,\ \text{first visit}\bigr).
             \label{eq:rl-mc-prediction}
         \end{equation}
+\where{$G_t$ is the full return actually observed after the first visit to
+state $s$ in an episode, averaged over all episodes in which $s$ occurred.}
         The estimate is unbiased and converges to $V^{\pi}(s)$ as the number
         of visits grows.
 
@@ -563,6 +584,9 @@ TD($\lambda$) interpolate along it.
             V(s_t) \leftarrow V(s_t) + \alpha
             \underbrace{\bigl[r_{t+1} + \gamma V(s_{t+1}) - V(s_t)\bigr]}_{\text{TD error }\delta_t}
         \end{equation}
+\where{$\alpha\in(0,1]$ is the learning rate and $\delta_t$ the TD error --- the
+gap between the one-step-informed estimate $r_{t+1}+\gamma V(s_{t+1})$ and the
+current estimate $V(s_t)$.}
         TD(0) bootstraps from the current estimate; $\alpha$ is the learning
         rate.\textsuperscript{\cite[][p.~343]{hurbansGrokkingArtificialIntelligence2020}}
 
@@ -574,12 +598,16 @@ TD($\lambda$) interpolate along it.
         \begin{equation}
             Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma Q(s',a') - Q(s,a)\bigr]
         \end{equation}
+\where{$s',a'$ are the next state and the action \emph{actually taken} there
+by the current policy --- which is what makes SARSA on-policy.}
         Uses the \emph{actually taken} next action $a'$.
 
         \textbf{Q-Learning} (off-policy):
         \begin{equation}
             Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma \max_{a'} Q(s',a') - Q(s,a)\bigr]
         \end{equation}
+\where{$\max_{a'}$ takes the best available action in $s'$ regardless of what
+the behaviour policy would do --- which is what makes Q-learning off-policy.}
         Always bootstraps from the \emph{greedy} action; converges to
         $Q^*$ regardless of behaviour
         policy.\textsuperscript{\cite[][p.~346]{hurbansGrokkingArtificialIntelligence2020}}
@@ -634,6 +662,9 @@ system --- SARSA is answering your question and Q-learning is not.
             \mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}
             \Bigl[\bigl(r + \gamma \max_{a'} Q(s',a';\theta^-) - Q(s,a;\theta)\bigr)^2\Bigr]
         \end{equation}
+\where{$\theta$ are the online network's parameters, $\theta^-$ the frozen
+target network's, and $\mathcal{D}$ the replay buffer transitions are sampled
+from. Both devices exist to stop the target moving with the estimate.}
         Key innovations: (1)~\textbf{experience replay} buffer $\mathcal{D}$;
         (2)~\textbf{target network} $\theta^-$ updated periodically (not every
         step). Achieved human-level performance on 49 Atari
@@ -664,6 +695,9 @@ system --- SARSA is answering your question and Q-learning is not.
         \begin{equation}
             y = r + \gamma\, Q\!\left(s',\, \arg\max_{a'} Q(s',a';\theta);\;\theta^-\right)
         \end{equation}
+\where{the inner $\arg\max$ uses the online network $\theta$ to \emph{select}
+the action while the outer $Q$ uses the target network $\theta^-$ to
+\emph{evaluate} it; decoupling the two removes the overestimation bias.}
         Online network $\theta$ selects; target network $\theta^-$ evaluates.
         Reduces overestimation, yields more stable training and better
         policies.\textsuperscript{\cite[][p.~353]{hurbansGrokkingArtificialIntelligence2020}}
@@ -767,6 +801,8 @@ system --- SARSA is answering your question and Q-learning is not.
         Q(s,a) \leftarrow (1{-}\alpha)\,Q(s,a)
                  + \alpha\!\left[r + \gamma \max_{a’} Q(s’,a’)\right]
     \end{equation}
+\where{this is the same update written as a weighted average: the old estimate
+keeps weight $1-\alpha$ and the newly informed target gets weight $\alpha$.}
     $\alpha$: learning rate; $\gamma$: discount factor; $r$: immediate reward;
     $s’$: next state.
 
@@ -782,6 +818,8 @@ system --- SARSA is answering your question and Q-learning is not.
     \begin{equation}
         Q(s,a) \leftarrow Q(s,a) + \alpha\bigl[r + \gamma\,Q(s’,a’) - Q(s,a)\bigr]
     \end{equation}
+\where{$s',a'$ are the next state and the action the policy actually takes there;
+compare the Q-learning update, which substitutes $\max_{a'}Q(s',a')$.}
 
     \begin{itemize}
         \item On-policy: more conservative, avoids dangerous exploratory actions
@@ -951,6 +989,9 @@ RL is conceptually compelling and comparatively rare in production.
             \arg\max_a Q(s_t,a) & \text{with prob.\ } 1{-}\varepsilon
         \end{cases}
     \end{equation}
+\where{$\varepsilon\in[0,1]$ is the exploration rate; it is usually decayed
+over time, because a constant $\varepsilon$ never stops paying for exploration
+it no longer needs.}
 
     \textbf{Decaying $\varepsilon$}: start at $\varepsilon \approx 1.0$ (mostly
     explore) and anneal to $\varepsilon \approx 0.01$ (mostly exploit) over
@@ -966,6 +1007,8 @@ RL is conceptually compelling and comparatively rare in production.
     \begin{equation}
         a_t = \arg\max_a \left[ Q(s,a) + c\sqrt{\frac{\ln t}{N_t(s,a)}} \right]
     \end{equation}
+\where{$N_t(s,a)$ is how often the pair has been tried by time $t$ and $c>0$
+scales the exploration bonus, which shrinks as $N_t$ grows.}
 
     $N_t(s,a)$ = times action $a$ was taken from state $s$; $c$ controls
     exploration strength. The confidence bonus shrinks as an action is tried
@@ -1004,6 +1047,9 @@ RL is conceptually compelling and comparatively rare in production.
     \begin{equation}
         p(\theta|\mathcal{D}) = \frac{p(\mathcal{D}|\theta)\,p(\theta)}{p(\mathcal{D})}
     \end{equation}
+\where{$\theta$ are the parameters, $\mathcal{D}$ the observed data,
+$p(\theta)$ the prior, $p(\mathcal{D}|\theta)$ the likelihood, and
+$p(\mathcal{D})$ the normalising evidence.}
 
     \begin{itemize}
         \item \textbf{Prior} $p(\theta)$: belief before seeing data
@@ -1041,6 +1087,9 @@ RL is conceptually compelling and comparatively rare in production.
     \begin{equation}
         p(x_1, \ldots, x_D) = \prod_{i=1}^{D} p\bigl(x_i \mid \mathrm{pa}(x_i)\bigr)
     \end{equation}
+\where{$\mathrm{pa}(x_i)$ denotes the parents of node $x_i$ in the graph. The
+factorisation is the whole economy of the model: each variable needs a
+distribution only over its parents.}
 
     \textbf{Wet Grass example}: $R$ (rain), $S$ (sprinkler), $T$ (Tracey’s
     grass), $J$ (Jack’s grass). With $p(T|J,R,S)=p(T|R,S)$ and $p(J|R,S)=p(J|R)$:
@@ -1064,6 +1113,8 @@ RL is conceptually compelling and comparatively rare in production.
         p(\mathbf{x}, \mathbf{z} | \theta) =
             p(\mathbf{x} | \mathbf{z}, \theta)\,p(\mathbf{z}|\theta)
     \end{equation}
+\where{$\mathbf{x}$ are observed variables, $\mathbf{z}$ latent (unobserved)
+ones, and $\theta$ the model parameters.}
 
     \textbf{Inference}: compute $p(\mathbf{z}|\mathbf{x},\theta)$ given observations.\\
     \textbf{Learning}: find $\theta$ maximising the marginal likelihood
@@ -1081,6 +1132,9 @@ RL is conceptually compelling and comparatively rare in production.
     \begin{equation}
         p(X, Y | Z) = p(X|Z)\,p(Y|Z)
     \end{equation}
+\where{$X$ and $Y$ are conditionally independent \emph{given} $Z$: once $Z$ is
+known, $Y$ says nothing further about $X$. They may still be strongly dependent
+when $Z$ is ignored.}
 
     Equivalently, $p(X|Y,Z) = p(X|Z)$: once $Z$ is known, $Y$ contains no
     additional information about $X$.
@@ -1265,6 +1319,10 @@ RL is conceptually compelling and comparatively rare in production.
     \begin{equation}
         p(Y \mid \mathrm{do}(X)) = \sum_{z} p(Y \mid X, \mathcal{Z}{=}z)\,p(\mathcal{Z}{=}z)
     \end{equation}
+\where{$\mathrm{do}(X)$ denotes intervening to set $X$ rather than observing
+it, and $\mathcal{Z}$ is the adjustment set satisfying the backdoor criterion;
+weighting by $p(\mathcal{Z}{=}z)$ reweights the strata to the population, which
+is what removes the confounding.}
 
     This allows computing causal effects from observational data by conditioning
     on the confounder set $\mathcal{Z}$.
@@ -1282,6 +1340,9 @@ RL is conceptually compelling and comparatively rare in production.
         p(Y|\mathrm{do}(X)) = \sum_m p(M{=}m|X)
             \sum_{x’} p(Y|M{=}m, X{=}x’)\,p(X{=}x’)
     \end{equation}
+\where{$M$ is the mediator on the causal path from $X$ to $Y$, and $x'$ ranges
+over the values of $X$. The front-door formula works even when the confounder is
+unobserved, provided the mediator is observed.}
 
 \end{v3topic}
 \begin{v3topic}{Three Rules of Do-Calculus}

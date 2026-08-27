@@ -139,6 +139,8 @@ different object.
   \end{pNiceMatrix}
   \label{eq:math-vector-order}
 \end{equation}
+\where{$a_1,\dots,a_n$ are the components and $n$ the dimension; the highlighted
+cells show that exchanging two of them yields a different vector.}
 
 \begin{plainlanguage}
 A vector is a recipe for getting somewhere. ``Three steps east, four steps
@@ -162,6 +164,8 @@ but machine learning uses three:
   \lVert \vec{x}\rVert_\infty = \max_i \lvert x_i\rvert .
   \label{eq:math-norms}
 \end{equation}
+\where{$x_i$ is the $i$-th component of $\vec{x}$ and $n$ the number of
+components; the subscript on $\lVert\cdot\rVert$ names the norm.}
 
 \begin{workedexample}[All three norms of one vector]
 Let $\vec{x} = (3,\,-4,\,12)$.
@@ -230,6 +234,8 @@ components and sums\textsuperscript{\cite[][p.~89]{cherneyLinearAlgebra2013}}:
   = \lVert\vec{u}\rVert\,\lVert\vec{v}\rVert\cos\Theta .
   \label{eq:math-dot}
 \end{equation}
+\where{$u_i,v_i$ are matching components, $n$ the shared dimension, and
+$\Theta$ the angle between the two vectors.}
 The second equality is the useful one: the dot product secretly measures
 \emph{angle}. Two orthogonal vectors have dot product
 zero\textsuperscript{\cite[][p.~30]{fischerMaschinellesLernenFuer2024}}.
@@ -239,6 +245,8 @@ Rearranging gives \keyterm{cosine similarity}:
                     {\lVert\vec{u}\rVert\,\lVert\vec{v}\rVert} .
   \label{eq:math-cosine}
 \end{equation}
+\where{$\lVert\vec{u}\rVert,\lVert\vec{v}\rVert$ are the vectors' lengths,
+so dividing by them removes magnitude and leaves only direction.}
 
 \begin{workedexample}[Angle between two vectors, by hand]
 Let $\vec{u} = (2,1,2)$ and $\vec{v} = (1,2,2)$.
@@ -413,6 +421,8 @@ For the $2\times2$ case,
   \begin{pNiceMatrix} d & -b\\ -c & a \end{pNiceMatrix}.
   \label{eq:math-2x2-inverse}
 \end{equation}
+\where{$a,b,c,d$ are the four entries of $\mathbf{A}$, read left to right
+and top to bottom.}
 
 \begin{figure}[htbp]
 \centering
@@ -487,6 +497,9 @@ equation:
   \det(\mathbf{A}-\lambda\mathbf{I}) = 0 .
   \label{eq:math-eigen}
 \end{equation}
+\where{$\lambda$ is a scalar (the eigenvalue), $\vec{v}\neq\vec{0}$ the
+corresponding eigenvector, and $\mathbf{I}$ the identity matrix of the same
+size as $\mathbf{A}$.}
 
 \begin{plainlanguage}
 Most vectors get knocked off course when a matrix acts on them. A few special
@@ -595,6 +608,9 @@ $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable:
   \frac{f(x+\Delta x) - f(x)}{\Delta x}.
   \label{eq:math-derivative}
 \end{equation}
+\where{$\Delta x$ is a small increment in the input, and the quotient is
+the average rate of change over that increment; the limit shrinks it to a
+point.}
 
 \begin{plainlanguage}
 The derivative answers one question: \emph{if I nudge the input a little, how
@@ -676,6 +692,8 @@ composition, $y = f(g(x))$, then
   \qquad u = g(x).
   \label{eq:math-chain-rule}
 \end{equation}
+\where{$u$ is the intermediate value produced by the inner function, so
+$dy/du$ is the outer rate of change and $du/dx$ the inner one.}
 
 \begin{engineernote}
 \Cref{eq:math-chain-rule} \emph{is} backpropagation. A neural network is a
@@ -763,6 +781,9 @@ of them gives the \keyterm{gradient}, a vector:
   \vec{x} \leftarrow \vec{x} - \eta\,\nabla f .
   \label{eq:math-gradient}
 \end{equation}
+\where{each entry is the partial derivative with respect to one input, so
+$\nabla f$ has the same shape as $\vec{x}$; $\eta>0$ is the step size, called
+the learning rate.}
 The gradient points in the direction of \emph{steepest ascent}; descent
 therefore moves against it.
 
@@ -949,6 +970,8 @@ area under the curve\textsuperscript{\cite{yangMathematicsCivilEngineers2018}}:
   \int_a^b f(x)\,dx = F(b)-F(a).
   \label{eq:math-integral}
 \end{equation}
+\where{$F$ is any antiderivative of $f$, and $[a,b]$ the interval; the result is
+the signed area, so regions below the axis subtract.}
 The \keyterm{fundamental theorem of calculus} ties the two operations together,
 $\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$.
 
@@ -1069,6 +1092,8 @@ The \keyterm{expectation} is the probability-weighted average; the
   = \mathbb{E}[X^2] - \bigl(\mathbb{E}[X]\bigr)^2 .
   \label{eq:math-expectation}
 \end{equation}
+\where{$X$ is the random variable, $p(x)$ its probability mass function in
+the discrete case and $f(x)$ its density in the continuous one.}
 
 \begin{workedexample}[Expectation and variance of a fair die]
 $X$ takes values $1$ to $6$ each with probability $1/6$.
@@ -1103,6 +1128,9 @@ estimators work.
   \rho_{XY} = \frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y}.
   \label{eq:math-covariance}
 \end{equation}
+\where{$\mu_X,\mu_Y$ are the two means and $\sigma_X,\sigma_Y$ the two
+standard deviations; dividing by them is what confines $\rho_{XY}$ to
+$[-1,1]$.}
 
 \begin{workedexample}[Covariance and correlation from four points]
 Let $x = (1,2,3,4)$ and $y = (2,4,5,9)$, so $\bar x = 2.5$ and $\bar y = 5$.
@@ -1157,6 +1185,8 @@ the mean.
     f(x) = \frac{1}{\sigma\sqrt{2\pi}}
     \exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
   \end{equation*}
+  \where{$\mu$ is the mean, $\sigma$ the standard deviation, and $x$ the value
+  whose density is being evaluated.}
   \begin{itemize}
     \item \textbf{Centre:} mean, median and mode all coincide at $\mu$.
     \item \textbf{Width:} larger $\sigma$ gives a lower, wider bell.
@@ -1217,6 +1247,9 @@ $p$\textsuperscript{\cite{downeyThinkBayes2016}}:
   \qquad \mu = np,\qquad \sigma^2 = np(1-p).
   \label{eq:math-binomial}
 \end{equation}
+\where{$n$ is the number of trials, $k$ the number of successes, $p$ the
+per-trial success probability, and $\binom{n}{k}$ the number of distinct ways
+$k$ successes can occur among $n$ trials.}
 
 \subsection{The Central Limit Theorem}
 
@@ -1282,6 +1315,9 @@ arrives:
   P(E) = P(E\mid H)P(H) + P(E\mid\neg H)P(\neg H).
   \label{eq:math-bayes}
 \end{equation}
+\where{$H$ is the hypothesis under test and $E$ the observed evidence;
+$\neg H$ is the hypothesis being false. The denominator sums the two ways the
+evidence could have arisen, which is why it normalises the result.}
 
 \begin{plainlanguage}
 Bayes' theorem says: how strongly you should believe something after seeing
@@ -1379,6 +1415,9 @@ $\theta$\textsuperscript{\cite{downeyThinkBayes2016}}:
   P(D) = \int P(D\mid\theta)\,P(\theta)\,d\theta .
   \label{eq:math-bayesian-posterior}
 \end{equation}
+\where{$\theta$ is the vector of model parameters and $D$ the observed
+data; the integral runs over every parameter value the prior allows, which is
+what makes it intractable in all but simple models.}
 The result is a full posterior distribution rather than a single number, so the
 remaining uncertainty is part of the answer instead of a footnote to it. The
 integral in the denominator is usually intractable, which is why Markov chain
@@ -1431,6 +1470,8 @@ variable\textsuperscript{\cite{shannonMathematicalTheoryCommunication},
   H(X) = -\sum_x p(x)\log_2 p(x) \quad[\text{bits}].
   \label{eq:math-entropy}
 \end{equation}
+\where{$p(x)$ is the probability of outcome $x$ and the sum runs over all
+outcomes; using $\log_2$ gives bits, and the natural logarithm gives nats.}
 
 \begin{plainlanguage}
 Entropy is the average number of yes/no questions you need to pin down the
@@ -1501,6 +1542,9 @@ over the best possible\textsuperscript{\cite{kullbackInformationSufficiency1951}
   = H(p,q) - H(p).
   \label{eq:math-kl}
 \end{equation}
+\where{$p$ is the true distribution and $q$ the model's; both sums run over
+all outcomes. Note the asymmetry: $p$ weights the terms in both expressions,
+so swapping $p$ and $q$ changes the answer.}
 Since $H(p)$ does not depend on the model, \emph{minimising cross-entropy is
 identical to minimising KL divergence} --- which is why cross-entropy is the
 default classification loss.
@@ -1738,6 +1782,8 @@ With $m = \max_i x_i$,
   \log\sum_i e^{x_i} = m + \log\sum_i e^{x_i - m}.
   \label{eq:math-logsumexp}
 \end{equation}
+\where{$m=\max_i x_i$ is the largest input, so every shifted exponent
+$x_i-m$ is at most zero and therefore representable.}
 Subtracting $m$ changes neither the exact result nor the softmax ratios, but
 keeps every exponent at most zero and therefore representable.
 
@@ -1849,6 +1895,9 @@ and integrating the overlap:
   (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\,g(t-\tau)\,d\tau .
   \label{eq:math-convolution}
 \end{equation}
+\where{$t$ is the output position, $\tau$ the integration variable sweeping
+across the overlap, and $g(t-\tau)$ the second function reversed and shifted to
+$t$.}
 This is the continuous parent of the discrete operation computed cell by cell
 in \cref{ch:deep-learning}; the sliding filter of a convolutional network is
 \cref{eq:math-convolution} with sums replacing integrals.
@@ -1859,6 +1908,9 @@ frequencies:
   \hat f(\omega) = \int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt .
   \label{eq:math-fourier}
 \end{equation}
+\where{$f(t)$ is the signal in time, $\omega$ the angular frequency,
+$\hat f(\omega)$ the amount of that frequency present, and $i$ the imaginary
+unit.}
 Its practical importance here is the \keyterm{convolution theorem}: convolution
 in the time domain is multiplication in the frequency domain. That identity
 underlies fast filtering, spectrogram features for speech, and the frequency
@@ -1888,6 +1940,8 @@ x_j$\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}:
   \end{pNiceMatrix}.
   \label{eq:math-jacobian}
 \end{equation}
+\where{$m$ is the number of outputs and $n$ the number of inputs, so
+$\mathbf{J}$ is $m\times n$; row $i$ is the gradient of output $f_i$.}
 The Jacobian generalises both the scalar derivative ($m=n=1$) and the gradient
 ($m=1$). In backpropagation, each layer contributes one Jacobian and the chain
 rule multiplies them --- which is the matrix-valued form of
@@ -1908,6 +1962,9 @@ Three further operators act on such fields\textsuperscript{\cite{bronsteinTasche
   \Delta f = \nabla^2 f = \sum_i \frac{\partial^2 f}{\partial x_i^2}.
   \label{eq:math-div-curl-laplacian}
 \end{equation}
+\where{$\vec{F}$ is a vector field with components $F_i$, $f$ a scalar field,
+and $\nabla$ the vector of partial derivatives; the three operators combine it
+by dot product, cross product, and repetition respectively.}
 Divergence measures net outward flux at a point, curl measures local rotation,
 and the \keyterm{Laplacian} generalises the second derivative to several
 dimensions.

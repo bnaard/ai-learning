@@ -176,6 +176,8 @@ how you are allowed to evaluate the result.}
     \begin{equation}
         \hat{\varepsilon} = \frac{1}{N}\sum_{n=1}^{N}(y_n - f(\mathbf{x}_n))^2
     \end{equation}
+\where{$N$ is the number of examples, $y_n$ the true target for example $n$,
+and $f(\mathbf{x}_n)$ the model's prediction for its input $\mathbf{x}_n$.}
     Evaluation: MSE, RMSE, MAE, $R^2$.
 
 \end{v3topic}
@@ -187,6 +189,9 @@ how you are allowed to evaluate the result.}
     \begin{equation}
         \ell^{(0/1)}(y, \hat{y}) = \begin{cases} 0 & \text{if } y = \hat{y} \\ 1 & \text{otherwise} \end{cases}
     \end{equation}
+\where{$y$ is the true class and $\hat{y}$ the predicted one; the loss is $1$
+for any mistake regardless of how confident or how close it was, which is what
+makes it non-differentiable and forces the use of surrogates.}
     Evaluation: Accuracy, Precision, Recall, F1, ROC-AUC.
 \end{v3topic}
 
@@ -230,6 +235,9 @@ reward that may arrive many steps after the action that earned it.}
         \text{Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Noise}
         \label{eq:ml-bias-variance}
     \end{equation}
+\where{\emph{bias} is the error from the model being too simple to represent
+the truth, \emph{variance} the error from sensitivity to the particular training
+sample, and \emph{irreducible noise} the part no model can remove.}
 
 \begin{plainlanguage}
 Bias is being consistently wrong in the same direction --- your model is too
@@ -325,6 +333,8 @@ project fails.
         \text{CV}(k) = \frac{1}{k}\sum_{i=1}^{k} \text{Error}_i
         \label{eq:ml-cv}
     \end{equation}
+\where{$k$ is the number of folds and $\text{Error}_i$ the error measured on
+fold $i$ by a model trained on the other $k-1$ folds.}
     Typical choice: $k = 5$ or $k = 10$.
 
 \begin{figure}[htbp]
@@ -419,6 +429,9 @@ subgroup the model handles badly, and that is more informative than the mean.
         F_1 = \frac{2\,TP}{2\,TP+FP+FN}.
         \label{eq:ml-precision-recall}
     \end{equation}
+\where{$TP$ counts correctly flagged positives, $FP$ wrongly flagged
+negatives, and $FN$ missed positives. Precision divides by everything the model
+flagged; recall divides by everything it should have flagged.}
 
 \begin{plainlanguage}
 Precision answers ``when the model raised its hand, how often was it right?''
@@ -511,6 +524,9 @@ each one can handle.}
         s(i) = \frac{b(i) - a(i)}{\max\{a(i),\, b(i)\}}, \qquad s(i) \in [-1,\, 1]
         \label{eq:ml-silhouette}
     \end{equation}
+\where{$a(i)$ is point $i$'s mean distance to its own cluster and $b(i)$ its
+mean distance to the nearest other cluster; the denominator normalises so the
+score cannot exceed one in magnitude.}
     The measure is due to
     Rousseeuw\textsuperscript{\cite{rousseeuwSilhouettesGraphicalAid1987}}.
 
@@ -540,6 +556,9 @@ instead of only scoring the partition.
     \begin{equation}
         \mathcal{L}(\mathbf{z}, \boldsymbol{\mu}) = \sum_{k=1}^{K} \sum_{n:\, z_n = k} \|\mathbf{x}_n - \boldsymbol{\mu}_k\|^2
     \end{equation}
+\where{$K$ is the number of clusters, $\boldsymbol{\mu}_k$ the centroid of
+cluster $k$, $\mathbf{x}_n$ the $n$-th data point, and $z_n$ the index of the
+cluster it is assigned to.}
 
 \end{v3topic}
 \begin{v3topic}{K-Means Algorithm}
@@ -603,6 +622,9 @@ worse partition. That is the entire motivation for $k$-means++.
         \mathbb{E}\bigl[\hat{\mathcal{L}}\bigr] \leq 8(\log K + 2)\,\mathcal{L}^{(\mathrm{opt})}
         \label{eq:ml-kmeanspp}
     \end{equation}
+\where{$\hat{\mathcal{L}}$ is the objective reached from a $k$-means++ seeding
+and $\mathcal{L}^{(\mathrm{opt})}$ the best achievable value; the expectation is
+over the randomness in the seeding.}
     The seeding scheme and this guarantee are due to Arthur and
     Vassilvitskii\textsuperscript{\cite{arthurKmeansAdvantagesCareful2007}}.
 
@@ -637,6 +659,9 @@ if they might be irregular or absent, use DBSCAN.
     \begin{equation}
         p(\mathbf{x}) = \sum_{k=1}^{K} \theta_k \,\mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k), \qquad \sum_{k=1}^{K}\theta_k = 1
     \end{equation}
+\where{$\theta_k$ is the mixing weight of component $k$ (how much of the data
+it accounts for), $\boldsymbol{\mu}_k$ its mean vector and
+$\boldsymbol{\Sigma}_k$ its covariance matrix.}
 
 \end{v3topic}
 \begin{v3topic}{E-Step: Computing Responsibilities}
@@ -647,6 +672,9 @@ if they might be irregular or absent, use DBSCAN.
                        {\displaystyle\sum_{j=1}^{K} \theta_j \,\mathcal{N}(\mathbf{x}_n \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
         \label{eq:ml-em-estep}
     \end{equation}
+\where{$z_{n,k}\in[0,1]$ is the \emph{responsibility} of component $k$ for
+point $n$; the denominator sums the same quantity over all $K$ components, so
+the responsibilities for one point sum to one.}
     The algorithm and its convergence proof are due to Dempster, Laird and
     Rubin\textsuperscript{\cite{dempsterMaximumLikelihoodIncomplete1977}}.
 
@@ -689,6 +717,9 @@ point is genuinely ambiguous where $k$-means cannot.
         \boldsymbol{\mu}_k = \frac{\sum_n z_{n,k}\,\mathbf{x}_n}{\sum_n z_{n,k}}, \qquad
         \boldsymbol{\Sigma}_k = \frac{\sum_n z_{n,k}(\mathbf{x}_n - \boldsymbol{\mu}_k)(\mathbf{x}_n - \boldsymbol{\mu}_k)^\top}{\sum_n z_{n,k}}
     \end{equation}
+\where{each update is the ordinary weighted estimate --- weight, mean, and
+covariance --- with the responsibilities $z_{n,k}$ from the E-step used as the
+weights instead of hard cluster memberships.}
 
 \end{v3topic}
 \begin{v3topic}{EM as a Generalization of K-Means}
@@ -915,6 +946,10 @@ same answer, which is what makes the reading robust.}
         \quad\Longrightarrow\quad
         \hat{\mathbf{w}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
     \end{equation}
+\where{$\mathbf{X}$ is the $n\times d$ design matrix of inputs, $\mathbf{y}$
+the vector of targets, and $\hat{\mathbf{w}}$ the fitted coefficients. See the
+caution in \cref{ch:mathematical-foundations} on why this form should not be
+implemented literally.}
 
 \end{v3topic}
 \begin{v3topic}{Polynomial and Non-linear Regression}
@@ -924,6 +959,9 @@ same answer, which is what makes the reading robust.}
         \hat{y} = \sum_{j=0}^{d} w_j\, x^j = \mathbf{w}^\top \boldsymbol{\phi}(x),
         \qquad \boldsymbol{\phi}(x) = [1,\, x,\, x^2,\, \ldots,\, x^d]^\top
     \end{equation}
+\where{$d$ is the polynomial degree, $w_j$ the coefficient on the $j$-th
+power, and $\boldsymbol{\phi}(x)$ the vector of basis functions --- the model is
+non-linear in $x$ but still linear in $\mathbf{w}$.}
 \end{v3topic}
 
 % ---- 5.3.2 Logistic Regression ------------------------------------------------------------------
@@ -935,6 +973,8 @@ same answer, which is what makes the reading robust.}
     \begin{equation}
         P(y = 1 \mid \mathbf{x}) = \sigma\!\left(\mathbf{w}^\top \mathbf{x} + b\right) = \frac{1}{1 + \exp\!\left[-\!\left(\mathbf{w}^\top \mathbf{x} + b\right)\right]}
     \end{equation}
+\where{$\mathbf{w}$ are the feature weights, $b$ the intercept, and $\sigma$
+the logistic function that maps the real-valued score to $(0,1)$.}
 
 \end{v3topic}
 \begin{v3topic}{The Sigmoid Curve and Log-Odds}
@@ -1007,6 +1047,10 @@ near $z=0$ and almost nothing out in the tails.
         \min_{\mathbf{w}} \sum_{n=1}^{N} \rho_\tau\!\left(y_n - \mathbf{w}^\top\mathbf{x}_n\right),
         \quad \tau \in (0,1)
     \end{equation}
+\where{$u$ is the residual (actual minus predicted), $\tau\in(0,1)$ the
+quantile being estimated, and $N$ the number of examples. The asymmetry is the
+point: $\tau=0.9$ penalises under-prediction nine times as heavily as
+over-prediction.}
 \end{v3topic}
 
 % ---- 5.3.4 Multivariate Regression --------------------------------------------------------------
@@ -1021,6 +1065,9 @@ near $z=0$ and almost nothing out in the tails.
         \hat{\mathbf{W}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{Y}
         \quad (D \text{ features},\; K \text{ responses})
     \end{equation}
+\where{$D$ is the number of input features and $K$ the number of responses
+predicted simultaneously, so $\mathbf{W}$ is $D\times K$ and each column is one
+ordinary regression.}
 \end{v3topic}
 
 % ---- 5.3.5 Lasso & Ridge Regression -------------------------------------------------------------
@@ -1035,6 +1082,9 @@ near $z=0$ and almost nothing out in the tails.
         \underbrace{\min_{\mathbf{w}} \tfrac{1}{2}\|\mathbf{X}\mathbf{w}-\mathbf{y}\|^2 + \lambda\|\mathbf{w}\|_1}_{\text{Lasso: no closed form}}
         \label{eq:ml-ridge-lasso}
     \end{equation}
+\where{$\lambda \geq 0$ sets the penalty strength ($\lambda=0$ recovers plain
+least squares), $\|\mathbf{w}\|_2^2$ is the sum of squared coefficients, and
+$\|\mathbf{w}\|_1$ the sum of their absolute values.}
     Ridge is due to Hoerl and
     Kennard\textsuperscript{\cite{hoerlRidgeRegressionBiased1970}} and the lasso
     to Tibshirani\textsuperscript{\cite{tibshiraniRegressionShrinkageSelection1996}}.
@@ -1172,6 +1222,9 @@ are the support vectors, and the rest of your data is irrelevant to the answer.
         \quad\text{s.t.}\quad
         y_n(\mathbf{w}\cdot\mathbf{x}_n + b) \geq 1 - \xi_n,\;\; \xi_n \geq 0 \;\;\forall n
     \end{equation}
+\where{$\xi_n \geq 0$ is the slack for example $n$ --- how far it is allowed to
+violate the margin --- and $C>0$ prices that violation. Large $C$ makes
+violations expensive and narrows the margin.}
 \end{v3topic}
 
 % ---- 5.4.2 SVM for Classification --------------------------------------------------------------
@@ -1225,6 +1278,9 @@ is not a weak model; it is a broken one.
         \quad\text{s.t.}\quad
         \left|y_n - \mathbf{w}\cdot\mathbf{x}_n - b\right| \leq \varepsilon + \max(\xi_n, \xi_n^*),\;\; \xi_n,\xi_n^* \geq 0
     \end{equation}
+\where{$\varepsilon$ is the half-width of the insensitive tube inside which
+residuals cost nothing, and $\xi_n,\xi_n^*$ are the slacks for points falling
+above and below it.}
 \end{v3topic}
 
 % ===========================================================================================
@@ -1326,6 +1382,9 @@ training.
         \text{Gain}(D,A) = H(D) - \sum_{v} \frac{|D_v|}{|D|}\,H(D_v)
         \label{eq:ml-information-gain}
     \end{equation}
+\where{$D$ is the set of examples at a node, $p_k$ the fraction belonging to
+class $k$, $A$ a candidate splitting feature, and $D_v$ the subset taking value
+$v$ on that feature; $|D_v|/|D|$ weights each branch by its size.}
 
 \begin{workedexample}[Choosing a split by information gain]
 Fourteen days of records, of which $9$ are ``play'' and $5$ are ``don't play''.
@@ -1386,6 +1445,10 @@ logarithm.
         \quad
         \hat{y}_{\text{leaf}} = \frac{1}{|D_{\text{leaf}}|}\sum_{n \in D_{\text{leaf}}} y_n
     \end{equation}
+\where{$A$ is the feature and $t$ the threshold defining the split,
+$D_{\text{left}}$ and $D_{\text{right}}$ the resulting subsets, and
+$\bar{y}$ the mean target within a subset --- so the criterion minimises
+within-leaf variance.}
 \end{v3topic}
 
 % ---- 5.5.4 Random Forests -----------------------------------------------------------------------
@@ -1487,6 +1550,10 @@ tree count tuned together.}
         h_t \leftarrow \arg\min_{h} \sum_{n=1}^{N}
             \left[ -\frac{\partial \mathcal{L}(y_n, F_{t-1}(\mathbf{x}_n))}{\partial F_{t-1}(\mathbf{x}_n)} - h(\mathbf{x}_n) \right]^2
     \end{equation}
+\where{$F_t$ is the ensemble after $t$ rounds, $h_t$ the tree added at round
+$t$, and $\eta\in(0,1]$ the learning rate that shrinks each tree's
+contribution. The bracketed term is the negative gradient of the loss --- the
+pseudo-residual the new tree is fitted to.}
 
 \end{v3topic}
 \begin{v3topic}{XGBoost and LightGBM}
@@ -1534,6 +1601,9 @@ one received: an untuned baseline is not a comparison.
         \hat{c}(\mathbf{x}) = \arg\max_{c} \sum_{i \in \mathcal{N}_k(\mathbf{x})} \mathbf{1}[y_i = c]
         \quad \text{(classification)}
     \end{equation}
+\where{$\mathcal{N}_k(\mathbf{x})$ is the set of the $k$ training points
+nearest to the query $\mathbf{x}$, and $\mathbf{1}[\cdot]$ is one when its
+condition holds and zero otherwise.}
 
 \end{v3topic}
 \begin{v3topic}{Weighted Voting and Choosing k}
@@ -1621,6 +1691,9 @@ which is invariant to monotone rescaling.
             p \to \infty: & \text{Chebyshev } (\max_j |x_j - z_j|)
         \end{cases}
     \end{equation}
+\where{$D$ is the number of features, $x_j,z_j$ the $j$-th component of each
+point, and $p\geq1$ the order that selects the metric. All of them require the
+features to be on comparable scales first.}
 \end{v3topic}
 
 % ===========================================================================================

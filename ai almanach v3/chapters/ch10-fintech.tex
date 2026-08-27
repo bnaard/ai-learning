@@ -462,6 +462,10 @@ Treat any backtest as a hypothesis, never as evidence of profit.
     \begin{equation}
         \min_{\mathbf{w}}\; \mathbf{w}^\top \boldsymbol{\Sigma}\, \mathbf{w} \quad \text{s.t.} \quad \mathbf{w}^\top \boldsymbol{\mu} = \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1
     \end{equation}
+\where{$\mathbf{w}$ is the vector of portfolio weights, $\boldsymbol{\Sigma}$ the
+covariance matrix of asset returns, $\boldsymbol{\mu}$ their expected returns,
+and $\mu^*$ the required return. The last constraint forces the weights to sum
+to one --- the whole portfolio is invested.}
     The set of optimal portfolios traces the \emph{efficient frontier} in mean-variance space.
 
 \end{v3topic}

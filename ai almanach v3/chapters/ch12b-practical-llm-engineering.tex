@@ -175,6 +175,9 @@ Each token ID selects one row, producing
     \in\mathbb{R}^{T\times d}.
     \label{eq:embedding-lookup}
 \end{equation}
+\where{$t_1,\dots,t_T$ are the token IDs, $E$ the embedding table, $T$ the sequence
+length, and $d$ the model dimension; the operation is a table lookup, not a
+matrix multiplication.}
 
 For this checkpoint, $V=49{,}152$ and $d=576$, so the embedding table contains
 $49{,}152\times576=28{,}311{,}552$ scalar parameters.
@@ -193,6 +196,9 @@ For one conventional attention head with row-vector activations,
     & H &= AV.
     \label{eq:scaled-dot-product-attention}
 \end{align}
+\where{$X$ is the layer input, $W_Q,W_K,W_V$ the learned projections, $d_h$ the
+per-head dimension, and $M$ the causal mask that sets future positions to
+$-\infty$ before the softmax.}
 
 $M$ is a causal mask that prevents a position from reading future tokens.
 The $T\times T$ matrix $A$ contains data-dependent mixing weights.
@@ -274,6 +280,9 @@ has approximately:
       = 2{,}654{,}208.
       \label{eq:smollm-mlp-parameters}
 \end{align}
+\where{the four terms are the query, key, value, and output projections; the key
+and value terms are smaller because this model shares three query heads per
+key/value head (grouped-query attention).}
 
 Thirty layers therefore contribute about $106.17$ million parameters, and the
 tied embedding table adds about $28.31$ million.
@@ -308,8 +317,10 @@ LoRA defines
     Y' &= X(W+\Delta W)^{\mathsf T}.
     \label{eq:lora-forward}
 \end{align}
+\where{$r$ is the adapter rank, $\alpha$ a scaling constant, and $A,B$ the two
+low-rank factors; only $A$ and $B$ receive gradients, while the base weights $W$
+stay frozen.}
 
-$r$ is the adapter rank and $\alpha/r$ scales the update.
 Because $\operatorname{rank}(BA)\leq r$, LoRA can only express updates in a
 low-rank family, which is the deliberate constraint.
 
@@ -327,6 +338,9 @@ The number of trainable LoRA scalars for one matrix is
     N_{\mathrm{LoRA}} = r(d_{\mathrm{in}}+d_{\mathrm{out}}),
     \label{eq:lora-parameter-count}
 \end{equation}
+\where{$d_{\mathrm{in}}$ and $d_{\mathrm{out}}$ are the dimensions of the weight
+matrix being adapted. Compare $d_{\mathrm{in}}d_{\mathrm{out}}$ for the full
+matrix: the saving is the whole point of the method.}
 
 compared with $d_{\mathrm{in}}d_{\mathrm{out}}$ base scalars.
 

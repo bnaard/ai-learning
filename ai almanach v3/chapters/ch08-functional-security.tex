@@ -195,6 +195,10 @@ accepted set $A_\tau=\{x:s(x)\geq\tau\}$,
   \mathrm{risk}(\tau) &= \frac{1}{|A_\tau|}
        \sum_{x_i\in A_\tau}\ell(f(x_i),y_i).
 \end{align}
+\where{$\tau$ is the confidence threshold, $A_\tau$ the set of inputs the model
+accepts rather than abstaining on, $n$ the total number of inputs, and $\ell$
+the loss. Raising $\tau$ lowers coverage and should lower risk --- if it does
+not, the confidence score is not informative.}
 The risk--coverage curve makes the trade-off visible. Abstention is useful only
 when a safe fallback exists and the operator can recognize the handover.
 
@@ -264,6 +268,10 @@ private if for every measurable output set $S$,
 \begin{equation}
   P[M(D)\in S] \leq e^{\varepsilon}P[M(D')\in S]+\delta.
 \end{equation}
+\where{$M$ is the randomised mechanism, $D$ and $D'$ two datasets differing in one
+individual, and $S$ any set of outputs. $\varepsilon$ is the privacy budget
+(smaller is stronger) and $\delta$ the probability the guarantee fails
+altogether.}
 This bounds how much one contribution can change the released distribution.
 Smaller $\varepsilon$ generally means a stronger bound but more noise; repeated
 releases consume privacy budget. The guarantee depends on adjacency,

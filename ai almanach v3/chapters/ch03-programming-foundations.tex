@@ -876,6 +876,9 @@ when you intend a copy.
         \;\Longrightarrow\;
         \textbf{A} + \textbf{b} \in \mathbb{R}^{m \times n}
     \end{equation}
+\where{$m$ and $n$ are the two surviving dimensions: a column of length $m$ and a
+row of length $n$ broadcast to a full $m\times n$ grid. This is the mechanism
+behind the silent shape bug described earlier in this chapter.}
     Example: \texttt{X - X.mean(axis=0)} subtracts a per-column mean from a matrix --- shape $(N, d) - (d,)$ is valid by broadcasting.
     A dimension of size 1 is \emph{stretched} (not copied) to match the other dimension.
 \end{v3topic}
@@ -1236,6 +1239,9 @@ described in \cref{ch:data-analytics}.}
     \begin{equation}
         \frac{\partial \mathcal{L}}{\partial \mathbf{w}} = \text{backprop through graph}
     \end{equation}
+\where{$\mathcal{L}$ is the loss and $\mathbf{w}$ the parameters; the framework
+records the operations performed in the forward pass and replays them in
+reverse to obtain this derivative (\cref{sec:dl-backprop}).}
     \begin{itemize}
         \item \texttt{loss.backward()} --- compute all gradients
         \item \texttt{w.grad} --- accumulated gradient $\partial\mathcal{L}/\partial w$

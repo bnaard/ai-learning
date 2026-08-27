@@ -602,6 +602,9 @@ approximately
 \begin{equation}
   C_{\mathrm{inference/success}} = \frac{n c}{p}.
 \end{equation}
+\where{$n$ is the number of model calls per attempt, $c$ the cost of one call, and
+$p$ the probability an attempt succeeds. Dividing by $p$ is the step teams
+forget: failed attempts are paid for too.}
 This approximation must be expanded when retries are correlated, cache hits
 matter, long contexts change cost, or expensive failures create support and
 liability exposure.

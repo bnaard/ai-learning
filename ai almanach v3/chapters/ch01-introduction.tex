@@ -152,6 +152,8 @@ than more data.}
         \begin{equation}
             y = \begin{cases} 1 & \text{if } \sum_{i} w_i x_i + b \geq 0 \\ 0 & \text{otherwise} \end{cases}
         \end{equation}
+\where{$x_i$ are the input features, $w_i$ the learned weights, and $b$ the bias
+that shifts the firing threshold; the output is binary.}
         A single perceptron can learn AND and OR (linearly separable), but \textbf{not XOR}. XOR requires a non-linear decision boundary --- no single line can separate the classes:
 \visualseparator
         \centering

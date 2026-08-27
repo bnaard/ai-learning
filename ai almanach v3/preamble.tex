@@ -290,6 +290,19 @@
   \par\addvspace{0.55\baselineskip}%
 }
 
+% Symbol glossary attached to a display formula. Keeps the explanation
+% visually tied to the equation it belongs to, and consistently formatted.
+\NewDocumentCommand{\where}{m}{%
+  \par\addvspace{-0.30\baselineskip}%
+  \begingroup
+  \small
+  \leftskip=1.1em
+  \noindent
+  \textsf{\footnotesize\bfseries\color{AlmanachTeal}where}\;\,#1\par
+  \endgroup
+  \addvspace{0.42\baselineskip}%
+}
+
 \NewDocumentCommand{\visualcaption}{m m}{%
   \captionof{figure}{#1}%
   \label{#2}%

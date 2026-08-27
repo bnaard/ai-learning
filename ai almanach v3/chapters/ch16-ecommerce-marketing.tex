@@ -153,6 +153,9 @@ reconstruct it afterwards.
     \begin{equation}
         \varepsilon = \frac{\partial Q / Q}{\partial P / P} = \frac{\partial \ln Q}{\partial \ln P}
     \end{equation}
+\where{$Q$ is quantity demanded and $P$ price; $\varepsilon$ is the percentage
+change in demand per percentage change in price, and is normally negative.
+Demand is called elastic when $|\varepsilon|>1$.}
     $|\varepsilon| > 1$: elastic (price-sensitive); $|\varepsilon| < 1$: inelastic.
     \textbf{Willingness-to-pay (WTP)}: the maximum price a consumer accepts; price discrimination extracts consumer surplus by offering different prices to different segments.
 
@@ -164,6 +167,9 @@ reconstruct it afterwards.
     \begin{equation}
         p^* = \arg\max_p \; p \cdot \mathbb{E}_\theta[Q(p, \theta)]
     \end{equation}
+\where{$p$ is the candidate price, $\theta$ the uncertain demand parameters,
+and $Q(p,\theta)$ the resulting quantity; the expectation is taken over the
+posterior for $\theta$, so the optimum accounts for what is not yet known.}
     Thompson Sampling balances \emph{exploration} (trying new prices) and \emph{exploitation} (using the current best estimate).
 
 \end{v3topic}
@@ -256,12 +262,19 @@ reconstruct it afterwards.
     \begin{equation}
         \text{support}(A \cup B) = \frac{|\{t : A \cup B \subseteq t\}|}{|T|}
     \end{equation}
+\where{$A$ and $B$ are itemsets, $t$ a single transaction, and $T$ the set of
+all transactions; support is simply the fraction of baskets containing both.}
     \begin{equation}
         \text{confidence}(A \Rightarrow B) = \frac{\text{support}(A \cup B)}{\text{support}(A)}
     \end{equation}
+\where{confidence is the conditional probability of $B$ given $A$ --- and is
+misleading on its own, because a very common $B$ produces high confidence for
+any $A$.}
     \begin{equation}
         \text{lift}(A \Rightarrow B) = \frac{\text{confidence}(A \Rightarrow B)}{\text{support}(B)}
     \end{equation}
+\where{lift corrects exactly that flaw by dividing by $B$'s own frequency:
+$\text{lift}=1$ means independence, $>1$ genuine association, $<1$ substitution.}
     Lift $> 1$ indicates a genuine association beyond chance.
 
 \end{v3topic}
@@ -433,10 +446,16 @@ reconstruct it afterwards.
     \begin{equation}
         \hat{r}_{ui} = \bar{r}_u + \frac{\sum_{v \in N(u)} \text{sim}(u,v)\,(r_{vi} - \bar{r}_v)}{\sum_{v \in N(u)} |\text{sim}(u,v)|}
     \end{equation}
+\where{$\hat{r}_{ui}$ is the predicted rating of user $u$ for item $i$,
+$N(u)$ the set of similar users, $r_{vi}$ user $v$'s actual rating, and
+$\bar{r}_u,\bar{r}_v$ their mean ratings --- subtracting them removes the fact
+that some users rate generously and others harshly.}
     \textbf{Cosine similarity} between user rating vectors:
     \begin{equation}
         \text{sim}(u,v) = \frac{\mathbf{r}_u \cdot \mathbf{r}_v}{\|\mathbf{r}_u\|\,\|\mathbf{r}_v\|}
     \end{equation}
+\where{$\mathbf{r}_u$ is user $u$'s rating vector; this is the cosine
+similarity of \cref{ch:mathematical-foundations} applied to rating rows.}
     \textbf{Pearson correlation} accounts for rating scale differences between users.
 
 \end{v3topic}
@@ -445,6 +464,10 @@ reconstruct it afterwards.
     \begin{equation}
         \hat{r}_{ui} = \frac{\sum_{j \in N(i)} \text{sim}(i,j)\,r_{uj}}{\sum_{j \in N(i)} |\text{sim}(i,j)|}
     \end{equation}
+\where{$N(i)$ is the set of items similar to $i$ and $r_{uj}$ the same user's
+rating of a similar item --- the item-based mirror of the user-based formula
+above, and usually the more stable of the two because items change less than
+people.}
     Item similarities are \textbf{pre-computed offline} and stable over time; only the personalised combination at query time is online.
     \textbf{Advantage over user-based}: items change less frequently than users; scales better for large user bases.
 
@@ -460,6 +483,10 @@ reconstruct it afterwards.
     \begin{equation}
         \min_{\mathbf{P},\mathbf{Q}} \sum_{(u,i)\in\mathcal{K}} \bigl(r_{ui} - \hat{r}_{ui}\bigr)^2 + \lambda\bigl(\|\mathbf{p}_u\|^2 + \|\mathbf{q}_i\|^2\bigr)
     \end{equation}
+\where{$\mathcal{K}$ is the set of \emph{observed} ratings only,
+$\mathbf{p}_u$ and $\mathbf{q}_i$ the latent factor vectors for user and item,
+and $\lambda$ the regularisation strength. Summing only over $\mathcal{K}$ is
+essential --- the unobserved entries are unknown, not zero.}
 
 \end{v3topic}
 \begin{v3topic}{ALS for Implicit Feedback}
@@ -475,6 +502,10 @@ reconstruct it afterwards.
     \begin{equation}
         \mathcal{L}_{\text{BPR}} = -\sum_{(u,i^+,j^-)} \ln\sigma\!\bigl(\hat{r}_{ui^+} - \hat{r}_{uj^-}\bigr) + \lambda \|\Theta\|^2
     \end{equation}
+\where{$i^+$ is an item the user interacted with, $j^-$ one they did not,
+$\sigma$ the logistic function, and $\Theta$ all model parameters. The loss
+ranks pairs rather than predicting ratings, which suits implicit feedback where
+no explicit score exists.}
     BPR is model-agnostic: it can be applied on top of MF, neural networks, or any scoring function.
     \textbf{Key insight}: for e-commerce, the task is \emph{ranking} (what to show at position 1), not \emph{rating prediction} (what score to assign).
 
@@ -497,6 +528,10 @@ reconstruct it afterwards.
     \begin{equation}
         \hat{y}(\mathbf{x}) = w_0 + \sum_i w_i x_i + \sum_{i<j} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j
     \end{equation}
+\where{$w_0$ is the global bias, $w_i$ the weight on feature $i$, and
+$\mathbf{v}_i$ a latent vector per feature; the inner product
+$\langle\mathbf{v}_i,\mathbf{v}_j\rangle$ models the interaction between two
+features without needing a separate parameter for every pair.}
     The pairwise interaction term $\langle \mathbf{v}_i, \mathbf{v}_j \rangle$ captures feature interactions (e.g., user $\times$ item, item $\times$ category) via low-rank factorisation of the interaction matrix.
     FM unifies MF and content-based approaches: user, item, and context features can all be included in $\mathbf{x}$.
 
@@ -559,6 +594,9 @@ reconstruct it afterwards.
     \begin{equation}
         \hat{r}_{ui} = \sigma\!\bigl(\mathbf{h}^\top \text{MLP}\bigl([\mathbf{p}_u \| \mathbf{q}_i]\bigr)\bigr)
     \end{equation}
+\where{$[\mathbf{p}_u \| \mathbf{q}_i]$ is the concatenation of the user and
+item embeddings, the MLP learns their interaction, and $\mathbf{h}$ is the
+output layer; $\sigma$ maps the score to a probability.}
     NCF achieves state-of-the-art ranking performance on implicit feedback benchmarks.
 
 \end{v3topic}

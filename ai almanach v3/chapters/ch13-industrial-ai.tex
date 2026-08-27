@@ -386,6 +386,9 @@ before the model.
     \begin{equation}
         {}^{i-1}T_i = R_z(\theta_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i)
     \end{equation}
+\where{the four Denavit--Hartenberg parameters for joint $i$: $\theta_i$ the joint
+angle, $d_i$ the link offset, $a_i$ the link length, and $\alpha_i$ the link
+twist; $R$ and $T$ denote rotation and translation about the named axis.}
 
 \end{v3topic}
 \begin{v3topic}{Forward and Inverse Kinematics}
@@ -393,6 +396,10 @@ before the model.
     \begin{equation}
         \mathbf{x} = f(\mathbf{q}), \quad {}^0T_n = \prod_{i=1}^{n} {}^{i-1}T_i
     \end{equation}
+\where{$\mathbf{q}$ is the vector of joint angles, $\mathbf{x}$ the resulting
+end-effector pose, and ${}^0T_n$ the chained transform from base to tool.
+Forward kinematics has one answer; the inverse generally has several or
+none.}
     \textbf{Inverse kinematics} solves for $\mathbf{q}$ given $\mathbf{x}$; generally non-linear with multiple solutions (elbow up/down, wrist configurations).
     \emph{Closed-form} solutions exist for specific architectures (e.g.\ 6-DOF with spherical wrist via decoupling); otherwise iterative Jacobian methods are used:
     \begin{equation}

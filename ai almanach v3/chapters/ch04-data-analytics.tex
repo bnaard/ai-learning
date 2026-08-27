@@ -105,6 +105,8 @@ predictive than the value would have been.
     \begin{equation}
         z = \frac{x - \mu}{\sigma}
     \end{equation}
+\where{$x$ is the raw value, $\mu$ the mean and $\sigma$ the standard
+deviation of the feature; $|z|>3$ is a common, and arbitrary, outlier flag.}
     Multivariate outliers require distance-based methods (Mahalanobis) or density-based methods (LOF).
 
 \end{v3topic}
@@ -238,6 +240,9 @@ make a measurement error dangerous.
     \begin{equation}
         x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}(b - a) + a
     \end{equation}
+\where{$x_{\min},x_{\max}$ are the observed extremes of the feature and
+$[a,b]$ the target range (usually $[0,1]$). Both extremes must come from the
+training split only.}
 
 \end{v3topic}
 \begin{v3topic}{Z-Score Standardization}
@@ -246,6 +251,8 @@ make a measurement error dangerous.
     \begin{equation}
         x' = \frac{x - \mu}{\sigma}
     \end{equation}
+\where{$\mu$ and $\sigma$ are estimated on the training data alone; reusing
+them unchanged at inference is what keeps the transform honest.}
     After standardization: $\mathbb{E}[x'] = 0$, $\mathrm{Var}(x') = 1$.
 
 \end{v3topic}
@@ -261,6 +268,108 @@ make a measurement error dangerous.
     \end{tblr}
 \captionof{table}{Encoding schemes for categorical variables. One-hot is safe but explodes with cardinality; target encoding is compact and leaks unless fitted inside the cross-validation fold.}
 \label{tab:data-encoding}
+
+\begin{workedexample}[All four encodings applied to the same column]
+A \textsf{colour} column with three categories, and a binary target:
+
+\smallskip
+\begin{tblr}{
+  width=0.5\linewidth,
+  colspec={Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+row & colour & converted \\
+1 & red & 1 \\
+2 & green & 0 \\
+3 & blue & 1 \\
+4 & red & 0 \\
+5 & red & 1 \\
+6 & green & 0 \\
+\end{tblr}
+\smallskip
+
+\emph{One-hot.} One new binary column per category; exactly one is $1$ per
+row. Three categories become three columns:
+
+\smallskip
+\begin{tblr}{
+  width=0.62\linewidth,
+  colspec={Q[c]Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+row & is\_red & is\_green & is\_blue \\
+1 & 1 & 0 & 0 \\
+2 & 0 & 1 & 0 \\
+3 & 0 & 0 & 1 \\
+\end{tblr}
+\smallskip
+
+No ordering is implied, which is the point. The cost is one column per
+category --- a postcode field with $8{,}000$ values becomes $8{,}000$ columns.
+
+\emph{Label encoding.} Map each category to an integer:
+$\textsf{blue}\to0$, $\textsf{green}\to1$, $\textsf{red}\to2$. Row~1 becomes
+$2$, row~2 becomes $1$, row~3 becomes $0$.
+
+\textbf{This asserts that $\textsf{blue}<\textsf{green}<\textsf{red}$ and that
+green is exactly halfway between.} A linear model, a distance metric, or a
+neural network will use that ordering, and it is fiction. Safe only for
+genuinely ordinal data (\textsf{small}/\textsf{medium}/\textsf{large}) or for
+tree models, which only ever split on ``$\leq$ some threshold'' and so are
+insensitive to which integers were chosen.
+
+\emph{Target encoding.} Replace each category by the mean target of its rows:
+\[
+  \textsf{red} = \tfrac{1+0+1}{3} = 0.667,\qquad
+  \textsf{green} = \tfrac{0+0}{2} = 0.000,\qquad
+  \textsf{blue} = \tfrac{1}{1} = 1.000 .
+\]
+One column instead of three, and it carries real signal.
+
+\textbf{But look at \textsf{blue}.} Its value of $1.000$ comes from a single
+row --- and that row's own target is inside its encoding. The model can read
+the answer off the feature. This is target leakage, and it is why target
+encoding must be fitted \emph{inside} each cross-validation fold, using only
+the other folds' rows.
+
+\emph{Smoothed target encoding} damps the small-category problem by pulling
+each estimate toward the overall mean $\bar y = 3/6 = 0.5$:
+\[
+  \text{enc}(c) = \frac{\text{sum}_c + m\bar y}{n_c + m},
+  \qquad\text{with } m = 2:
+\]
+\[
+  \textsf{red} = \frac{2 + 1}{3+2} = 0.600,\qquad
+  \textsf{green} = \frac{0 + 1}{2+2} = 0.250,\qquad
+  \textsf{blue} = \frac{1 + 1}{1+2} = 0.667 .
+\]
+\textsf{Blue} has fallen from a confident $1.000$ to a cautious $0.667$,
+because one observation is not evidence.
+\where{$n_c$ is the number of rows in category $c$, $\text{sum}_c$ their target
+total, $\bar y$ the overall mean, and $m>0$ the smoothing weight --- effectively
+``how many imaginary average rows to add''. Larger $m$ trusts small categories
+less.}
+
+\emph{Hashing trick.} Apply a hash function and take the remainder:
+$\text{col} = h(c) \bmod k$. With $k=2$, two of the three colours land in the
+same column and become indistinguishable. That collision is accepted
+deliberately: the feature count is fixed at $k$ regardless of how many
+categories appear, including ones never seen in training. Use it when
+cardinality is unbounded --- URLs, user agents, free-text tags --- and you can
+tolerate the collisions.
+\end{workedexample}
+
+\begin{cautionbox}[Unseen categories at inference time]
+Every scheme above needs an answer for a category that appears in production
+but not in training. One-hot must reserve an explicit \textsf{other} column;
+label and target encoding need a defined fallback (the overall mean is the
+usual choice for target encoding); only the hashing trick handles it without
+any special case, because an unseen value simply hashes somewhere.
+
+If you have not decided what happens for an unseen category, your pipeline has
+already decided --- usually by crashing, or worse, by silently encoding it as
+zero and thereby claiming it is the first category.
+\end{cautionbox}
 
 \end{v3topic}
 \begin{v3topic}{Log and Power Transforms}
@@ -298,6 +407,9 @@ make a measurement error dangerous.
     \begin{equation}
         \mathbf{Z} = \mathbf{X}\mathbf{W}_k, \quad \mathbf{W}_k \in \mathbb{R}^{d \times k}
     \end{equation}
+\where{$\mathbf{X}$ is the $n\times d$ data matrix, $\mathbf{W}_k$ the
+matrix whose columns are the top $k$ eigenvectors of the covariance matrix, and
+$\mathbf{Z}$ the $n\times k$ projected data.}
 
 \end{v3topic}
 \begin{v3topic}{Sampling Strategies}
@@ -337,6 +449,9 @@ make a measurement error dangerous.
     \begin{equation}
         \text{Availability} = \frac{\text{MTBF}}{\text{MTBF} + \text{MTTR}}
     \end{equation}
+\where{MTBF is the mean time between failures and MTTR the mean time to
+repair; halving repair time raises availability exactly as much as doubling
+time between failures.}
     \begin{itemize}
         \item \textbf{MTBF} — Mean Time Between Failures
         \item \textbf{MTTR} — Mean Time To Recovery
@@ -882,6 +997,8 @@ correlation coefficient is a summary of a picture you have not looked at.
     \begin{equation}
         r = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_i (x_i-\bar{x})^2}\sqrt{\sum_i (y_i-\bar{y})^2}}
     \end{equation}
+\where{$\bar{x},\bar{y}$ are the sample means and $n$ the number of paired
+observations; the denominator rescales the covariance so that $r\in[-1,1]$.}
     Range: $r \in [-1, 1]$. $|r| = 1$ indicates perfect linear relationship; $r = 0$ indicates no \emph{linear} relationship (but nonlinear dependence may still exist).
 
 \end{v3topic}

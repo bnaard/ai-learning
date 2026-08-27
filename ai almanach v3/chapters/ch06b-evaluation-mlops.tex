@@ -161,6 +161,9 @@ false positives, true negatives, and false negatives.
                     {\text{precision}+\text{recall}}.
     \label{eq:specificity-f1}
 \end{align}
+\where{$TP,FP,TN,FN$ are the four confusion-matrix counts: true and false
+positives, true and false negatives. Precision divides by what was predicted
+positive, recall by what actually was positive.}
 
 Accuracy answers, ``What fraction was labelled correctly?''
 It can be misleading when classes are imbalanced or error costs differ.
@@ -192,6 +195,9 @@ For errors $e_i=y_i-\hat y_i$ over $n$ observations,
     &\operatorname{RMSE} &= \sqrt{\operatorname{MSE}}.
     \label{eq:mse-rmse}
 \end{align}
+\where{$e_i = y_i - \hat y_i$ is the residual for observation $i$ and $n$ the
+number of observations. MSE squares the residuals, so a single large error
+dominates it in a way it cannot dominate MAE.}
 
 MAE is in the target's units and weights absolute errors linearly.
 RMSE is also in the target's units but penalises large errors more strongly.
@@ -203,6 +209,9 @@ The coefficient of determination,
          {\sum_i(y_i-\bar y)^2},
     \label{eq:r-squared}
 \end{equation}
+\where{$y_i$ is the actual value, $\hat y_i$ the prediction, and $\bar y$ the mean
+of the actuals; the denominator is the error a constant-mean model would make,
+so $R^2$ is the fraction of that error removed.}
 
 compares squared error with a mean-prediction baseline.
 $R^2$ can be negative on test data when the candidate is worse than that
@@ -227,6 +236,9 @@ For a binary target $y_i\in\{0,1\}$ and predicted probability $p_i$,
     \operatorname{Brier} = \frac{1}{n}\sum_{i=1}^{n}(p_i-y_i)^2.
     \label{eq:brier-score}
 \end{equation}
+\where{$p_i\in[0,1]$ is the predicted probability and $y_i\in\{0,1\}$ the actual
+outcome; lower is better. Unlike accuracy it rewards being well calibrated, not
+just being on the right side of the threshold.}
 
 Calibration must be checked on data not used to fit the calibrator.
 It should also be checked by relevant subgroup when error consequences differ.

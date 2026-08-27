@@ -580,6 +580,9 @@ cheaply built as such.
         u_i(a_i^*, a_{-i}) \;\geq\; u_i(a_i, a_{-i})
         \quad \forall\, a_i \in A_i,\; \forall\, a_{-i}
     \end{equation}
+\where{$u_i$ is agent $i$'s utility, $a_i^*$ its equilibrium action, $A_i$ its
+action set, and $a_{-i}$ the actions of every other agent. The condition says no
+agent can do better by changing its own action alone.}
     When every agent has a dominant strategy, those strategies form a
     \emph{dominant strategy equilibrium} (often unique and robust).
 
@@ -619,6 +622,9 @@ cheaply built as such.
         \frac{|S|!\,(|N|-|S|-1)!}{|N|!}
         \bigl[v(S \cup \{i\}) - v(S)\bigr]
     \end{equation}
+\where{$N$ is the set of agents, $S$ a coalition not containing $i$, and $v(S)$ the
+value that coalition can achieve; the bracket is $i$'s marginal contribution to
+$S$, averaged over every order in which the coalition could form.}
     This is the average marginal contribution of agent $i$ over all possible
     orderings of agents joining the coalition.
     Properties: efficiency ($\sum_i \phi_i = v(N)$), symmetry, dummy player, additivity.
@@ -711,6 +717,10 @@ cheaply built as such.
     \begin{equation}
         Q_{tot}(\boldsymbol{\tau}, \mathbf{a}) = f_{\text{mix}}\bigl(Q_1(\tau_1, a_1), \ldots, Q_n(\tau_n, a_n);\, s\bigr)
     \end{equation}
+\where{$\tau_i$ is agent $i$'s action-observation history, $a_i$ its action, $s$
+the global state available during training, and $f_{\text{mix}}$ a monotone
+mixing network --- monotonicity is what lets agents act independently at
+execution time.}
     The mixing network has \emph{non-negative weights} (monotonicity constraint),
     ensuring the individual-global-max (IGM) principle:
     \[

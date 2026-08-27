@@ -411,6 +411,10 @@ is a marketing claim.
     \begin{equation}
         \mathrm{tfidf}(t, d) = \underbrace{\frac{\text{count}(t,d)}{|d|}}_{\text{TF}} \times \underbrace{\log\frac{N}{\text{df}(t)}}_{\text{IDF}}
     \end{equation}
+\where{$t$ is a term, $d$ a document, $|d|$ its length in tokens, $N$ the
+number of documents in the corpus, and $\text{df}(t)$ the number of documents
+containing $t$. The logarithm is what suppresses words that appear
+everywhere.}
     Common words like ``the'' get low IDF weight; rare but discriminative words get high weight.
     TF-IDF remains useful for information retrieval and keyword extraction but cannot capture semantic similarity.
 
@@ -466,6 +470,8 @@ suggest, and it holds far better for frequent words than for rare ones.}
     \begin{equation}
         \vec{v}(\text{king}) - \vec{v}(\text{man}) + \vec{v}(\text{woman}) \approx \vec{v}(\text{queen})
     \end{equation}
+\where{$\vec{v}(w)$ is the embedding vector of word $w$; the relation holds
+approximately and far better for frequent words than rare ones.}
     Word2Vec vectors are \emph{static}: the same vector is assigned to ``bank'' regardless of context.
 
 \end{v3topic}
@@ -503,6 +509,9 @@ suggest, and it holds far better for frequent words than for rare ones.}
         \approx
         P(w_t \mid w_{t-N+1}, \ldots, w_{t-1})
     \end{equation}
+\where{$w_t$ is the word at position $t$ and $N$ the order of the model, so
+only the previous $N-1$ words are retained. Larger $N$ captures more context and
+makes unseen $n$-grams exponentially more likely.}
     Counts in a training corpus estimate these probabilities.
     Smoothing (Laplace, Kneser-Ney) handles unseen $n$-grams.
     Bengio et al.\ (2003) introduced the \textbf{neural probabilistic language model}: replace the count-based estimate with a feed-forward neural network that maps word embeddings to the next-word distribution.
@@ -648,6 +657,9 @@ altogether.
     \begin{equation}
         P(\mathbf{w} \mid \mathbf{a}) \propto \underbrace{P(\mathbf{a} \mid \mathbf{w})}_{\text{acoustic model}} \times \underbrace{P(\mathbf{w})}_{\text{language model}}
     \end{equation}
+\where{$\mathbf{a}$ is the observed acoustic signal and $\mathbf{w}$ a
+candidate word sequence; the acoustic model scores how well the sounds match the
+words, the language model how plausible the word sequence is on its own.}
     \begin{itemize}
         \item \textbf{Acoustic model}: maps audio features (MFCC) to phoneme probabilities; classically HMM-GMM, later deep neural networks
         \item \textbf{Language model}: $n$-gram or neural LM providing prior over word sequences
@@ -851,6 +863,9 @@ altogether.
     \begin{equation}
         \ell(\theta) = \sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1};\,\theta)
     \end{equation}
+\where{$x_t$ is the token at position $t$, $T$ the sequence length, and
+$\theta$ the model parameters. This is the entire pre-training objective:
+predict each token from everything before it.}
     Equivalently, training minimises the negative log-likelihood $\mathcal{L}(\theta)=-\ell(\theta)$. This is next-token prediction on large unlabelled
     corpora.\textsuperscript{\cite[][p.~129]{raschkaBuildLargeLanguage2025}}
 
