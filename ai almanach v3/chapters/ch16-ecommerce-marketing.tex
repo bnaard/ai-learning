@@ -8,6 +8,39 @@
 \chapterlead{How can personalisation create value without harmful feedback loops?}{Discover}{Recommend}{Experiment}{Govern}{commerce-marketing}
 
 % ==== Section 1: AI in E-Commerce ===============================================================
+\label{ch:ecommerce-marketing}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute the sample size an A/B test needs to detect a given effect;
+  \item explain why stopping a test when it reaches significance inflates the
+        false-positive rate;
+  \item distinguish a recommender that creates value from one that takes credit
+        for it;
+  \item name the feedback loop a recommender induces and its consequence for
+        offline evaluation;
+  \item state why offline recommender metrics disagree with online results.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Commerce is the domain with the most data and the most self-deception. Every
+click is recorded, every test is cheap, and almost every reported win is larger
+than the real one --- because the metric was chosen after the result, the test
+was stopped when it looked good, or the model was credited with a purchase that
+would have happened anyway.
+\end{plainlanguage}
+
+\begin{engineernote}
+The recurring error here is attributing to the model what belongs to the
+counterfactual. A recommender shown on the homepage will always appear to
+``drive'' revenue, because it is shown to people who came to buy. The only
+honest measure is incrementality: what happened to a comparable group who did
+not see it. Design the holdout before the system, because you cannot
+reconstruct it afterwards.
+\end{engineernote}
+
 \section{AI in E-Commerce}
 
 % ---- 16.1.1 Application Areas -----------------------------------------------------------------------
@@ -54,7 +87,7 @@
     A \textbf{demand-side platform (DSP)} bids on behalf of advertisers; a \textbf{supply-side platform (SSP)} represents publishers.
     Models predict \textbf{click-through rate (CTR)} and \textbf{conversion rate (CVR)} from user context, page content, and historical behaviour.
 \visualseparator
-    \begin{tblr}{|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}}
         \hline
         \textbf{Metric} & \textbf{Formula} \\
         \hline
@@ -65,8 +98,8 @@
         ROAS & Revenue / Ad Spend \\
         \hline
     \end{tblr}
-\captionof{table}{Application Areas: Programmatic Advertising.}
-\label{tab:ch16-ecommerce-marketing-inline-01}
+\captionof{table}{Programmatic advertising metrics and their formulas. Each is a ratio, so each can be improved by shrinking its denominator rather than by creating value.}
+\label{tab:ecom-ad-metrics}
 
 \end{v3topic}
 \begin{v3topic}{IoT in Retail}
@@ -348,7 +381,7 @@
 \begin{v3topic}{User--Item Matrix and Feedback Types}
     The central data structure is the \textbf{user--item interaction matrix} $\mathbf{R} \in \mathbb{R}^{m \times n}$, where $m$ = users, $n$ = items\textsuperscript{\cite[][pp.~8--13]{aggarwalRecommenderSystems2016}}.
 \visualseparator
-    \begin{tblr}{|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}}
         \hline
         \textbf{Explicit feedback} & \textbf{Implicit feedback} \\
         \hline
@@ -361,8 +394,8 @@
         User-intentional & Behavioural proxy \\
         \hline
     \end{tblr}
-\captionof{table}{Foundations: User--Item Matrix and Feedback Types.}
-\label{tab:ch16-ecommerce-marketing-inline-02}
+\captionof{table}{Explicit against implicit feedback. Implicit feedback is abundant and ambiguous: a click is not an endorsement, and an absent click is not a rejection.}
+\label{tab:ecom-feedback-types}
     Most production systems rely on implicit feedback because it is abundant, though it does not distinguish preference from mere exposure.
 
 \end{v3topic}
@@ -570,6 +603,97 @@ Define which objectives are hard constraints and which can trade off.
 Monitor feedback loops that make the training data increasingly reflect the
 model's own past choices.
 \end{v3topic}
+
+
+\begin{workedexample}[How long must the A/B test run?]
+Baseline conversion $p_0 = 4\,\%$. You want to detect a relative improvement of
+$5\,\%$, i.e.\ $p_1 = 4.2\,\%$, at $\alpha = 0.05$ and $80\,\%$ power.
+
+The standard approximation for two proportions is
+\[
+  n \approx \frac{2\,\bigl(z_{\alpha/2}+z_{\beta}\bigr)^2\,\bar p\,(1-\bar p)}
+                 {(p_1-p_0)^2},
+  \qquad \bar p = 0.041 .
+\]
+With $z_{\alpha/2} = 1.96$ and $z_\beta = 0.84$, so
+$(1.96+0.84)^2 = 7.85$:
+\[
+  n \approx \frac{2(7.85)(0.041)(0.959)}{(0.002)^2}
+    = \frac{0.6174}{0.000004}
+    \approx 154{,}000 \text{ per arm.}
+\]
+
+\emph{Roughly $308{,}000$ visitors in total.} At $10{,}000$ visitors a day the
+test needs about a month.
+
+\emph{The lesson in the denominator.} The required sample scales as
+$1/(\text{effect size})^2$. Halving the effect you want to detect --- to a
+$2.5\,\%$ relative lift --- quadruples the sample to about $616{,}000$ per arm.
+Small effects are not slightly harder to measure; they are quadratically
+harder. If you cannot reach the sample size, the honest conclusion is that the
+experiment cannot answer the question, not that the result was inconclusive.
+\end{workedexample}
+
+\begin{cautionbox}[Peeking turns a 5\,\% error rate into something much worse]
+Checking a running test and stopping as soon as $p < 0.05$ appears is the most
+common error in commercial experimentation. Under a true null, the $p$-value
+wanders; given enough looks it will cross $0.05$ eventually. Testing
+continuously drives the false-positive rate far above the nominal $5\,\%$ ---
+with frequent peeking it can exceed $30\,\%$.
+
+The fixes: fix the sample size in advance and look once; or use a method
+designed for continuous monitoring --- sequential testing with alpha spending, or
+a Bayesian approach with a pre-declared decision rule. What you may not do is
+use a fixed-horizon $p$-value and stop whenever you like. This, combined with
+running many simultaneous tests without correction, is why so many reported
+uplifts do not replicate.
+\end{cautionbox}
+
+\begin{cautionbox}[Recommenders grade their own homework]
+A recommender trained on logged interactions learns from data it caused. Items
+it surfaced get clicked and become training signal; items it never surfaced
+generate no data and are learned to be uninteresting. The loop is
+self-confirming, and offline metrics computed on logged data reward exactly
+this behaviour --- which is why offline ranking scores routinely fail to predict
+online results.
+
+Two partial defences: reserve a small randomised traffic slice that shows
+unranked or randomised items, giving unbiased data for evaluation; and measure
+incrementality against a holdout that sees no recommendations at all. Both cost
+short-term revenue, and both are the only way to know whether the system is
+creating value or redistributing it.
+\end{cautionbox}
+
+\begin{practicallab}[Measure incrementality, not attribution]
+\textbf{Goal.} Find out what a recommender is actually worth.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Define the metric before anything else --- revenue per visitor, not
+        click-through --- and pre-register it in writing.
+  \item Compute the required sample size for the smallest effect worth acting
+        on. If it is unreachable, stop and say so.
+  \item Hold out a random slice of users who see no recommendations. This is
+        the only group that answers the question.
+  \item Run to the pre-computed sample size. Do not look at significance before
+        then; monitor only for outages.
+  \item Report the effect size with a confidence interval, alongside the
+        $p$-value.
+  \item Compute what naive attribution \emph{would} have claimed, and compare
+        with the incremental result.
+\end{enumerate}
+
+\textbf{Deliverable.} The pre-registration, the required $n$, the incremental
+lift with its interval, and the attribution figure beside it.
+\textbf{The point:} step 6 typically shows attribution overstating the effect
+by a factor of two or more.
+\end{practicallab}
+
+\begin{checkpoint}
+A recommender is credited with $18\,\%$ of revenue. Give three reasons this
+number overstates its value, and describe the single experiment that would
+establish the real one.
+\end{checkpoint}
 
 \chapterreview{Discover}{Recommend}{Experiment}{Govern}
 

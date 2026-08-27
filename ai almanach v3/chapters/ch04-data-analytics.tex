@@ -8,10 +8,66 @@
 \chapterlead{How does raw data become trustworthy evidence for a decision?}{Acquire}{Clean}{Explore}{Govern}{data-analytics}
 
 % ---- 4.1 Data Preprocessing -------------------------------------------------------------------------
+\label{ch:data-analytics}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item choose a missing-data strategy from the \emph{mechanism}, not from
+        convenience, and say what each one biases;
+  \item standardise and normalise a small dataset by hand, and state which
+        models require it;
+  \item explain why fitting a scaler before splitting is a leak, with the
+        arithmetic that shows it;
+  \item compute a correlation and demonstrate that it can be zero for perfectly
+        dependent variables;
+  \item run PCA on a $2\times2$ covariance matrix by hand;
+  \item name the drift type behind a production degradation and the monitor
+        that would detect it.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Most of the work in a machine-learning project happens before any model exists,
+and most of the damage happens there too. Data arrives with gaps, duplicates,
+inconsistent units, and quiet encoding decisions made by whoever built the
+system that produced it. None of that shows up as an error later --- it shows up
+as a model that works in testing and disappoints in use.
+\end{plainlanguage}
+
+\begin{engineernote}
+Every transform in this chapter is a function fitted on data, and the rule for
+all of them is the same: \emph{fit on training data only, apply everywhere}.
+That applies to scalers, imputers, encoders, vocabularies, PCA bases, and
+feature selectors alike. The moment a transform sees the validation or test set
+before it is scored, the score stops meaning what you think it means.
+\end{engineernote}
+
 \section{Data Preprocessing}
 
 % ---- 4.1.1 Data Cleaning ----------------------------------------------------------------------------
 \subsection{Data Cleaning}
+
+\begin{cautionbox}[Missingness has a mechanism, and it decides the fix]
+Before choosing how to handle a gap, ask why it is there.
+\begin{description}
+  \item[MCAR --- missing completely at random] The gap is unrelated to
+    anything. Dropping rows is unbiased, just wasteful. This is rare.
+  \item[MAR --- missing at random] The gap depends on other \emph{observed}
+    variables: older patients skip a questionnaire item. Imputation
+    conditioned on those variables is valid.
+  \item[MNAR --- missing not at random] The gap depends on the \emph{unobserved
+    value itself}: high earners decline to state income; a failing sensor stops
+    reporting. No imputation can fix this, because the data needed to correct
+    it is exactly the data that is absent.
+\end{description}
+The dangerous case is the third, because it looks identical to the first two in
+the file. Mean imputation under MNAR does not merely add noise --- it
+systematically pulls the missing group toward the population average and erases
+the very signal you were trying to model. Always add a binary
+\texttt{was\_missing} indicator: whether a value was absent is often more
+predictive than the value would have been.
+\end{cautionbox}
 
 \begin{v3topic}{Why Data Cleaning?}
     Real-world data is rarely clean: values may be missing, erroneous, duplicated, or inconsistent.
@@ -29,14 +85,14 @@
 \begin{v3topic}{Missing Data: MCAR, MAR, MNAR}
     Rubin (1976) classified missingness into three mechanisms\textsuperscript{\cite{brucePracticalStatisticsData2017}}:
 \visualseparator
-    \begin{tblr}{colspec={|Q[l,m,2cm]|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X|}, hlines}
         \textbf{Type} & \textbf{Meaning} \\
         MCAR & Missing Completely At Random — missingness is independent of all data \\
         MAR  & Missing At Random — missingness depends on observed data only \\
         MNAR & Missing Not At Random — missingness depends on the unobserved value itself \\
     \end{tblr}
-\captionof{table}{Data Cleaning: Missing Data: MCAR, MAR, MNAR.}
-\label{tab:ch04-data-analytics-inline-01}
+\captionof{table}{The three missingness mechanisms. Only the mechanism determines whether imputation is valid, and the file itself never tells you which one you have.}
+\label{tab:data-missingness}
 
 \end{v3topic}
 \begin{v3topic}{Outlier Detection}
@@ -55,7 +111,7 @@
 \begin{v3topic}{Imputation Strategies}
     Imputation replaces missing values with plausible substitutes rather than discarding whole records\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Strategy} & \textbf{Notes} \\
         Mean / median      & Simple; distorts variance \\
         Mode (categorical) & Assigns most frequent class \\
@@ -63,8 +119,8 @@
         k-NN imputation    & Uses similar records; better for MAR \\
         Model-based (MICE) & Multiple Imputation by Chained Equations; commonly relies on a Missing At Random assumption, while MNAR requires explicit sensitivity or missingness modelling \\
     \end{tblr}
-\captionof{table}{Data Cleaning: Imputation Strategies.}
-\label{tab:ch04-data-analytics-inline-02}
+\captionof{table}{Imputation strategies and what each assumes. All of them reduce variance and none of them adds information --- always keep a was-missing indicator.}
+\label{tab:data-imputation}
 \end{v3topic}
 
 % ---- 4.1.2 Data Integration -------------------------------------------------------------------------
@@ -131,6 +187,51 @@
 % ---- 4.1.3 Data Transformation ----------------------------------------------------------------------
 \subsection{Data Transformation}
 
+\begin{workedexample}[Standardise and normalise the same five numbers]
+Take $x = (2,\,4,\,4,\,4,\,6)$.
+
+\emph{Mean and standard deviation.}
+$\mu = \frac{2+4+4+4+6}{5} = 4$;
+deviations $(-2,0,0,0,2)$, squares $(4,0,0,0,4)$, so
+$\sigma^2 = 8/5 = 1.6$ and $\sigma = 1.265$.
+
+\emph{Standardisation} $z = (x-\mu)/\sigma$:
+\[
+  z = (-1.581,\ 0,\ 0,\ 0,\ 1.581),
+  \qquad \text{mean } 0,\ \text{standard deviation } 1 .
+\]
+
+\emph{Min--max normalisation} to $[0,1]$, with $\min = 2$ and $\max = 6$:
+\[
+  x' = \frac{x-2}{6-2} = (0,\ 0.5,\ 0.5,\ 0.5,\ 1) .
+\]
+
+\emph{Which to use.} Standardisation keeps outliers visible and is what
+distance- and gradient-based methods want (SVM, $k$-NN, $k$-means, PCA, neural
+networks). Min--max forces a fixed range and is what you want when a bounded
+input is required --- but a single extreme value compresses everything else
+into a narrow band, so it is fragile precisely when the data is dirty.
+Tree-based models need neither.
+\end{workedexample}
+
+\begin{workedexample}[Why fitting the scaler before splitting is a leak]
+Suppose the training rows have mean $10$ and the test rows, drawn from a later
+period, have mean $30$.
+
+\emph{Correct.} Fit on training only: $\mu = 10$. Test values are standardised
+using $\mu = 10$, so their standardised mean comes out near $+2$ --- and the
+model, quite correctly, sees that the test period is unusual.
+
+\emph{Leaked.} Fit on everything: $\mu = 20$. Now training data centres at
+$-1$ and test at $+1$, and the shift between the two periods has been
+\emph{partially removed by the preprocessing itself}. Validation accuracy
+improves. Deployment accuracy does not, because in production there is no
+future data to average with.
+
+The leak is small, silent, and flatters the model --- the three properties that
+make a measurement error dangerous.
+\end{workedexample}
+
 \begin{v3topic}{Min-Max Normalization}
     Rescales values to a fixed interval $[a, b]$, typically $[0, 1]$\textsuperscript{\cite{hanDataMiningConcepts2012}}.
     Preserves the original distribution shape but is sensitive to outliers.
@@ -151,15 +252,15 @@
 \begin{v3topic}{Categorical Encoding}
     Algorithms typically require numerical input; categorical variables must be encoded\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Encoding}    & \textbf{When to use} \\
         One-hot (dummy)       & Nominal; no ordinal relationship; creates $k$ binary columns \\
         Label encoding        & Ordinal or tree-based models where ordering is irrelevant \\
         Target encoding       & High-cardinality nominals; replaces category with mean target value \\
         Binary / Hash trick   & Very high cardinality; reduces dimensionality at cost of collisions \\
     \end{tblr}
-\captionof{table}{Data Transformation: Categorical Encoding.}
-\label{tab:ch04-data-analytics-inline-04}
+\captionof{table}{Encoding schemes for categorical variables. One-hot is safe but explodes with cardinality; target encoding is compact and leaks unless fitted inside the cross-validation fold.}
+\label{tab:data-encoding}
 
 \end{v3topic}
 \begin{v3topic}{Log and Power Transforms}
@@ -179,15 +280,15 @@
 \begin{v3topic}{Feature Selection vs. Feature Extraction}
     Both reduce dimensionality, but differ in approach\textsuperscript{\cite{hanDataMiningConcepts2012}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Feature Selection} & \textbf{Feature Extraction} \\
         Selects a subset of original features & Creates new features from originals \\
         Preserves interpretability & May lose interpretability \\
         Filter, Wrapper, Embedded methods & PCA, autoencoders, LDA \\
         No transformation of values & Projects data into new space \\
     \end{tblr}
-\captionof{table}{Data Reduction: Feature Selection vs. Feature Extraction.}
-\label{tab:ch04-data-analytics-inline-05}
+\captionof{table}{Selection keeps original columns and stays interpretable; extraction builds new combinations and usually does not.}
+\label{tab:data-selection-extraction}
 
 \end{v3topic}
 \begin{v3topic}{PCA: Principal Component Analysis}
@@ -202,7 +303,7 @@
 \begin{v3topic}{Sampling Strategies}
     When full-data computation is infeasible, sampling produces a representative subset\textsuperscript{\cite{hanDataMiningConcepts2012}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Method}           & \textbf{How}                                    & \textbf{Use case} \\
         Simple random             & Each record drawn with equal probability         & General baseline \\
         Stratified                & Draw proportionally from each stratum            & Imbalanced classes \\
@@ -210,8 +311,8 @@
         Systematic                & Every $k$-th record                              & Ordered datasets \\
         Reservoir (online)        & Fixed-size sample from a stream in one pass      & Streaming / big data \\
     \end{tblr}
-\captionof{table}{Data Reduction: Sampling Strategies.}
-\label{tab:ch04-data-analytics-inline-06}
+\captionof{table}{Sampling strategies. Stratification matters most exactly when the class of interest is rare, which is when a random split is least reliable.}
+\label{tab:data-sampling}
 \end{v3topic}
 
 % ---- 4.1.5 Foundations of Data Systems --------------------------------------------------------------
@@ -249,15 +350,15 @@
 \begin{v3topic}{Vertical vs. Horizontal Scaling}
     As data volume grows, systems must scale\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Aspect}    & \textbf{Vertical (Scale Up)} & \textbf{Horizontal (Scale Out)} \\
         Approach   & Bigger machine (more CPU/RAM) & More machines in a cluster \\
         Limit      & Single-node hardware ceiling  & Near-linear with node count \\
         Cost model & Non-linear (premium hardware) & Commodity servers \\
         Failure    & Single point of failure       & Graceful degradation \\
     \end{tblr}
-\captionof{table}{Foundations of Data Systems: Vertical vs. Horizontal Scaling.}
-\label{tab:ch04-data-analytics-inline-07}
+\captionof{table}{Scaling up against scaling out. Vertical scaling is simpler and has a ceiling; horizontal scaling has no ceiling and imports distributed-systems problems.}
+\label{tab:data-scaling}
 
 \end{v3topic}
 \begin{v3topic}{CAP Theorem}
@@ -283,14 +384,14 @@
 \begin{v3topic}{Three Pillars of Maintainability}
     Kleppmann (2017) identifies three design goals that make systems maintainable over time\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|Q[l,m,2.5cm]|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|X|}, hlines}
         \textbf{Property}   & \textbf{Meaning}                                                  & \textbf{Practices} \\
         Operability          & Easy for ops teams to keep running day-to-day                     & Good monitoring, documentation, predictable behavior \\
         Simplicity           & New engineers can understand the system                           & Abstraction, clean APIs, remove accidental complexity \\
         Evolvability         & Easy to adapt to new requirements                                 & Modular design, backward-compatible schemas, CI/CD \\
     \end{tblr}
-\captionof{table}{Foundations of Data Systems: Three Pillars of Maintainability.}
-\label{tab:ch04-data-analytics-inline-08}
+\captionof{table}{The maintainability properties a data system is judged on long after the first version ships.}
+\label{tab:data-maintainability}
 \end{v3topic}
 
 % ---- 4.1.6 Data Processing at Scale -----------------------------------------------------------------
@@ -313,15 +414,15 @@
     Hadoop provides a distributed file system (HDFS) and a MapReduce runtime\textsuperscript{\cite{leskovecMiningMassiveDatasets2014}}.
     Apache Spark generalizes MapReduce with in-memory computation on Resilient Distributed Datasets (RDDs), delivering 10--100$\times$ speedups for iterative algorithms.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Feature}       & \textbf{Hadoop MR}     & \textbf{Spark} \\
         Computation model      & Disk-based             & In-memory (RDD/DataFrame) \\
         Latency                & High (minutes)         & Low (seconds) \\
         Iterative algorithms   & Painful                & Efficient \\
         Ecosystem              & HDFS, YARN, Hive       & SQL, Streaming, MLlib, GraphX \\
     \end{tblr}
-\captionof{table}{Data Processing at Scale: Hadoop \& Apache Spark.}
-\label{tab:ch04-data-analytics-inline-09}
+\captionof{table}{Hadoop MapReduce against Spark. Spark's advantage is keeping intermediate results in memory, which matters most for the iterative workloads machine learning produces.}
+\label{tab:data-hadoop-spark}
 \end{v3topic}
 
 \subsubsection{Stream and Complex Event Processing}
@@ -329,15 +430,15 @@
 \begin{v3topic}{Real-Time vs. Near-Real-Time Processing}
     Stream processing handles data in motion — records are processed as they arrive rather than accumulated first\textsuperscript{\cite{leskovecMiningMassiveDatasets2014}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Mode}       & \textbf{Latency}        & \textbf{Examples} \\
         Real-time           & $<$10 ms                & Algorithmic trading, fraud detection \\
         Near-real-time      & Seconds to minutes      & Dashboards, recommendations \\
         Micro-batch         & Seconds (Spark Streaming) & Aggregations with windowing \\
         Batch               & Minutes to hours        & Nightly ETL, model retraining \\
     \end{tblr}
-\captionof{table}{Data Processing at Scale: Real-Time vs. Near-Real-Time Processing.}
-\label{tab:ch04-data-analytics-inline-10}
+\captionof{table}{Processing modes by latency. Choose from the decision deadline, not from the word ``real-time'' in the requirement.}
+\label{tab:data-processing-modes}
 
 \end{v3topic}
 \begin{v3topic}{Apache Kafka \& Event-Driven Architecture}
@@ -360,7 +461,7 @@
 \begin{v3topic}{Monolith vs. Microservices}
     A \emph{monolithic} application deploys all functionality as a single unit; a \emph{microservices} architecture decomposes it into small, independently deployable services each owning its own data\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Aspect}      & \textbf{Monolith}         & \textbf{Microservices} \\
         Deployment unit      & Single artifact           & Many small services \\
         Scaling              & Scale whole app           & Scale per service \\
@@ -368,8 +469,8 @@
         Development          & Simpler initially         & Requires DevOps maturity \\
         Data storage         & Shared DB                 & DB-per-service \\
     \end{tblr}
-\captionof{table}{Microservices: Monolith vs. Microservices.}
-\label{tab:ch04-data-analytics-inline-11}
+\captionof{table}{Monolith against microservices. Microservices trade a deployment problem for a distributed-systems problem; take the trade only when team or scaling boundaries demand it.}
+\label{tab:data-monolith-micro}
 
 \end{v3topic}
 \begin{v3topic}{Benefits \& Trade-offs}
@@ -405,15 +506,15 @@
     \textbf{Docker} packages a service and its dependencies into an immutable, portable \emph{container image}, solving the ``works on my machine'' problem\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
     \textbf{Kubernetes} (K8s) orchestrates containers across a cluster: scheduling, self-healing, rolling updates, and service networking.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Docker concept}  & \textbf{Kubernetes equivalent} \\
         Image                     & Pod spec (container definition) \\
         Container                 & Pod (1+ containers) \\
         docker-compose service    & Deployment / StatefulSet \\
         Port mapping              & Service (ClusterIP, NodePort, LoadBalancer) \\
     \end{tblr}
-\captionof{table}{Microservices: Containerization \& Orchestration.}
-\label{tab:ch04-data-analytics-inline-12}
+\captionof{table}{Container concepts and their orchestration equivalents.}
+\label{tab:data-containers}
 \end{v3topic}
 
 % ---- 4.1.8 Governance & Security -------------------------------------------------------------------
@@ -437,15 +538,15 @@
 \begin{v3topic}{Anonymization \& Pseudonymization}
     Anonymization irreversibly removes the link between data and an individual; pseudonymization replaces direct identifiers with tokens while preserving the ability to re-link\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Technique}      & \textbf{Description}                         & \textbf{GDPR status} \\
         Anonymization            & Remove or generalize all identifiers          & Outside GDPR scope \\
         Pseudonymization         & Replace ID with token; key stored separately  & Still personal data \\
         $k$-anonymity            & Each record indistinguishable from $k-1$ others & Privacy model \\
         Differential Privacy     & Add calibrated noise; formal guarantee        & State of the art \\
     \end{tblr}
-\captionof{table}{Governance \& Security: Anonymization \& Pseudonymization.}
-\label{tab:ch04-data-analytics-inline-13}
+\captionof{table}{Anonymisation against pseudonymisation, with the GDPR consequence in the last column: only one removes the data from scope, and the bar is higher than it sounds (\cref{ch:it-law}).}
+\label{tab:data-anonymisation}
 \end{v3topic}
 
 \subsubsection{Data Security}
@@ -464,15 +565,15 @@
 \begin{v3topic}{Access Control}
     Access control enforces the \emph{principle of least privilege}: users and services receive only the permissions they need\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Model}   & \textbf{Description} \\
         DAC (Discretionary)    & Owner grants permissions; UNIX file permissions \\
         MAC (Mandatory)        & Labels and clearances; OS-enforced \\
         RBAC (Role-Based)      & Permissions attached to roles, users assigned to roles \\
         ABAC (Attribute-Based) & Policies on user/resource/env attributes; most flexible \\
     \end{tblr}
-\captionof{table}{Governance \& Security: Access Control.}
-\label{tab:ch04-data-analytics-inline-14}
+\captionof{table}{Access-control models, in increasing order of expressiveness and administrative cost.}
+\label{tab:data-access-control}
 \end{v3topic}
 
 \subsubsection{Data Governance}
@@ -481,7 +582,7 @@
     Data governance ensures that data assets are managed, trusted, and used responsibly across an organization\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
     Quality is assessed along several dimensions:
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Dimension}   & \textbf{Question} \\
         Accuracy              & Does the data reflect reality? \\
         Completeness          & Are all required values present? \\
@@ -489,8 +590,8 @@
         Timeliness            & Is the data up-to-date for its use? \\
         Uniqueness            & Are duplicates controlled? \\
     \end{tblr}
-\captionof{table}{Governance \& Security: Data Quality Dimensions.}
-\label{tab:ch04-data-analytics-inline-15}
+\captionof{table}{Data quality dimensions, each phrased as the question to ask of a dataset before modelling it.}
+\label{tab:data-quality}
 
 \end{v3topic}
 \begin{v3topic}{Data Lineage, Cataloging \& Stewardship}
@@ -513,7 +614,7 @@
 \begin{v3topic}{AWS Data Analytics Services}
     Amazon Web Services offers the broadest cloud portfolio; key data analytics services are\textsuperscript{\cite{gujaStartingDataAnalytics2025}}:
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Category}    & \textbf{Service}           & \textbf{Purpose} \\
         Object Storage        & S3                          & Scalable data lake storage \\
         Data Warehouse        & Redshift                    & Columnar OLAP, SQL analytics \\
@@ -523,8 +624,8 @@
         ML Platform           & SageMaker                   & End-to-end ML lifecycle \\
         NoSQL                 & DynamoDB                    & Key-value / document at scale \\
     \end{tblr}
-\captionof{table}{Common Cloud Platforms \& Services: AWS Data Analytics Services.}
-\label{tab:ch04-data-analytics-inline-16}
+\captionof{table}{AWS analytics services by category. Names change; read the middle column as a role, not a recommendation.}
+\label{tab:data-aws}
 \end{v3topic}
 
 \subsubsection{Google Cloud}
@@ -532,7 +633,7 @@
 \begin{v3topic}{GCP Data Analytics Services}
     Google Cloud Platform originated many modern big data technologies (MapReduce, Bigtable, Dremel)\textsuperscript{\cite{gujaStartingDataAnalytics2025}}:
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Category}    & \textbf{Service}           & \textbf{Purpose} \\
         Object Storage        & Cloud Storage (GCS)         & Multi-regional data lake \\
         Data Warehouse        & BigQuery                    & Serverless, petabyte-scale SQL \\
@@ -541,8 +642,8 @@
         ML Platform           & Vertex AI                   & Unified ML training + serving \\
         Data Catalog          & Dataplex / Data Catalog     & Metadata management \\
     \end{tblr}
-\captionof{table}{Common Cloud Platforms \& Services: GCP Data Analytics Services.}
-\label{tab:ch04-data-analytics-inline-17}
+\captionof{table}{Google Cloud analytics services, aligned to the same categories as the AWS table for comparison.}
+\label{tab:data-gcp}
 \end{v3topic}
 
 \subsubsection{Microsoft Azure}
@@ -550,7 +651,7 @@
 \begin{v3topic}{Azure Data Analytics Services}
     Microsoft Azure is strong in enterprise integration and hybrid cloud scenarios\textsuperscript{\cite{gujaStartingDataAnalytics2025}}:
 \visualseparator
-    \begin{tblr}{colspec={|X|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}, hlines}
         \textbf{Category}    & \textbf{Service}              & \textbf{Purpose} \\
         Object Storage        & Azure Blob Storage / ADLS Gen2 & Data lake storage \\
         Data Warehouse        & Azure Synapse Analytics        & Integrated SQL + Spark + pipelines \\
@@ -559,8 +660,8 @@
         ETL / Orchestration   & Azure Data Factory             & Code-free ETL pipelines \\
         ML Platform           & Azure Machine Learning         & MLOps, AutoML, designer \\
     \end{tblr}
-\captionof{table}{Common Cloud Platforms \& Services: Azure Data Analytics Services.}
-\label{tab:ch04-data-analytics-inline-18}
+\captionof{table}{Azure analytics services in the same categories. The consistency across all three providers is the point: the roles are stable even when the products are not.}
+\label{tab:data-azure}
 \end{v3topic}
 
 % ---- 4.1.10 DataOps ---------------------------------------------------------------------------------
@@ -584,7 +685,7 @@
     Unlike application code, data has both code \emph{and} state (the data itself)\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
     Version control strategies:
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Asset}         & \textbf{Tooling} \\
         Pipeline code           & Git (same as software) \\
         Data files              & DVC (Data Version Control), Git LFS \\
@@ -592,8 +693,8 @@
         ML experiments          & MLflow, Weights \& Biases \\
         Infrastructure          & Terraform, Pulumi (IaC) \\
     \end{tblr}
-\captionof{table}{Data Ops: Version Control for Data Pipelines.}
-\label{tab:ch04-data-analytics-inline-19}
+\captionof{table}{What needs versioning in a data pipeline. Code is the easy part; data and model versioning are what make a result reconstructible.}
+\label{tab:data-pipeline-vcs}
 \end{v3topic}
 
 \subsubsection{Containerization}
@@ -613,15 +714,15 @@
 \begin{v3topic}{Immutable Infrastructure}
     The \emph{immutable infrastructure} principle states that servers and containers are never modified after deployment — they are replaced\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Mutable (traditional)}  & \textbf{Immutable (container)} \\
         SSH in, patch, restart           & Build new image, deploy, retire old \\
         Configuration drift over time    & Every instance identical to image \\
         Hard to reproduce state          & Full reproducibility from Dockerfile \\
         Rollback: restore backup         & Rollback: redeploy previous image tag \\
     \end{tblr}
-\captionof{table}{Data Ops: Immutable Infrastructure.}
-\label{tab:ch04-data-analytics-inline-20}
+\captionof{table}{Mutable against immutable infrastructure. Immutability removes configuration drift, which is the failure that makes ``it works on the other machine'' unanswerable.}
+\label{tab:data-immutable}
 \end{v3topic}
 
 \subsubsection{Building Data Pipelines}
@@ -642,7 +743,7 @@
 \begin{v3topic}{Orchestration Patterns \& Monitoring}
     Beyond scheduling, a robust data platform needs monitoring, alerting, and lineage tracking\textsuperscript{\cite{gujaStartingDataAnalytics2025}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Pattern / Tool}    & \textbf{Purpose} \\
         Idempotent tasks            & Safe to re-run; crucial for retries \\
         Sensor operators            & Wait for external condition (file, partition) \\
@@ -651,8 +752,8 @@
         OpenLineage / Marquez       & Capture lineage events from Airflow runs \\
         Prometheus + Grafana        & Infrastructure and pipeline metrics \\
     \end{tblr}
-\captionof{table}{Data Ops: Orchestration Patterns \& Monitoring.}
-\label{tab:ch04-data-analytics-inline-21}
+\captionof{table}{Orchestration and monitoring tooling by purpose.}
+\label{tab:data-orchestration}
 \end{v3topic}
 
 % ---- 4.2 Exploratory Data Analysis ------------------------------------------------------------------
@@ -675,7 +776,7 @@
 \begin{v3topic}{Measures of Spread}
     Spread (dispersion) quantifies how much values deviate from the center\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Measure}       & \textbf{Formula / Notes} \\
         Variance                & $s^2 = \frac{1}{n-1}\sum(x_i - \bar{x})^2$ \\
         Std deviation           & $s = \sqrt{s^2}$; same units as $x$ \\
@@ -683,8 +784,8 @@
         Range                   & $x_{\max} - x_{\min}$; sensitive to outliers \\
         MAD                     & $\text{median}(|x_i - \text{median}|)$; very robust \\
     \end{tblr}
-\captionof{table}{Descriptive Statistics: Measures of Spread.}
-\label{tab:ch04-data-analytics-inline-22}
+\captionof{table}{Measures of spread. Standard deviation assumes roughly symmetric data; the interquartile range does not, and survives outliers.}
+\label{tab:data-spread}
 
 \end{v3topic}
 \begin{v3topic}{Five-Number Summary \& Box Plot}
@@ -716,8 +817,11 @@
         \node[below] at (5,0) {\small $Q_3{+}1.5\text{IQR}$};
         \node[below] at (5.6,0) {\small outlier};
     \end{tikzpicture}
-\captionof{figure}{Descriptive Statistics: Five-Number Summary \& Box Plot.}
-\label{fig:ch04-data-analytics-inline-01}
+\captionof{figure}{The five-number summary and the box plot that encodes it.
+The box shows the middle half of the data, so it is robust to the outliers
+plotted individually beyond the whiskers --- which is exactly why a box plot
+survives skewed data where a mean and standard deviation mislead.}
+\label{fig:data-boxplot}
     \end{center}
 \end{v3topic}
 
@@ -727,7 +831,7 @@
 \begin{v3topic}{Chart Selection Guide}
     Choosing the right chart type is the first step in effective communication\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
 \visualseparator
-    \begin{tblr}{colspec={|X|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|}, hlines}
         \textbf{Goal}               & \textbf{Recommended chart} \\
         Distribution of one variable & Histogram, KDE, box plot, violin \\
         Two-variable relationship    & Scatter plot, bubble chart \\
@@ -737,8 +841,8 @@
         Correlation matrix           & Heatmap \\
         High-dimensional overview    & Pair plot, parallel coordinates \\
     \end{tblr}
-\captionof{table}{Data Visualization Techniques: Chart Selection Guide.}
-\label{tab:ch04-data-analytics-inline-23}
+\captionof{table}{Chart choice by analytical goal rather than by data type --- expanded in \cref{ch:visualization}.}
+\label{tab:data-chart-selection}
 
 \end{v3topic}
 \begin{v3topic}{Principles of Effective Visualization}
@@ -755,6 +859,23 @@
 
 % ---- 4.2.3 Correlation Analysis ---------------------------------------------------------------------
 \subsection{Correlation Analysis}
+
+\begin{cautionbox}[What a correlation of zero does not mean]
+Pearson correlation measures \emph{linear} association only. Let $X$ be uniform
+on $[-1,1]$ and $Y = X^2$. Then $Y$ is completely determined by $X$, yet
+\[
+  \operatorname{Cov}(X,Y) = \mathbb{E}[X^3] - \mathbb{E}[X]\,\mathbb{E}[X^2]
+  = 0 - 0 = 0 ,
+\]
+so $\rho = 0$. Zero correlation, perfect dependence.
+
+Three more traps in the same family: correlation is destroyed by
+non-monotone relationships (use mutual information or a scatter plot);
+it is dominated by outliers (a single point can create or erase it); and
+different datasets with identical correlation can look nothing alike --- which
+is the entire point of Anscombe's quartet. \textbf{Plot the data.} A
+correlation coefficient is a summary of a picture you have not looked at.
+\end{cautionbox}
 
 \begin{v3topic}{Pearson Correlation}
     Pearson's $r$ measures the strength and direction of the \emph{linear} relationship between two continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}.
@@ -779,20 +900,61 @@
 
     \textbf{Correlation does not imply causation.} Three alternative explanations always exist for a correlation between $X$ and $Y$:
 \visualseparator
-    \begin{tblr}{colspec={|Q[l,m,3cm]|X|}, hlines}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X|}, hlines}
         \textbf{Explanation}         & \textbf{Example} \\
         $X$ causes $Y$                & Ice cream sales $\to$ drownings? (no) \\
         $Y$ causes $X$               & Reverse causation \\
         Confounding variable $Z$      & Hot weather increases both ice cream \emph{and} swimming \\
         Spurious correlation          & Nicolas Cage films $\sim$ pool drownings (coincidence) \\
     \end{tblr}
-\captionof{table}{Correlation Analysis: Correlation Matrix \& Correlation Is Not Causation.}
-\label{tab:ch04-data-analytics-inline-24}
+\captionof{table}{Why correlation does not establish causation, with the alternative explanation for each case. A fourth possibility is always present: coincidence.}
+\label{tab:data-correlation-causation}
     Establishing causation requires randomized controlled trials (RCTs) or causal inference methods (Pearl's do-calculus, instrumental variables, regression discontinuity).
 \end{v3topic}
 
 % ---- 4.2.4 Dimensionality Reduction -----------------------------------------------------------------
 \subsection{Dimensionality Reduction}
+
+\begin{workedexample}[PCA on a $2\times2$ covariance matrix, by hand]
+Two standardised features with covariance matrix
+\[
+  \Sigma = \begin{pNiceMatrix} 1 & 0.8\\ 0.8 & 1 \end{pNiceMatrix}.
+\]
+
+\emph{Eigenvalues.} $\det(\Sigma-\lambda I) = (1-\lambda)^2 - 0.64 = 0$, so
+$1-\lambda = \pm0.8$ and
+\[
+  \lambda_1 = 1.8,\qquad \lambda_2 = 0.2 .
+\]
+Check against the trace: $1.8+0.2 = 2 = 1+1$. \checkmark
+
+\emph{Eigenvectors.} For $\lambda_1 = 1.8$: $(1-1.8)v_1 + 0.8v_2 = 0
+\Rightarrow v_2 = v_1$, giving the direction $(1,1)/\sqrt2$. For
+$\lambda_2 = 0.2$: $(1,-1)/\sqrt2$.
+
+\emph{Explained variance.}
+\[
+  \frac{\lambda_1}{\lambda_1+\lambda_2} = \frac{1.8}{2.0} = 90\,\% ,
+  \qquad \text{second component } 10\,\% .
+\]
+
+\emph{Read it.} Because the two features are strongly correlated, almost all
+the variation lies along their sum. Keeping one component discards $10\,\%$ of
+the variance and halves the dimension. Note what the components \emph{are}: the
+first is ``both features together'', the second is ``the difference between
+them''. PCA components are combinations of your original variables, so they
+usually have no domain meaning --- which is the price of the compression, and
+the reason PCA hurts interpretability even when it helps performance.
+\end{workedexample}
+
+\begin{cautionbox}[PCA maximises variance, not usefulness]
+PCA has no access to your labels. A direction with small variance can carry all
+the discriminative signal, and PCA will discard it first. It is also scale
+dependent --- run it on unstandardised data and whichever feature happens to be
+measured in the largest units becomes the first component regardless of
+importance. Standardise first, and if the goal is class separation rather than
+compression, use a supervised method instead.
+\end{cautionbox}
 
 \begin{v3topic}{PCA Step-by-Step}
     Principal Component Analysis finds a lower-dimensional linear subspace that captures maximum variance\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}.
@@ -853,9 +1015,51 @@ Pair statistical signals with slice-level performance, data-quality checks,
 and an investigation playbook.
 \end{v3topic}
 
+
+\begin{practicallab}[Audit a dataset before you model it]
+\textbf{Goal.} Produce the one-page data report that should precede every
+modelling decision --- and that most projects skip.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item \textbf{Shape and types.} Row count, column count, dtype per column,
+        memory. Flag any numeric column stored as text.
+  \item \textbf{Missingness.} Percentage missing per column, and the
+        co-occurrence pattern between columns. Classify each as MCAR, MAR, or
+        MNAR and justify the choice in one sentence.
+  \item \textbf{Duplicates.} Exact duplicate rows, and near-duplicates on the
+        key columns. Decide whether they are genuine repeats or a join gone
+        wrong.
+  \item \textbf{Distributions.} For every numeric column: min, max, median,
+        IQR, and a histogram. Look for impossible values --- negative ages,
+        future timestamps, placeholder codes such as $-999$ or $0$ standing in
+        for missing.
+  \item \textbf{Cardinality.} For every categorical column: distinct count and
+        the top ten values. Anything with cardinality near the row count is an
+        identifier and must not be a feature.
+  \item \textbf{Target leakage sweep.} Correlate every feature with the target.
+        Investigate anything suspiciously strong --- it is usually a column
+        computed \emph{after} the outcome was known.
+  \item \textbf{Time and groups.} Is there a timestamp? Do rows share an entity?
+        Either one changes how you must split.
+\end{enumerate}
+
+\textbf{Deliverable.} A one-page report ending in two sentences: the split
+strategy this data requires, and the single biggest risk you found.
+\textbf{The point:} step 6 has saved more projects than any modelling choice in
+this book.
+\end{practicallab}
+
+\begin{checkpoint}
+A model's accuracy falls from $0.91$ to $0.78$ over six months in production
+while the code is unchanged. Name three distinct mechanisms that could cause
+this --- one about the inputs, one about the relationship between inputs and
+target, and one about the labels --- and give the monitor that detects each.
+\end{checkpoint}
+
 \chapterreview{Acquire}{Clean}{Explore}{Govern}
 
-\section{Literature}
+\section{Further Reading}
 \begin{itemize}
     \item Han, J., Kamber, M., \& Pei, J. (2011). Data mining: Concepts and techniques (3rd ed.). Morgan Kaufmann.
     \item Provost, F., \& Fawcett, T. (2013). Data science for business: What you need to know about data mining and data-analytic thinking. O'Reilly Media.

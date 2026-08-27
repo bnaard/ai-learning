@@ -8,6 +8,41 @@
 \chapterlead{How do predictions become safe, timely actions in physical systems?}{Sense}{Model}{Control}{Verify}{industrial-ai}
 
 % ==== Section 1: The Smart Factory and Industry 4.0 ==========================================
+\label{ch:industrial-ai}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute the expected value of a predictive-maintenance model from
+        failure costs and false-alarm costs;
+  \item explain why a rare-failure dataset makes accuracy meaningless and what
+        to report instead;
+  \item state the latency and determinism constraints that rule out a
+        cloud round trip;
+  \item name the safety argument a learned controller cannot make on its own;
+  \item describe what must be true before a model update is deployed to a
+        machine that can injure someone.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A factory is a place where being wrong has mass. A misclassified image on a
+website costs a click; a misclassified vibration signature costs a bearing, a
+production line, or a hand. Industrial AI is therefore less about squeezing out
+accuracy and more about bounding behaviour: knowing what the system does when
+the sensor drifts, the network drops, or the input falls outside anything it
+was trained on.
+\end{plainlanguage}
+
+\begin{engineernote}
+Two constraints dominate and neither appears in a benchmark. \textbf{Latency
+must be bounded, not merely low}: a control loop needs a guaranteed worst case,
+and a cloud round trip has none. \textbf{Behaviour on out-of-distribution input
+must be defined}: a model that extrapolates confidently into a regime it has
+never seen is more dangerous than one that refuses. Design the abstention path
+before the model.
+\end{engineernote}
+
 \section{The Smart Factory and Industry 4.0}
 
 % ---- 13.1.1 Industry 4.0 and the Smart Factory ---------------------------------------------
@@ -483,6 +518,76 @@ fallback.
 An update must preserve the operational safety envelope even when its average
 prediction metric improves.
 \end{v3topic}
+
+
+\begin{workedexample}[Is predictive maintenance worth deploying?]
+A machine fails about twice a year. An unplanned failure costs
+$\text{\euro}80{,}000$ in lost production and emergency repair; a planned
+intervention costs $\text{\euro}5{,}000$. A model predicts failures with
+$70\,\%$ recall and raises $20$ false alarms per year.
+
+\emph{Cost without the model.} $2 \times 80{,}000 = \text{\euro}160{,}000$.
+
+\emph{Cost with the model.}
+\[
+\begin{aligned}
+  \text{prevented failures} &: 0.7\times2 = 1.4
+    \rightarrow 1.4\times5{,}000 = \text{\euro}7{,}000\\
+  \text{missed failures} &: 0.3\times2 = 0.6
+    \rightarrow 0.6\times80{,}000 = \text{\euro}48{,}000\\
+  \text{false alarms} &: 20\times5{,}000 = \text{\euro}100{,}000\\
+  \text{total} &= \text{\euro}155{,}000 .
+\end{aligned}
+\]
+
+\emph{Net benefit: $\text{\euro}5{,}000$ per year} --- against the cost of
+sensors, integration, and maintaining the model. On these numbers the project
+does not pay for itself.
+
+\emph{Where the money actually is.} The false alarms cost twenty times more
+than the prevented failures save. Halving them to $10$ per year yields
+$\text{\euro}55{,}000$ of benefit without touching recall at all. The
+engineering priority is precision, and no amount of work on recall would have
+revealed that. Always build this table before building the model.
+\end{workedexample}
+
+\begin{cautionbox}[Rare failures break the usual workflow]
+With two failures a year and continuous sensing, the positive class may be one
+in a million samples. Consequences: accuracy is useless; a random split leaks
+because consecutive samples from the same event land on both sides (split by
+\emph{event}, not by row); and there may be too few positive examples to
+validate on at all. Consider treating it as anomaly detection --- model normal
+operation and flag deviation --- rather than as supervised classification, and
+report performance per failure event rather than per sample.
+\end{cautionbox}
+
+\begin{practicallab}[Cost model before model]
+\textbf{Goal.} Decide whether an industrial AI project is worth starting, using
+arithmetic rather than enthusiasm.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Pick a real or plausible failure mode. Establish its frequency, the
+        cost of an unplanned failure, and the cost of a planned intervention.
+  \item Compute the do-nothing annual cost.
+  \item Build a table of net benefit across a grid of recall
+        ($0.5$ to $0.9$) and false alarms per year ($5$ to $50$).
+  \item Mark the region where the project breaks even. Is it reachable?
+  \item Add the detection horizon: a warning that arrives two hours before
+        failure may be worth nothing if the intervention takes a day.
+  \item State the latency budget and whether it permits a network round trip.
+\end{enumerate}
+
+\textbf{Deliverable.} The break-even grid with the reachable region marked, and
+one sentence naming which metric the project actually depends on.
+\end{practicallab}
+
+\begin{checkpoint}
+A vision system on a packaging line must reject defective units within
+$50\,\text{ms}$. Name three consequences of that constraint --- one for where
+the model runs, one for the architecture, and one for what happens when the
+model is uncertain.
+\end{checkpoint}
 
 \chapterreview{Sense}{Model}{Control}{Verify}
 

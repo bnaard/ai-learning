@@ -4,7 +4,48 @@
 
 % ==== Machine Learning =============================================================================
 \chapter{Machine Learning}
+\label{ch:machine-learning}
+
 \chapterlead{How can a model learn patterns that generalise beyond its examples?}{Frame}{Baseline}{Fit}{Diagnose}{machine-learning}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item state, for any method here, its inputs, its assumptions, and the
+        failure it cannot survive;
+  \item compute information gain for a candidate tree split by hand;
+  \item trace $k$-means to convergence on a small dataset and explain why the
+        initialisation matters;
+  \item read a confusion matrix and say why $94\,\%$ accuracy can be worse than
+        useless;
+  \item explain why ridge shrinks coefficients but lasso sets them to exactly
+        zero, with the arithmetic that shows it;
+  \item choose $k$ in $k$-NN from a bias--variance argument rather than a
+        default;
+  \item distinguish bagging from boosting by what each one reduces;
+  \item design an honest evaluation, including the split, the baseline, and the
+        leak you are most likely to introduce.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Classical machine learning is a toolbox of ways to draw a line, a curve, or a
+boundary through data. Some methods draw one straight line and try to place it
+well (regression, SVM). Some carve the space into boxes with yes/no questions
+(trees). Some just remember every example and ask the neighbours ($k$-NN). Some
+look for clumps without being told what to look for (clustering). Choosing
+among them is mostly a question of what shape you believe the answer has, and
+how much data you have to justify that belief.
+\end{plainlanguage}
+
+\begin{engineernote}
+Read this chapter with one question always in front of you: \emph{what would
+have to be true for this method to work?} Every algorithm here encodes an
+assumption --- that classes are linearly separable, that clusters are
+spherical, that nearby points share labels, that features are independent.
+Methods do not fail because they are weak. They fail because their assumption
+was false for your data and nobody checked.
+\end{engineernote}
 
 \section{Introduction to Machine Learning}
 
@@ -18,7 +59,7 @@
 
 \end{v3topic}
 \begin{v3topic}{ML Components}
-    \begin{tblr}{|Q[c,m]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|X|}}
         \hline
         \textbf{Component}   & \textbf{Description}                          & \textbf{Example}                              \\
         \hline
@@ -31,8 +72,10 @@
         Optimization         & Finds parameters minimizing the loss          & Gradient descent, normal equation              \\
         \hline
     \end{tblr}
-\captionof{table}{What is Machine Learning?: ML Components.}
-\label{tab:ch05-machine-learning-inline-01}
+\captionof{table}{The four components present in every supervised learning
+system. If you cannot name all four for a project, the project is not yet
+specified.}
+\label{tab:ml-components}
 
 \end{v3topic}
 \begin{v3topic}{The Learning Pipeline}
@@ -57,10 +100,20 @@
         \draw[arr] (train) -- (eval);
         \draw[arr] (eval) -- (deploy);
     \end{tikzpicture}
-\captionof{figure}{What is Machine Learning?: The Learning Pipeline.}
-\label{fig:ch05-machine-learning-inline-01}
+\captionof{figure}{The machine-learning pipeline. The arrows are drawn left to
+right, but in practice evaluation sends you back to feature engineering far
+more often than it sends you forward to deployment.}
+\label{fig:ml-pipeline}
     \end{center}
 \end{v3topic}
+
+\begin{engineernote}
+The diagram lies by omission in one important way: it shows training as the
+centre. In real projects, data collection and preparation consume most of the
+effort, and the modelling step is often the shortest. A team that spends three
+weeks tuning a model on a dataset with label errors has optimised the wrong
+thing --- see the data-centric error loop at the end of this chapter.
+\end{engineernote}
 
 % ---- 5.1.2 Supervised & Unsupervised Learning --------------------------------------------------
 \subsection{Supervised \& Unsupervised Learning}
@@ -89,9 +142,9 @@
 
 \end{v3topic}
 \begin{v3topic}{Classification vs.\ Clustering}
-    Classification and clustering both produce groups, but they differ fundamentally in their inputs and objectives\textsuperscript{\cite[][pp.~323--324]{hurbansGrokkingArtificialIntelligence2020}}.
+    Classification and clustering\textsuperscript{\cite[][pp.~323--324]{hurbansGrokkingArtificialIntelligence2020}} both produce groups, but they differ fundamentally in their inputs and their objectives.
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|X|}}
         \hline
         \textbf{Aspect}     & \textbf{Classification}                       & \textbf{Clustering}                                  \\
         \hline
@@ -106,8 +159,10 @@
         Evaluation          & Accuracy, F1, ROC-AUC                         & Silhouette, within-cluster variance, domain judgment \\
         \hline
     \end{tblr}
-\captionof{table}{Supervised \& Unsupervised Learning: Classification vs.\ Clustering.}
-\label{tab:ch05-machine-learning-inline-02}
+\captionof{table}{Classification and clustering both produce groups, but only
+one of them is told in advance what the groups mean. That difference decides
+how you are allowed to evaluate the result.}
+\label{tab:classification-vs-clustering}
 \end{v3topic}
 
 % ---- 5.1.3 Regression & Classification ---------------------------------------------------------
@@ -157,8 +212,10 @@
         \draw[arr] ([yshift=3mm]agent.east) -- node[above, draw=none, minimum height=0, minimum width=0] {\footnotesize action $a_t$} ([yshift=3mm]env.west);
         \draw[arr] ([yshift=-3mm]env.west) -- node[below, draw=none, minimum height=0, minimum width=0] {\footnotesize state $s_{t+1}$, reward $r_{t+1}$} ([yshift=-3mm]agent.east);
     \end{tikzpicture}
-\captionof{figure}{Reinforcement Learning: Agent--Environment Loop.}
-\label{fig:ch05-machine-learning-inline-02}
+\captionof{figure}{The reinforcement-learning loop. Unlike supervised
+learning, no correct action is ever supplied --- the only feedback is a scalar
+reward that may arrive many steps after the action that earned it.}
+\label{fig:ml-agent-environment}
     \end{center}
 \end{v3topic}
 
@@ -171,7 +228,60 @@
 \visualseparator
     \begin{equation}
         \text{Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Noise}
+        \label{eq:ml-bias-variance}
     \end{equation}
+
+\begin{plainlanguage}
+Bias is being consistently wrong in the same direction --- your model is too
+simple to see the pattern, like fitting a straight line to a curve. Variance is
+being wrong in a different direction every time --- your model is so flexible
+it chases the noise, and a slightly different training set would give a
+completely different answer. Irreducible noise is the part nobody can fix,
+because the data does not contain the answer.
+\end{plainlanguage}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=48mm, width=0.86\linewidth,
+  domain=0.35:5, samples=140,
+  xlabel={model complexity}, ylabel={error},
+  ymin=0, ymax=5.2, xtick=\empty, ytick=\empty,
+  legend style={at={(0.5,1.03)},anchor=south},legend columns=3]
+  \addplot[AlmanachTeal,thick] {3.4/x};            \addlegendentry{bias$^2$}
+  \addplot[AlmanachOchre,thick] {0.30*x^2};        \addlegendentry{variance}
+  \addplot[AlmanachRed,very thick] {3.4/x+0.30*x^2+0.7};
+    \addlegendentry{total error}
+  \addplot[AlmanachInk!40,dashed,thick] {0.7};
+    \addlegendentry{}
+  \draw[AlmanachInk!55,dashed] (axis cs:2.03,0) -- (axis cs:2.03,3.62);
+  \node[font=\scriptsize\sffamily,anchor=south,color=AlmanachInk!70]
+    at (axis cs:2.03,3.7) {sweet spot};
+  \node[font=\scriptsize\sffamily,anchor=west,color=AlmanachInk!60]
+    at (axis cs:3.6,0.95) {irreducible noise};
+  \node[font=\scriptsize\sffamily,anchor=north west,color=AlmanachInk!70]
+    at (axis cs:0.45,5.1) {underfitting};
+  \node[font=\scriptsize\sffamily,anchor=north east,color=AlmanachInk!70]
+    at (axis cs:4.9,5.1) {overfitting};
+\end{axis}
+\end{tikzpicture}
+\caption{The classical bias--variance decomposition. Total error is U-shaped
+because bias falls and variance rises as the model gains flexibility; the best
+model is not the most powerful one, but the one at the minimum. Note the floor:
+no model can do better than the irreducible noise, so a target accuracy below
+that floor is a specification error, not a modelling challenge.}
+\label{fig:ml-bias-variance}
+\end{figure}
+
+\begin{cautionbox}[The U-curve is a model, not a law]
+\Cref{fig:ml-bias-variance} is the right first picture and an incomplete last
+one. Very large models can pass the interpolation threshold and improve again
+--- the double-descent behaviour described in
+\cref{ch:deep-learning}. Use the U-curve to reason about a decision tree's
+depth or a polynomial's degree, where it holds well. Do not use it to argue
+that a larger neural network must generalise worse.
+\end{cautionbox}
 
 \end{v3topic}
 \begin{v3topic}{Train/Validation/Test Split}
@@ -183,6 +293,29 @@
     \end{itemize}
     A common split ratio is 60/20/20 or 70/15/15.
 
+\begin{cautionbox}[The test set is a budget, and you can only spend it once]
+Every time you look at the test score and then change something, you leak
+information from the test set into your model, and the score stops being an
+unbiased estimate. After twenty such rounds you have effectively fitted the
+test set by hand.
+
+Three further leaks are more subtle and more common:
+\begin{itemize}
+  \item \textbf{Preprocessing before splitting.} Computing a mean, a scaler, or
+        a vocabulary on the full dataset and \emph{then} splitting leaks the
+        test distribution into training. Fit every transform on the training
+        fold only.
+  \item \textbf{Random splits on grouped data.} If one patient, user, or
+        machine contributes several rows, a random split puts near-duplicates
+        on both sides. Split by group.
+  \item \textbf{Random splits on time series.} A random split lets the model
+        learn from the future. Split chronologically.
+\end{itemize}
+Each of these produces a validation score that looks excellent and a deployment
+that disappoints, which is the single most common way a machine-learning
+project fails.
+\end{cautionbox}
+
 \end{v3topic}
 \begin{v3topic}{Cross-Validation}
     $k$-fold cross-validation partitions the data into $k$ equal folds.
@@ -190,9 +323,157 @@
 \visualseparator
     \begin{equation}
         \text{CV}(k) = \frac{1}{k}\sum_{i=1}^{k} \text{Error}_i
+        \label{eq:ml-cv}
     \end{equation}
     Typical choice: $k = 5$ or $k = 10$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  cell/.style={draw=AlmanachTeal!55,minimum height=5.5mm,minimum width=17mm,
+    font=\sffamily\scriptsize,inner sep=0pt},
+  tr/.style={cell,fill=AlmanachMist},
+  va/.style={cell,fill=AlmanachOchre!35,draw=AlmanachOchre},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  \foreach \r in {1,...,5}{
+    \node[lbl,anchor=east] at (-2mm,-\r*7mm) {fold \r};
+    \foreach \c in {1,...,5}{
+      \pgfmathparse{int(\r==\c)}
+      \ifnum\pgfmathresult=1
+        \node[va] at (\c*18mm-18mm,-\r*7mm) {validate};
+      \else
+        \node[tr] at (\c*18mm-18mm,-\r*7mm) {train};
+      \fi}}
+  \node[lbl,anchor=west] at (92mm,-21mm)
+    {each row is one complete};
+  \node[lbl,anchor=west] at (92mm,-26mm)
+    {train--evaluate cycle};
+  \draw[decorate,decoration={brace,amplitude=3pt},AlmanachInk!50]
+    (-1mm,3mm) -- (73mm,3mm)
+    node[midway,above=3pt,lbl] {the data, split into 5 equal parts};
+\end{tikzpicture}
+\caption{Five-fold cross-validation. Every observation is used for validation
+exactly once and for training four times, so the estimate uses all the data
+without ever scoring a model on a row it trained on. The cost is five times the
+training compute.}
+\label{fig:ml-cross-validation}
+\end{figure}
+
+\begin{workedexample}[Reading a cross-validation result honestly]
+Five folds return accuracies $0.86,\ 0.91,\ 0.78,\ 0.89,\ 0.86$.
+
+\emph{Mean.} $\dfrac{0.86+0.91+0.78+0.89+0.86}{5} = \dfrac{4.30}{5} = 0.860$.
+
+\emph{Standard deviation.} Deviations are
+$0.00,\ +0.05,\ -0.08,\ +0.03,\ 0.00$; their squares are
+$0,\ 0.0025,\ 0.0064,\ 0.0009,\ 0$, summing to $0.0098$. Dividing by
+$k-1 = 4$ gives $0.00245$, so $s = 0.0495$.
+
+\emph{Report.} ``$0.86 \pm 0.05$ over 5 folds'', not ``$0.86$''.
+
+\emph{Now interpret.} A competing model scores $0.88$. Is it better? The
+difference is $0.02$, well inside a spread of $0.05$. On this evidence you
+cannot tell the two apart. The fold at $0.78$ is also worth a look on its own:
+one fold performing far below the others usually means that fold contains a
+subgroup the model handles badly, and that is more informative than the mean.
+\end{workedexample}
 \end{v3topic}
+
+% ---- 5.1.6 Measuring a Classifier -------------------------------------------
+\subsection{Measuring a Classifier}
+
+\begin{v3topic}{The Confusion Matrix}
+    Every binary classification result is one of four outcomes. Arranging them
+    in a $2\times2$ table gives the \keyterm{confusion matrix}, from which every
+    other classification metric is derived.
+\visualseparator
+    \begin{center}
+    \begin{tikzpicture}[
+      cell/.style={draw=AlmanachInk!35,minimum width=27mm,minimum height=12mm,
+        font=\sffamily\small,align=center},
+      good/.style={cell,fill=AlmanachTeal!16},
+      bad/.style={cell,fill=AlmanachRed!16},
+      lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+      \node[good] (tp) at (0,0) {\textbf{TP}\\80};
+      \node[bad]  (fp) at (27mm,0) {\textbf{FP}\\20};
+      \node[bad]  (fn) at (0,-12mm) {\textbf{FN}\\40};
+      \node[good] (tn) at (27mm,-12mm) {\textbf{TN}\\860};
+      \node[lbl,above] at (0,7mm) {predicted positive};
+      \node[lbl,above] at (27mm,7mm) {predicted negative};
+      \node[lbl,rotate=90,anchor=south] at (-16mm,0) {actually positive};
+      \node[lbl,rotate=90,anchor=south] at (-16mm,-12mm) {actually negative};
+    \end{tikzpicture}
+    \captionof{figure}{A confusion matrix for 1000 cases with 120 true
+    positives. The two off-diagonal cells are different mistakes with different
+    costs, and no single number can represent both.}
+    \label{fig:ml-confusion-matrix}
+    \end{center}
+\end{v3topic}
+
+\begin{v3topic}{Precision, Recall, and the Accuracy Trap}
+    \begin{equation}
+        \text{Precision} = \frac{TP}{TP+FP},
+        \qquad
+        \text{Recall} = \frac{TP}{TP+FN},
+        \qquad
+        F_1 = \frac{2\,TP}{2\,TP+FP+FN}.
+        \label{eq:ml-precision-recall}
+    \end{equation}
+
+\begin{plainlanguage}
+Precision answers ``when the model raised its hand, how often was it right?''
+Recall answers ``of everything it should have caught, how much did it catch?''
+You can always raise one by sacrificing the other: predict positive for
+everything and recall hits $100\,\%$ while precision collapses. The $F_1$ score
+is their harmonic mean, which punishes a large gap between the two.
+\end{plainlanguage}
+
+\begin{workedexample}[Why $94\,\%$ accuracy can be a failing grade]
+Take the numbers in \cref{fig:ml-confusion-matrix}: $TP=80$, $FP=20$, $FN=40$,
+$TN=860$, out of $1000$ cases of which $120$ are truly positive.
+\[
+\begin{aligned}
+  \text{Accuracy} &= \frac{80+860}{1000} = 0.940, &
+  \text{Precision} &= \frac{80}{80+20} = 0.800,\\[3pt]
+  \text{Recall} &= \frac{80}{80+40} = 0.667, &
+  F_1 &= \frac{160}{160+20+40} = \frac{160}{220} = 0.727 .
+\end{aligned}
+\]
+
+\emph{Now compute the baseline.} A model that predicts ``negative'' for every
+single case, and therefore does nothing at all, scores
+\[
+  \text{Accuracy}_{\text{trivial}} = \frac{880}{1000} = 0.880 .
+\]
+
+So the real model's $94\,\%$ buys $6$ percentage points over a model with no
+information in it, while missing a third of the positive cases. Reported as
+``$94\,\%$ accurate'', this sounds like a success. Reported as ``catches two
+out of three, one in five alarms is false, against an $88\,\%$ do-nothing
+baseline'', it sounds like what it is.
+
+\emph{The rule.} Never report accuracy without the majority-class baseline
+beside it. On imbalanced data, accuracy measures the imbalance more than it
+measures the model.
+\end{workedexample}
+
+\begin{engineernote}
+Which metric to optimise is a question about consequences, not statistics. In
+cancer screening a false negative may cost a life while a false positive costs
+an anxious week and a second test, so recall dominates. In an email spam filter
+a false positive may delete a job offer, so precision dominates. Decide this
+\emph{before} you train, write it down, and let it choose the threshold.
+\Cref{ch:evaluation-mlops} develops the full protocol.
+\end{engineernote}
+\end{v3topic}
+
+\begin{checkpoint}
+A fraud model flags $500$ of $100{,}000$ transactions; $50$ flags are genuine
+fraud, and $30$ frauds were missed. Compute precision, recall, and $F_1$. Then
+state which of the two errors you would rather halve, and what that choice does
+to the other.
+\end{checkpoint}
+
 \section{Clustering}
 
 % ---- 5.2.1 Introduction to Clustering ---------------------------------------------------------
@@ -203,7 +484,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Clustering Families}
-    \begin{tblr}{|Q[c,m]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|X|}}
         \hline
         \textbf{Family}      & \textbf{Representative Algorithm} & \textbf{Key Idea}                          \\
         \hline
@@ -216,8 +497,11 @@
         Model-based          & GMM / EM                          & Mixture of Gaussian distributions          \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Clustering: Clustering Families.}
-\label{tab:ch05-machine-learning-inline-03}
+\captionof{table}{Four families of clustering algorithm. They differ mainly in
+what they assume a cluster \emph{is} --- a centroid, a nesting, a dense region,
+or a probability distribution --- and that assumption decides which datasets
+each one can handle.}
+\label{tab:ml-clustering-families}
 
 \end{v3topic}
 \begin{v3topic}{Evaluating Cluster Quality}
@@ -225,7 +509,26 @@
 \visualseparator
     \begin{equation}
         s(i) = \frac{b(i) - a(i)}{\max\{a(i),\, b(i)\}}, \qquad s(i) \in [-1,\, 1]
+        \label{eq:ml-silhouette}
     \end{equation}
+    The measure is due to
+    Rousseeuw\textsuperscript{\cite{rousseeuwSilhouettesGraphicalAid1987}}.
+
+\begin{workedexample}[Reading a silhouette score]
+A point has mean distance $a(i) = 1.2$ to its own cluster and $b(i) = 3.6$ to
+the nearest other cluster:
+\[
+  s(i) = \frac{3.6-1.2}{\max\{1.2,\,3.6\}} = \frac{2.4}{3.6} = +0.67 .
+\]
+Comfortably assigned. Now a second point with $a(i) = 3.0$ and $b(i) = 2.4$:
+\[
+  s(i) = \frac{2.4-3.0}{3.0} = -0.20 .
+\]
+Negative, which means this point is on average \emph{closer} to a neighbouring
+cluster than to its own --- it is probably misassigned. That is the practical
+value of the silhouette: it is computed per point, so it localises the problem
+instead of only scoring the partition.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 5.2.2 K-Means -----------------------------------------------------------------------------
@@ -248,6 +551,49 @@
         \item \textbf{Update:} $\boldsymbol{\mu}_k \leftarrow \dfrac{1}{|C_k|}\displaystyle\sum_{n \in C_k} \mathbf{x}_n$ for every cluster $k$
         \item Repeat steps 2--3 until convergence (no assignment changes)
     \end{enumerate}
+    The procedure is Lloyd's
+    algorithm\textsuperscript{\cite{lloydLeastSquaresQuantization1982}}.
+
+\begin{workedexample}[$k$-means traced to convergence]
+Cluster the one-dimensional points $\{1,\,2,\,4,\,8,\,9\}$ with $K=2$, starting
+from $\mu_1 = 1$ and $\mu_2 = 9$.
+
+\emph{Iteration 1 --- assign.} Compare each point's distance to both centroids:
+
+\smallskip
+\begin{tblr}{
+  width=0.72\linewidth,
+  colspec={Q[c]Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+point & $|x-\mu_1|$ & $|x-\mu_2|$ & assigned \\
+1 & 0 & 8 & $C_1$ \\
+2 & 1 & 7 & $C_1$ \\
+4 & 3 & 5 & $C_1$ \\
+8 & 7 & 1 & $C_2$ \\
+9 & 8 & 0 & $C_2$ \\
+\end{tblr}
+\smallskip
+
+\emph{Iteration 1 --- update.}
+$\mu_1 = \frac{1+2+4}{3} = 2.333$ and $\mu_2 = \frac{8+9}{2} = 8.5$.
+
+\emph{Iteration 2 --- assign.} Point $4$ is the only one worth rechecking:
+$|4-2.333| = 1.667$ against $|4-8.5| = 4.5$, so it stays in $C_1$. No
+assignment changes, so the algorithm has converged.
+
+\emph{Final objective.}
+\[
+  \mathcal{L} = \underbrace{(1{-}2.333)^2+(2{-}2.333)^2+(4{-}2.333)^2}_{4.667}
+  + \underbrace{(8{-}8.5)^2+(9{-}8.5)^2}_{0.5} = 5.167 .
+\]
+
+\emph{The catch.} This converged in two iterations to an obviously sensible
+answer --- because the initial centroids happened to sit at the two extremes.
+$k$-means only guarantees convergence to a \emph{local} optimum of
+$\mathcal{L}$, and a poor initialisation can converge just as confidently to a
+worse partition. That is the entire motivation for $k$-means++.
+\end{workedexample}
 
 \end{v3topic}
 \begin{v3topic}{K-Means++ Initialization}
@@ -255,7 +601,20 @@
 \visualseparator
     \begin{equation}
         \mathbb{E}\bigl[\hat{\mathcal{L}}\bigr] \leq 8(\log K + 2)\,\mathcal{L}^{(\mathrm{opt})}
+        \label{eq:ml-kmeanspp}
     \end{equation}
+    The seeding scheme and this guarantee are due to Arthur and
+    Vassilvitskii\textsuperscript{\cite{arthurKmeansAdvantagesCareful2007}}.
+
+\begin{cautionbox}[$k$-means assumes round clusters of similar size]
+The objective minimises squared Euclidean distance to a centroid, which means
+it can only find clusters that are roughly spherical and roughly equal in
+extent. Give it two elongated parallel bands and it will cut across them; give
+it one dense cluster and one diffuse one and it will steal points from the
+diffuse one. It will also always return exactly $K$ clusters, including when
+the data has none. If your clusters might be elongated, use a Gaussian mixture;
+if they might be irregular or absent, use DBSCAN.
+\end{cautionbox}
 
 \end{v3topic}
 \begin{v3topic}{Choosing K: Elbow Method and Information Criteria}
@@ -286,7 +645,40 @@
     \begin{equation}
         z_{n,k} = \frac{\theta_k \,\mathcal{N}(\mathbf{x}_n \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)}
                        {\displaystyle\sum_{j=1}^{K} \theta_j \,\mathcal{N}(\mathbf{x}_n \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
+        \label{eq:ml-em-estep}
     \end{equation}
+    The algorithm and its convergence proof are due to Dempster, Laird and
+    Rubin\textsuperscript{\cite{dempsterMaximumLikelihoodIncomplete1977}}.
+
+\begin{workedexample}[One responsibility, computed]
+Two one-dimensional components with equal weights $\theta_1=\theta_2=0.5$,
+means $\mu_1 = 0$ and $\mu_2 = 4$, and unit variances. Where does the point
+$x = 1$ belong?
+
+\emph{Component densities.} With
+$\mathcal{N}(x\mid\mu,1) = \frac{1}{\sqrt{2\pi}}e^{-(x-\mu)^2/2}$ and
+$\frac{1}{\sqrt{2\pi}} = 0.39894$:
+\[
+  \mathcal{N}(1\mid 0,1) = 0.39894\,e^{-0.5} = 0.39894(0.60653) = 0.24197,
+\]
+\[
+  \mathcal{N}(1\mid 4,1) = 0.39894\,e^{-4.5} = 0.39894(0.011109) = 0.004432 .
+\]
+
+\emph{Responsibilities.}
+\[
+  z_{1} = \frac{0.5(0.24197)}{0.5(0.24197)+0.5(0.004432)}
+        = \frac{0.24197}{0.24640} = 0.982,
+  \qquad z_2 = 0.018 .
+\]
+Check: $0.982+0.018 = 1.000$. \checkmark
+
+\emph{Read it.} The point belongs $98.2\,\%$ to the first component and
+$1.8\,\%$ to the second. $k$-means would have said ``cluster 1'' and thrown the
+$1.8\,\%$ away. That retained fraction is what lets EM express uncertainty
+about points lying between clusters --- and it is why EM can report that a
+point is genuinely ambiguous where $k$-means cannot.
+\end{workedexample}
 
 \end{v3topic}
 \begin{v3topic}{M-Step: Re-estimating Parameters}
@@ -302,7 +694,7 @@
 \begin{v3topic}{EM as a Generalization of K-Means}
     K-means is a special case of EM\textsuperscript{\cite[][p.180]{iiiCourseMachineLearning}}. When all GMM covariances are fixed to $\sigma^2 \mathbf{I}$ and $\sigma \to 0$, the soft responsibilities $z_{n,k}$ collapse to hard indicator assignments and the EM update reduces exactly to the K-means update. EM thus trades the assumption of spherical, equal-size clusters for the ability to model elliptical clusters of varying shapes and sizes.
 \visualseparator
-    \begin{tblr}{|X|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}}
         \hline
                                 & \textbf{K-Means}          & \textbf{EM / GMM}                    \\
         \hline
@@ -315,21 +707,24 @@
         Convergence guarantee   & Local optimum of WCSS     & Monotone increase of log-likelihood  \\
         \hline
     \end{tblr}
-\captionof{table}{Expectation Maximization: EM as a Generalization of K-Means.}
-\label{tab:ch05-machine-learning-inline-04}
+\captionof{table}{$k$-means is the zero-variance limit of a Gaussian mixture.
+Every row is a capability EM buys with extra parameters --- and extra
+parameters are exactly what makes it slower and more prone to poor local
+optima.}
+\label{tab:ml-kmeans-vs-em}
 \end{v3topic}
 
 % ---- 5.2.4 DBSCAN ------------------------------------------------------------------------------
 \subsection{DBSCAN}
 
 \begin{v3topic}{Density-Based Clustering Concept}
-    DBSCAN (Density-Based Spatial Clustering of Applications with Noise) identifies clusters as dense regions of points separated by sparser regions\textsuperscript{\cite[][p.471]{hanDataMiningConcepts2012}}. It requires two parameters: the neighborhood radius $\varepsilon$ and the minimum point count MinPts. Crucially, DBSCAN requires no preset number of clusters $K$ and naturally labels low-density points as noise (outliers).
+    DBSCAN (Density-Based Spatial Clustering of Applications with Noise) identifies clusters as dense regions of points separated by sparser regions\textsuperscript{\cite{esterDensityBasedAlgorithmDiscovering1996}, \cite[][p.~471]{hanDataMiningConcepts2012}}. It requires two parameters: the neighborhood radius $\varepsilon$ and the minimum point count MinPts. Crucially, DBSCAN requires no preset number of clusters $K$ and naturally labels low-density points as noise (outliers).
 
 \end{v3topic}
 \begin{v3topic}{Core, Border, and Noise Points}
     Every point in DBSCAN is classified as exactly one of three types based on the density of its $\varepsilon$-neighborhood $N_\varepsilon(p) = \{q \mid d(p,q) \leq \varepsilon\}$\textsuperscript{\cite[][pp.~472--474]{hanDataMiningConcepts2012}}. A cluster is the maximal set of density-connected core and border points.
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|}}
         \hline
         \textbf{Point type} & \textbf{Definition}                                                          \\
         \hline
@@ -340,8 +735,10 @@
         Noise point         & Neither core nor border — an outlier                                         \\
         \hline
     \end{tblr}
-\captionof{table}{DBSCAN: Core, Border, and Noise Points.}
-\label{tab:ch05-machine-learning-inline-05}
+\captionof{table}{The three point types in DBSCAN. Only core points can start
+or extend a cluster, which is what lets the algorithm refuse to assign an
+outlier at all --- something $k$-means cannot do.}
+\label{tab:ml-dbscan-point-types}
 
 \end{v3topic}
 \begin{v3topic}{DBSCAN Point Types Illustrated}
@@ -401,8 +798,22 @@
         \node[corecolor!80!black] at (0.45,-1.0) {\small Cluster 1};
         \node[corecolor!80!black] at (3.65,-0.9) {\small Cluster 2};
     \end{tikzpicture}
-\captionof{figure}{DBSCAN: DBSCAN Point Types Illustrated.}
-\label{fig:ch05-machine-learning-inline-03}
+\captionof{figure}{DBSCAN with MinPts $=4$. Core points carry enough neighbours
+inside radius $\varepsilon$ to seed a cluster, border points attach to one
+without seeding it, and the three isolated points are returned as noise rather
+than being forced into a cluster.}
+\label{fig:ml-dbscan-points}
+
+\begin{engineernote}
+DBSCAN replaces the question ``how many clusters?'' with the question ``how
+dense is dense?'', which is often easier to answer from domain knowledge but is
+not free. A common heuristic sets MinPts $\approx 2D$ for $D$ dimensions, then
+chooses $\varepsilon$ from the knee of a sorted $k$-distance plot. Two
+limitations matter in practice: a single global $\varepsilon$ cannot handle
+clusters of genuinely different densities, and in high dimensions the distance
+concentration described in \cref{ch:mathematical-foundations} makes
+$\varepsilon$ progressively harder to set at all.
+\end{engineernote}
 
 \end{v3topic}
 \begin{v3topic}{DBSCAN Algorithm}
@@ -485,8 +896,11 @@
             \node[left, font=\tiny] at (-0.55,\y) {\lbl};
         }
     \end{tikzpicture}
-\captionof{figure}{Hierarchical Clustering: Reading a Dendrogram.}
-\label{fig:ch05-machine-learning-inline-04}
+\captionof{figure}{A dendrogram for six points. Merge height is the distance at
+which two groups joined, so the large vertical gap below the final merge is
+evidence for two natural clusters --- cutting anywhere in that gap gives the
+same answer, which is what makes the reading robust.}
+\label{fig:ml-dendrogram}
 \end{v3topic}
 \section{Regression}
 
@@ -549,15 +963,39 @@
             \node[right, font=\tiny, text=red] at (0.1, 0.58) {decision boundary};
         \end{scope}
     \end{tikzpicture}
-\captionof{figure}{Logistic Regression: The Sigmoid Curve and Log-Odds.}
-\label{fig:ch05-machine-learning-inline-05}
+\captionof{figure}{The logistic curve. The model is linear in log-odds and
+S-shaped in probability; the decision boundary sits where $z=0$ and
+$\sigma(z)=0.5$, but that threshold is a choice, not a property of the model.}
+\label{fig:ml-sigmoid}
+
+\begin{workedexample}[Reading logistic coefficients as odds]
+A model for loan default has $z = -3.0 + 0.05\,(\text{age}) + 1.2\,
+(\text{prior default})$, with prior default coded $0$ or $1$.
+
+\emph{A 40-year-old with no prior default.}
+$z = -3.0 + 0.05(40) + 0 = -1.0$, so
+\[
+  P = \sigma(-1.0) = \frac{1}{1+e^{1.0}} = \frac{1}{3.718} = 0.269 .
+\]
+
+\emph{The same person with a prior default.}
+$z = -1.0 + 1.2 = +0.2$, so $P = \sigma(0.2) = 1/(1+e^{-0.2}) = 0.550$.
+
+\emph{What the coefficient means.} The probability jumped from $0.269$ to
+$0.550$, but the coefficient $1.2$ is not a probability change --- it is a
+change in \emph{log-odds}. Exponentiating gives the odds ratio
+$e^{1.2} = 3.32$: a prior default multiplies the odds of default by $3.3$,
+regardless of age. Odds ratios are constant across the curve; probability
+changes are not, which is why the same coefficient moves the probability a lot
+near $z=0$ and almost nothing out in the tails.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 5.3.3 Quantile Regression ------------------------------------------------------------------
 \subsection{Quantile Regression}
 
 \begin{v3topic}{Quantile Regression and the Pinball Loss}
-    Quantile regression estimates conditional \emph{quantiles} of the response (e.g.\ the median, or the 10th and 90th percentiles) rather than the conditional mean. It is robust to outliers and makes no assumption of normality or homoscedasticity; fitting multiple quantile levels together yields a full prediction interval. The loss function (pinball loss) applies asymmetric linear penalties.
+    Quantile regression\textsuperscript{\cite{koenkerRegressionQuantiles1978}} estimates conditional \emph{quantiles} of the response (e.g.\ the median, or the 10th and 90th percentiles) rather than the conditional mean. It is robust to outliers and makes no assumption of normality or homoscedasticity; fitting multiple quantile levels together yields a full prediction interval. The loss function (pinball loss) applies asymmetric linear penalties.
 \visualseparator
     \begin{equation}
         \rho_\tau(u) =
@@ -595,11 +1033,47 @@
         \underbrace{\min_{\mathbf{w}} \tfrac{1}{2}\|\mathbf{X}\mathbf{w}-\mathbf{y}\|^2 + \tfrac{\lambda}{2}\|\mathbf{w}\|_2^2}_{\text{Ridge: } \hat{\mathbf{w}}=(\mathbf{X}^\top\mathbf{X}+\lambda\mathbf{I})^{-1}\mathbf{X}^\top\mathbf{y}}
         \qquad
         \underbrace{\min_{\mathbf{w}} \tfrac{1}{2}\|\mathbf{X}\mathbf{w}-\mathbf{y}\|^2 + \lambda\|\mathbf{w}\|_1}_{\text{Lasso: no closed form}}
+        \label{eq:ml-ridge-lasso}
     \end{equation}
+    Ridge is due to Hoerl and
+    Kennard\textsuperscript{\cite{hoerlRidgeRegressionBiased1970}} and the lasso
+    to Tibshirani\textsuperscript{\cite{tibshiraniRegressionShrinkageSelection1996}}.
+
+\begin{workedexample}[Ridge shrinks, lasso deletes --- in one line of algebra]
+Take the smallest possible problem: one feature, $\mathbf{X} = (1,2,3)^{\!\top}$
+and $\mathbf{y} = (1,2,3)^{\!\top}$. Then
+$\mathbf{X}^{\!\top}\mathbf{X} = 1+4+9 = 14$ and
+$\mathbf{X}^{\!\top}\mathbf{y} = 14$, so the unregularised solution is
+$\hat w_{\text{OLS}} = 14/14 = 1$.
+
+\emph{Ridge.} $\hat w = \dfrac{14}{14+\lambda}$:
+\[
+  \lambda = 0 \Rightarrow 1.000,\quad
+  \lambda = 7 \Rightarrow 0.667,\quad
+  \lambda = 14 \Rightarrow 0.500,\quad
+  \lambda = 126 \Rightarrow 0.100 .
+\]
+It approaches zero but never reaches it, for any finite $\lambda$.
+
+\emph{Lasso.} Setting the derivative to zero for $w>0$ gives
+$14w - 14 + \lambda = 0$, so
+\[
+  \hat w = 1 - \frac{\lambda}{14}
+  \quad\Rightarrow\quad
+  \lambda = 7 \Rightarrow 0.500,\qquad
+  \lambda = 14 \Rightarrow \mathbf{0} \text{ exactly.}
+\]
+
+\emph{The difference in one sentence.} Ridge divides, so the coefficient decays
+smoothly toward zero; lasso subtracts, so the coefficient hits zero at a finite
+penalty and stays there. That is why lasso performs feature selection and ridge
+does not --- and it is the algebraic counterpart of the corner geometry in the
+figure below.
+\end{workedexample}
 
 \end{v3topic}
 \begin{v3topic}{Elastic Net and the Geometry of Sparsity}
-    Elastic Net combines both penalties ($\lambda_1\|\mathbf{w}\|_1 + \lambda_2\|\mathbf{w}\|_2^2$), inheriting Lasso's sparsity and Ridge's stability under multicollinearity\textsuperscript{\cite[][pp.~91--97]{iiiCourseMachineLearning}}. The geometric picture below explains \emph{why} L1 gives sparse solutions: the OLS contours first touch the L1 diamond at a corner (where a coordinate is zero), whereas L1 ellipsoid contacts are typically at smooth points.
+    Elastic Net combines both penalties ($\lambda_1\|\mathbf{w}\|_1 + \lambda_2\|\mathbf{w}\|_2^2$), inheriting Lasso's sparsity and Ridge's stability under multicollinearity\textsuperscript{\cite{zouRegularizationVariableSelection2005}, \cite[][pp.~91--97]{iiiCourseMachineLearning}}. The geometric picture below explains \emph{why} L1 gives sparse solutions: the OLS contours first touch the L1 diamond at a corner (where a coordinate is zero), whereas L1 ellipsoid contacts are typically at smooth points.
 \visualseparator
     \begin{tikzpicture}[scale=1.1]
         % ---- coordinate axes ----
@@ -629,8 +1103,11 @@
         \filldraw[blue!70!black] (0.72, 0.69) circle (2.5pt);
         \node[right, font=\tiny, text=blue!70!black] at (0.73, 0.58) {dense};
     \end{tikzpicture}
-\captionof{figure}{Lasso \& Ridge Regression: Elastic Net and the Geometry of Sparsity.}
-\label{fig:ch05-machine-learning-inline-06}
+\captionof{figure}{Why $L_1$ produces sparsity. The regularised solution sits
+where the loss contours first touch the constraint region; the $L_1$ diamond
+has corners on the axes, so contact there sets a coefficient to exactly zero,
+while the smooth $L_2$ circle almost never does.}
+\label{fig:ml-sparsity-geometry}
 \end{v3topic}
 
 % ===========================================================================================
@@ -640,7 +1117,7 @@
 \subsection{Introduction to Support Vector Machines}
 
 \begin{v3topic}{Maximum Margin Hyperplane}
-    A Support Vector Machine finds the unique hyperplane $\mathbf{w}\cdot\mathbf{x} + b = 0$ that maximizes the geometric margin $\gamma = 2/\|\mathbf{w}\|$ between the two classes\textsuperscript{\cite[][pp.~98--101]{iiiCourseMachineLearning}}. Only the training points closest to the hyperplane — the \emph{support vectors} — determine the solution. The complexity of the learned classifier depends on the number of support vectors, not the dimensionality of the input space.
+    A Support Vector Machine\textsuperscript{\cite{cortesSupportVectorNetworks1995}} finds the unique hyperplane $\mathbf{w}\cdot\mathbf{x} + b = 0$ that maximizes the geometric margin $\gamma = 2/\|\mathbf{w}\|$ between the two classes\textsuperscript{\cite[][pp.~98--101]{iiiCourseMachineLearning}}. Only the training points closest to the hyperplane — the \emph{support vectors} — determine the solution. The complexity of the learned classifier depends on the number of support vectors, not the dimensionality of the input space.
 \visualseparator
     \begin{tikzpicture}[scale=1.05]
         % ---- class A points (circles, top-right) ----
@@ -673,8 +1150,18 @@
             (4.28,2.7)--(4.52,2.7) (4.4,2.58)--(4.4,2.82);
         \node[right, font=\tiny] at (4.55,2.7) {Class $-1$};
     \end{tikzpicture}
-\captionof{figure}{Introduction to Support Vector Machines: Maximum Margin Hyperplane.}
-\label{fig:ch05-machine-learning-inline-07}
+\captionof{figure}{The maximum-margin hyperplane. Only the circled support
+vectors touch the margin and determine the solution; every other training point
+could be deleted without moving the boundary at all.}
+\label{fig:ml-svm-margin}
+
+\begin{plainlanguage}
+Many straight lines separate two clouds of points. The SVM picks the one that
+leaves the widest empty corridor between them, on the reasoning that a boundary
+with room to spare is less likely to be wrong about the next point. Only the
+handful of points sitting right on the edge of that corridor matter --- those
+are the support vectors, and the rest of your data is irrelevant to the answer.
+\end{plainlanguage}
 
 \end{v3topic}
 \begin{v3topic}{Hard-Margin vs.\ Soft-Margin SVM}
@@ -691,9 +1178,9 @@
 \subsection{SVM for Classification}
 
 \begin{v3topic}{The Kernel Trick}
-    For non-linearly separable data, the kernel trick maps inputs into a high-dimensional feature space $\phi(\mathbf{x})$ where a linear separator exists — without ever computing $\phi$ explicitly\textsuperscript{\cite[][pp.~128--140]{iiiCourseMachineLearning}}. The decision function depends only on inner products, which the kernel $K(\mathbf{x}_i,\mathbf{x}_j) = \phi(\mathbf{x}_i)\cdot\phi(\mathbf{x}_j)$ computes directly. SVM training always finds a global optimum (convex QP).
+    For non-linearly separable data, the kernel trick\textsuperscript{\cite{boserTrainingAlgorithmOptimal1992}} maps inputs into a high-dimensional feature space $\phi(\mathbf{x})$ where a linear separator exists — without ever computing $\phi$ explicitly\textsuperscript{\cite[][pp.~128--140]{iiiCourseMachineLearning}}. The decision function depends only on inner products, which the kernel $K(\mathbf{x}_i,\mathbf{x}_j) = \phi(\mathbf{x}_i)\cdot\phi(\mathbf{x}_j)$ computes directly. SVM training always finds a global optimum (convex QP).
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=3.2cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=3.2cm]|X|}}
         \hline
         \textbf{Kernel}      & \textbf{Formula}                                                                                      \\
         \hline
@@ -706,8 +1193,21 @@
         Sigmoid              & $K(\mathbf{x}_i,\mathbf{x}_j) = \tanh(\kappa\,\mathbf{x}_i\cdot\mathbf{x}_j - \delta)$              \\
         \hline
     \end{tblr}
-\captionof{table}{SVM for Classification: The Kernel Trick.}
-\label{tab:ch05-machine-learning-inline-06}
+\captionof{table}{Common kernels. Each one implicitly defines a different
+feature space; the RBF kernel's space is infinite-dimensional, which the
+algorithm never has to represent because it only ever needs inner products.}
+\label{tab:ml-kernels}
+
+\begin{engineernote}
+The RBF kernel is the sensible default for a small tabular dataset, with $C$
+and $\gamma$ tuned together by cross-validation --- they interact, so a grid
+over both beats tuning them separately. Two practical constraints decide
+whether an SVM is viable at all: kernel SVM training scales roughly between
+quadratically and cubically in the number of samples, which makes it
+impractical much beyond a few tens of thousands of rows, and the kernel matrix
+depends on distances, so features \emph{must} be scaled first. An unscaled SVM
+is not a weak model; it is a broken one.
+\end{engineernote}
 
 \end{v3topic}
 \begin{v3topic}{Multiclass SVMs}
@@ -734,7 +1234,7 @@
 \subsection{Introduction to Decision Trees}
 
 \begin{v3topic}{Decision Trees: Structure and Construction}
-    A decision tree partitions the feature space recursively: each internal node applies a test on one feature, each branch follows an outcome, and each leaf assigns a prediction\textsuperscript{\cite[][pp.~8--20]{iiiCourseMachineLearning}}. The tree is built greedily (ID3, C4.5, CART) by choosing at each step the feature split that maximizes a purity criterion. Decision trees are highly interpretable but unstable — small data changes can produce very different trees.
+    A decision tree partitions the feature space recursively: each internal node applies a test on one feature, each branch follows an outcome, and each leaf assigns a prediction\textsuperscript{\cite[][pp.~8--20]{iiiCourseMachineLearning}}. The tree is built greedily by choosing at each step the feature split that maximizes a purity criterion --- the approach taken by ID3\textsuperscript{\cite{quinlanInductionDecisionTrees1986}} and by CART\textsuperscript{\cite{breimanClassificationRegressionTrees1984}}. Decision trees are highly interpretable but unstable — small data changes can produce very different trees.
 \visualseparator
     \begin{tikzpicture}[
         level distance=1.4cm,
@@ -776,14 +1276,16 @@
                 edge from parent node[right, font=\tiny] {no}
             };
     \end{tikzpicture}
-\captionof{figure}{Introduction to Decision Trees: Decision Trees: Structure and Construction.}
-\label{fig:ch05-machine-learning-inline-08}
+\captionof{figure}{A decision tree as a sequence of questions. Every path from
+root to leaf is a readable rule, which is why trees are the standard choice when
+a decision must be explained to a person who will be held responsible for it.}
+\label{fig:ml-decision-tree}
 
 \end{v3topic}
 \begin{v3topic}{Splitting Criteria and Pruning}
     The split at each node is chosen to maximize impurity reduction\textsuperscript{\cite[][pp.~330--344]{hanDataMiningConcepts2012}}. Pre-pruning stops growth early (threshold on gain); post-pruning grows a full tree then removes subtrees that do not improve validation accuracy. Both strategies reduce overfitting.
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=2.4cm]|X|Q[l,m,wd=2.6cm]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=2.4cm]|X|Q[l,m,wd=2.6cm]|}}
         \hline
         \textbf{Algorithm} & \textbf{Splitting criterion}                                           & \textbf{Split type}   \\
         \hline
@@ -794,8 +1296,20 @@
         CART               & Gini Index $= 1 - \sum_k p_k^2$                                       & Binary                \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Decision Trees: Splitting Criteria and Pruning.}
-\label{tab:ch05-machine-learning-inline-07}
+\captionof{table}{The three classical tree-induction algorithms and what
+distinguishes them. C4.5's gain ratio exists specifically to stop information
+gain from preferring a high-cardinality identifier column.}
+\label{tab:ml-tree-algorithms}
+
+\begin{cautionbox}[Information gain favours columns with many distinct values]
+A customer-ID column splits a dataset into perfectly pure single-row leaves, so
+its information gain is maximal --- and it generalises to nothing at all. This
+is not a hypothetical: it is the standard way an ID or timestamp column
+silently destroys a tree model. C4.5's gain ratio divides by the split's own
+entropy to penalise exactly this, and CART's binary splits limit it
+structurally. The reliable fix is still to remove identifier columns before
+training.
+\end{cautionbox}
 \end{v3topic}
 
 % ---- 5.5.2 Decision Trees for Classification ----------------------------------------------------
@@ -810,7 +1324,53 @@
         \text{Gini}(D) = 1 - \sum_{k=1}^{K} p_k^2,
         \qquad
         \text{Gain}(D,A) = H(D) - \sum_{v} \frac{|D_v|}{|D|}\,H(D_v)
+        \label{eq:ml-information-gain}
     \end{equation}
+
+\begin{workedexample}[Choosing a split by information gain]
+Fourteen days of records, of which $9$ are ``play'' and $5$ are ``don't play''.
+
+\emph{Step 1 --- entropy before the split.}
+\[
+  H(D) = -\tfrac{9}{14}\log_2\tfrac{9}{14} - \tfrac{5}{14}\log_2\tfrac{5}{14}
+       = 0.6429(0.6374) + 0.3571(1.4854)
+       = 0.410 + 0.531 = 0.940 \text{ bits.}
+\]
+
+\emph{Step 2 --- split on \textsf{Outlook}} into Sunny ($2$ yes, $3$ no),
+Overcast ($4$ yes, $0$ no) and Rain ($3$ yes, $2$ no):
+\[
+\begin{aligned}
+  H(\text{Sunny}) &= -\tfrac{2}{5}\log_2\tfrac{2}{5}
+    -\tfrac{3}{5}\log_2\tfrac{3}{5} = 0.529 + 0.442 = 0.971,\\
+  H(\text{Overcast}) &= 0 \quad\text{(pure --- every case is ``play'')},\\
+  H(\text{Rain}) &= 0.971 \quad\text{(same proportions as Sunny)} .
+\end{aligned}
+\]
+
+\emph{Step 3 --- weighted entropy after the split.}
+\[
+  \tfrac{5}{14}(0.971) + \tfrac{4}{14}(0) + \tfrac{5}{14}(0.971)
+  = 0.347 + 0 + 0.347 = 0.694 \text{ bits.}
+\]
+
+\emph{Step 4 --- gain.}
+\[
+  \text{Gain}(D,\textsf{Outlook}) = 0.940 - 0.694 = \mathbf{0.247} \text{ bits.}
+\]
+
+\emph{Interpret.} Knowing the outlook removes about a quarter of a bit of
+uncertainty out of the $0.940$ available. Almost all of that reduction comes
+from the Overcast branch, which is perfectly pure and needs no further
+splitting --- the other two branches are barely more informative than the
+parent. The tree-growing algorithm computes this number for every candidate
+feature and takes the largest, then recurses on each impure branch.
+
+\emph{Gini for comparison.} $\text{Gini}(D) = 1 - (9/14)^2 - (5/14)^2
+= 1 - 0.413 - 0.128 = 0.459$. Gini and entropy disagree about the best split
+only rarely; Gini is the default in CART mainly because it avoids computing a
+logarithm.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 5.5.3 Decision Trees for Regression --------------------------------------------------------
@@ -832,7 +1392,7 @@
 \subsection{Random Forests}
 
 \begin{v3topic}{Bagging and the Random Forest Algorithm}
-    A Random Forest trains $T$ decision trees on \emph{bootstrap} samples (sampling $N$ points with replacement) and combines their predictions by majority vote (classification) or averaging (regression)\textsuperscript{\cite[][pp.~586--588]{hanDataMiningConcepts2012}}. At each split, only a random subset of $m \approx \sqrt{D}$ features is considered. This double randomization decorrelates the individual trees and drastically reduces variance while keeping bias low.
+    A Random Forest\textsuperscript{\cite{breimanRandomForests2001}} trains $T$ decision trees on \emph{bootstrap} samples (sampling $N$ points with replacement) and combines their predictions by majority vote (classification) or averaging (regression)\textsuperscript{\cite{breimanBaggingPredictors1996}, \cite[][pp.~586--588]{hanDataMiningConcepts2012}}. At each split, only a random subset of $m \approx \sqrt{D}$ features is considered. This double randomization decorrelates the individual trees and drastically reduces variance while keeping bias low.
 \visualseparator
     \begin{equation}
         \hat{y}(\mathbf{x}) = \frac{1}{T} \sum_{t=1}^{T} h_t(\mathbf{x}),
@@ -843,15 +1403,83 @@
     \end{equation}
 
 \end{v3topic}
+\begin{workedexample}[Where the $37\,\%$ comes from]
+Drawing $N$ points with replacement, the chance a particular point is
+\emph{missed} on one draw is $1-1/N$. Over $N$ independent draws,
+\[
+  P(\text{never drawn}) = \left(1-\frac{1}{N}\right)^{N}
+  \xrightarrow{\;N\to\infty\;} e^{-1} = 0.368 .
+\]
+Numerically: $0.349$ at $N=10$, $0.366$ at $N=100$, $0.368$ at $N=1000$. So
+roughly $37\,\%$ of the training set is out-of-bag for each tree, and averaging
+each point's prediction over only the trees that never saw it gives a
+generalisation estimate for free --- no separate validation split required.
+This is the closest thing in classical machine learning to obtaining
+cross-validation without paying for it.
+\end{workedexample}
+
 \begin{v3topic}{Out-of-Bag Error and Feature Importance}
     Each bootstrap sample leaves out roughly 37\% of the training points (out-of-bag, OOB)\textsuperscript{\cite[][p.588]{hanDataMiningConcepts2012}}. Predicting each training point with the trees that did \emph{not} train on it gives a free, unbiased estimate of generalization error without a separate validation set. Feature importance is measured by how much prediction accuracy drops when a feature's values are randomly permuted (permutation importance).
+
+\begin{cautionbox}[Impurity-based feature importance is misleading]
+The default importance attribute in most libraries is mean impurity decrease,
+and it is biased toward high-cardinality and continuous features for the same
+reason information gain is. It also splits credit arbitrarily between
+correlated features, so a genuinely important variable can look unimportant
+because a correlated twin absorbed its share. Prefer permutation importance
+computed on \emph{held-out} data, and treat any importance ranking as a
+hypothesis to test rather than an explanation.
+\end{cautionbox}
 \end{v3topic}
 
 % ---- 5.5.5 Gradient Boosting --------------------------------------------------------------------
 \subsection{Gradient Boosting}
 
 \begin{v3topic}{Gradient Boosting: Sequential Error Correction}
-    Gradient Boosting builds an ensemble sequentially: each new tree $h_t$ fits the \emph{negative gradient} (pseudo-residuals) of the loss of the current ensemble\textsuperscript{\cite[][p.590]{hanDataMiningConcepts2012}}. For squared-error loss, these pseudo-residuals equal the ordinary residuals $y_n - F_{t-1}(\mathbf{x}_n)$. A learning rate $\eta$ (shrinkage) scales each tree's contribution to prevent overfitting.
+    Gradient Boosting\textsuperscript{\cite{friedmanGreedyFunctionApproximation2001}} builds an ensemble sequentially: each new tree $h_t$ fits the \emph{negative gradient} (pseudo-residuals) of the loss of the current ensemble\textsuperscript{\cite[][p.~590]{hanDataMiningConcepts2012}}. For squared-error loss, these pseudo-residuals equal the ordinary residuals $y_n - F_{t-1}(\mathbf{x}_n)$. A learning rate $\eta$ (shrinkage) scales each tree's contribution to prevent overfitting.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  tr/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum width=13mm,minimum height=7mm,font=\sffamily\scriptsize},
+  arr/.style={-{Stealth[length=1.6mm]},draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+
+  \node[lbl,anchor=west,font=\sffamily\small\bfseries] at (0,14mm)
+    {Bagging: parallel, reduces \emph{variance}};
+  \node[tr] (d) at (6mm,0) {data};
+  \foreach \i/\y in {1/8mm,2/0mm,3/-8mm}{
+    \node[tr] (b\i) at (30mm,\y) {tree \i};
+    \draw[arr] (d) -- (b\i);}
+  \node[tr,fill=AlmanachOchre!22,draw=AlmanachOchre] (avg) at (56mm,0)
+    {average};
+  \foreach \i in {1,2,3}{\draw[arr] (b\i) -- (avg);}
+  \node[lbl,anchor=west,align=left,text width=40mm] at (66mm,0)
+    {each tree sees a different bootstrap sample};
+
+  \node[lbl,anchor=west,font=\sffamily\small\bfseries] at (0,-24mm)
+    {Boosting: sequential, reduces \emph{bias}};
+  \node[tr] (s0) at (6mm,-36mm) {data};
+  \node[tr] (s1) at (30mm,-36mm) {tree 1};
+  \node[tr] (s2) at (54mm,-36mm) {tree 2};
+  \node[tr] (s3) at (78mm,-36mm) {tree 3};
+  \draw[arr] (s0) -- (s1);
+  \draw[arr] (s1) -- (s2)
+    node[midway,above,lbl,color=AlmanachRed] {residuals};
+  \draw[arr] (s2) -- (s3)
+    node[midway,above,lbl,color=AlmanachRed] {residuals};
+  \node[lbl,anchor=west,align=left,text width=32mm] at (90mm,-36mm)
+    {each tree fixes what the previous one missed};
+\end{tikzpicture}
+\caption{The two ensemble strategies. Bagging averages many independent
+high-variance trees and trains in parallel; boosting fits each tree to what the
+ensemble still gets wrong and is inherently sequential. That is why a random
+forest is hard to overfit, while a boosted ensemble needs its learning rate and
+tree count tuned together.}
+\label{fig:ml-bagging-vs-boosting}
+\end{figure}
+
 \visualseparator
     \begin{equation}
         F_t(\mathbf{x}) = F_{t-1}(\mathbf{x}) + \eta\, h_t(\mathbf{x}),
@@ -862,9 +1490,9 @@
 
 \end{v3topic}
 \begin{v3topic}{XGBoost and LightGBM}
-    XGBoost (Chen \& Guestrin, 2016) extends gradient boosting with a second-order Taylor expansion of the loss, L1/L2 regularization on tree weights, and efficient column subsampling. LightGBM (Ke et al., 2017) further accelerates training via Gradient-based One-Side Sampling (GOSS) and Exclusive Feature Bundling (EFB), enabling learning on very large datasets with millions of rows. Both consistently rank among the top performers on tabular-data benchmarks\textsuperscript{\cite[][p.590]{hanDataMiningConcepts2012}}.
+XGBoost\textsuperscript{\cite{chenXGBoostScalableTree2016}} extends gradient boosting with a second-order Taylor expansion of the loss, $L_1$/$L_2$ regularisation on tree weights, and efficient column subsampling. LightGBM\textsuperscript{\cite{keLightGBMHighlyEfficient2017}} further accelerates training via Gradient-based One-Side Sampling (GOSS) and Exclusive Feature Bundling (EFB), enabling learning on datasets with millions of rows. Both consistently rank among the top performers on tabular-data benchmarks\textsuperscript{\cite[][p.~590]{hanDataMiningConcepts2012}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=2.6cm]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=2.6cm]|X|X|}}
         \hline
         \textbf{Method}   & \textbf{Key innovation}                                  & \textbf{Typical use}           \\
         \hline
@@ -875,8 +1503,19 @@
         LightGBM          & GOSS + EFB, leaf-wise growth                             & Large-scale datasets           \\
         \hline
     \end{tblr}
-\captionof{table}{Gradient Boosting: XGBoost and LightGBM.}
-\label{tab:ch05-machine-learning-inline-08}
+\captionof{table}{Three generations of boosting. The later entries did not
+change the underlying idea; they changed what it costs to run, which is what
+moved boosting from research result to default choice.}
+\label{tab:ml-boosting-variants}
+
+\begin{engineernote}
+For tabular data, gradient-boosted trees remain the strongest default, and a
+tuned LightGBM or XGBoost still beats a neural network on most tabular
+benchmarks. Reach for deep learning when the input has structure a tree cannot
+exploit --- pixels, audio, text, graphs --- not because it is newer. And when
+you report that a boosted model beat a network, state the tuning budget each
+one received: an untuned baseline is not a comparison.
+\end{engineernote}
 \end{v3topic}
 
 % ===========================================================================================
@@ -886,7 +1525,7 @@
 \subsection{K-Nearest Neighbors}
 
 \begin{v3topic}{K-Nearest Neighbors Algorithm}
-    K-Nearest Neighbors (k-NN) is a non-parametric, instance-based learner: instead of fitting an explicit model, it stores the training data and at prediction time finds the $k$ closest training examples to the query point\textsuperscript{\cite[][pp.~396--400]{hanDataMiningConcepts2012}}. For classification, it returns the majority class among the $k$ neighbors; for regression, it returns their mean. There is no training phase, but prediction cost is $O(ND)$ per query without indexing.
+    K-Nearest Neighbors\textsuperscript{\cite{coverNearestNeighborPattern1967}} is a non-parametric, instance-based learner: instead of fitting an explicit model, it stores the training data and at prediction time finds the $k$ closest training examples to the query point\textsuperscript{\cite[][pp.~396--400]{hanDataMiningConcepts2012}}. For classification, it returns the majority class among the $k$ neighbors; for regression, it returns their mean. There is no training phase, but prediction cost is $O(ND)$ per query without indexing.
 \visualseparator
     \begin{equation}
         \hat{y}(\mathbf{x}) = \frac{1}{k}\sum_{i \in \mathcal{N}_k(\mathbf{x})} y_i
@@ -900,7 +1539,7 @@
 \begin{v3topic}{Weighted Voting and Choosing k}
     Distance-weighted k-NN gives closer neighbors more influence: the weight of neighbor $i$ is $w_i = 1/d(\mathbf{x}, \mathbf{x}_i)^2$\textsuperscript{\cite[][p.399]{hanDataMiningConcepts2012}}. The choice of $k$ is critical: $k=1$ is susceptible to noise (high variance); large $k$ smooths the boundary but may blur distinct clusters (high bias). Cross-validation is used to select the optimal $k$.
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|X|}}
         \hline
         \textbf{$k$ value} & \textbf{Bias}    & \textbf{Variance}  \\
         \hline
@@ -911,8 +1550,60 @@
         $k = N$            & High             & Very low (predicts overall majority) \\
         \hline
     \end{tblr}
-\captionof{table}{K-Nearest Neighbors: Weighted Voting and Choosing k.}
-\label{tab:ch05-machine-learning-inline-09}
+\captionof{table}{How $k$ moves the bias--variance balance. The two extremes
+are both useless in opposite directions, which is why $k$ is chosen by
+cross-validation rather than by rule of thumb.}
+\label{tab:ml-knn-k}
+
+\begin{workedexample}[One noisy point decides the answer for small $k$]
+Classify the query $\mathbf{q} = (4,4)$ against six labelled points. Compute
+every Euclidean distance:
+
+\smallskip
+\begin{tblr}{
+  width=0.86\linewidth,
+  colspec={Q[c]Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+point & label & $d$ to $(4,4)$ & rank \\
+$(4,3)$ & B & $\sqrt{0+1} = 1.000$ & 1 \\
+$(2,3)$ & A & $\sqrt{4+1} = 2.236$ & 2 \\
+$(6,6)$ & B & $\sqrt{4+4} = 2.828$ & 3 \\
+$(3,1)$ & A & $\sqrt{1+9} = 3.162$ & 4 \\
+$(1,2)$ & A & $\sqrt{9+4} = 3.606$ & 5 \\
+$(7,7)$ & B & $\sqrt{9+9} = 4.243$ & 6 \\
+\end{tblr}
+\smallskip
+
+Now vote, for three values of $k$:
+\[
+\begin{aligned}
+  k=1:\ &\{\text{B}\} &&\Rightarrow \textbf{B}\\
+  k=3:\ &\{\text{B},\text{A},\text{B}\} &&\Rightarrow \textbf{B}\ (2\text{--}1)\\
+  k=5:\ &\{\text{B},\text{A},\text{B},\text{A},\text{A}\}
+        &&\Rightarrow \textbf{A}\ (3\text{--}2)
+\end{aligned}
+\]
+
+\emph{What happened.} The point $(4,3)$ is a lone B sitting deep inside A
+territory --- a mislabelled or anomalous observation. At $k=1$ and $k=3$ it
+dominates the vote purely because it is nearest. At $k=5$ the surrounding A
+points outvote it. This is the bias--variance trade-off made concrete: small
+$k$ has the flexibility to honour every training point, including the wrong
+ones.
+\end{workedexample}
+
+\begin{cautionbox}[$k$-NN without feature scaling is measuring the wrong thing]
+Euclidean distance adds squared differences across features, so a feature
+measured in metres and a feature measured in millimetres contribute at wildly
+different weights. Predicting house prices from \texttt{rooms} (range 1--8) and
+\texttt{area\_cm2} (range 500{,}000--3{,}000{,}000) means the area term is
+larger by a factor of roughly $10^{11}$ --- the room count is arithmetically
+invisible, and the model is a one-feature model that nobody intended.
+Standardise every feature before computing any distance. The same warning
+applies to $k$-means, SVM, and PCA, and to nothing at all in a decision tree,
+which is invariant to monotone rescaling.
+\end{cautionbox}
 \end{v3topic}
 
 % ---- 5.6.2 Distance Metrics -------------------------------------------------------------------
@@ -939,9 +1630,9 @@
 \subsection{Introduction to Genetic Algorithms}
 
 \begin{v3topic}{Terminology: Chromosomes, Genes, and Fitness}
-    A genetic algorithm (GA) maintains a \emph{population} of candidate solutions called \emph{chromosomes}\textsuperscript{\cite[][pp.~91--95]{hurbansGrokkingArtificialIntelligence2020}}. Each chromosome is a sequence of \emph{genes} (encoding one attribute each); the value stored in a gene is its \emph{allele}. A \emph{fitness function} assigns a scalar score to each chromosome, quantifying how well it solves the problem. GAs require no gradient information — only the ability to evaluate fitness.
+    A genetic algorithm\textsuperscript{\cite{hollandAdaptationNaturalArtificial1975}} maintains a \emph{population} of candidate solutions called \emph{chromosomes}\textsuperscript{\cite[][pp.~91--95]{hurbansGrokkingArtificialIntelligence2020}}. Each chromosome is a sequence of \emph{genes} (encoding one attribute each); the value stored in a gene is its \emph{allele}. A \emph{fitness function} assigns a scalar score to each chromosome, quantifying how well it solves the problem. GAs require no gradient information — only the ability to evaluate fitness.
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=2.4cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=2.4cm]|X|}}
         \hline
         \textbf{Term}    & \textbf{Meaning}                                                        \\
         \hline
@@ -956,8 +1647,20 @@
         Genotype         & Encoded representation; \emph{phenotype} = the actual decoded solution  \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Genetic Algorithms: Terminology: Chromosomes, Genes, and Fitness.}
-\label{tab:ch05-machine-learning-inline-10}
+\captionof{table}{Genetic-algorithm vocabulary, which is borrowed wholesale
+from biology. The only part that carries real engineering weight is the
+encoding: it decides which solutions are even reachable.}
+\label{tab:ml-ga-terminology}
+
+\begin{plainlanguage}
+A genetic algorithm is organised trial and error with memory. Guess a few
+hundred solutions at random, score them, throw away the worst, and build the
+next batch by mixing pieces of the survivors and randomly tweaking a few
+values. Repeat. Nothing understands the problem at any point --- but because
+good pieces get copied more often than bad ones, the population drifts toward
+better solutions. It is the method of last resort, and the method of first
+resort when you have no gradient.
+\end{plainlanguage}
 
 \end{v3topic}
 \begin{v3topic}{The GA Life Cycle}
@@ -978,7 +1681,7 @@
 \begin{v3topic}{Crossover and Mutation Operators}
     Crossover (recombination) exchanges genetic material between two parent chromosomes to produce offspring, exploiting existing good partial solutions\textsuperscript{\cite[][pp.~100--115]{hurbansGrokkingArtificialIntelligence2020}}. Mutation randomly flips bits or perturbs values, reintroducing diversity lost through selection. The mutation rate $p_m$ is kept small (typically 0.001--0.01) to avoid turning the GA into a random search.
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=3.0cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=3.0cm]|X|}}
         \hline
         \textbf{Operator}       & \textbf{Description}                                                                  \\
         \hline
@@ -993,8 +1696,49 @@
         Gaussian mutation       & Gene perturbed by $\mathcal{N}(0,\sigma^2)$ (real-valued encoding)                   \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Genetic Algorithms: Crossover and Mutation Operators.}
-\label{tab:ch05-machine-learning-inline-11}
+\captionof{table}{Crossover exploits combinations that already work; mutation
+explores combinations nobody has tried. A GA that loses either operator
+degenerates --- into a random search without crossover, into a premature
+monoculture without mutation.}
+\label{tab:ml-ga-operators}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  g/.style={draw=AlmanachInk!40,minimum size=6mm,font=\ttfamily\scriptsize,
+    inner sep=0pt},
+  pa/.style={g,fill=AlmanachTeal!22},
+  pb/.style={g,fill=AlmanachOchre!25},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  \node[lbl,anchor=east] at (-3mm,6mm) {parent 1};
+  \node[lbl,anchor=east] at (-3mm,0mm) {parent 2};
+  \node[lbl,anchor=east] at (-3mm,-11mm) {child 1};
+  \node[lbl,anchor=east] at (-3mm,-17mm) {child 2};
+  \foreach \v [count=\i from 0] in {1,0,1,1,0,1}{
+    \node[pa] at (\i*6mm,6mm) {\v};}
+  \foreach \v [count=\i from 0] in {0,1,1,0,1,0}{
+    \node[pb] at (\i*6mm,0mm) {\v};}
+  \foreach \v [count=\i from 0] in {1,0,1}{
+    \node[pa] at (\i*6mm,-11mm) {\v};}
+  \foreach \v [count=\i from 3] in {0,1,0}{
+    \node[pb] at (\i*6mm,-11mm) {\v};}
+  \foreach \v [count=\i from 0] in {0,1,1}{
+    \node[pb] at (\i*6mm,-17mm) {\v};}
+  \foreach \v [count=\i from 3] in {1,0,1}{
+    \node[pa] at (\i*6mm,-17mm) {\v};}
+  \draw[AlmanachRed,very thick,dashed] (15mm,10mm) -- (15mm,-4mm);
+  \node[lbl,color=AlmanachRed,anchor=south] at (15mm,10mm) {cut point};
+  \draw[-{Stealth[length=1.8mm]},AlmanachInk!55] (15mm,-5mm) -- (15mm,-7mm);
+  \node[g,fill=AlmanachRed!35,draw=AlmanachRed] at (24mm,-17mm) {0};
+  \node[lbl,anchor=west,color=AlmanachRed] at (40mm,-17mm)
+    {one gene then mutated};
+\end{tikzpicture}
+\caption{Single-point crossover followed by a mutation. The two children each
+inherit a contiguous block from either parent, preserving combinations of genes
+that worked together; the mutated bit reintroduces a value that selection had
+already eliminated from the population.}
+\label{fig:ml-ga-crossover}
+\end{figure}
 \end{v3topic}
 
 % ---- 5.7.2 Applications of Genetic Algorithms --------------------------------------------------
@@ -1003,7 +1747,7 @@
 \begin{v3topic}{Application Domains and Configurable Parameters}
     Genetic algorithms excel in large, complex, or discontinuous search spaces where gradient methods fail\textsuperscript{\cite[][pp.~115--127]{hurbansGrokkingArtificialIntelligence2020}}. They are robust to noisy fitness functions and require no problem-specific gradient. For example, the Knapsack Problem with 26 items requires $2^{26} \approx 67$ million brute-force evaluations; a GA typically finds near-optimal solutions in 10\,000--100\,000 fitness evaluations. GAs provide no guarantee of global optimality.
 \visualseparator
-    \begin{tblr}{|Q[l,m,wd=3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,wd=3.5cm]|X|}}
         \hline
         \textbf{Domain}             & \textbf{Example applications}                                              \\
         \hline
@@ -1017,13 +1761,24 @@
         \hline
         Finance \& game AI          & Portfolio optimization, trading strategy development, level generation     \\
         \hline
-        \SetCell[c=2]{l} {\textbf{Key parameters:} population size $N$,
-        mutation rate $p_m$, crossover rate $p_c$, selection pressure,
-        encoding, stopping condition} & \\
-        \hline
     \end{tblr}
-\captionof{table}{Applications of Genetic Algorithms: Application Domains and Configurable Parameters.}
-\label{tab:ch05-machine-learning-inline-12}
+\captionof{table}{Where genetic algorithms earn their cost: large, rugged, or
+discontinuous search spaces in which no gradient exists to follow.}
+\label{tab:ml-ga-applications}
+
+    \textbf{Key parameters to configure:} population size $N$, mutation rate
+    $p_m$, crossover rate $p_c$, selection pressure, encoding, and the stopping
+    condition.
+
+\begin{cautionbox}[A genetic algorithm is the answer only when there is no gradient]
+GAs are attractive because they need nothing but a fitness function, and that
+same generality is their weakness: they ignore all the structure a gradient
+would have given them for free. If your objective is differentiable, gradient
+descent will beat a GA by orders of magnitude in evaluations. Reserve genetic
+algorithms for genuinely non-differentiable, combinatorial, or black-box
+objectives --- and even then, benchmark against random search and simulated
+annealing, both of which are simpler and surprisingly often competitive.
+\end{cautionbox}
 \end{v3topic}
 %
 \section{Deep Dive: From Score to Decision Policy}
@@ -1051,6 +1806,49 @@ measure whether improvement transfers beyond the error slice that inspired the
 change.
 \end{v3topic}
 
+\begin{practicallab}[Build the baseline that makes your model prove itself]
+\textbf{Goal.} Establish, on a dataset of your choosing, the number every later
+model must beat --- and discover how often that number is embarrassingly hard
+to beat.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Pick any tabular dataset with a target column. Record its size, class
+        balance, and the meaning of one prediction.
+  \item \textbf{Split first, before you look at anything.} Hold out a test set
+        and do not touch it again until step 7. Split by group or by time if
+        either applies.
+  \item Compute the three trivial baselines: majority class (classification) or
+        mean (regression); a single-feature rule; and a decision tree of
+        depth 2. Report all three on cross-validation, with the spread.
+  \item Fit a regularised linear or logistic model, then a gradient-boosted
+        tree. Tune each with the same budget --- count the trials and write the
+        number down.
+  \item Report precision, recall, $F_1$, and the majority-class baseline
+        together. Never report accuracy alone.
+  \item Take the twenty worst errors and read them. Classify each as label
+        error, missing feature, genuine ambiguity, or model limitation.
+  \item Only now, once, score your chosen model on the test set. Whatever it
+        says is your answer.
+\end{enumerate}
+
+\textbf{Deliverable.} One table with every model, its cross-validation mean and
+spread, its tuning budget, and the trivial baseline in the first row. Plus one
+paragraph on what the twenty errors told you.
+
+\textbf{The point.} Step 6 usually changes the project more than step 4 does.
+A model that beats the baseline by less than the fold-to-fold spread has not
+been shown to beat it at all.
+\end{practicallab}
+
+\begin{checkpoint}
+For each of $k$-means, DBSCAN, SVM with an RBF kernel, a random forest, and
+$k$-NN, name (a) the one assumption that method makes about the data, (b) the
+preprocessing step it cannot work without, and (c) the dataset shape on which
+you would expect it to fail. Only one of the five is invariant to feature
+scaling --- identify it and explain why.
+\end{checkpoint}
+
 \chapterreview{Frame}{Baseline}{Fit}{Diagnose}
 
 \section{Further Reading}
@@ -1061,5 +1859,18 @@ change.
         \item \fullcite{hanDataMiningConcepts2012} — Comprehensive reference for clustering (DBSCAN, hierarchical), decision trees, ensemble methods, and k-NN.
         \item \fullcite{hurbansGrokkingArtificialIntelligence2020} — Accessible introduction to genetic algorithms, reinforcement learning, and AI concepts with visual examples.
         \item \fullcite{fischerMaschinellesLernenFuer2024} — German-language introduction covering regression and core ML concepts (Kapitel 9--12).
+        \item \fullcite{hastieElementsStatisticalLearning2008} — the standard graduate reference; the natural next step after this chapter.
+    \end{itemize}
+\end{v3topic}
+
+\begin{v3topic}{Primary sources for the methods in this chapter}
+    \begin{itemize}
+        \item \fullcite{cortesSupportVectorNetworks1995} — support-vector networks, and the soft margin.
+        \item \fullcite{breimanRandomForests2001} — random forests; see also \fullcite{breimanBaggingPredictors1996} for bagging.
+        \item \fullcite{friedmanGreedyFunctionApproximation2001} — gradient boosting as function-space gradient descent.
+        \item \fullcite{tibshiraniRegressionShrinkageSelection1996} — the lasso, and why $L_1$ selects features.
+        \item \fullcite{esterDensityBasedAlgorithmDiscovering1996} — DBSCAN, and clustering without choosing $K$.
+        \item \fullcite{dempsterMaximumLikelihoodIncomplete1977} — the EM algorithm in its general form.
+        \item \fullcite{chenXGBoostScalableTree2016} — the engineering that made boosting the tabular default.
     \end{itemize}
 \end{v3topic}

@@ -8,6 +8,46 @@
 \chapterlead{How can language systems be evaluated rather than merely admired?}{Tokenise}{Represent}{Generate}{Evaluate}{nlp-generative-ai}
 
 % ==== Section 1: Natural Language Processing Foundations =====================================
+\label{ch:nlp-voice-assistants}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item run the byte-pair-encoding merge loop by hand and predict how an unseen
+        word will be split;
+  \item explain why token count, not word count, is what a context window
+        measures --- and estimate both;
+  \item compute perplexity from a sequence of probabilities and relate it to
+        cross-entropy;
+  \item compute a BLEU score, including the brevity penalty, and state what it
+        cannot see;
+  \item estimate an $n$-gram probability with and without smoothing, and say
+        what smoothing costs;
+  \item describe what a word embedding does and does not encode;
+  \item size a retrieval-augmented pipeline: chunk count, retrieved context,
+        and what is left for the answer;
+  \item name the two separate evaluations a RAG system needs;
+  \item explain why a fluent answer is not evidence of a correct one.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A language model does not read words. It reads numbers. The whole first half of
+this chapter is about how text becomes numbers --- splitting it into tokens,
+mapping tokens to IDs, and turning IDs into vectors that place similar meanings
+near each other. The second half is about what you can build once that
+translation exists: translation, search, summaries, assistants. Almost every
+surprising behaviour of a language model, good or bad, traces back to a
+decision made in that first translation step.
+\end{plainlanguage}
+
+\begin{engineernote}
+This chapter sits between \cref{ch:deep-learning}, which builds the Transformer,
+and \cref{ch:practical-llm-engineering}, which takes a real checkpoint apart.
+Read it as the bridge: here the mechanism becomes a language system, and the
+failures stop being numerical and start being linguistic and social.
+\end{engineernote}
+
 \section{Natural Language Processing Foundations}
 
 % ---- 12.1.1 What is NLP? -------------------------------------------------------------------
@@ -41,7 +81,7 @@
 \begin{v3topic}{A Brief History of NLP}
     NLP development spans three eras\textsuperscript{\cite[][pp.~3--9]{dhamaniIntroductionGenerativeAI2024}}:
 
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec = {X[1.2]X[3.5]},
         hlines, vlines,
         row{1} = {font=\bfseries\small, bg=LimeGreen!30},
@@ -57,8 +97,8 @@
         2018--2019 & GPT-1 (OpenAI) and BERT (Google) --- pre-trained large language models \\
         2020--2023 & GPT-3 (175B), ChatGPT, GPT-4 --- conversational AI at scale \\
     \end{tblr}
-\captionof{table}{What is NLP?: A Brief History of NLP.}
-\label{tab:ch12-nlp-voice-assistants-inline-01}
+\captionof{table}{The successive paradigms of natural language processing, each of which solved the previous one's blocking limitation.}
+\label{tab:nlp-history}
 \end{v3topic}
 
 % ---- 12.1.2 Linguistic Building Blocks -----------------------------------------------------
@@ -68,7 +108,7 @@
     Language is analysed at multiple levels\textsuperscript{\cite[][pp.~3--4]{dhamaniIntroductionGenerativeAI2024}}.
     Each level provides different information for NLP tasks:
 
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec = {Q[2.5cm]X[2]X[4]},
         hlines, vlines,
         row{1} = {font=\bfseries\small, bg=LimeGreen!30},
@@ -81,8 +121,8 @@
         \textbf{Pragmatics} & Language in context & Speaker intent; indirect requests; discourse coherence \\
         \textbf{Phonology} & Sound patterns & Stress, intonation, phoneme inventories (for speech) \\
     \end{tblr}
-\captionof{table}{Linguistic Building Blocks: Levels of Linguistic Analysis.}
-\label{tab:ch12-nlp-voice-assistants-inline-02}
+\captionof{table}{Levels of linguistic analysis. Modern end-to-end models do not represent these explicitly, but the levels remain the vocabulary for describing where a system fails.}
+\label{tab:nlp-linguistic-levels}
 
     NLP systems typically must handle all levels: a machine translation system requires morphological analysis, syntactic parsing, semantic understanding, and pragmatic coherence.
 \end{v3topic}
@@ -114,7 +154,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Byte Pair Encoding (BPE)}
-    \textbf{BPE} is the dominant subword tokenization algorithm, used in GPT (via \texttt{tiktoken}), RoBERTa, and others\textsuperscript{\cite[][pp.~20--22]{farrisHowLargeLanguage2025}}:
+    \textbf{BPE}\textsuperscript{\cite{sennrichNeuralMachineTranslation2016}} is the dominant subword tokenization algorithm, used in GPT (via \texttt{tiktoken}), RoBERTa, and others\textsuperscript{\cite[][pp.~20--22]{farrisHowLargeLanguage2025}}:
     \begin{enumerate}
         \item Initialise vocabulary with individual characters $\{a, b, \ldots, z\}$
         \item Find the most frequently co-occurring adjacent byte pair in the corpus
@@ -126,7 +166,126 @@
     \emph{schoolhouse} $\to$ \texttt{school} + \texttt{house}.
     Alternative algorithms: \textbf{WordPiece} (BERT, Google) and \textbf{SentencePiece} (multilingual models, preserves whitespace).
 
-\end{v3topic}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,font=\ttfamily\scriptsize,inner xsep=3pt},
+  vec/.style={draw=AlmanachOchre,fill=AlmanachOchre!18,rounded corners=0.6mm,
+    minimum height=8mm,minimum width=7mm,font=\scriptsize},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+
+  \node[bx,minimum width=34mm] (txt) at (0,0) {"unhappiness"};
+  \node[lbl,below=1.5mm of txt] {raw string};
+
+  \node[bx] (t1) at (33mm,4.5mm) {un};
+  \node[bx] (t2) at (33mm,-4.5mm) {happiness};
+  \node[lbl] at (33mm,-13mm) {subword tokens};
+
+  \node[bx] (i1) at (56mm,4.5mm) {392};
+  \node[bx] (i2) at (56mm,-4.5mm) {21832};
+  \node[lbl] at (56mm,-13mm) {integer IDs};
+
+  \foreach \r in {0,1,2}{
+    \node[vec] at (78mm+\r*8mm,4.5mm) {};
+    \node[vec] at (78mm+\r*8mm,-4.5mm) {};}
+  \node[lbl] at (94mm,-13mm) {embedding vectors};
+  \node[lbl,anchor=west] at (102mm,4.5mm) {$\cdots$};
+  \node[lbl,anchor=west] at (102mm,-4.5mm) {$\cdots$};
+
+  \draw[arr] (txt.east) -- ++(4mm,0) |- (t1.west);
+  \draw[arr] (txt.east) -- ++(4mm,0) |- (t2.west);
+  \draw[arr] (t1) -- (i1);
+  \draw[arr] (t2) -- (i2);
+  \draw[arr] (i1.east) -- ++(4mm,0);
+  \draw[arr] (i2.east) -- ++(4mm,0);
+\end{tikzpicture}
+\caption{How text becomes something a network can multiply. The model never
+sees letters --- only the IDs in the third column, and then the learned vectors
+in the fourth. Everything the model can and cannot do about spelling is decided
+at the second arrow.}
+\label{fig:nlp-tokenization-pipeline}
+\end{figure}
+
+\begin{workedexample}[Three BPE merges, by hand]
+Train a tokenizer on a five-word corpus with these frequencies:
+\texttt{hug}\,(10), \texttt{pug}\,(5), \texttt{hugs}\,(5), \texttt{pun}\,(12),
+\texttt{bun}\,(4).
+
+\emph{Start.} Split every word into characters. The base vocabulary is
+$\{$\texttt{b}, \texttt{g}, \texttt{h}, \texttt{n}, \texttt{p}, \texttt{s},
+\texttt{u}$\}$.
+
+\emph{Round 1 --- count adjacent pairs.}
+\[
+\begin{aligned}
+  \texttt{h}\,\texttt{u} &= 10+5 = 15, &
+  \texttt{u}\,\texttt{g} &= 10+5+5 = \mathbf{20}, &
+  \texttt{g}\,\texttt{s} &= 5,\\
+  \texttt{p}\,\texttt{u} &= 5+12 = 17, &
+  \texttt{u}\,\texttt{n} &= 12+4 = 16, &
+  \texttt{b}\,\texttt{u} &= 4.
+\end{aligned}
+\]
+The winner is \texttt{ug} at $20$. Merge it and add it to the vocabulary.
+
+\emph{Round 2.} Recount with \texttt{ug} now a single symbol:
+$\texttt{h}\,\texttt{ug} = 15$, $\texttt{p}\,\texttt{ug} = 5$,
+$\texttt{ug}\,\texttt{s} = 5$, $\texttt{p}\,\texttt{u} = 12$,
+$\texttt{u}\,\texttt{n} = \mathbf{16}$, $\texttt{b}\,\texttt{u} = 4$.
+Merge \texttt{un}.
+
+\emph{Round 3.} Now $\texttt{h}\,\texttt{ug} = \mathbf{15}$ is the largest
+($\texttt{p}\,\texttt{un} = 12$ is next). Merge \texttt{hug}.
+
+\emph{Result.} Vocabulary $=$ base characters $+\ \{$\texttt{ug},
+\texttt{un}, \texttt{hug}$\}$.
+
+\emph{Now tokenize new words with it:}
+\[
+\begin{aligned}
+  \texttt{hugs} &\rightarrow \texttt{hug}\;\texttt{s}
+    &&\text{2 tokens},\\
+  \texttt{bug}  &\rightarrow \texttt{b}\;\texttt{ug}
+    &&\text{2 tokens --- never seen in training, still representable},\\
+  \texttt{mug}  &\rightarrow \texttt{?}\;\texttt{ug}
+    &&\text{\texttt{m} is not in the vocabulary at all.}
+\end{aligned}
+\]
+That last line is the whole reason modern tokenizers are \emph{byte}-level: by
+starting from the 256 possible bytes rather than from observed characters, no
+input can ever be unrepresentable. The cost is that unusual text fragments into
+many short tokens.
+\end{workedexample}
+
+\begin{workedexample}[What a context window actually holds]
+English averages roughly $0.75$ words per token, so a $4{,}096$-token window
+holds about
+\[
+  4096 \times 0.75 \approx 3{,}070 \text{ words } \approx 12 \text{ pages.}
+\]
+Conversely, a $10{,}000$-word document needs about
+$10{,}000 / 0.75 \approx 13{,}300$ tokens --- it does not fit, and must be
+chunked.
+
+\emph{The ratio is not constant.} Code, names, numbers, and non-English text
+tokenize far less efficiently. The same sentence in a language written without
+spaces, or in one under-represented in the training corpus, can cost two to
+three times more tokens than its English equivalent. Since both cost and
+context limits are billed in tokens, this is a real and frequently overlooked
+fairness issue as well as a budgeting one.
+\end{workedexample}
+
+\begin{cautionbox}[The tokenizer explains most ``stupid'' model failures]
+When a model cannot count the letters in a word, cannot reverse a string, or
+does arithmetic badly on long numbers, the cause is usually the tokenizer, not
+the reasoning. The model never saw the letters --- it saw two or three opaque
+subword IDs. A number like \texttt{1234567} may split as
+\texttt{123}$\vert$\texttt{45}$\vert$\texttt{67}, with no digit-place structure
+preserved at all. Before concluding that a model ``cannot reason'', check what
+it was actually given.
+\end{cautionbox}
 \begin{v3topic}{Why Subword Tokenization Dominates}
     Subword tokenization solves three fundamental NLP problems\textsuperscript{\cite[][pp.~15--16]{farrisHowLargeLanguage2025}}:
     \begin{itemize}
@@ -144,7 +303,7 @@
 \begin{v3topic}{Automatic NLP Metrics}
     NLP systems are evaluated with a mix of automatic metrics and human judgment\textsuperscript{\cite[][pp.~11--12]{dhamaniIntroductionGenerativeAI2024}}:
 
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec = {Q[3cm]X[2.5]X[4]},
         hlines, vlines,
         row{1} = {font=\bfseries\small, bg=LimeGreen!30},
@@ -152,17 +311,89 @@
     }
         Metric & Task & Key formula / idea \\
         \textbf{Perplexity} & Language modelling & $\mathrm{PP} = \exp\!\left(-\frac{1}{N}\sum_{i=1}^{N}\log P(w_i|\text{context})\right)$; lower = better \\
-        \textbf{BLEU} & Machine translation & Precision of $n$-gram overlaps between hypothesis and reference; brevity penalty \\
-        \textbf{ROUGE-N} & Summarisation & Recall of $n$-gram overlaps: $\frac{\text{matched }n\text{-grams}}{\text{reference }n\text{-grams}}$ \\
+        \textbf{BLEU}\textsuperscript{\cite{papineniBLEUMethodAutomatic2002}} & Machine translation & Precision of $n$-gram overlaps between hypothesis and reference; brevity penalty \\
+        \textbf{ROUGE-N}\textsuperscript{\cite{linROUGEPackageAutomatic2004}} & Summarisation & Recall of $n$-gram overlaps: $\frac{\text{matched }n\text{-grams}}{\text{reference }n\text{-grams}}$ \\
         \textbf{F1} & NER, QA, classification & Harmonic mean of precision and recall: $\frac{2\,P\,R}{P+R}$ \\
         \textbf{GLUE / SuperGLUE} & General NLU & Multi-task benchmark suite; BERT$_\mathrm{LARGE}$ scores 82.1 \\
         \textbf{Human evaluation} & Fluency, coherence, factuality & Gold standard; expensive; high inter-annotator variance \\
     \end{tblr}
-\captionof{table}{Evaluation of NLP Systems: Automatic NLP Metrics.}
-\label{tab:ch12-nlp-voice-assistants-inline-03}
+\captionof{table}{The standard automatic metrics. Every one of them measures
+surface overlap or model confidence; none of them measures whether the output is
+true.}
+\label{tab:nlp-metrics}
 
     Automatic metrics correlate imperfectly with human judgment: a translation can score high on BLEU while being pragmatically awkward.
     Human evaluation remains the gold standard for high-stakes NLP applications.
+
+\begin{workedexample}[Perplexity, computed and interpreted]
+A language model assigns these probabilities to the four words of a sentence:
+$0.5,\ 0.25,\ 0.25,\ 0.5$.
+
+\emph{Cross-entropy first} (in bits):
+\[
+  H = -\tfrac{1}{4}\bigl(\log_2 0.5 + \log_2 0.25 + \log_2 0.25
+      + \log_2 0.5\bigr)
+    = -\tfrac{1}{4}(-1-2-2-1) = \tfrac{6}{4} = 1.5 \text{ bits.}
+\]
+
+\emph{Perplexity} is just the exponential of that:
+\[
+  \mathrm{PP} = 2^{1.5} = 2.83 .
+\]
+
+\emph{Read it.} At each word, the model is as uncertain as if it were choosing
+uniformly among $2.83$ equally likely options. That is the only correct
+intuition for perplexity: it is an \emph{effective branching factor}.
+
+\emph{Two warnings.} Perplexity depends on the tokenizer, so two models with
+different vocabularies cannot be compared by perplexity at all. And a model can
+have excellent perplexity while being confidently, fluently wrong --- perplexity
+measures how well the model predicts text, never whether the text is true.
+\end{workedexample}
+
+\begin{workedexample}[A BLEU score, all the way through]
+\textsf{Reference:} ``the cat is on the mat'' ($r = 6$ words). \\
+\textsf{Candidate:} ``the cat is on mat'' ($c = 5$ words).
+
+\emph{Step 1 --- clipped $n$-gram precisions.}
+\[
+\begin{aligned}
+  p_1 &= 5/5 = 1.000 &&\text{(all five unigrams appear in the reference)},\\
+  p_2 &= 3/4 = 0.750 &&\text{(\textsf{on mat} is not a reference bigram)},\\
+  p_3 &= 2/3 = 0.667, \qquad p_4 &&= 1/2 = 0.500 .
+\end{aligned}
+\]
+
+\emph{Step 2 --- geometric mean.}
+\[
+  \bigl(1.000 \times 0.750 \times 0.667 \times 0.500\bigr)^{1/4}
+  = (0.250)^{1/4} = 0.707 .
+\]
+
+\emph{Step 3 --- brevity penalty.} The candidate is shorter than the reference
+($c < r$), so
+\[
+  \mathrm{BP} = e^{\,1 - r/c} = e^{\,1-6/5} = e^{-0.2} = 0.819 .
+\]
+
+\emph{Step 4 --- BLEU.} $0.819 \times 0.707 = \mathbf{0.58}$.
+
+\emph{What it missed.} Dropping one \textsf{the} cost a third of the score, and
+BLEU cannot tell you that the sentence still means exactly the same thing. Now
+consider the reverse: ``the cat is not on the mat'' shares five of six words
+with the reference and would score very well, while asserting the opposite. BLEU
+counts overlapping strings. It has no access to meaning, and no access to truth.
+\end{workedexample}
+
+\begin{cautionbox}[Report the metric with the thing it cannot see]
+Every automatic metric in \cref{tab:nlp-metrics} is a proxy. BLEU and ROUGE
+reward surface overlap and punish valid paraphrase; perplexity rewards
+predictability and is blind to factuality; a benchmark score rewards whatever
+the benchmark happened to sample, and is vulnerable to that benchmark having
+leaked into pre-training data. State the metric, its known blind spot, and the
+human or task-level check you ran alongside it. A number without its blind spot
+is a marketing claim.
+\end{cautionbox}
 \end{v3topic}
 
 % ==== Section 2: Text Processing and Representation ==========================================
@@ -184,7 +415,46 @@
     TF-IDF remains useful for information retrieval and keyword extraction but cannot capture semantic similarity.
 
 \end{v3topic}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0,
+  ax/.style={->,draw=AlmanachInk!45,>={Stealth[length=1.6mm]}},
+  w/.style={circle,fill=AlmanachTeal,inner sep=1.3pt},
+  wo/.style={circle,fill=AlmanachOchre,inner sep=1.3pt},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!80},
+  rel/.style={-{Stealth[length=1.8mm]},draw=AlmanachRed,thick,dashed}]
+  \draw[ax] (0,0) -- (7.2,0);
+  \draw[ax] (0,0) -- (0,3.4);
+  \node[lbl,rotate=90,anchor=south] at (-4mm,1.7) {latent dimension 2};
+  \node[lbl,anchor=north] at (3.6,-3mm) {latent dimension 1};
+
+  \node[w] (king) at (1.4,2.5) {};   \node[lbl,above] at (1.4,2.6) {king};
+  \node[w] (queen) at (3.4,2.5) {};  \node[lbl,above] at (3.4,2.6) {queen};
+  \node[w] (man) at (1.4,1.0) {};    \node[lbl,below] at (1.4,0.85) {man};
+  \node[w] (woman) at (3.4,1.0) {};  \node[lbl,below] at (3.4,0.85) {woman};
+  \draw[rel] (man) -- (woman);
+  \draw[rel] (king) -- (queen);
+  \node[lbl,color=AlmanachRed] at (2.4,1.22) {same offset};
+
+  \node[wo] (cat) at (5.7,2.2) {};   \node[lbl,right=1mm] at (5.75,2.2) {cat};
+  \node[wo] (dog) at (6.1,2.6) {};   \node[lbl,right=1mm] at (6.15,2.6) {dog};
+  \node[wo] (kitten) at (5.4,2.6) {};\node[lbl,left=1mm] at (5.35,2.6) {kitten};
+  \draw[draw=AlmanachOchre,dashed] (5.75,2.45) circle (0.62);
+  \node[lbl,color=AlmanachOchre,anchor=north] at (5.75,1.72)
+    {similar words cluster};
+\end{tikzpicture}
+\caption{What an embedding buys. Words used in similar contexts end up near
+each other, and some relations appear as consistent offsets --- the basis of
+the famous \emph{king $-$ man $+$ woman $\approx$ queen} arithmetic. The
+regularity is real but weaker and more selective than the popular examples
+suggest, and it holds far better for frequent words than for rare ones.}
+\label{fig:nlp-embedding-space}
+\end{figure}
+
 \begin{v3topic}{Word2Vec: Learning Dense Embeddings}
+    Word2Vec is due to Mikolov and
+    colleagues\textsuperscript{\cite{mikolovEfficientEstimationWord2013}}.
+
     \textbf{Word2Vec} (Mikolov et al., Google, 2013) learns dense, low-dimensional word vectors from large corpora using two architectures\textsuperscript{\cite[][p.~36]{farrisHowLargeLanguage2025}}:
     \begin{itemize}
         \item \textbf{CBOW} (Continuous Bag-of-Words): predict center word from surrounding context words
@@ -200,6 +470,9 @@
 
 \end{v3topic}
 \begin{v3topic}{GloVe and the Embedding Geometry}
+    GloVe factorises a global co-occurrence
+    matrix\textsuperscript{\cite{penningtonGloVeGlobalVectors2014}}.
+
     \textbf{GloVe} (Global Vectors, Pennington et al., Stanford 2014) learns embeddings from global co-occurrence statistics rather than local context windows\textsuperscript{\cite[][p.~35]{farrisHowLargeLanguage2025}}.
     Objective: $\vec{v}_i \cdot \vec{v}_j + b_i + b_j = \log X_{ij}$ where $X_{ij}$ is the co-occurrence count.
     GloVe captures corpus-wide statistics more efficiently than Word2Vec on large corpora.
@@ -235,6 +508,44 @@
     Bengio et al.\ (2003) introduced the \textbf{neural probabilistic language model}: replace the count-based estimate with a feed-forward neural network that maps word embeddings to the next-word distribution.
     This was the conceptual precursor to modern LLMs.
 
+\begin{workedexample}[Counting bigrams, and the zero that breaks everything]
+Corpus: \textsf{``the cat sat on the mat the cat ran''} --- nine tokens, six
+distinct words $V = \{$the, cat, sat, on, mat, ran$\}$.
+
+\emph{Raw counts.} \textsf{the} occurs $3$ times. It is followed by
+\textsf{cat} twice and \textsf{mat} once. So
+\[
+  P(\textsf{cat}\mid\textsf{the}) = \tfrac{2}{3} = 0.667,
+  \qquad
+  P(\textsf{mat}\mid\textsf{the}) = \tfrac{1}{3} = 0.333,
+  \qquad
+  P(\textsf{sat}\mid\textsf{the}) = \tfrac{0}{3} = \mathbf{0}.
+\]
+
+That zero is fatal. Sentence probability is a product, so a single unseen
+bigram makes the \emph{entire sentence} impossible --- and its log-probability
+$-\infty$.
+
+\emph{Add-one (Laplace) smoothing.} Add $1$ to every count and $|V| = 6$ to
+every denominator:
+\[
+  P(\textsf{cat}\mid\textsf{the}) = \tfrac{2+1}{3+6} = \tfrac{3}{9} = 0.333,
+  \qquad
+  P(\textsf{sat}\mid\textsf{the}) = \tfrac{0+1}{3+6} = \tfrac{1}{9} = 0.111 .
+\]
+Check that it still sums to one over $V$:
+$\tfrac{1+3+1+1+2+1}{9} = \tfrac{9}{9} = 1$. \checkmark
+
+\emph{The cost.} The observed bigram fell from $0.667$ to $0.333$ --- add-one
+smoothing took half the probability mass away from what we actually saw and
+handed it to things we never saw. With a realistic vocabulary of $50{,}000$
+words the denominator becomes $3 + 50{,}000$ and the observed evidence is
+annihilated entirely. This is why real systems use Kneser--Ney or backoff rather
+than Laplace, and ultimately why neural models --- which share statistical
+strength through embeddings instead of counting --- replaced $n$-grams
+altogether.
+\end{workedexample}
+
 \end{v3topic}
 \begin{v3topic}{Sequence Models: HMM and CRF}
     Classical NLP used probabilistic sequence models for structured prediction (POS tagging, NER)\textsuperscript{\cite[][p.~6]{dhamaniIntroductionGenerativeAI2024}}:
@@ -254,6 +565,9 @@
 \subsection{RNN-based Approaches}
 
 \begin{v3topic}{Seq2Seq: Encoder-Decoder for NLP}
+    The encoder--decoder formulation is due to Sutskever, Vinyals and
+    Le\textsuperscript{\cite{sutskeverSequenceSequenceLearning2014}}.
+
     The \textbf{sequence-to-sequence (seq2seq)} architecture (Sutskever et al., 2014) enables NLP tasks with variable-length inputs and outputs\textsuperscript{\cite[][p.~8]{dhamaniIntroductionGenerativeAI2024}}:
     \begin{enumerate}
         \item \textbf{Encoder} (LSTM/GRU): reads input sequence and compresses it into a fixed context vector $\mathbf{c}$
@@ -264,6 +578,11 @@
 
 \end{v3topic}
 \begin{v3topic}{Attention in RNNs}
+    Attention was introduced for translation by Bahdanau, Cho and
+    Bengio\textsuperscript{\cite{bahdanauNeuralMachineTranslation2015}}, four
+    years before it displaced recurrence entirely
+    (\cref{sec:dl-attention}).
+
     The \textbf{attention mechanism} (Bahdanau et al., 2014) overcomes the seq2seq bottleneck by allowing the decoder to selectively attend to all encoder hidden states at each generation step\textsuperscript{\cite[][p.~8]{dhamaniIntroductionGenerativeAI2024}}:
     \begin{equation}
         \mathbf{c}_t = \sum_{i} \alpha_{t,i}\, \mathbf{h}_i, \quad \alpha_{t,i} = \mathrm{softmax}(e_{t,i})
@@ -339,6 +658,9 @@
 
 \end{v3topic}
 \begin{v3topic}{End-to-End ASR: Whisper}
+    Whisper is trained with large-scale weak
+    supervision\textsuperscript{\cite{radfordRobustSpeechRecognition2023}}.
+
     \textbf{Whisper} (Radford et al., OpenAI 2022) is a transformer encoder-decoder trained end-to-end on 680{,}000 hours of diverse, weakly labelled multilingual audio\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
     \begin{itemize}
         \item \textbf{Encoder}: processes 30-second log-mel spectrogram windows; generates contextual audio representations
@@ -364,6 +686,9 @@
 
 \end{v3topic}
 \begin{v3topic}{Neural TTS: WaveNet and Tacotron}
+    WaveNet models raw audio
+    autoregressively\textsuperscript{\cite{oordWaveNetGenerativeModel2016}}.
+
     Neural TTS systems operate in two stages: text $\to$ acoustic features $\to$ waveform\textsuperscript{\cite[][p.~11]{dhamaniIntroductionGenerativeAI2024}}:
     \begin{itemize}
         \item \textbf{WaveNet} (van den Oord et al., DeepMind, 2016): dilated causal convolutional network that generates raw audio waveforms sample-by-sample at 16kHz; produces natural prosody and voice quality; very slow at inference (autoregressive)
@@ -414,7 +739,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Pre-training vs.\ Fine-tuning vs.\ Prompting}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l,2] X[l,3] X[l,3]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -432,8 +757,8 @@
         RAG & Retrieve relevant documents; inject into prompt &
             Knowledge-intensive tasks; up-to-date information \\
     \end{tblr}
-\captionof{table}{Pre-training and Fine-tuning: Pre-training vs.\ Fine-tuning vs.\ Prompting.}
-\label{tab:ch12-nlp-voice-assistants-inline-04}
+\captionof{table}{Three ways to adapt a model, in decreasing order of cost and increasing order of iteration speed.}
+\label{tab:nlp-adaptation-strategies}
     \vspace{2pt}
     \textsuperscript{\cite[][p.~70]{farrisHowLargeLanguage2025}}
     \textsuperscript{\cite[][p.~5]{raschkaBuildLargeLanguage2025}}
@@ -456,7 +781,7 @@
 
     Input embedding $=$ token emb.~$+$ segment emb.~$+$ position emb.
 
-    \begin{tblr}{colspec={X[l]X[l]X[l]}, hlines, vlines,
+    \begin{tblr}{width=\linewidth,colspec={X[l]X[l]X[l]}, hlines, vlines,
                  row{1}={font=\bfseries\scriptsize, bg=LimeGreen!20},
                  row{2-Z}={font=\scriptsize}}
         & BERT\textsubscript{BASE} & BERT\textsubscript{LARGE} \\
@@ -465,8 +790,8 @@
         Heads $A$ & 12 & 16 \\
         Parameters & 110M & 340M \\
     \end{tblr}
-\captionof{table}{BERT: BERT Architecture.}
-\label{tab:ch12-nlp-voice-assistants-inline-05}
+\captionof{table}{The two BERT configurations. The scaling here is modest by current standards, which is worth remembering when reading the results it produced.}
+\label{tab:nlp-bert-sizes}
 
 \end{v3topic}
 \begin{v3topic}{Pre-training: MLM and NSP}
@@ -491,7 +816,7 @@
     \emph{all} parameters end-to-end on labelled
     data.\textsuperscript{\cite[][p.~4-5]{devlinBERTPretrainingDeep2019}}
 
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l,2] X[l,2] X[l,4]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -503,8 +828,8 @@
         QA (SQuAD) & \texttt{[CLS]} + question + \texttt{[SEP]} + passage & Start/end token positions \\
         Named Entity Recognition & \texttt{[CLS]} + sentence & Per-token label from $T_i$ \\
     \end{tblr}
-\captionof{table}{BERT: Fine-tuning BERT for Downstream Tasks.}
-\label{tab:ch12-nlp-voice-assistants-inline-06}
+\captionof{table}{How different task types map onto the same encoder: only the input formatting and the output head change.}
+\label{tab:nlp-bert-finetuning}
 
     BERT achieved state-of-the-art on 11 NLP tasks at release, including GLUE
     (+7.7\,\%), SQuAD~1.1 F1~93.2, and CoNLL-2003 NER F1~92.8.
@@ -531,7 +856,7 @@
 
 \end{v3topic}
 \begin{v3topic}{GPT Evolution and Scaling Laws}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l] X[l] X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\scriptsize, bg=LimeGreen!20},
@@ -544,8 +869,8 @@
         Chinchilla & 2022 & 70B params; compute-optimal parameter--data balance \\
         GPT-4 & 2023 & Multimodal; strong reasoning and coding \\
     \end{tblr}
-\captionof{table}{GPT Family: GPT Evolution and Scaling Laws.}
-\label{tab:ch12-nlp-voice-assistants-inline-07}
+\captionof{table}{The GPT series by scale. Time-sensitive: treat parameter counts and dates as of publication, and verify before quoting.}
+\label{tab:nlp-gpt-evolution}
     \vspace{2pt}
     \textsuperscript{\cite[][p.~9]{dhamaniIntroductionGenerativeAI2024}}
 
@@ -609,6 +934,11 @@
 
 \end{v3topic}
 \begin{v3topic}{Emergent Abilities of Large Models}
+    The term is due to Wei and
+    colleagues\textsuperscript{\cite{weiEmergentAbilitiesLarge2022}}; few-shot
+    behaviour was first documented at scale with
+    GPT-3\textsuperscript{\cite{brownLanguageModelsAre2020}}.
+
     \textbf{Emergent abilities} are capabilities that appear only above a certain model
     scale and are \emph{not} present in smaller models --- they cannot be predicted by
     extrapolating smaller-scale
@@ -635,7 +965,272 @@
 \subsection{Prompt Engineering}
 
 
+\begin{v3topic}{Prompt Frameworks: The Named Mnemonics}
+    Alongside the \emph{techniques} below --- which are research results about
+    how models behave --- a parallel body of \keyterm{prompt frameworks} has
+    grown up in practice. These are mnemonics: checklists of the dimensions a
+    prompt should specify, packaged as an acronym so a non-specialist can
+    recall them.
+
+\begin{table}[htbp]
+\centering
+\caption{Prompt frameworks in common circulation. Read down the expansions
+rather than across the names: the same handful of dimensions --- role,
+context, task, constraints, format, audience, evaluation --- recurs in almost
+every row.}
+\label{tab:nlp-prompt-frameworks}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.155\textwidth] X[l] Q[l,0.215\textwidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  column{1}={cmd=\nohyphens},
+  hlines,vlines}
+Name & Expansion & Suits \\
+R-T-F & Role, Task, Format & The shortest useful checklist; everyday requests \\
+A-P-E & Action, Purpose, Expectation & Speed over precision \\
+T-A-G & Task, Action, Goal & Simple task framing \\
+R-A-C-E & Role, Action, Context, Expectation & Quick structured prompts \\
+C-A-R-E & Context, Action, Result, Example & When one worked example carries
+  the intent \\
+C-L-E-A-R\textsuperscript{\cite{loCLEARPathFramework2023}} &
+  Concise, Logical, Explicit, Adaptive, Reflective &
+  Not a slot list but a set of writing \emph{qualities}; the one framework
+  here with peer-reviewed provenance \\
+R-I-S-E-N & Role, Instructions, Steps, End goal, Narrowing &
+  Multi-step procedural tasks \\
+S-T-O-K-E & Situation, Task, Objective, Knowledge, Examples &
+  Domain-expert tasks where accuracy needs supplied knowledge \\
+C-R-I-S-P-E & Capacity/role, Insight, Statement, Personality, Experiment &
+  Exploratory work; asks for several variants \\
+T-C-R-E-I\textsuperscript{\cite{googlePromptingEssentials2026}} &
+  Task, Context, References, Evaluate, Iterate &
+  Includes the two steps most people skip: check the output, then revise the
+  prompt \\
+C-O-S-T-A-R\textsuperscript{\cite{teoHowWonSingapore2023}} &
+  Context, Objective, Style, Tone, Audience, Response format &
+  Audience-facing writing, where tone and register matter \\
+C-R-E-A-T-E & Character, Request, Examples, Adjustments, Type, Extras &
+  Creative work matched to a reference style \\
+B-R-I-D-G-E & Background, Request, Inputs, Deliverable, Guardrails,
+  Evaluation & Work with supplied data, hard constraints, and a self-check \\
+5W3H & What, Why, Who, When, Where, How-to-do, How-much, How-feel &
+  The most exhaustive; derived from the journalistic
+  checklist\textsuperscript{\cite{penggangStructuredIntentProtocol2026}} \\
+\end{tblr}
+\end{table}
+
+\begin{plainlanguage}
+None of these is an algorithm. They are packing lists. The reason a prompt
+fails is almost never that the writer chose the wrong acronym --- it is that
+they left out the audience, or the format, or the constraint that the answer
+must fit on one page. An acronym is simply a way of not forgetting.
+\end{plainlanguage}
+
+\begin{workedexample}[One task, three frameworks, and what actually changed]
+\emph{The bare request:} ``Write something about our new API rate limits.''
+
+\emph{R-T-F.}
+\textsf{Role:} you are a developer-relations engineer.
+\textsf{Task:} explain the new rate limits and what a caller should do when
+they hit one.
+\textsf{Format:} 200 words, then a three-row table of limit tiers.
+
+\emph{C-O-S-T-A-R} adds three slots R-T-F does not have:
+\textsf{Context:} limits change on 1 October; existing integrations will break
+without action.
+\textsf{Objective:} get integrators to add retry-with-backoff before that date.
+\textsf{Style:} technical documentation.
+\textsf{Tone:} matter-of-fact, not apologetic.
+\textsf{Audience:} third-party developers who did not ask for this change.
+\textsf{Response:} 200 words plus a table.
+
+\emph{T-C-R-E-I} adds two \emph{process} steps rather than content slots:
+\textsf{References:} last quarter's deprecation notice, as a style exemplar.
+\textsf{Evaluate:} check every stated number against the specification.
+\textsf{Iterate:} revise the prompt, not just the output.
+
+\emph{What each addition bought.} R-T-F fixed the shape. CO-STAR fixed the
+\emph{stance} --- ``matter-of-fact, not apologetic'' and ``developers who did
+not ask for this'' change the text substantially, and neither is expressible
+in R-T-F. TCREI fixed the \emph{workflow}: the reference sets the house style
+without describing it, and the evaluate step catches the invented rate number
+that no amount of prompt structure prevents.
+
+\emph{The point.} The gain came from the dimensions added, not from the
+mnemonic. Had you written the same six considerations as unnumbered prose,
+you would have got the same result.
+\end{workedexample}
+
+\begin{engineernote}[What the evidence actually says]
+A controlled comparison across three frontier models, three languages, and
+$3{,}240$ generated outputs found that 5W3H, CO-STAR, and RISEN reached
+\emph{statistically comparable} goal-alignment scores ($4.93$, $4.98$, $4.98$
+on a five-point scale), leading the authors to conclude that
+\emph{dimensional decomposition itself} is the active ingredient rather than
+any particular
+framework\textsuperscript{\cite{penggangStructuredIntentProtocol2026}}.
+
+Two further findings are more useful than the ranking. First, structured
+prompting cut cross-language variance dramatically ($\sigma$ from $0.470$ to
+about $0.020$): the same intent produced far more consistent output regardless
+of the language it was written in. Second --- the \keyterm{weak-model
+compensation effect} --- the weakest baseline model gained $+1.006$ points from
+structure while the strongest gained only $+0.217$.
+
+\emph{Read that second result carefully, because it is the practical one.}
+Elaborate prompt scaffolding buys most where the model is weakest, and its
+value shrinks as models improve. A framework that was essential on a 2023
+model may be redundant on a current one, and the way to find out is to test
+the plain request first.
+
+\emph{And read the study's limits.} It is a single-author preprint, not peer
+reviewed; its judge is itself a language model; and the authors explicitly
+note that the near-identical scores may reflect a ceiling in the metric rather
+than genuine equivalence. It is the best available evidence on this question,
+which is not the same as strong evidence.
+\end{engineernote}
+
+\begin{v3topic}{How Much Does Prompting Actually Buy?}
+    Prompting advice is usually asserted rather than measured. The published
+    numbers that do exist span three orders of magnitude, and the spread is the
+    finding: what you gain depends far more on the \emph{task} and the
+    \emph{model} than on the framework.
+
+\begin{table}[htbp]
+\centering
+\caption{Measured effects of prompting interventions. Read the last two rows
+against the first: the largest published gains come from reasoning
+\emph{techniques} on hard tasks, not from prompt \emph{frameworks}, and one
+study finds structure that helps in isolation collapsing in a realistic
+prompt.}
+\label{tab:nlp-prompting-effectiveness}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.21\textwidth] X[l] Q[l,0.20\textwidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Intervention & Measured effect & Setting \\
+Chain-of-thought\textsuperscript{\cite{weiChainofThoughtPrompting2022}} &
+  GSM8K solve rate $18\,\% \rightarrow 57\,\%$ ($+39$ points) &
+  PaLM 540B; gain is \emph{emergent} --- small models get little or none \\
+Self-consistency over CoT\textsuperscript{\cite{wangSelfConsistencyImprovesChain2023}} &
+  GSM8K $+17.9$, SVAMP $+11.0$, AQuA $+12.2$, StrategyQA $+6.4$,
+  ARC-challenge $+3.9$ points &
+  Costs $n$ samples per answer \\
+Structured clinical reasoning\textsuperscript{\cite{sonodaStructuredClinicalReasoning2024}} &
+  Primary diagnosis $56.5\,\% \rightarrow 60.6\,\%$ ($p=0.042$); top-three
+  $66.5\,\% \rightarrow 70.5\,\%$ ($p=0.005$) &
+  322 radiology cases; a summary-only control gave $56.2\,\%$, i.e.\ no gain \\
+Framework choice among CO-STAR, RISEN, 5W3H\textsuperscript{\cite{penggangStructuredIntentProtocol2026}} &
+  Goal alignment $4.93$ / $4.98$ / $4.98$ of 5 --- \textbf{no meaningful
+  difference} & 3{,}240 outputs, 3 models, 3 languages \\
+Any structure vs.\ none, by model strength\textsuperscript{\cite{penggangStructuredIntentProtocol2026}} &
+  Weakest model $+1.006$; strongest model $+0.217$ &
+  The gain shrinks as the model improves \\
+Any structure vs.\ none, cross-language consistency\textsuperscript{\cite{penggangStructuredIntentProtocol2026}} &
+  Cross-language $\sigma$ $0.470 \rightarrow 0.020$ &
+  Consistency improves far more than mean quality \\
+Structure inside a busy production prompt\textsuperscript{\cite{joPromptComplexityDilutes2026}} &
+  $100\,\% \rightarrow 0\text{--}30\,\%$ when competing instructions are added
+  & The same structure, embedded rather than isolated \\
+\end{tblr}
+\end{table}
+
+\begin{workedexample}[Reading the table as an engineer]
+Four conclusions follow, and none of them is ``pick framework X''.
+
+\emph{1. The big wins are techniques, not frameworks.} Chain-of-thought moved
+GSM8K by $39$ points. The best-measured \emph{framework} comparison found a
+difference of $0.05$ on a five-point scale between three named frameworks ---
+statistically nothing. If you have a hard reasoning task, spend your effort on
+the technique.
+
+\emph{2. Gains are task-shaped.} $+39$ points on multi-step arithmetic;
+$+4.1$ points on radiological diagnosis. Both are real; quoting the first as
+representative of prompting in general is not.
+
+\emph{3. Structure buys consistency more reliably than quality.} The
+cross-language variance fell by a factor of about $24$ while mean scores moved
+comparatively little. For a production system serving many users, \emph{lower
+variance is often worth more than a higher mean} --- it is the difference
+between a system that is usually good and one that is dependably adequate.
+
+\emph{4. The benefit is being competed away.} The weak model gained nearly five
+times what the strong one did. Extrapolate: advice written against a 2023 model
+may be measuring a deficiency that no longer exists. Always test the plain
+request as your baseline before adopting elaborate scaffolding.
+\end{workedexample}
+
+\begin{cautionbox}[Structure that works in isolation can fail in place]
+The most useful negative result here is also the least known. A structured
+reasoning format that scored $100\,\%$ on a task in isolation dropped to
+between $0$ and $30\,\%$ when the same structure was placed inside a realistic
+production system prompt alongside other
+instructions\textsuperscript{\cite{joPromptComplexityDilutes2026}}. The
+diagnosed mechanism is instructive: a competing directive demanded a
+conclusion first, which inverted the reason-then-answer order the structure
+depends on. The model was observed emitting its answer \emph{before} the
+reasoning it was told to perform --- it retained the capability and had already
+committed.
+
+Two lessons. \textbf{Instruction order is a design variable}, not formatting.
+And \textbf{benchmark your prompt where it will live}, not on its own: an
+isolated A/B test of a prompt fragment can be actively misleading about its
+behaviour in the full system. This is a single preprint and should be treated
+as a caution to test for rather than an established magnitude --- but the
+failure mode is easy to check and cheap to prevent.
+\end{cautionbox}
+\end{v3topic}
+
+\begin{v3topic}{Choosing and Testing a Prompt}
+\begin{cautionbox}[These acronyms are folklore, and they do not agree with each other]
+Unlike the techniques in the next topic, prompt frameworks are largely
+practitioner artefacts with no common standard, and their expansions drift.
+R-I-S-E-N appears in circulation as \emph{Role, Instructions, Steps, End goal,
+Narrowing}; as \emph{Role, Input, Steps, Expectation, Narrowing}; and as
+\emph{Role, Input, Scenario, Expectation, Nuance} --- three different
+checklists behind one name. C-L-E-A-R is a set of writing qualities, while
+C-O-S-T-A-R is a set of content slots; they are not the same kind of object
+despite being presented side by side.
+
+Two consequences. Do not cite a framework as though it were a standard ---
+state the expansion you mean. And do not let framework choice absorb effort
+that belongs in evaluation: a prompt written to \emph{any} of these and then
+tested against twenty fixed cases will beat a prompt written to the
+theoretically best one and never measured.
+\end{cautionbox}
+
+\begin{engineernote}[When a framework stops being the right tool]
+Frameworks address the \emph{writing} of a single prompt. Three situations
+outgrow them:
+\begin{itemize}
+  \item \textbf{The prompt is now a program.} Once it is versioned, tested,
+        and templated with variables, treat it as code --- with a test suite ---
+        rather than as prose to be checklisted.
+  \item \textbf{The context is assembled, not written.} In an agent, most of
+        the context is retrieved documents, tool results, and history. That is
+        \emph{context engineering} (\cref{sec:mas-engineering-llm-agents}), and
+        a mnemonic about role and tone does not touch it.
+  \item \textbf{The task needs a different technique, not a better prompt.}
+        If the model lacks the knowledge, retrieval is the answer
+        (\cref{fig:nlp-rag-pipeline}); if it lacks the behaviour, fine-tuning
+        or an adapter is (\cref{ch:practical-llm-engineering}). No amount of
+        structure substitutes for either.
+\end{itemize}
+\end{engineernote}
+
+\begin{checkpoint}
+Take \cref{tab:nlp-prompt-frameworks} and list the distinct \emph{dimensions}
+that appear across all fourteen rows, merging synonyms. You should end with
+roughly eight. Then write your own checklist covering those eight, and explain
+why it is neither better nor worse than any published framework.
+\end{checkpoint}
+\end{v3topic}
+
 \begin{v3topic}{Prompting Strategies}
+    Chain-of-thought prompting is due to Wei and
+    colleagues\textsuperscript{\cite{weiChainofThoughtPrompting2022}}.
+
     \textbf{Prompting} shapes LLM behaviour without changing model
     weights.\textsuperscript{\cite[][p.~82]{farrisHowLargeLanguage2025}}
 
@@ -682,7 +1277,7 @@
 
 
 \begin{v3topic}{RAG: Motivation and Pipeline}
-    \textbf{Retrieval-Augmented Generation (RAG)} addresses two core LLM limitations:
+    \textbf{Retrieval-Augmented Generation (RAG)}\textsuperscript{\cite{lewisRetrievalAugmentedGeneration2020}} addresses two core LLM limitations:
     (1) \emph{knowledge cutoff} --- the model cannot know events after training, and
     (2) \emph{hallucination} --- the model generates plausible but factually wrong
     content.\textsuperscript{\cite[][p.~82]{farrisHowLargeLanguage2025}}
@@ -705,8 +1300,173 @@
     particularly effective for enterprise knowledge bases, document QA, and keeping
     responses up-to-date.\textsuperscript{\cite[][p.~83]{farrisHowLargeLanguage2025}}
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm,
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=9mm,minimum width=21mm,font=\sffamily\scriptsize,
+    align=center},
+  db/.style={bx,fill=AlmanachOchre!20,draw=AlmanachOchre},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+
+  \node[lbl,anchor=west,font=\sffamily\scriptsize\bfseries] at (0,15mm)
+    {Offline: index once};
+  \node[bx] (docs) at (12mm,4mm) {documents};
+  \node[bx,right=of docs] (chunk) {chunk\\\scriptsize 512 tokens};
+  \node[bx,right=of chunk] (emb) {embed};
+  \node[db,right=of emb] (vdb) {vector\\store};
+  \foreach \a/\b in {docs/chunk,chunk/emb,emb/vdb}{\draw[arr] (\a) -- (\b);}
+
+  \node[lbl,anchor=west,font=\sffamily\scriptsize\bfseries] at (0,-14mm)
+    {Online: per query};
+  \node[bx] (q) at (12mm,-25mm) {query};
+  \node[bx,right=of q] (qe) {embed};
+  \node[bx,right=of qe] (ann) {top-$k$\\search};
+  \node[bx,right=of ann] (llm) {LLM};
+  \node[bx,right=of llm] (ans) {answer};
+  \foreach \a/\b in {q/qe,qe/ann,ann/llm,llm/ans}{\draw[arr] (\a) -- (\b);}
+  \draw[arr,draw=AlmanachOchre] (vdb) -- (ann)
+    node[midway,right,lbl,color=AlmanachOchre] {$k$ chunks};
+  \draw[arr,dashed,draw=AlmanachInk!40] (q.south) -- ++(0,-6mm) -| (llm.south)
+    node[near end,below,lbl] {original question carried through};
+\end{tikzpicture}
+\caption{The two halves of a RAG system. Indexing happens once and offline;
+retrieval and generation happen per query. The two halves fail independently,
+which is why they must be evaluated separately.}
+\label{fig:nlp-rag-pipeline}
+\end{figure}
+
+\begin{workedexample}[Sizing a RAG pipeline before building it]
+A knowledge base of $50{,}000$ tokens, chunk size $512$, overlap $64$, feeding
+a model with a $4{,}096$-token context.
+
+\emph{How many chunks?} The stride is $512 - 64 = 448$ tokens, so
+\[
+  \text{chunks} = \left\lceil\frac{50{,}000 - 512}{448}\right\rceil + 1
+  = \lceil 110.5 \rceil + 1 = 112 .
+\]
+The overlap costs about $12\,\%$ extra storage and exists so that a fact
+straddling a boundary still appears intact in at least one chunk.
+
+\emph{What fits in the prompt?} Retrieving $k=5$ chunks costs
+$5 \times 512 = 2{,}560$ tokens. Add a system prompt and the question, say
+$300$ tokens. That leaves
+\[
+  4096 - 2560 - 300 = 1{,}236 \text{ tokens for the answer.}
+\]
+
+\emph{Now the trade-off is visible.} Raising $k$ to $8$ costs $4{,}096$ tokens
+of retrieved text alone --- the entire window, with nothing left to answer
+with. Every RAG design decision is a negotiation inside this budget, and it is
+arithmetic you can do before writing any code.
+\end{workedexample}
+
+\begin{cautionbox}[Retrieval failure and generation failure look identical]
+When a RAG system returns something wrong, there are two completely different
+causes and the output does not distinguish them: either the right chunk was
+never retrieved, or it was retrieved and the model ignored or misread it. The
+first is a search problem (embedding model, chunking, $k$, reranking); the
+second is a grounding problem (prompt, model, instruction to abstain).
+
+Diagnose by checking retrieval separately: for a set of questions with known
+answers, measure whether the supporting chunk appears in the top $k$ at all.
+That single measurement splits your debugging in half, and it is the reason
+\cref{fig:nlp-rag-pipeline} is drawn as two independent halves.
+\end{cautionbox}
+
 \end{v3topic}
-\begin{v3topic}{Vector Databases and Chunking}
+\begin{v3topic}{Vector Databases and Approximate Search}
+    A \keyterm{vector database} stores embeddings and answers nearest-neighbour
+    queries over them. The reason it is a distinct piece of infrastructure
+    rather than a table with a distance function is arithmetic: exact search
+    over $N$ vectors of dimension $d$ costs $O(Nd)$ per query.
+
+\begin{workedexample}[Why exact nearest-neighbour search stops working]
+Ten million chunks embedded at $d = 1{,}536$ in \texttt{float32}.
+
+\emph{Storage.} $10^7 \times 1536 \times 4 = 61.4\,\text{GB}$ for the vectors
+alone.
+
+\emph{One exact query.} A dot product per vector is $1{,}536$ multiply--adds,
+so $10^7 \times 1536 = 1.54\times10^{10}$ operations --- roughly a second of
+pure compute per query, before any other work, and it scales linearly with the
+corpus.
+
+\emph{Approximate search} trades exactness for speed. HNSW builds a layered
+proximity graph and walks it greedily, reaching sub-millisecond queries at
+roughly $95\text{--}99\,\%$
+recall\textsuperscript{\cite{malkovEfficientRobustApproximate2020}};
+IVF and product-quantisation methods partition and compress the space
+instead\textsuperscript{\cite{johnsonBillionscaleSimilaritySearch2021}}.
+
+\emph{The consequence nobody plans for.} Your retrieval is now
+\emph{probabilistic}. The chunk that should have been returned may simply not
+be, and no error is raised. When measuring a RAG system
+(\cref{fig:nlp-rag-pipeline}), measure recall against exact search on a sample
+--- otherwise a retrieval regression is indistinguishable from a generation
+regression.
+\end{workedexample}
+
+\begin{engineernote}
+Three practical properties decide the choice, and none of them is the
+similarity metric. \textbf{Filtering}: can it combine a vector query with a
+metadata predicate (tenant, date, permission) \emph{during} the search rather
+than after it? Post-filtering silently returns fewer results than requested.
+\textbf{Updates}: can vectors be deleted and re-indexed without a full
+rebuild? \textbf{Recall measurability}: can you compare against exact search?
+A store that cannot answer the third leaves you unable to debug the first.
+
+Note also that embeddings are derived data. Changing the embedding model
+invalidates every stored vector, so re-embedding the whole corpus is a
+migration to plan for, not an accident to discover.
+\end{engineernote}
+
+\begin{cautionbox}[Hybrid search exists because embeddings miss exact matches]
+Dense retrieval matches meaning and is weak precisely where meaning is not the
+point: part numbers, error codes, surnames, statute references, rare acronyms.
+An embedding places \texttt{ERR-4471} near other error codes rather than
+retrieving that one. Keyword search (BM25) does the opposite --- exact on
+tokens, blind to paraphrase.
+
+Production systems generally run both and fuse the rankings, then rerank the
+merged top candidates with a cross-encoder. If your RAG system fails on
+identifiers, the fix is not a better embedding model.
+\end{cautionbox}
+\end{v3topic}
+
+\begin{v3topic}{Graph-Based Retrieval}
+    Chunk-based retrieval answers questions whose evidence sits in one place.
+    It fails on questions requiring several facts to be joined --- ``which of
+    our suppliers are affected by the regulation that changed last quarter?''
+    --- because no single chunk contains the answer and top-$k$ retrieval has
+    no notion of connecting them.
+
+    \keyterm{Graph-based retrieval} builds an explicit structure over the
+    corpus: entities as nodes, relationships as edges, extracted by a model
+    during indexing. Retrieval then traverses the graph rather than ranking
+    passages, and community summaries over the graph can answer corpus-level
+    questions that no individual chunk
+    supports\textsuperscript{\cite{edgeLocalGlobalGraph2024}}.
+
+    The costs are real and should be stated plainly: indexing requires a model
+    pass over the whole corpus to extract entities and relations, extraction
+    errors become permanent structural errors, and the graph must be
+    maintained as documents change. Reach for it when the questions are
+    genuinely multi-hop or aggregate, not by default.
+
+\begin{engineernote}
+Knowledge graphs predate all of this and remain the right tool when relations
+are known rather than inferred --- product hierarchies, organisational
+structure, bills of materials, clinical ontologies. The pragmatic pattern is a
+curated graph for the relations you can state authoritatively, plus vector
+retrieval over the unstructured text, with the graph used to constrain or
+expand what is retrieved.
+\end{engineernote}
+\end{v3topic}
+
+\begin{v3topic}{Chunking Strategies}
     The retrieval step depends on \textbf{dense vector embeddings}: each text chunk is
     encoded as a high-dimensional vector by an embedding model (e.g.\ a BERT-based
     sentence encoder). Similarity is measured by cosine distance or inner product.
@@ -730,8 +1490,8 @@
         Semantic chunking & Embed and cluster sentences by similarity; highest quality \\
         Recursive splitting & Hierarchically split: paragraph $\to$ sentence $\to$ token \\
     \end{tblr}
-\captionof{table}{Retrieval-Augmented Generation: Vector Databases and Chunking.}
-\label{tab:ch12-nlp-voice-assistants-inline-08}
+\captionof{table}{Chunking strategies. Chunk size trades retrieval precision against the risk of splitting a fact across a boundary --- see the sizing example in this chapter.}
+\label{tab:nlp-chunking}
     Chunk size trades off recall (larger $=$ more context per chunk) against precision
     (smaller $=$ more focused retrieval).
 
@@ -951,6 +1711,9 @@
 
 
 \begin{v3topic}{Training Data Bias}
+    The scale-and-provenance argument is set out by Bender and
+    colleagues\textsuperscript{\cite{benderDangersStochasticParrots2021}}.
+
     LLMs trained on web-scale data absorb and amplify the biases present in
     human-generated
     text.\textsuperscript{\cite[][p.~xii]{dhamaniIntroductionGenerativeAI2024}}
@@ -1039,6 +1802,9 @@
 
 
 \begin{v3topic}{Hallucination in LLMs}
+    The phenomenon is surveyed by Ji and
+    colleagues\textsuperscript{\cite{jiSurveyHallucinationNatural2023}}.
+
     \textbf{Hallucination} refers to LLM outputs that are fluent and confident but
     factually incorrect or
     fabricated.\textsuperscript{\cite[][p.~xii]{dhamaniIntroductionGenerativeAI2024}}
@@ -1061,6 +1827,9 @@
 
 \end{v3topic}
 \begin{v3topic}{Alignment and RLHF}
+    Instruction tuning with human feedback is described by Ouyang and
+    colleagues\textsuperscript{\cite{ouyangTrainingLanguageModels2022}}.
+
     \textbf{Alignment} is the problem of ensuring LLM behaviour matches human values and
     intentions.\textsuperscript{\cite[][p.~73]{farrisHowLargeLanguage2025}}
 
@@ -1109,6 +1878,62 @@ inputs, and instructions embedded inside retrieved content.
 \end{v3topic}
 
 \chapterreview{Tokenise}{Represent}{Generate}{Evaluate}
+
+
+\begin{cautionbox}[Fluency is not evidence]
+The single most important thing to understand about a language model is that
+its confidence and its correctness are produced by different mechanisms and are
+almost uncorrelated. The model is trained to produce text that \emph{looks
+like} its training data. A fabricated citation looks exactly like a real one,
+because looking like a real one is precisely what the objective rewarded.
+
+The practical consequences: never accept a citation, a statistic, a quotation,
+an API signature, or a legal reference from a model without checking it against
+the source; and design systems so that unverifiable claims are cheap to detect
+--- by grounding answers in retrieved text, by requiring citations that resolve,
+and by giving the model a supported way to say it does not know.
+\end{cautionbox}
+
+\begin{practicallab}[Break a tokenizer, then break a RAG system]
+\textbf{Part A --- the tokenizer.} Using any tokenizer library:
+\begin{enumerate}
+  \item Tokenize \texttt{"strawberry"}. Count the tokens, then ask a model how
+        many times the letter \texttt{r} appears. Explain the answer from the
+        token split, not from ``the model is bad at counting''.
+  \item Tokenize the same paragraph in English and in a language you know that
+        is written in another script. Compare token counts and compute the cost
+        ratio.
+  \item Tokenize \texttt{1234567} and a date. Report the splits, and predict
+        which arithmetic tasks will fail.
+\end{enumerate}
+
+\textbf{Part B --- retrieval.} Build the smallest possible RAG system over
+twenty documents you know well.
+\begin{enumerate}
+  \item Write ten questions whose answers you can point to in a specific
+        document.
+  \item Measure \emph{retrieval} alone: for each question, is the supporting
+        chunk in the top $k$? Report recall@$k$ for $k = 1, 3, 5$.
+  \item Now measure \emph{generation}: given the correct chunk, does the model
+        answer correctly? Report separately.
+  \item Ask a question your corpus cannot answer. Does the system abstain, or
+        invent? Record which.
+  \item Halve the chunk size and repeat step 2. Explain the direction of the
+        change.
+\end{enumerate}
+
+\textbf{Deliverable.} Two tables --- retrieval recall and generation accuracy
+--- never combined into one number. \textbf{The point:} the two halves of
+\cref{fig:nlp-rag-pipeline} fail independently, and a single end-to-end score
+tells you nothing about which one to fix.
+\end{practicallab}
+
+\begin{checkpoint}
+Your assistant answers a question about your company's refund policy with a
+confident, fluent, and wrong answer. List the four places the failure could
+have originated --- chunking, embedding/retrieval, prompt, or model --- and give
+the single cheapest measurement that distinguishes each from the others.
+\end{checkpoint}
 
 \section{Further Reading}
 

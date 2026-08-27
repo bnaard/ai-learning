@@ -47,6 +47,434 @@ dominate, or the data distribution differs from the customer environment.
 Define the operational decision and its error costs before choosing a metric.
 \end{cautionbox}
 
+\section{Lean Startup: The Method and Its Evidence}
+\label{sec:startup-lean}
+
+\subsection{The Reframe}
+
+Eric Ries's \emph{The Lean
+Startup}\textsuperscript{\cite{riesLeanStartup2011}} --- published in German
+as \emph{Lean Startup: Schnell, risikolos und erfolgreich Unternehmen
+gründen}\textsuperscript{\cite{riesLeanStartupDeutsch2014}} --- is the single
+most influential text on how to build a company under uncertainty, and its
+central move is a definition:
+
+\begin{quote}
+\itshape A startup is a human institution designed to create a new product or
+service under conditions of extreme uncertainty.
+\end{quote}
+
+Three consequences follow, and they are the whole method. If the defining
+condition is uncertainty, then the scarce resource is not capital or code but
+\keyterm{validated learning} --- knowledge about customers demonstrated by
+evidence rather than assumed. If learning is the unit of progress, then
+progress can be \emph{managed}, and entrepreneurship becomes a management
+discipline rather than a temperament. And if learning is what you are buying,
+then any effort that does not produce it is \keyterm{waste}, however
+impressive the artefact it produces.
+
+\begin{plainlanguage}
+The ordinary way to start a company is to decide what to build, build it, and
+find out at launch whether anyone wanted it. Lean startup inverts that: work
+out what you are \emph{assuming}, find the cheapest experiment that could show
+the assumption is wrong, and run it before building. A startup is then not a
+small version of a big company --- it is a machine for converting money into
+answers, and the question is how many answers per euro it produces.
+\end{plainlanguage}
+
+\begin{engineernote}
+The method is close kin to everything this book says about evaluation. An
+assumption is a hypothesis; an MVP is an experiment; a cohort is a held-out
+sample; a vanity metric is training accuracy on data you already fit. If you
+have internalised \cref{ch:evaluation-mlops}, you already have the reflexes ---
+lean startup applies them to the business rather than to the model.
+\end{engineernote}
+
+\subsection{Vision: The Two Hypotheses and Validated Learning}
+
+Ries divides the book into three parts --- \emph{Vision}, \emph{Steer}, and
+\emph{Accelerate} --- and Part~I asks what is actually being tested. Every new
+venture rests on two leaps of faith:
+
+\begin{description}
+  \item[The value hypothesis] Does the product deliver value to customers once
+    they use it? Not ``would you use this?'' but observed behaviour.
+  \item[The growth hypothesis] How will new customers discover the product,
+    and does that mechanism compound?
+\end{description}
+
+These are separable and must be tested separately, in that order. A product
+that grows without delivering value is a leaking bucket filled faster; a
+product that delivers value without a growth mechanism is a good business that
+stays small.
+
+\subsection{Steer: Build--Measure--Learn}
+
+The operational core is a feedback loop --- and the most-quoted, least-applied
+insight about it is that you \emph{plan} it backwards while you \emph{run} it
+forwards.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=13mm,
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=9mm,minimum width=24mm,font=\sffamily\scriptsize,
+    align=center},
+  art/.style={font=\sffamily\scriptsize,color=AlmanachOchre!80!black},
+  fw/.style={-{Stealth[length=2mm]},thick,draw=AlmanachTeal},
+  bw/.style={-{Stealth[length=2mm]},thick,draw=AlmanachRed,dashed},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[bx] (ideas) at (0,16mm) {IDEAS};
+  \node[bx] (build) at (34mm,0) {BUILD};
+  \node[bx] (code) at (34mm,-14mm) {\textcolor{AlmanachOchre!80!black}{product}};
+  \node[bx] (measure) at (0,-28mm) {MEASURE};
+  \node[bx] (data) at (-34mm,-14mm) {\textcolor{AlmanachOchre!80!black}{data}};
+  \node[bx] (learn) at (-34mm,0) {LEARN};
+  \draw[fw] (ideas) -- (build);
+  \draw[fw] (build) -- (code);
+  \draw[fw] (code) -- (measure);
+  \draw[fw] (measure) -- (data);
+  \draw[fw] (data) -- (learn);
+  \draw[fw] (learn) -- (ideas);
+  \draw[bw] (-16mm,20mm) .. controls (20mm,26mm) and (46mm,10mm) .. (46mm,-6mm);
+  \node[lbl,color=AlmanachRed,anchor=west] at (-14mm,25mm)
+    {plan in this direction};
+  \node[lbl,color=AlmanachTeal,anchor=north,align=center] at (0,-36mm)
+    {execute in this direction};
+  \node[lbl,anchor=west,align=left,text width=40mm] at (52mm,-14mm)
+    {\emph{Minimise total time through the loop} --- that is the only thing
+     the loop optimises};
+\end{tikzpicture}
+\caption{The build--measure--learn loop. Design it backwards: decide what you
+need to \emph{learn}, then what you must \emph{measure} to learn it, then the
+smallest thing you can \emph{build} to produce that measurement. Teams that
+plan forwards build a product and then look for something to measure about
+it.}
+\label{fig:startup-bml-loop}
+\end{figure}
+
+\begin{cautionbox}[What a minimum viable product is, and what it is not]
+The \keyterm{MVP} is the version of the product that enables a full turn of
+the loop with the least effort. It is an \emph{experimental instrument}, and
+several common readings are wrong:
+\begin{itemize}
+  \item It is \textbf{not} version 1.0 of the real product, nor a
+    stripped-down but complete thing you would be proud to ship.
+  \item It is \textbf{not} necessarily software. A landing page, a manual
+    service, or a slide deck can be an MVP if it produces the measurement.
+  \item It \textbf{is} allowed to be embarrassing --- Ries's point is that the
+    embarrassment is the price of learning early.
+  \item It \textbf{must} be tied to a metric decided in advance. An MVP with
+    no pre-declared measurement is just a small product.
+\end{itemize}
+Useful forms: the \keyterm{concierge MVP} (deliver the service by hand to a
+handful of customers), the \keyterm{Wizard-of-Oz MVP} (the interface looks
+automated; humans do the work behind it), the \keyterm{smoke test} (sell it
+before it exists and count who tries to buy), and the single-feature product.
+\end{cautionbox}
+
+\subsection{Innovation Accounting}
+
+If learning is progress, it needs a ledger. \keyterm{Innovation accounting}
+replaces gross totals with three milestones: establish a baseline with a first
+MVP; tune the engine by moving the metric from baseline toward the ideal; then
+decide to pivot or persevere. Metrics must be \emph{actionable} (show clear
+cause and effect), \emph{accessible} (readable by the people who must act),
+and \emph{auditable} (traceable to real customer behaviour).
+
+\begin{workedexample}[A vanity metric hiding a deteriorating product]
+A dashboard shows total registered users growing from $5{,}000$ to $40{,}000$
+in six months. The board is delighted. Now split the same data by
+\keyterm{cohort} --- grouping users by the month they joined and following each
+group forward:
+
+\smallskip
+\begin{tblr}{
+  width=0.92\linewidth,
+  colspec={Q[l,0.16\linewidth] Q[c] Q[c] Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Cohort & Signups & Converted to paid & Rate \\
+Month 1 & 1{,}000 & 42 & $4.2\,\%$ \\
+Month 2 & 1{,}800 & 70 & $3.9\,\%$ \\
+Month 4 & 4{,}500 & 158 & $3.5\,\%$ \\
+Month 6 & 8{,}000 & 248 & $3.1\,\%$ \\
+\end{tblr}
+\smallskip
+
+\emph{Read both readings.} Absolute paying customers rose from $42$ to $248$ ---
+a genuine $5.9\times$. Conversion \emph{per cohort} fell from $4.2\,\%$ to
+$3.1\,\%$, a relative decline of $26\,\%$.
+
+\emph{What is actually happening.} Growth is being bought, and each new
+customer is worth less than the last. Every feature shipped in those six
+months either failed to improve conversion or actively hurt it, and the total
+line concealed that completely. Had the team been steering by the total, they
+would have concluded the product was working.
+
+\emph{The rule.} Cumulative totals only go up and therefore cannot falsify
+anything. Steer by cohort behaviour and by split tests, which can.
+\end{workedexample}
+
+\subsection{Pivot or Persevere}
+
+A \keyterm{pivot} is a structured course correction that tests a new
+fundamental hypothesis --- not a synonym for a change of plan, and not a
+failure. Ries catalogues ten forms.
+
+\begin{table}[htbp]
+\centering
+\caption{The ten pivot types. The value of the taxonomy is diagnostic: naming
+which hypothesis failed tells you which pivot is available, and stops a team
+changing everything at once.}
+\label{tab:startup-pivot-types}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.20\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Pivot & What changes \\
+Zoom-in & One feature becomes the whole product \\
+Zoom-out & The whole product becomes one feature of something larger \\
+Customer segment & The product roughly works, but for a different buyer \\
+Customer need & Same buyer, different problem worth solving \\
+Platform & From application to platform, or the reverse \\
+Business architecture & High margin/low volume $\leftrightarrow$ low margin/high volume \\
+Value capture & A different revenue or pricing model \\
+Engine of growth & Switch between viral, sticky, and paid growth \\
+Channel & A different route to the customer \\
+Technology & Same problem and customer, different technical means \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+Schedule the pivot-or-persevere decision as a recurring meeting with a fixed
+cadence, and set the criteria before you need them. Ries's observation is that
+most startups fail to pivot not because the evidence is unclear but because
+nobody is obliged to look at it --- and because a vanity metric always offers a
+reason to persevere. This is the same discipline as the kill criteria later in
+this chapter, and the same discipline as a pre-registered evaluation
+threshold in \cref{ch:evaluation-mlops}.
+\end{engineernote}
+
+\subsection{Accelerate: Engines of Growth and Small Batches}
+
+Part~III asks how to run the loop faster and how growth compounds. Ries
+identifies three \keyterm{engines of growth}, each with its own governing
+metric, and warns against pursuing more than one at a time.
+
+\begin{workedexample}[The engines, and the arithmetic that decides them]
+\emph{Viral engine.} Growth comes from use itself. The governing quantity is
+the viral coefficient $k = i \times c$, where $i$ is invitations sent per user
+and $c$ the fraction that convert.
+\[
+  i = 2.5,\ c = 0.15 \;\Rightarrow\; k = 0.375,
+  \qquad
+  \text{total users per initial user } = \frac{1}{1-k} = 1.6 .
+\]
+The campaign dies out. Now
+\[
+  i = 4,\ c = 0.30 \;\Rightarrow\; k = 1.2 > 1 \;\Rightarrow\;
+  \text{unbounded growth.}
+\]
+Note the cliff at $k=1$: at $k = 0.9$ each initial user yields $10$ in total
+--- large, but finite and self-extinguishing. Between $0.9$ and $1.2$ lies the
+difference between a campaign and a company.
+
+\emph{Sticky engine.} Growth comes from retention. The governing quantity is
+the compounding rate $=$ acquisition rate $-$ churn rate. At $6\,\%$
+acquisition and $4\,\%$ churn per month:
+\[
+  1.02^{12} = 1.27 \;\Rightarrow\; 27\,\% \text{ annual growth.}
+\]
+At $6\,\%$ acquisition and $8\,\%$ churn the business shrinks, no matter how
+much is spent on marketing --- churn must be fixed first.
+
+\emph{Paid engine.} Growth is bought from margin. It works only while
+lifetime value exceeds acquisition cost with enough headroom to fund the next
+cohort; the unit economics of \cref{sec:startup-unit-economics} are exactly
+this calculation.
+
+\emph{Why one at a time.} Each engine has a different governing metric and
+implies different work. A team optimising all three optimises none, and cannot
+attribute any change it observes.
+\end{workedexample}
+
+Two further accelerators complete Part~III. \keyterm{Small batches} shorten
+the loop: work in the smallest increment that can be measured, because a large
+batch hides which change caused which effect --- the same argument as changing
+one variable at a time in an experiment. And the \keyterm{Five Whys} converts
+each failure into a proportional investment: ask ``why'' five times to move
+from a symptom to a root cause, then fix at every level in proportion to the
+damage, which prevents both over-reaction and repeated incidents.
+
+% ===========================================================================
+\section{Does Lean Startup Work? The Evidence}
+% ===========================================================================
+
+Lean startup is a management theory, and this book's standard is that
+management theories, like models, are claims to be tested. The evidence is
+better than most business methods can offer and weaker than its popularity
+implies.
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical findings on lean startup and the scientific approach to
+entrepreneurship. Note that the strongest study measures better \emph{stopping}
+decisions rather than higher returns --- which is a real benefit, and not the
+one usually claimed.}
+\label{tab:startup-lean-evidence}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.21\textwidth] X[l] Q[l,0.17\textwidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Study & Finding & Design \\
+Camuffo et al.\ (2020)\textsuperscript{\cite{camuffoScientificApproachEntrepreneurial2020}}
+  & Founders trained in hypothesis-driven decision making were more likely to
+  \emph{terminate} projects and to \emph{pivot radically}
+  & Randomised controlled trial, 116 Italian startups \\
+Camuffo et al.\ (2024)\textsuperscript{\cite{camuffoScientificApproachReplication2024}}
+  & Replication confirms the effect on termination; evidence of a
+  \emph{non-linear} effect on pivots --- a few beat none or many
+  & Large-scale replication and extension \\
+Welter et al.\ (2021)\textsuperscript{\cite{welterRoadEntrepreneurialSuccess2021}}
+  & Collecting preorders ($\beta=0.89$, $p=0.04$ for growth) and pivoting on
+  feedback ($\beta=0.34$, $p=0.03$) helped. \textbf{Prototyping and
+  experimentation showed no significant effect} --- and writing a business plan
+  \emph{did} ($\beta=0.30$, $p=0.036$)
+  & Survey, 120 US entrepreneurs \\
+Felin et al.\ (2020)\textsuperscript{\cite{felinLeanStartupBusiness2020}}
+  & Theoretical critique: the method says little about where hypotheses
+  \emph{come from}, and customer feedback on a nascent product may be a weak
+  signal that biases toward incremental outcomes
+  & Conceptual \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}[Reading the evidence honestly]
+Three conclusions, none of them the marketing version.
+
+\emph{1. The measured benefit is better decisions, especially about stopping.}
+The randomised trial's clearest effect is that trained founders killed bad
+projects sooner. That is genuinely valuable --- an entrepreneur's scarcest
+asset is the time they are spending on the wrong thing --- but it is not the
+same as ``lean startup makes startups succeed''.
+
+\emph{2. The parts are not equally supported.} Welter and colleagues found
+preorders and evidence-driven pivots associated with growth while prototyping
+and experimentation were not. Treat the method as a menu of practices with
+different evidential standing, not as a doctrine to adopt whole.
+
+\emph{3. The plan-versus-lean dichotomy is false.} In the same study, writing
+a business plan was \emph{also} associated with success. The popular reading
+that plans are waste is not supported; what is supported is that a plan
+containing untested assumptions should be treated as a list of experiments
+rather than a commitment.
+\end{engineernote}
+
+\begin{cautionbox}[The critique worth taking seriously]
+Felin and colleagues make an argument that no amount of iteration
+answers\textsuperscript{\cite{felinLeanStartupBusiness2020}}: build--measure--learn
+tells you how to \emph{test} a hypothesis and almost nothing about where a
+hypothesis worth testing comes from. Experimentation is a search procedure,
+and a search procedure guided by customer feedback on an early product hill-
+climbs toward local improvements. It is well suited to finding the next
+increment and poorly suited to finding a non-obvious position that customers
+could not have described.
+
+The practical reading is not to abandon the method but to recognise its
+division of labour: \emph{theory generates the hypothesis; experiment
+adjudicates it}. Ries's loop is excellent at the second job. The first still
+requires a point of view about the world that no customer interview will hand
+you --- which is precisely why the value-hypothesis question in this chapter's
+opening section comes before any experiment is designed.
+\end{cautionbox}
+
+\subsection{Adapting the Method to AI Products}
+
+Lean startup was written for software whose behaviour is deterministic and
+whose cost falls to nearly zero at scale. Neither holds for AI products, and
+four adjustments follow.
+
+\begin{table}[htbp]
+\centering
+\caption{Where the standard method needs modification for an AI product, and
+what to do instead. The pattern: AI moves cost and risk from the build phase
+into the measure phase.}
+\label{tab:startup-lean-for-ai}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.20\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Assumption & Why it breaks for AI & Adaptation \\
+The MVP is cheap to build & Model quality is not a feature you can stub; it
+  is the product & Use a Wizard-of-Oz or concierge MVP --- humans deliver the
+  output --- to test demand before any model exists \\
+Output quality is binary & Quality is a distribution, and the tail is what
+  users remember & Declare the acceptance threshold and the failure behaviour
+  as part of the hypothesis \\
+Marginal cost is near zero & Inference costs money per request, every request
+  & Test the unit economics as an explicit hypothesis
+  (\cref{sec:startup-unit-economics}), not as a later optimisation \\
+Faster iteration is always better & Model changes shift behaviour globally,
+  not locally & Keep a frozen evaluation set; a change that improves the demo
+  may regress cases you already sold \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+The Wizard-of-Oz MVP deserves emphasis, because it is unusually well suited to
+AI and unusually underused. If you are proposing to spend six months building
+a model to draft responses, first have two people draft those responses by
+hand behind the same interface for thirty customers. You will learn whether
+anyone wants the output, what ``good'' means to them, and what the acceptance
+threshold is --- and the transcripts become your evaluation set and your
+training data. The manual version costs weeks rather than months, and it
+answers the question the model cannot: whether the problem was worth solving.
+\end{engineernote}
+
+\begin{practicallab}[Run one turn of the loop, backwards]
+\textbf{Goal.} Convert a product idea into a completed experiment, and observe
+how much you learn without building the thing.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Write your value hypothesis and growth hypothesis as separate,
+        falsifiable sentences. Each must name a number and a threshold.
+  \item Rank your assumptions by \emph{leap of faith} --- how much of the
+        business dies if this one is false --- not by how easy they are to test.
+  \item Take the riskiest. Design the loop \emph{backwards}: what must you
+        learn, what would you measure, what is the smallest instrument that
+        produces the measurement?
+  \item Choose the MVP form: smoke test, concierge, or Wizard of Oz. Justify
+        why the cheaper option would not answer the question.
+  \item \textbf{Pre-declare the decision rule}: at what result do you persevere,
+        pivot, or stop? Write it down before running.
+  \item Run it with at least $20$ real people who do not know you.
+  \item Report by cohort, never as a cumulative total.
+  \item Hold the pivot-or-persevere meeting and apply the rule from step~5
+        exactly as written.
+\end{enumerate}
+
+\textbf{Deliverable.} The two hypotheses, the ranked assumption list, the
+pre-declared decision rule, the cohort table, and the decision taken.
+
+\textbf{The point.} Step~5 is the phase. A decision rule written after seeing
+the data is not a decision rule, and this is where most teams quietly
+substitute the outcome they wanted.
+\end{practicallab}
+
+\begin{checkpoint}
+Your AI assistant has $12{,}000$ signups, up from $2{,}000$ last quarter, and
+the team wants to raise on that number. Name the metric that would falsify the
+optimistic reading, state which of the two hypotheses each of the two numbers
+speaks to, and give the pivot type you would consider first if per-cohort
+retention is falling.
+\end{checkpoint}
+
 \section{The Evidence Loop}
 
 \begin{figure}[htbp]
@@ -159,6 +587,7 @@ learn that lesson in production.
 \end{engineernote}
 
 \section{Unit Economics for AI Systems}
+\label{sec:startup-unit-economics}
 
 For one completed customer workflow, a useful contribution estimate is
 \begin{equation}
@@ -268,6 +697,24 @@ and regulation move faster than the plan.
 \chapterreview{Problem}{Experiment}{Economics}{Scale}
 
 \section{Further Reading}
+
+\begin{v3topic}{Lean startup: the primary text and the evidence}
+\begin{itemize}
+  \item \fullcite{riesLeanStartup2011} --- the founding text; the German
+    edition is \fullcite{riesLeanStartupDeutsch2014}.
+  \item \fullcite{blankWhyLeanStartup2013} --- the customer-development
+    tradition lean startup grew out of, in twelve pages.
+  \item \fullcite{osterwalderBusinessModelGeneration2010} --- the business
+    model canvas, the usual companion tool for stating hypotheses.
+  \item \fullcite{camuffoScientificApproachEntrepreneurial2020} --- the
+    randomised controlled trial; read this before quoting any claim about
+    whether the method works.
+  \item \fullcite{welterRoadEntrepreneurialSuccess2021} --- which specific
+    practices correlate with success, and which do not.
+  \item \fullcite{felinLeanStartupBusiness2020} --- the substantive critique:
+    where do hypotheses come from?
+\end{itemize}
+\end{v3topic}
 
 Customer interviews and evidence-based discovery are developed in
 \cite{constableTalkingHumansSuccess2014}.

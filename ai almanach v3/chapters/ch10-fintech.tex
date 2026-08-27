@@ -8,6 +8,41 @@
 \chapterlead{How can AI support financial decisions under asymmetric risk?}{Onboard}{Assess}{Transact}{Govern}{fintech}
 
 % ============================================================
+\label{ch:fintech}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute precision and recall for a fraud detector at realistic base
+        rates and explain why accuracy is meaningless there;
+  \item define point-in-time correctness and name the leak that backtests
+        create most often;
+  \item explain why a model that predicts returns can still lose money after
+        costs;
+  \item identify a proxy variable that reintroduces a protected attribute into
+        a credit decision;
+  \item state what a regulator requires beyond predictive performance.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Finance is where a small edge, applied often, becomes real money --- and where
+a small methodological error, applied often, becomes a real loss. The
+mathematics is mostly familiar from earlier chapters. What is different is that
+the data moves, an adversary is optimising against you, the decisions are
+legally consequential, and the thing you are predicting reacts to your having
+predicted it.
+\end{plainlanguage}
+
+\begin{engineernote}
+Two properties make financial machine learning unlike the tabular problems in
+\cref{ch:machine-learning}. First, the data is non-stationary by construction:
+a pattern that persisted for three years may vanish the month you deploy,
+because someone else found it too. Second, every backtest is a measurement of a
+past that cannot be re-run, so the only real test is forward and out of sample.
+Treat any backtest as a hypothesis, never as evidence of profit.
+\end{engineernote}
+
 \section{Concepts of FinTech and Artificial Intelligence}
 % ============================================================
 
@@ -24,7 +59,7 @@
 \begin{v3topic}{The FinTech Ecosystem}
     The FinTech ecosystem is a network of interdependent actors co-creating value around financial services.
 \visualseparator
-    \begin{tblr}{|Q[c,m,4cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m,4cm]|X|}}
         \hline
         \textbf{Actor}        & \textbf{Role} \\
         \hline
@@ -39,8 +74,8 @@
         Customers             & End users driving adoption and behavioral data \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to FinTech: The FinTech Ecosystem.}
-\label{tab:ch10-fintech-inline-01}
+\captionof{table}{Actors in the FinTech ecosystem and what each contributes.}
+\label{tab:fin-ecosystem}
 
 \end{v3topic}
 \begin{v3topic}{Open Banking and PSD2}
@@ -112,7 +147,7 @@
 \begin{v3topic}{ML and DL in Finance}
     Machine learning is the primary analytical engine of modern FinTech\textsuperscript{\cite[][pp.~1--3]{jansenMachineLearningAlgorithmic2020}}:
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|}}
         \hline
         \textbf{ML Type}       & \textbf{Finance Application} \\
         \hline
@@ -125,8 +160,8 @@
         Deep Learning          & Time-series forecasting (LSTM), sentiment (BERT), OCR \\
         \hline
     \end{tblr}
-\captionof{table}{FinTech Underlying Technologies: ML and DL in Finance.}
-\label{tab:ch10-fintech-inline-02}
+\captionof{table}{Machine-learning families mapped to financial applications.}
+\label{tab:fin-ml-applications}
 
 \end{v3topic}
 \begin{v3topic}{NLP for Financial Text}
@@ -190,7 +225,7 @@
 \end{v3topic}
 \begin{v3topic}{Strategy Types}
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|}}
         \hline
         \textbf{Strategy}       & \textbf{Description} \\
         \hline
@@ -205,8 +240,8 @@
         Long-short equity       & ML signals rank stocks; long winners, short losers \\
         \hline
     \end{tblr}
-\captionof{table}{Algorithmic Trading: Strategy Types.}
-\label{tab:ch10-fintech-inline-03}
+\captionof{table}{Algorithmic trading strategies by mechanism. Each depends on a market condition that other participants are also trying to exploit.}
+\label{tab:fin-strategies}
 
 \end{v3topic}
 \begin{v3topic}{RL for Trading}
@@ -219,7 +254,7 @@
     Backtesting simulates a strategy on historical data to estimate future performance\textsuperscript{\cite[][pp.~222--226]{jansenMachineLearningAlgorithmic2020}}.
     Critical pitfalls:
 \visualseparator
-    \begin{tblr}{|X|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|X|X|X|}}
         \hline
         \textbf{Pitfall}         & \textbf{Cause}                                    & \textbf{Remedy} \\
         \hline
@@ -232,8 +267,8 @@
         Transaction costs        & Ignoring slippage, commissions, market impact       & Model realistic costs per strategy \\
         \hline
     \end{tblr}
-\captionof{table}{Algorithmic Trading: Backtesting and Overfitting Risk.}
-\label{tab:ch10-fintech-inline-04}
+\captionof{table}{Backtest pitfalls with cause and remedy. Every one of them makes the backtest look better and the deployment worse.}
+\label{tab:fin-backtest-pitfalls}
 
 \end{v3topic}
 
@@ -399,7 +434,7 @@
 \end{v3topic}
 \begin{v3topic}{Pure vs.\ Hybrid Robo-Advisors}
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|X|}}
         \hline
                              & \textbf{Pure Robo} & \textbf{Hybrid / Bionic} \\
         \hline
@@ -412,8 +447,8 @@
         Examples              & Betterment, Wealthfront   & Vanguard Personal Advisor, Schwab \\
         \hline
     \end{tblr}
-\captionof{table}{Definition and Types of Robo-Advisors: Pure vs.\ Hybrid Robo-Advisors.}
-\label{tab:ch10-fintech-inline-05}
+\captionof{table}{Pure against hybrid robo-advice. The human element is retained mainly for the cases where the constraint is behavioural rather than computational.}
+\label{tab:fin-robo-types}
 
 \end{v3topic}
 
@@ -519,7 +554,7 @@
 \begin{v3topic}{Regulation of Robo-Advisors}
     Robo-advisors providing investment advice are subject to financial regulations across jurisdictions:
 \visualseparator
-    \begin{tblr}{|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[c,m]|X|}}
         \hline
         \textbf{Jurisdiction} & \textbf{Regime} \\
         \hline
@@ -532,8 +567,8 @@
         UK                    & FCA authorization; Consumer Duty (2023) \\
         \hline
     \end{tblr}
-\captionof{table}{Regulation of AI in Financial Services: Regulation of Robo-Advisors.}
-\label{tab:ch10-fintech-inline-06}
+\captionof{table}{Robo-advice regimes by jurisdiction. Verify against current primary sources before relying on any row.}
+\label{tab:fin-robo-regulation}
 
 \end{v3topic}
 
@@ -591,6 +626,103 @@ capacity, adverse-action explanation, human review, and appeal.
 Measure calibration and error costs by relevant groups, plus queue burden and
 time to resolution.
 \end{v3topic}
+
+
+\begin{workedexample}[Why a fraud detector with 99.9\,\% accuracy is unusable]
+One million transactions, of which $0.1\,\%$ --- one thousand --- are
+fraudulent. A model catches $800$ of them and raises $9{,}000$ false alarms.
+
+\[
+\begin{aligned}
+  \text{Accuracy} &= \frac{800 + (999{,}000-9{,}000)}{1{,}000{,}000}
+    = \frac{990{,}800}{1{,}000{,}000} = 99.08\,\%,\\[3pt]
+  \text{Precision} &= \frac{800}{800+9{,}000} = \frac{800}{9{,}800}
+    = 8.2\,\%,\\[3pt]
+  \text{Recall} &= \frac{800}{1{,}000} = 80\,\% .
+\end{aligned}
+\]
+
+\emph{The do-nothing baseline.} Approving everything scores
+$99.9\,\%$ accuracy --- \emph{better} than the model.
+
+\emph{The operational reading.} Of every twelve alerts a reviewer opens, eleven
+are legitimate customers. At $9{,}800$ alerts and, say, four minutes each, that
+is roughly $650$ analyst-hours per million transactions. The binding constraint
+is not the model's quality but the review capacity, and the threshold must be
+set from that capacity, not from an $F_1$ optimum.
+
+\emph{The decision that follows.} Compare the expected cost of a missed fraud
+against the cost of a false alarm --- including the customer whose legitimate
+card was declined at a checkout. Those two numbers, not the ROC curve, choose
+the threshold.
+\end{workedexample}
+
+\begin{cautionbox}[Point-in-time correctness, and the leak that flatters every backtest]
+A backtest must use only information that was actually available at the moment
+of the simulated decision. Four leaks recur:
+\begin{itemize}
+  \item \textbf{Restatements.} Fundamentals are revised after publication.
+        Using today's corrected value in a simulated decision made years ago
+        gives the model knowledge nobody had.
+  \item \textbf{Survivorship.} An index constituent list downloaded today
+        contains only firms that still exist. Backtesting on it quietly deletes
+        every bankruptcy.
+  \item \textbf{Look-ahead in features.} A ratio computed from a quarter's
+        close, applied to decisions within that quarter.
+  \item \textbf{Random splits.} Shuffling time series lets the model train on
+        the future (\cref{ch:machine-learning}). Split chronologically, always.
+\end{itemize}
+Each of these makes the backtest better and the deployment worse. A strategy
+that looks excellent and cannot be explained mechanically is usually a leak,
+not an edge.
+\end{cautionbox}
+
+\begin{cautionbox}[Proxies reintroduce what the law removed]
+Removing a protected attribute from the feature list does not remove it from
+the model. Postcode encodes ethnicity in many cities; device type and shopping
+category encode income; name encodes gender and origin; even application
+timestamp can encode shift work. A model trained without the attribute can
+reconstruct it and discriminate just as effectively --- while producing a
+compliance document stating the attribute was not used.
+
+The test is empirical, not documentary: measure outcome rates across protected
+groups on held-out data, and check whether the protected attribute is
+predictable from the features you did use. If it is, you have a proxy.
+\end{cautionbox}
+
+\begin{practicallab}[Build the backtest you are allowed to believe]
+\textbf{Goal.} Produce a model evaluation that would survive a regulator or a
+risk committee.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Take any public time-series dataset with a label you could have known
+        at decision time. Write down the exact decision moment.
+  \item Split \emph{chronologically} into train, validation, and a final
+        holdout period you will touch once.
+  \item Establish three baselines: always-negative, a single-feature rule, and
+        the previous period's value.
+  \item Fit a model. Report precision, recall, and the review-capacity
+        implication at three thresholds.
+  \item \textbf{Leak hunt.} For every feature, state the timestamp at which its
+        value became knowable. Remove anything knowable only later. Re-run and
+        record how much performance drops --- that drop was your leak.
+  \item Apply realistic costs: transaction fees, review time, or the cost of a
+        wrongly declined customer. Recompute whether the model still wins.
+  \item Report subgroup outcome rates.
+\end{enumerate}
+
+\textbf{Deliverable.} A table with all three baselines, both threshold
+analyses, the pre- and post-leak-hunt numbers, and the subgroup rates.
+\textbf{The point:} step 5 usually removes most of the apparent performance,
+and step 6 removes most of the rest.
+\end{practicallab}
+
+\begin{checkpoint}
+Your credit model has AUC $0.82$ and the incumbent rule-based system has
+$0.79$. Name three things you would need to establish before recommending the
+switch, at least one of which is not a performance measurement.
+\end{checkpoint}
 
 \chapterreview{Onboard}{Assess}{Transact}{Govern}
 

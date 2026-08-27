@@ -57,9 +57,8 @@ Subgroup metrics, uncertainty, impact analysis \\
 Accountability & Can decisions, owners, and evidence be reconstructed? &
 Versioned records, approvals, logs, incident process
 \end{tblr}
-\captionof{table}{Trustworthiness properties connect distinct engineering
-questions to distinct forms of evidence.}
-\label{tab:ch08-functional-security-inline-01}
+\captionof{table}{Trustworthiness properties, each paired with the engineering question it answers and the evidence that would settle it.}
+\label{tab:sec-trust-properties}
 \end{center}
 
 For hazards $h_i$, a first screening model is
@@ -183,9 +182,8 @@ usable override, training \\
 Operations & Drift, dependency compromise, telemetry gap & Signed artifacts,
 monitoring, rollback drill
 \end{tblr}
-\captionof{table}{ML failures arise at specification, data, statistical,
-implementation, interaction, and operational boundaries.}
-\label{tab:ch08-functional-security-inline-02}
+\captionof{table}{Machine-learning failure families by origin. Note how few are model failures: most originate in specification or data.}
+\label{tab:sec-failure-families}
 \end{center}
 
 If a model emits confidence $s(x)$, that number is not automatically
@@ -236,9 +234,8 @@ Supply-chain attack & Build/deploy & Dataset, package, model, or adapter is
 replaced
 & Pinning, hashes/signatures, scanning, bill of materials, rollback
 \end{tblr}
-\captionof{table}{Adversarial-ML controls must address attacks across the
-training, serving, application, and supply-chain lifecycle.}
-\label{tab:ch08-functional-security-inline-03}
+\captionof{table}{Adversarial attacks by lifecycle stage, with a corresponding control. No single defence covers the whole table, which is why the last column is defence in depth.}
+\label{tab:sec-adversarial-controls}
 \end{center}
 
 \begin{engineernote}[The model is not the security boundary]

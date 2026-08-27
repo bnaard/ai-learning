@@ -6,6 +6,41 @@
 \chapter{Programming Foundations}
 \chapterlead{How does an analytical idea become reproducible, testable software?}{Specify}{Implement}{Test}{Maintain}{programming}
 
+\label{ch:programming-foundations}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item predict the result shape of a broadcast operation before running it,
+        and recognise the silent bug that broadcasting causes most often;
+  \item explain why \texttt{0.1 + 0.2 == 0.3} is \texttt{False} and what to
+        write instead;
+  \item name the three Python defaults that produce wrong results rather than
+        errors;
+  \item choose between a loop, a vectorised operation, and a compiled routine
+        from the data size;
+  \item write the environment record that makes an experiment reproducible;
+  \item read a shape error and locate the bug without a debugger.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+The programming you need for machine learning is narrower than general software
+engineering but less forgiving in one specific way: most mistakes do not crash.
+A wrong axis, a broadcast that silently expands, a copy that was actually a
+view, a seed that was never set --- each produces a number, and the number
+looks fine. This chapter is mostly about the failures that return a result
+instead of an error.
+\end{plainlanguage}
+
+\begin{engineernote}
+Two habits prevent most of the damage. First, print shapes --- of every array,
+at every boundary, until the pipeline is trusted. Second, write the assertion
+you are tempted to check by eye: \texttt{assert y\_pred.shape == y\_true.shape}
+costs one line and catches a class of bug that can otherwise survive all the
+way into a published number.
+\end{engineernote}
+
 \section{Programming with Python}
 \subsection{Introduction to Python}
 
@@ -16,7 +51,7 @@
     Python provides four built-in collection types that differ in mutability, ordering, and uniqueness\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     Choosing the right type matters for both correctness and performance.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|Q[c,m]|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|Q[c,m]|Q[c,m]|X|}}
         \hline
         \textbf{Type} & \textbf{Ordered} & \textbf{Mutable} & \textbf{Notes / Use-case} \\
         \hline
@@ -29,8 +64,8 @@
         \texttt{set}   & no  & yes & Unique elements; fast membership tests; set algebra \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Python: Data Structures: Lists, Tuples, Dicts, Sets.}
-\label{tab:ch03-programming-foundations-inline-01}
+\captionof{table}{The four built-in collections. Choose by the two middle columns: ordering and mutability decide correctness, everything else is performance.}
+\label{tab:prog-data-structures}
 \end{v3topic}
 
 % ---- 3.1.2 Functions ----------------------------------------------------------------------------
@@ -69,7 +104,7 @@
     Python's control flow is concise: \texttt{if}/\texttt{elif}/\texttt{else} for branching, \texttt{for} over any iterable, \texttt{while} for condition-driven loops\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     List, dict, and set comprehensions replace many explicit loops with readable one-liners.
 \visualseparator
-    \begin{tblr}{|X[2]|X[3]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[3]|}}
         \hline
         \textbf{Construct} & \textbf{Example} \\
         \hline
@@ -86,8 +121,8 @@
         Generator expr.  & \texttt{sum(x**2 for x in data)} --- lazy evaluation \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Python: Flow Control and Comprehensions.}
-\label{tab:ch03-programming-foundations-inline-02}
+\captionof{table}{Flow control constructs. Comprehensions are preferred not for brevity but because they make the output shape explicit at the point of construction.}
+\label{tab:prog-flow-control}
 \end{v3topic}
 
 % ---- 3.1.4 Input / Output -----------------------------------------------------------------------
@@ -96,7 +131,7 @@
 \begin{v3topic}{File Handling and I/O}
     Python's \texttt{open()} built-in and the \texttt{with} context manager handle file I/O safely: the file is closed automatically when the block exits, even on exceptions\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|}}
         \hline
         \textbf{Pattern} & \textbf{Description} \\
         \hline
@@ -113,8 +148,8 @@
         \texttt{json.dump} / \texttt{json.load} & Serialize Python objects to/from JSON \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Python: File Handling and I/O.}
-\label{tab:ch03-programming-foundations-inline-03}
+\captionof{table}{File-handling patterns. The context-manager form is the only one that closes the handle when an exception is raised part-way through.}
+\label{tab:prog-file-io}
 \end{v3topic}
 
 % ---- 3.1.5 Modules and packages -----------------------------------------------------------------
@@ -155,7 +190,7 @@
     Python resolves names by searching scopes in order: \textbf{L}ocal $\to$ \textbf{E}nclosing $\to$ \textbf{G}lobal $\to$ \textbf{B}uilt-in (LEGB)\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     Assignment in a scope creates a local binding; \texttt{global} and \texttt{nonlocal} keywords break out of the default rule.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X|}}
         \hline
         \textbf{Scope} & \textbf{Where it lives} \\
         \hline
@@ -168,8 +203,8 @@
         Built-in (B)  & Python's built-in names (\texttt{len}, \texttt{range}, \ldots) \\
         \hline
     \end{tblr}
-\captionof{table}{Classes and Inheritance: The LEGB Rule.}
-\label{tab:ch03-programming-foundations-inline-04}
+\captionof{table}{Python's name resolution order. Nearly every surprising scope bug is a name found at an outer level when an inner one was intended.}
+\label{tab:prog-legb}
 \end{v3topic}
 
 % ---- 3.2.2 Classes and inheritance --------------------------------------------------------------
@@ -180,7 +215,7 @@
     \texttt{\_\_init\_\_} is the constructor; \texttt{self} is the explicit reference to the instance.
     Single and multiple inheritance are supported; method resolution follows the \emph{C3 linearization} (MRO)\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Concept} & \textbf{Description} \\
         \hline
@@ -197,8 +232,8 @@
         \texttt{@property}                  & Getter/setter without explicit call parentheses \\
         \hline
     \end{tblr}
-\captionof{table}{Classes and Inheritance: Classes and Inheritance.}
-\label{tab:ch03-programming-foundations-inline-05}
+\captionof{table}{Core object-oriented concepts. In machine-learning code these matter mainly for dataset and model classes, where framework base classes fix the interface.}
+\label{tab:prog-classes}
 \end{v3topic}
 
 % ---- 3.2.3 Iterators and generators -------------------------------------------------------------
@@ -237,12 +272,39 @@
         \texttt{\_\_enter\_\_} / \texttt{\_\_exit\_\_} & \texttt{with} statement \\
         \hline
     \end{tblr}
-\captionof{table}{Classes and Inheritance: Protocol Dunder Methods.}
-\label{tab:ch03-programming-foundations-inline-06}
+\captionof{table}{Dunder methods and the syntax that triggers them. Implementing these is how a custom class becomes usable by code that never heard of it.}
+\label{tab:prog-dunder}
 \end{v3topic}
 
 % ---- 3.3 Errors and Exceptions ------------------------------------------------------------------
 \subsection{Errors and Exceptions}
+
+\begin{workedexample}[Three Python results that are wrong rather than broken]
+\emph{1. Floating-point equality.}
+\[
+  0.1 + 0.2 = 0.30000000000000004 \neq 0.3 .
+\]
+Neither $0.1$ nor $0.2$ is representable in binary, so the sum lands one unit
+in the last place away from $0.3$ (see \cref{sec:math-numerics}). Never compare
+floats with \texttt{==}; compare with a tolerance, e.g.\
+\texttt{math.isclose(a, b, rel\_tol=1e-9)}.
+
+\emph{2. Mutable default arguments.} A default is evaluated \emph{once}, when
+the function is defined --- not on each call:
+\begin{center}
+\texttt{def add(item, bucket=[]): bucket.append(item); return bucket}
+\end{center}
+Calling \texttt{add(1)} returns \texttt{[1]}; calling \texttt{add(2)}
+returns \texttt{[1, 2]}. The list persists across calls. Use
+\texttt{bucket=None} and create the list inside.
+
+\emph{3. Integer division and silent type change.} \texttt{7 / 2} is
+\texttt{3.5} but \texttt{7 // 2} is \texttt{3}, and mixing the two inside an
+index computation shifts every subsequent result by one without complaint.
+
+All three return a value. None of them raises. That is what makes them
+expensive.
+\end{workedexample}
 
 % ---- 3.3.1 Syntax errors ------------------------------------------------------------------------
 \subsubsection{Syntax errors}
@@ -268,8 +330,8 @@
         \texttt{IndexError} / \texttt{KeyError} & Access beyond sequence / absent dict key \\
         \hline
     \end{tblr}
-\captionof{table}{Errors and Exceptions: Syntax vs.\ Runtime Errors.}
-\label{tab:ch03-programming-foundations-inline-07}
+\captionof{table}{Errors by when they surface. Syntax errors are free; runtime errors cost a run; the dangerous third category, wrong results without an error, appears in neither row.}
+\label{tab:prog-error-types}
 \end{v3topic}
 
 % ---- 3.3.2 Handling and raising exceptions ------------------------------------------------------
@@ -305,7 +367,7 @@
     User-defined exceptions inherit from \texttt{Exception} (or a more specific base class).
     Custom exceptions improve code clarity and allow callers to catch domain-specific errors without catching everything\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,4cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,4cm]|X|}}
         \hline
         \textbf{Pattern} & \textbf{Notes} \\
         \hline
@@ -318,8 +380,8 @@
         Application hierarchy                           & \texttt{AppError} $\to$ \texttt{DBError}, \texttt{NetworkError} \\
         \hline
     \end{tblr}
-\captionof{table}{Errors and Exceptions: Custom Exception Classes.}
-\label{tab:ch03-programming-foundations-inline-08}
+\captionof{table}{Custom exception patterns. A specific exception type lets a caller handle one failure and let the rest propagate, which a bare string message cannot.}
+\label{tab:prog-custom-exceptions}
     Catch the base class to handle the whole hierarchy; catch subclasses for fine-grained handling.
 \end{v3topic}
 
@@ -332,7 +394,7 @@
 \begin{v3topic}{Python Standard Library Highlights}
     The standard library ships with CPython and covers a huge range of tasks without third-party dependencies\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|}}
         \hline
         \textbf{Module} & \textbf{Key functionality} \\
         \hline
@@ -353,8 +415,8 @@
         \texttt{re}          & Regular expressions \\
         \hline
     \end{tblr}
-\captionof{table}{Important Libraries: Python Standard Library Highlights.}
-\label{tab:ch03-programming-foundations-inline-09}
+\captionof{table}{Standard-library modules worth knowing before reaching for a dependency.}
+\label{tab:prog-stdlib}
 \end{v3topic}
 
 % ---- 3.4.2 Scientific calculations --------------------------------------------------------------
@@ -392,7 +454,7 @@
     Pure Python loops are slow due to interpreter overhead.
     Several tools compile or parallelize Python to approach C/Fortran speeds\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|}}
         \hline
         \textbf{Tool} & \textbf{Approach and notes} \\
         \hline
@@ -409,8 +471,8 @@
         \textbf{Dask}           & Lazy parallel arrays/dataframes; scales to cluster \\
         \hline
     \end{tblr}
-\captionof{table}{Important Libraries: Accelerating Python Code.}
-\label{tab:ch03-programming-foundations-inline-10}
+\captionof{table}{Ways to make Python faster, in increasing order of commitment. Measure before choosing: the answer is usually vectorisation, not a rewrite.}
+\label{tab:prog-acceleration}
     Rule of thumb: profile first (\texttt{cProfile}, \texttt{line\_profiler}), then optimise the bottleneck.
 \end{v3topic}
 
@@ -420,7 +482,7 @@
 \begin{v3topic}{Python Visualization Ecosystem}
     Python offers a layered visualization stack from low-level to high-level APIs\textsuperscript{\cite{navlaniPythonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|}}
         \hline
         \textbf{Library} & \textbf{Description} \\
         \hline
@@ -435,8 +497,8 @@
         \textbf{Altair}     & Declarative API based on Vega-Lite; grammar of graphics \\
         \hline
     \end{tblr}
-\captionof{table}{Important Libraries: Python Visualization Ecosystem.}
-\label{tab:ch03-programming-foundations-inline-11}
+\captionof{table}{The plotting libraries and what each is actually for. See \cref{ch:visualization} for choosing the chart rather than the library.}
+\label{tab:prog-viz-libraries}
     Matplotlib is the default for publication figures; Plotly/Bokeh/Altair for interactive exploration.
 \end{v3topic}
 
@@ -446,7 +508,7 @@
 \begin{v3topic}{Database Access in Python}
     Python accesses databases via the DB-API 2.0 standard (\texttt{sqlite3}, \texttt{psycopg2}, \texttt{pymysql}) or the ORM layer SQLAlchemy\textsuperscript{\cite{navlaniPythonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X|}}
         \hline
         \textbf{Tool} & \textbf{Notes} \\
         \hline
@@ -461,8 +523,8 @@
         \textbf{Pandas}          & \texttt{pd.read\_sql(query, con)} --- query result directly to DataFrame \\
         \hline
     \end{tblr}
-\captionof{table}{Important Libraries: Database Access in Python.}
-\label{tab:ch03-programming-foundations-inline-12}
+\captionof{table}{Database access options, from raw driver to full ORM. The trade is control against boilerplate.}
+\label{tab:prog-database}
 \end{v3topic}
 
 % ---- 3.5 Working with Python --------------------------------------------------------------------
@@ -474,7 +536,7 @@
 \begin{v3topic}{Virtual Environments}
     A virtual environment is an isolated Python installation that keeps project dependencies separate, avoiding conflicts between projects\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X|}}
         \hline
         \textbf{Tool} & \textbf{Commands / Notes} \\
         \hline
@@ -487,8 +549,8 @@
         \texttt{uv}              & Ultra-fast Rust-based pip/venv replacement \\
         \hline
     \end{tblr}
-\captionof{table}{Working with Python: Virtual Environments.}
-\label{tab:ch03-programming-foundations-inline-13}
+\captionof{table}{Environment tools. Any of them works; using none of them is what makes a result unreproducible.}
+\label{tab:prog-venv}
     Best practice: one virtual environment per project; never install into the system Python.
 \end{v3topic}
 
@@ -498,7 +560,7 @@
 \begin{v3topic}{Reproducible Package Management}
     Pinning dependency versions ensures reproducible builds across machines and CI/CD pipelines\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{File / Tool} & \textbf{Purpose} \\
         \hline
@@ -511,8 +573,8 @@
         \texttt{conda env export}   & Export conda environment including non-Python packages \\
         \hline
     \end{tblr}
-\captionof{table}{Working with Python: Reproducible Package Management.}
-\label{tab:ch03-programming-foundations-inline-14}
+\captionof{table}{The files that pin an environment. A lock file records what was actually installed; a requirements file records what was requested, and the two diverge.}
+\label{tab:prog-packaging}
 \end{v3topic}
 
 % ---- 3.5.3 Unit and integration testing ---------------------------------------------------------
@@ -534,7 +596,7 @@
     Good tests are fast, isolated, repeatable, and self-validating\textsuperscript{\cite{anayaCleanCodePython2021}}.
     The \emph{Arrange-Act-Assert} (AAA) pattern structures each test clearly.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X|}}
         \hline
         \textbf{Layer} & \textbf{Scope} \\
         \hline
@@ -547,8 +609,8 @@
         Property test   & \texttt{hypothesis} library generates random inputs \\
         \hline
     \end{tblr}
-\captionof{table}{Working with Python: Test Design Principles.}
-\label{tab:ch03-programming-foundations-inline-15}
+\captionof{table}{The test pyramid. Fast, numerous unit tests catch most regressions; slow end-to-end tests catch the ones that matter most.}
+\label{tab:prog-test-layers}
 \end{v3topic}
 
 % ---- 3.5.4 Documenting code ---------------------------------------------------------------------
@@ -558,7 +620,7 @@
     Python supports inline documentation through \emph{docstrings} (PEP 257) and static type annotations (PEP 484)\textsuperscript{\cite{anayaCleanCodePython2021}}.
     Tools such as \texttt{Sphinx} generate HTML/PDF API docs from docstrings; \texttt{mypy} and \texttt{pyright} perform static type checking.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X|}}
         \hline
         \textbf{Convention} & \textbf{Notes} \\
         \hline
@@ -574,8 +636,8 @@
         \texttt{sphinx-autodoc}          & Extracts docstrings to build HTML reference docs \\
         \hline
     \end{tblr}
-\captionof{table}{Working with Python: Docstrings and Type Hints.}
-\label{tab:ch03-programming-foundations-inline-16}
+\captionof{table}{Documentation and typing conventions. Type hints do not execute, but they let a checker find shape and type errors before a run costs GPU time.}
+\label{tab:prog-docstrings}
 \end{v3topic}
 
 % ---- 3.6 Version Control ------------------------------------------------------------------------
@@ -587,7 +649,7 @@
 \begin{v3topic}{Why Version Control?}
     A \emph{version control system} (VCS) records changes to files over time, enabling rollback, parallel development, and collaboration\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X[2]|X[2]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X[2]|X[2]|}}
         \hline
         \textbf{Property} & \textbf{Centralized (SVN)} & \textbf{Distributed (Git)} \\
         \hline
@@ -600,8 +662,8 @@
         Fault tolerance & Single point of failure  & Any clone can restore the repo \\
         \hline
     \end{tblr}
-\captionof{table}{Version Control: Why Version Control?}
-\label{tab:ch03-programming-foundations-inline-17}
+\captionof{table}{Centralised against distributed version control. The practical consequence of the distributed model is that history and branching are local and therefore cheap.}
+\label{tab:prog-vcs-models}
 \end{v3topic}
 
 % ---- 3.6.2 Version control with GIT -------------------------------------------------------------
@@ -611,7 +673,7 @@
     Git stores snapshots (not diffs) as a directed acyclic graph (DAG) of \emph{commits}\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
     A \emph{branch} is a movable pointer to a commit; \emph{HEAD} is the currently checked-out commit.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X|}}
         \hline
         \textbf{Command} & \textbf{Effect} \\
         \hline
@@ -628,15 +690,15 @@
         \texttt{git rebase main}   & Replay commits on top of main \\
         \hline
     \end{tblr}
-\captionof{table}{Version Control: Core Git Concepts.}
-\label{tab:ch03-programming-foundations-inline-18}
+\captionof{table}{The Git commands that cover almost all daily use.}
+\label{tab:prog-git-core}
 
 \end{v3topic}
 \begin{v3topic}{Collaboration Workflow}
     Remote repositories on GitHub/GitLab enable team collaboration.
     The \emph{feature-branch workflow} is the most common: work on a branch, open a pull request, review, then merge\textsuperscript{\cite{romanoLearnPythonProgramming2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X|}}
         \hline
         \textbf{Command} & \textbf{Effect} \\
         \hline
@@ -651,13 +713,62 @@
         \texttt{git log --oneline --graph} & Visual commit DAG \\
         \hline
     \end{tblr}
-\captionof{table}{Version Control: Collaboration Workflow.}
-\label{tab:ch03-programming-foundations-inline-19}
+\captionof{table}{Collaboration commands. Note which of these rewrite history: those are the ones that need agreement before use on a shared branch.}
+\label{tab:prog-git-collab}
 \end{v3topic}
 
 % ==================================================================================================
 \section{NumPy and Pandas}
 \subsection{Introduction to NumPy}
+
+\begin{workedexample}[Broadcasting, and the bug it hides]
+NumPy aligns shapes from the \emph{right} and stretches any dimension of size
+$1$.
+
+\emph{The intended behaviour.}
+\[
+  \underbrace{(3,1)}_{\text{column}} \;+\; \underbrace{(1,4)}_{\text{row}}
+  \;\longrightarrow\; (3,4).
+\]
+With column $[1,2,3]^{\!\top}$ and row $[10,20,30,40]$ the result is the full
+outer sum
+$\left(\begin{smallmatrix}11&21&31&41\\12&22&32&42\\13&23&33&43
+\end{smallmatrix}\right)$ --- useful, and exactly what was asked for.
+
+\emph{The bug.} Now suppose targets have shape $(100,)$ and predictions come
+back from a model with shape $(100,1)$ --- a single trailing dimension nobody
+removed. Align from the right:
+\[
+  (100,) \rightarrow (1,100),
+  \qquad
+  (1,100) \text{ against } (100,1)
+  \;\longrightarrow\; \mathbf{(100,100)} .
+\]
+So \texttt{y\_true - y\_pred} produces a $100\times100$ matrix of every
+pairwise difference. Taking its mean square yields a number --- a perfectly
+plausible-looking loss, computed over $10{,}000$ meaningless values instead of
+$100$ real ones.
+
+\emph{Nothing raises an error.} Training proceeds, the loss decreases, and the
+model learns something unrelated to the task. The one-line defence:
+\begin{center}
+\texttt{assert y\_pred.shape == y\_true.shape}
+\end{center}
+This is the single most valuable assertion in applied machine learning.
+\end{workedexample}
+
+\begin{cautionbox}[Views, copies, and edits that vanish]
+NumPy slicing returns a \emph{view}, not a copy: \texttt{b = a[0:3]} shares
+memory with \texttt{a}, so writing to \texttt{b} changes \texttt{a}. Fancy
+indexing (\texttt{a[[0,1,2]]}) returns a copy, so writing to it changes
+nothing. The two look almost identical in code and behave oppositely, and
+neither warns you.
+
+In pandas the same ambiguity produces the notorious chained-assignment problem:
+\texttt{df[df.x > 0]["y"] = 1} may modify a temporary and silently discard your
+edit. Use \texttt{.loc} for any assignment, and call \texttt{.copy()} explicitly
+when you intend a copy.
+\end{cautionbox}
 
 % ---- 3.7.1 NumPy arrays -------------------------------------------------------------------------
 \subsubsection{NumPy arrays}
@@ -678,7 +789,7 @@
 \begin{v3topic}{Array dtypes}
     Choosing the right \texttt{dtype} balances precision against memory footprint, which matters at scale\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|Q[c,m]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|Q[c,m]|X|}}
         \hline
         \textbf{dtype} & \textbf{Bytes} & \textbf{Use-case} \\
         \hline
@@ -693,8 +804,8 @@
         \texttt{bool}    & 1 & Masks, logical operations \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to NumPy: Array dtypes.}
-\label{tab:ch03-programming-foundations-inline-20}
+\captionof{table}{NumPy dtypes and their cost. Choosing \texttt{float32} over \texttt{float64} halves memory and is usually sufficient for training; it is not sufficient for accumulating sums (\cref{sec:math-numerics}).}
+\label{tab:prog-numpy-dtypes}
 \end{v3topic}
 
 % ---- 3.7.2 Array indexing and slicing -----------------------------------------------------------
@@ -703,7 +814,7 @@
 \begin{v3topic}{Indexing and Slicing}
     NumPy supports basic, fancy, and boolean indexing; slices return \emph{views} (no copy), fancy and boolean indexing return copies\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Syntax} & \textbf{Meaning} \\
         \hline
@@ -720,8 +831,8 @@
         \texttt{a[..., 0]}          & Last axis = 0 for any number of leading axes \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to NumPy: Indexing and Slicing.}
-\label{tab:ch03-programming-foundations-inline-21}
+\captionof{table}{Indexing syntax. The distinction that bites: basic slicing returns a view sharing memory, fancy indexing returns a copy.}
+\label{tab:prog-numpy-indexing}
 \end{v3topic}
 
 % ---- 3.7.3 Array operations ---------------------------------------------------------------------
@@ -731,7 +842,7 @@
     NumPy operations are \emph{element-wise} by default; matrix products require \texttt{np.dot} or \texttt{@}.
     Reduction ufuncs (sum, max, etc.) accept an \texttt{axis} argument\textsuperscript{\cite{fuhrerScientificComputingPython2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Operation} & \textbf{Notes} \\
         \hline
@@ -748,8 +859,8 @@
         \texttt{np.clip(a, 0, 1)}             & Clamp values to $[0, 1]$ \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to NumPy: Vectorised Operations and ufuncs.}
-\label{tab:ch03-programming-foundations-inline-22}
+\captionof{table}{Vectorised operations. These are not merely shorthand for loops --- they dispatch to compiled routines, which is where the order-of-magnitude speedup comes from.}
+\label{tab:prog-numpy-ufuncs}
 \end{v3topic}
 
 % ---- 3.7.4 Broadcasting -------------------------------------------------------------------------
@@ -791,7 +902,7 @@
 \begin{v3topic}{Reading and Writing Data}
     Pandas reads many formats natively; the resulting DataFrame is the entry point for all subsequent analysis\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Function} & \textbf{Format} \\
         \hline
@@ -806,8 +917,8 @@
         \texttt{df.to\_csv(path)}      & Write CSV \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Pandas: Reading and Writing Data.}
-\label{tab:ch03-programming-foundations-inline-23}
+\captionof{table}{Pandas I/O functions by format. Prefer a columnar binary format over CSV for anything re-read often: it preserves dtypes, which CSV does not.}
+\label{tab:prog-pandas-io}
 \end{v3topic}
 
 % ---- 3.8.2 Data indexing and selection ----------------------------------------------------------
@@ -816,7 +927,7 @@
 \begin{v3topic}{loc, iloc, and Boolean Indexing}
     Pandas provides three main selection mechanisms\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X[2]|X[2]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X[2]|X[2]|}}
         \hline
         \textbf{Accessor} & \textbf{Selects by} & \textbf{Example} \\
         \hline
@@ -829,8 +940,8 @@
         \texttt{df.query} & String expression (efficient) & \texttt{df.query("age > 30 and city == 'Berlin'")} \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Pandas: loc, iloc, and Boolean Indexing.}
-\label{tab:ch03-programming-foundations-inline-24}
+\captionof{table}{The three pandas accessors. Use \texttt{.loc} for any assignment --- chained indexing may write to a temporary and silently discard the edit.}
+\label{tab:prog-pandas-accessors}
     Chained indexing (\texttt{df["a"]["b"]}) can cause \texttt{SettingWithCopyWarning}; prefer \texttt{.loc} for assignments.
 \end{v3topic}
 
@@ -883,8 +994,8 @@
         \texttt{df.pivot\_table(values="sales", index="region", columns="year", aggfunc="sum")} & Pivot for cross-tabulation \\
         \hline
     \end{tblr}
-\captionof{table}{Introduction to Pandas: GroupBy and Aggregation.}
-\label{tab:ch03-programming-foundations-inline-25}
+\captionof{table}{The split--apply--combine pattern. Most row-wise loops over a DataFrame are a group-by that has not been recognised yet.}
+\label{tab:prog-pandas-groupby}
 \end{v3topic}
 
 % ---- 3.9 Data visualization with Pandas ---------------------------------------------------------
@@ -956,7 +1067,7 @@
 \begin{v3topic}{Merging and Joining DataFrames}
     Pandas mirrors SQL joins via \texttt{pd.merge}; \texttt{pd.concat} stacks DataFrames along an axis\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,4cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,4cm]|X|}}
         \hline
         \textbf{Function / arg} & \textbf{Behaviour} \\
         \hline
@@ -973,8 +1084,8 @@
         \texttt{df.join(other, on="key")}          & Join on index by default \\
         \hline
     \end{tblr}
-\captionof{table}{Advanced Pandas techniques: Merging and Joining DataFrames.}
-\label{tab:ch03-programming-foundations-inline-26}
+\captionof{table}{Join behaviour. Always check row count before and after a merge: an unexpected increase means duplicate keys, and it is the most common silent data bug.}
+\label{tab:prog-pandas-merge}
 \end{v3topic}
 
 % ---- 3.11.2 Pivot tables and cross-tabulations --------------------------------------------------
@@ -983,7 +1094,7 @@
 \begin{v3topic}{Pivot Tables and Cross-Tabulations}
     Pivot tables reshape data from long (tidy) to wide format, aggregating values at the intersection of two categorical dimensions\textsuperscript{\cite{molinHandsonDataAnalysis2021}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,4.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,4.5cm]|X|}}
         \hline
         \textbf{Function} & \textbf{Notes} \\
         \hline
@@ -998,8 +1109,8 @@
         \texttt{df.stack()} / \texttt{df.unstack()}              & Rotate innermost column/row level \\
         \hline
     \end{tblr}
-\captionof{table}{Advanced Pandas techniques: Pivot Tables and Cross-Tabulations.}
-\label{tab:ch03-programming-foundations-inline-27}
+\captionof{table}{Reshaping operations for moving between long and wide layouts.}
+\label{tab:prog-pandas-pivot}
 \end{v3topic}
 
 % ---- 3.12 Performance optimization --------------------------------------------------------------
@@ -1051,7 +1162,7 @@
 \begin{v3topic}{Scikit-learn: Key Modules}
     Scikit-learn organises its functionality into sub-modules that cover the full ML workflow\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Module} & \textbf{Contents} \\
         \hline
@@ -1072,8 +1183,8 @@
         \texttt{sklearn.metrics}         & Accuracy, F1, ROC-AUC, MSE, \ldots \\
         \hline
     \end{tblr}
-\captionof{table}{SciKit-Learn: Scikit-learn: Key Modules.}
-\label{tab:ch03-programming-foundations-inline-28}
+\captionof{table}{The scikit-learn module map. Everything follows the same fit/transform/predict interface, which is what makes pipelines composable.}
+\label{tab:prog-sklearn-modules}
 
 \end{v3topic}
 \begin{v3topic}{Scikit-learn Pipeline}
@@ -1095,8 +1206,11 @@
         \draw[arr] (enc) -- (feat);
         \draw[arr] (feat) -- (model);
     \end{tikzpicture}
-\captionof{figure}{SciKit-Learn: Scikit-learn Pipeline.}
-\label{fig:ch03-programming-foundations-inline-01}
+\captionof{figure}{A scikit-learn pipeline. Its real value is not tidiness:
+because every transform is fitted inside the pipeline, cross-validation refits
+them on each training fold, which structurally prevents the preprocessing leak
+described in \cref{ch:data-analytics}.}
+\label{fig:prog-sklearn-pipeline}
     \end{center}
     \texttt{ColumnTransformer} applies different transformers to different feature subsets in parallel before feeding results to the final estimator.
 \end{v3topic}
@@ -1134,7 +1248,7 @@
     All neural network models subclass \texttt{torch.nn.Module}, implementing \texttt{forward()}\textsuperscript{\cite{raschkaPythonMachineLearning2015}}.
     The standard training loop is explicit: forward pass $\to$ loss $\to$ backward pass $\to$ optimizer step.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3.5cm]|X|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3.5cm]|X|}}
         \hline
         \textbf{Step} & \textbf{Code} \\
         \hline
@@ -1153,8 +1267,8 @@
         Update weights  & \texttt{optimizer.step()} \\
         \hline
     \end{tblr}
-\captionof{table}{PyTorch: nn.Module and the Training Loop.}
-\label{tab:ch03-programming-foundations-inline-29}
+\captionof{table}{The PyTorch training loop, step by step. Forgetting \texttt{zero\_grad()} accumulates gradients across batches --- a bug that trains, slowly and wrongly.}
+\label{tab:prog-pytorch-loop}
     \texttt{torch.utils.data.DataLoader} wraps any \texttt{Dataset} and handles batching, shuffling, and parallel loading.
 \end{v3topic}
 
@@ -1185,9 +1299,82 @@ Record code revision, data identifier, seed, hardware, and output artifact in
 the same run manifest.
 \end{v3topic}
 
+
+\begin{workedexample}[The record that makes a result reproducible]
+An experiment is reproducible when someone else, months later, can obtain your
+number. That requires recording seven things, and the omission of any one of
+them is enough to break it:
+
+\smallskip
+\begin{tblr}{
+  width=\linewidth,
+  colspec={Q[l,0.22\linewidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Record & Because without it \\
+Data version or hash & ``the dataset'' silently changes under you \\
+Split indices or seed & a different split is a different experiment \\
+All random seeds & Python, NumPy, and the framework each have their own \\
+Library versions & a minor release can change a default and the result \\
+Hardware and precision & GPU reductions are non-deterministic in ordering \\
+Full configuration & a hyperparameter you did not log is one you cannot
+  restore \\
+Exact metric definition & ``accuracy'' hides averaging and threshold choices \\
+\end{tblr}
+\smallskip
+
+\emph{Note the honest limit.} Even with all seven, bitwise reproducibility on a
+GPU is not guaranteed --- floating-point addition is not associative, and
+parallel reductions may sum in a different order between runs
+(\cref{sec:math-numerics}). What you can promise is that the result is
+reproducible \emph{within run-to-run variance}, which is why you report a
+spread over seeds rather than one number.
+\end{workedexample}
+
+\begin{cautionbox}[The notebook that cannot be re-run]
+A Jupyter notebook records the order cells were \emph{written}, not the order
+they were \emph{executed}. A notebook that produces a beautiful result may
+depend on a cell that was edited after it ran, a variable defined in a cell
+since deleted, or an execution order nobody remembers. Before trusting any
+notebook result: restart the kernel and run all cells top to bottom. If it does
+not reproduce, the result does not exist yet.
+\end{cautionbox}
+
+\begin{practicallab}[Make one experiment genuinely reproducible]
+\textbf{Goal.} Turn a notebook that works into an experiment that survives.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Take any small training script you have. Run it twice without changing
+        anything. Record whether the two numbers are identical.
+  \item Set every seed --- Python's \texttt{random}, NumPy, and the
+        framework's. Run twice more. Are they identical now? On GPU, probably
+        still not; note that.
+  \item Run five seeds and report mean and standard deviation. This spread is
+        the resolution of your experiment: any improvement smaller than it is
+        not yet demonstrated.
+  \item Write out a JSON record with the seven fields from the worked example.
+  \item Move the data loading and metric into a module with a test. Write one
+        property test: shuffling the rows must not change the metric.
+  \item Restart and run everything from a clean shell. Delete every cached
+        artefact first.
+\end{enumerate}
+
+\textbf{Deliverable.} The JSON record, the seed-spread number, and one passing
+property test. \textbf{The point:} step 3 tells you how large a difference has
+to be before you are allowed to call it an improvement.
+\end{practicallab}
+
+\begin{checkpoint}
+A colleague reports that their model improved from $0.882$ to $0.889$ accuracy.
+Using this chapter, list three questions you would ask before believing the
+improvement is real, and name the single number they should have reported
+alongside it.
+\end{checkpoint}
+
 \chapterreview{Specify}{Implement}{Test}{Maintain}
 
-\section{Literature}
+\section{Further Reading}
 \begin{itemize}
     \item Lutz, M. (2017). Learning Python (5th ed.). O'Reilly.
     \item Mathes, E. (2019). Python Crash Course (2nd ed.). No Starch Press.

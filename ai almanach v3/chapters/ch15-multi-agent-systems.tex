@@ -8,6 +8,40 @@
 \chapterlead{How can autonomous components coordinate without losing control?}{Architect}{Communicate}{Coordinate}{Verify}{multi-agent-systems}
 
 % -------------------------------------------------------
+\label{ch:multi-agent-systems}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item distinguish an agent from a pipeline by what it decides, not by what
+        it is called;
+  \item explain why adding agents multiplies failure modes rather than adding
+        them;
+  \item bound the cost of an agent loop before running it;
+  \item name the coordination failures that emerge only at more than two
+        agents;
+  \item design the termination and escalation conditions an agent system needs
+        before it is allowed to act.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+An agent is a program that chooses its own next step. That is the whole
+definition, and it is also the whole problem: a system that chooses its own
+steps can choose badly, repeatedly, and expensively, without ever crashing. The
+engineering discipline here is not about making agents cleverer --- it is about
+bounding what an agent is permitted to do and how it is stopped.
+\end{plainlanguage}
+
+\begin{engineernote}
+Reach for a multi-agent design only after a single agent has demonstrably
+failed at the task. Each additional agent adds a communication channel, a
+failure mode, a source of latency, and a place for an error to be laundered
+into confident-sounding input for the next agent. Most tasks announced as
+multi-agent problems are pipelines with a scheduler, and are better and more
+cheaply built as such.
+\end{engineernote}
+
 \section{Agent Technology}
 
 \subsection{Concepts of Agents and Multi-Agent Systems}
@@ -45,7 +79,7 @@
     Russell \& Norvig classify environments along five dimensions that determine agent design
     complexity:\textsuperscript{\cite[][p.~47]{wooldridgeIntroductionMultiAgentSystems2009}}
     \begin{center}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l]X[l]X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -58,8 +92,8 @@
         Dynamics & Static (world waits) & Dynamic (world changes while deciding) \\
         Action/state space & Discrete & Continuous \\
     \end{tblr}
-\captionof{table}{Concepts of Agents and Multi-Agent Systems: Environment Types.}
-\label{tab:ch15-multi-agent-systems-inline-01}
+\captionof{table}{Environment properties, ordered from easier to harder for an agent. Real deployments sit on the right of almost every row.}
+\label{tab:mas-environments}
     \end{center}
 
 \end{v3topic}
@@ -132,7 +166,7 @@
     UML for object-oriented
     systems:\textsuperscript{\cite[][p.~9]{weissMultiagentSystems2013}}
     \begin{center}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l]X[l]X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -144,8 +178,8 @@
         \textbf{MaSE} (Multi-Agent SE) & Use cases $\to$ agents & Deployment, sequence diagrams \\
         \textbf{Tropos} & Social dependencies & Goal model, agent capabilities \\
     \end{tblr}
-\captionof{table}{Agent-Oriented Design: Agent-Oriented Methodologies.}
-\label{tab:ch15-multi-agent-systems-inline-02}
+\captionof{table}{Agent-oriented design methodologies and what each produces.}
+\label{tab:mas-methodologies}
     \end{center}
     All start from a \emph{societal} view (roles, norms, dependencies) and
     progressively refine down to individual agent implementation.
@@ -209,7 +243,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Reactive vs.\ Deliberative}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l]X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -223,8 +257,8 @@
         Limited to present percepts & Can pursue long-horizon goals \\
         Simple to implement & Complex engineering \\
     \end{tblr}
-\captionof{table}{Reactive Agents: Reactive vs.\ Deliberative.}
-\label{tab:ch15-multi-agent-systems-inline-03}
+\captionof{table}{Reactive against deliberative agents. Reactive agents are fast and cannot plan; deliberative agents plan and may miss the deadline.}
+\label{tab:mas-reactive-deliberative}
     \textsuperscript{\cite[][p.~67]{wooldridgeIntroductionMultiAgentSystems2009}}
 
 \end{v3topic}
@@ -367,7 +401,7 @@
           and task outcome are separate messages.}{fig:fipa-request-sequence}
     }
     \begin{center}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l]X[l]X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -381,8 +415,8 @@
         Dutch Auction & Price decreasing until acceptance & Perishable goods allocation \\
         Brokering / Recruiting & Mediator finds capable agents & Service discovery \\
     \end{tblr}
-\captionof{table}{Communication Languages: Interaction Protocols.}
-\label{tab:ch15-multi-agent-systems-inline-04}
+\captionof{table}{Standard interaction protocols and their message flow.}
+\label{tab:mas-protocols}
     \end{center}
 
 \end{v3topic}
@@ -706,7 +740,7 @@
     MARL environments differ in the structure of the reward
     function:\textsuperscript{\cite[][p.~440]{weissMultiagentSystems2013}}
     \begin{center}
-    \begin{tblr}{
+    \begin{tblr}{width=\linewidth,
         colspec={X[l]X[l]X[l]X[l]},
         hlines, vlines,
         row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -718,8 +752,8 @@
         Mixed (general-sum) & Individual rewards & Balance self-interest \& cooperation & Trading agents, autonomous driving \\
         Team competition & Teams share within, compete across & Both challenges combined & AlphaStar, RoboCup \\
     \end{tblr}
-\captionof{table}{Key MARL Algorithms: Cooperative vs.\ Competitive vs.\ Mixed.}
-\label{tab:ch15-multi-agent-systems-inline-05}
+\captionof{table}{Multi-agent reinforcement-learning settings by reward structure. Credit assignment is hard in the cooperative case and the equilibrium may not be unique in the others.}
+\label{tab:mas-marl-settings}
     \end{center}
 
 \end{v3topic}
@@ -838,6 +872,352 @@
 
 % -------------------------------------------------------
 %
+\section{Engineering LLM Agents}
+\label{sec:mas-engineering-llm-agents}
+
+\subsection{The Agent Loop, and What Sits Inside It}
+
+\begin{v3topic}{Anatomy of an LLM Agent}
+    Strip away the vocabulary and a language-model agent is a loop with four
+    slots: a \keyterm{model} that decides, a set of \keyterm{tools} it may
+    call, a \keyterm{context} assembled fresh on every turn, and a
+    \keyterm{termination condition}. The loop that made this practical is
+    \keyterm{ReAct}\textsuperscript{\cite{yaoReActSynergizingReasoning2023}}:
+    interleave a reasoning step with an acting step, so the model's own
+    intermediate reasoning conditions the next tool call, and the tool result
+    conditions the next reasoning step.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm,
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=20mm,font=\sffamily\scriptsize,
+    align=center},
+  gate/.style={bx,fill=AlmanachRed!16,draw=AlmanachRed},
+  tool/.style={bx,fill=AlmanachOchre!22,draw=AlmanachOchre},
+  arr/.style={-{Stealth[length=1.7mm]},thick,draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[bx] (ctx) at (0,0) {assemble\\context};
+  \node[bx,right=of ctx] (model) {model\\decides};
+  \node[tool,right=of model] (tool) {call tool};
+  \node[bx,right=of tool] (obs) {observe\\result};
+  \node[gate,right=of obs] (stop) {stop?};
+  \node[bx,right=of stop] (out) {answer};
+  \foreach \a/\b in {ctx/model,model/tool,tool/obs,obs/stop,stop/out}{
+    \draw[arr] (\a) -- (\b);}
+  \draw[arr] (stop.south) -- ++(0,-8mm) -| (ctx.south)
+    node[near start,below,lbl] {loop: history grows every pass};
+  \node[lbl,anchor=west,color=AlmanachRed,align=left,text width=32mm]
+    at (0,15mm)
+    {every one of these four boxes is a place the loop can fail silently};
+\end{tikzpicture}
+\caption{The agent loop. Nothing here is intelligent on its own --- the model
+merely chooses the next call. What makes an agent trustworthy is the gate on
+the right and the discipline applied to the box on the left, not the model in
+the middle.}
+\label{fig:mas-agent-loop}
+\end{figure}
+
+\end{v3topic}
+
+\begin{v3topic}{Tool Use}
+    A \keyterm{tool} is a function the model may invoke, described to it by a
+    name, a natural-language purpose, and a typed parameter schema. The model
+    emits a structured call; the harness executes it and returns the result as
+    a new observation. Language models can be trained to do this
+    explicitly\textsuperscript{\cite{schickToolformerLanguageModels2023}}, and
+    modern instruction-tuned models do it from the schema alone.
+
+    Tool design is interface design, and the model is the user:
+    \begin{itemize}
+      \item \textbf{Name and describe by purpose}, not by implementation.
+        \texttt{search\_invoices(customer, date\_range)} is usable;
+        \texttt{query\_db(sql)} pushes the hard part back onto the model.
+      \item \textbf{Constrain the parameters.} Enums, ranges, and required
+        fields eliminate whole classes of malformed call.
+      \item \textbf{Return errors the model can act on.} ``Customer not found;
+        try \texttt{search\_customer} first'' recovers; ``500'' does not.
+      \item \textbf{Keep the set small.} Tool-selection accuracy degrades as
+        the menu grows, and two tools with overlapping descriptions will be
+        confused.
+    \end{itemize}
+
+\begin{cautionbox}[A tool call is an action with real consequences]
+The model decides; the harness \emph{acts}. Separate the two explicitly.
+Classify every tool as read-only, reversible, or irreversible, and require
+human approval for the third class. Never expose a tool that can send money,
+delete data, or contact a customer without an approval gate, and never
+construct that gate out of a prompt instruction --- a prompt is a request, not
+a permission system. Enforce it in the harness, where the model cannot reach.
+\end{cautionbox}
+\end{v3topic}
+
+\begin{v3topic}{Memory and Context Engineering}
+    An LLM is stateless. Everything an agent ``remembers'' is text placed back
+    into the context window on the next turn, which makes
+    \keyterm{context engineering} --- deciding what occupies that finite budget
+    --- the central design activity, and a more accurate name for most of what
+    is called prompt engineering once an agent runs for more than one turn.
+
+    Four kinds of memory, distinguished by lifetime:
+    \begin{description}
+      \item[Working memory] The current turn's context: system prompt, task,
+        recent history, tool results. Bounded by the context window.
+      \item[Episodic memory] A record of what happened in this session,
+        usually summarised as it grows so that older turns cost fewer tokens.
+      \item[Semantic memory] Durable facts retrieved on demand, typically via
+        the retrieval machinery of \cref{ch:nlp-voice-assistants}.
+      \item[Procedural memory] Learned or written-down policy --- instructions,
+        examples, and skills the agent reloads rather than rediscovers.
+    \end{description}
+
+\begin{workedexample}[Budgeting a context window]
+An agent with a $128{,}000$-token window, running a task expected to take
+$15$ tool calls that each return about $2{,}000$ tokens.
+
+Naive accumulation: $15 \times 2{,}000 = 30{,}000$ tokens of tool output, plus
+the model's own reasoning at perhaps $400$ tokens per step ($6{,}000$), plus a
+$3{,}000$-token system prompt. Total about $39{,}000$ --- comfortably inside the
+window.
+
+But cost is not the total: the whole context is re-read on \emph{every} call.
+Summing over the run,
+\[
+  \sum_{n=1}^{15}\bigl(3{,}000 + 2{,}400n\bigr)
+  = 45{,}000 + 2{,}400\times120 = 333{,}000 \text{ input tokens.}
+\]
+
+Now double the tool output to $4{,}000$ tokens each. The per-step growth
+becomes $4{,}400$ and the total rises to
+$45{,}000 + 4{,}400\times120 = 573{,}000$ --- a $72\,\%$ cost increase from a
+change that never came close to filling the window.
+
+\emph{The lesson.} Context is a budget you spend once per step, not once per
+run. Truncating tool output, summarising old turns, and storing detail
+externally for retrieval are cost decisions before they are quality decisions.
+\end{workedexample}
+\end{v3topic}
+
+\subsection{Loop Engineering and Robust Agentic Workflows}
+
+\begin{v3topic}{Making the Loop Terminate, and Terminate Well}
+    \keyterm{Loop engineering} is the discipline of controlling what happens
+    between the first decision and the final answer. Three mechanisms do most
+    of the work:
+
+    \begin{description}
+      \item[Reflection] The agent critiques its own output and retries.
+        \keyterm{Reflexion}\textsuperscript{\cite{shinnReflexionLanguageAgents2023}}
+        stores that critique in episodic memory so the next attempt is
+        informed by the failure. It helps when the task has a checkable
+        criterion, and mostly adds cost when it does not.
+      \item[Verification] An external check --- a test suite, a schema
+        validator, a second model, a deterministic rule. Verification beats
+        reflection whenever it is available, because it does not depend on the
+        model's ability to notice its own error.
+      \item[Bounded retry] A fixed budget of attempts with a defined
+        escalation path when it is exhausted.
+    \end{description}
+
+\begin{engineernote}
+Prefer the simplest structure that works, and add agency only where it earns
+its keep\textsuperscript{\cite{anthropicBuildingEffectiveAgents2026}}. A fixed
+chain of model calls --- prompt chaining, routing, parallel voting --- is
+predictable, cheap, and debuggable. A genuine agent loop, in which the model
+decides its own next step and its own stopping point, is the right answer only
+when the required steps cannot be enumerated in advance. Most systems called
+agents are workflows, and are better for it.
+\end{engineernote}
+
+\begin{cautionbox}[Every agent needs four limits before it is allowed to run]
+\begin{enumerate}
+  \item \textbf{Step budget} --- maximum loop iterations.
+  \item \textbf{Wall-clock timeout} --- independent of step count, because one
+    step can hang.
+  \item \textbf{Cost ceiling} --- enforced by the harness, since token spend
+    grows quadratically with steps.
+  \item \textbf{Escalation path} --- what happens when any limit is hit. An
+    agent that stops without handing off has failed silently.
+\end{enumerate}
+None of these can be implemented in the prompt. All four belong in the code
+that runs the loop.
+\end{cautionbox}
+\end{v3topic}
+
+\subsection{Harness Architectures}
+
+\begin{v3topic}{What the Harness Owns}
+    The \keyterm{harness} is the non-model code around the loop, and it is
+    where correctness actually lives. It owns context assembly, tool
+    execution and sandboxing, permission enforcement, retry and timeout
+    policy, logging, and the termination decision.
+
+    A useful separation of concerns:
+    \begin{itemize}
+      \item \textbf{The model} proposes. It is a stochastic component and
+        must be treated as one.
+      \item \textbf{The harness} disposes. It is deterministic, testable, and
+        the only place where authority is granted.
+      \item \textbf{The evaluation layer} judges, against fixed cases, and is
+        independent of both.
+    \end{itemize}
+    Open harnesses exist to be read for exactly this structure; treat any
+    specific implementation as a moving target and check its current state
+    before adopting it.
+\end{v3topic}
+
+\subsection{Interoperability Protocols}
+
+\begin{v3topic}{MCP: Connecting an Agent to Tools and Data}
+    The \keyterm{Model Context Protocol}
+    (MCP)\textsuperscript{\cite{anthropicModelContextProtocol2026}} is an open
+    protocol that standardises how a model-based application connects to
+    external tools and data sources. Instead of every application writing a
+    bespoke integration for every system, a \emph{server} exposes its
+    capabilities once in a standard shape and any compliant \emph{client} can
+    use them.
+
+    It defines three primitive kinds of capability:
+    \begin{description}
+      \item[Tools] Functions the model may invoke, with typed schemas ---
+        model-controlled.
+      \item[Resources] Data the application may read into context --- typically
+        application-controlled.
+      \item[Prompts] Reusable templates a user can invoke --- user-controlled.
+    \end{description}
+
+    The value is combinatorial: $M$ applications and $N$ systems need
+    $M\times N$ bespoke integrations, or $M+N$ if both sides speak one
+    protocol.
+\end{v3topic}
+
+\begin{v3topic}{A2A: Connecting Agents to Each Other}
+    Where MCP connects an agent \emph{downwards} to its tools, the
+    \keyterm{Agent2Agent}
+    (A2A) protocol\textsuperscript{\cite{a2aAgent2AgentProtocol2026}}
+    addresses the \emph{sideways} problem: how an agent built by one team, on
+    one framework, discovers and delegates to an agent built by another
+    without either exposing its internals.
+
+    Its central object is the \keyterm{agent card} --- a published description
+    of what an agent can do, how to reach it, and what authentication it
+    requires --- which turns capability discovery into something a program can
+    do rather than something a human wires up. Interaction is modelled as
+    long-running tasks with explicit state, because agent work is often
+    asynchronous and may require human input part-way through.
+
+\begin{cautionbox}[These protocols are young, and this text will date]
+MCP was published in late 2024 and A2A in 2025; both are under active
+revision, and A2A moved to Linux Foundation stewardship shortly after
+announcement. Adoption, security guidance, and the specifications themselves
+are all still moving. Take the \emph{shape} of the problem from this section
+--- one protocol downwards to capabilities, one sideways to peers --- and check
+the current specification before writing anything against either. Note also
+the security consequence: connecting an agent to a third-party MCP server
+grants a stochastic component access to whatever that server exposes, so
+server provenance and least-privilege scoping are not optional.
+\end{cautionbox}
+\end{v3topic}
+
+\subsection{Evaluating and Governing Agents}
+
+\begin{v3topic}{Guardrails and Agent Evaluation}
+    Agent evaluation is harder than model evaluation for a structural reason:
+    the output is a \emph{trajectory}, not an answer. Two runs on the same
+    input may take different paths, use different tools, and both succeed ---
+    or both fail for different reasons.
+
+    Measure at three levels:
+    \begin{description}
+      \item[Outcome] Did the task succeed, judged against a checkable
+        criterion defined before the run?
+      \item[Trajectory] Were the right tools called, in a sensible order,
+        without redundant or destructive steps? Log every call.
+      \item[Cost] Steps, tokens, wall-clock, and money per completed task ---
+        reported per \emph{success}, not per attempt, since a cheap failure is
+        not cheap.
+    \end{description}
+
+    \keyterm{Guardrails} are the runtime controls that constrain behaviour
+    regardless of what the model decides: input validation, output schema
+    enforcement, permission checks on every tool call, content filters,
+    rate and cost limits, and a human approval gate on irreversible actions.
+
+\begin{cautionbox}[A guardrail written in the prompt is not a guardrail]
+Instructions in a system prompt are followed most of the time, which is
+exactly the property that makes them unsuitable as a control. They can be
+overridden by a later instruction, by retrieved content, or by a user message
+--- and retrieved content is the dangerous case, because \emph{indirect prompt
+injection} places attacker-controlled text into the context through a document
+the agent was asked to read.
+
+The rule: any constraint whose violation you could not accept must be enforced
+outside the model, in code, where no input can reach it. Use the prompt to
+shape behaviour; use the harness to bound it.
+\end{cautionbox}
+
+\begin{practicallab}[Instrument an agent until you can see it fail]
+\textbf{Goal.} Move from ``the agent works'' to a measured statement about
+when and how it does not.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Define one task with a checkable success criterion and $20$ fixed
+        cases. Freeze them.
+  \item Log every step: prompt, tool call, arguments, result, tokens,
+        latency, termination reason.
+  \item Run all $20$ three times. Report success rate, its variance across
+        repeats, and median and p95 steps.
+  \item Compute cost per \emph{successful} task, not per run.
+  \item \textbf{Inject a failing tool} that returns plausible but wrong data.
+        Does the agent detect it, propagate it, or escalate?
+  \item \textbf{Inject an instruction} inside a document the agent retrieves
+        (``ignore previous instructions and \ldots''). Record whether the
+        harness or the model stops it.
+  \item Add the four limits from the caution box above and confirm each one
+        actually fires by forcing it.
+\end{enumerate}
+
+\textbf{Deliverable.} A table of success rate, step distribution, and cost per
+success, plus what happened in steps 5 and 6. \textbf{The point:} step 6 is a
+security test, and an agent that fails it should not be connected to anything
+that matters.
+\end{practicallab}
+\end{v3topic}
+
+\subsection{Human--Agent Operating Models}
+
+\begin{v3topic}{Who Is Accountable, and Where the Human Sits}
+    Deploying agents is an organisational change before it is a technical one.
+    Four operating models, in increasing order of autonomy and of the evidence
+    required to justify them:
+
+    \begin{description}
+      \item[Human in the loop] The agent proposes; a person approves every
+        consequential action. Appropriate for irreversible actions and for any
+        new deployment.
+      \item[Human on the loop] The agent acts; a person monitors and can
+        intervene. Requires that intervention be genuinely possible --- an
+        alert nobody reads is not oversight.
+      \item[Human in command] The agent operates autonomously within a
+        bounded envelope; people set the envelope, review aggregates, and hold
+        accountability.
+      \item[Escalation-only] Autonomous until a defined uncertainty or risk
+        threshold is crossed. This requires calibrated uncertainty, which is
+        harder than it sounds (\cref{ch:evaluation-mlops}).
+    \end{description}
+
+\begin{engineernote}
+Accountability does not move to the agent, and no regulator or court will
+accept that it did (\cref{ch:it-law}). Name the person responsible for each
+agent's actions, give them the authority and the interface to stop it, and log
+enough to reconstruct any decision afterwards. Practically, that means: an
+audit log of every action with its inputs, a documented escalation route, and
+a kill switch someone has actually tested.
+\end{engineernote}
+\end{v3topic}
+
 \section{Deep Dive: LLM Agents as Distributed Systems}
 \begin{v3topic}{Distinguish Three Agent Traditions}
 Classical BDI agents execute explicit beliefs, desires, and intentions.
@@ -860,6 +1240,80 @@ permission violations, deadlocks, loops, and human interventions.
 Test adversarial messages and collusion as well as cooperative examples.
 Local pass rates do not prove stable collective behaviour.
 \end{v3topic}
+
+
+\begin{workedexample}[What an agent loop costs before you run it]
+An agent runs up to $10$ steps. Each step sends the accumulated conversation
+plus the new observation. Suppose the prompt starts at $2{,}000$ tokens and each
+step adds about $800$ tokens of tool output and reasoning.
+
+\emph{Tokens processed} at step $n$ are roughly $2000 + 800n$, so over ten
+steps:
+\[
+  \sum_{n=1}^{10}(2000 + 800n) = 20{,}000 + 800\times55 = 64{,}000
+  \text{ input tokens.}
+\]
+
+\emph{The shape of the cost is quadratic, not linear.} Doubling the step limit
+to $20$ gives $40{,}000 + 800\times210 = 208{,}000$ tokens --- more than three
+times the cost for twice the steps, because every step re-reads the entire
+history.
+
+\emph{Three consequences.} A step limit is a cost control, not just a safety
+control. Trimming or summarising history changes the cost curve from quadratic
+back toward linear. And an agent that loops without converging does not fail
+loudly --- it fails as an invoice.
+\end{workedexample}
+
+\begin{cautionbox}[Failure modes that appear only with more than one agent]
+\begin{itemize}
+  \item \textbf{Error laundering.} Agent A's uncertain guess arrives at agent B
+        as plain input. B has no way to know it was a guess, and states it as
+        fact. Confidence increases along the chain while accuracy falls.
+  \item \textbf{Mutual deadlock.} Each agent waits for the other to act,
+        politely, forever.
+  \item \textbf{Convergent agreement.} Agents built on the same model share the
+        same blind spots, so consensus is not independent confirmation. Three
+        agents agreeing is often one agent answering three times.
+  \item \textbf{Goal drift.} A long chain gradually optimises the sub-task in
+        front of it rather than the objective it was given.
+  \item \textbf{Runaway loops.} Two agents hand work back and forth, each
+        producing plausible output, with no external termination condition.
+\end{itemize}
+Every one of these produces fluent output rather than an exception. Define a
+step budget, a wall-clock timeout, a cost ceiling, and a human escalation path
+before deployment --- not after the first incident.
+\end{cautionbox}
+
+\begin{practicallab}[Prove a single agent is not enough]
+\textbf{Goal.} Earn the right to build a multi-agent system.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Define one task with a checkable success criterion and twenty test
+        cases.
+  \item Build the simplest possible solution: a fixed pipeline with no agency
+        at all. Record success rate, latency, and cost.
+  \item Build a single agent with tools. Same measurements.
+  \item Only if the agent beats the pipeline, build a two-agent version.
+        Measure again.
+  \item Instrument every run: steps taken, tokens consumed, tools called,
+        termination reason.
+  \item Inject a failure --- a tool that returns wrong data --- and record what
+        each architecture does. Does the error surface, or propagate silently?
+\end{enumerate}
+
+\textbf{Deliverable.} A table of success rate, p95 latency, and cost per task
+for all three architectures, plus what each did under the injected failure.
+\textbf{The point:} step 2 wins more often than the field admits, and step 6 is
+where multi-agent designs usually lose.
+\end{practicallab}
+
+\begin{checkpoint}
+An agent system has been running for forty minutes on a task estimated at two.
+List the four limits that should already have stopped it, and say which one you
+would implement first.
+\end{checkpoint}
 
 \chapterreview{Architect}{Communicate}{Coordinate}{Verify}
 
