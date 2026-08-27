@@ -123,6 +123,43 @@ deviation of the feature; $|z|>3$ is a common, and arbitrary, outlier flag.}
     \end{tblr}
 \captionof{table}{Imputation strategies and what each assumes. All of them reduce variance and none of them adds information --- always keep a was-missing indicator.}
 \label{tab:data-imputation}
+
+\begin{workedexample}[What mean imputation actually does to your data]
+A feature with two missing values:
+$[\,10,\ 12,\ \textsf{NA},\ 14,\ \textsf{NA},\ 200\,]$.
+
+\emph{Compute the substitutes} from the four observed values:
+\[
+  \text{mean} = \frac{10+12+14+200}{4} = 59,
+  \qquad
+  \text{median} = \frac{12+14}{2} = 13 .
+\]
+
+\emph{Mean imputation} gives $[10, 12, \mathbf{59}, 14, \mathbf{59}, 200]$.
+The two invented values are larger than three of the four real ones, because
+the single outlier $200$ dragged the mean up. Median imputation gives
+$[10, 12, \mathbf{13}, 14, \mathbf{13}, 200]$, which is far more plausible.
+
+\emph{Now the damage.} Population variance over the four observed values is
+\[
+  \frac{49^2+47^2+45^2+141^2}{4} = \frac{26{,}516}{4} = 6{,}629,
+  \qquad s = 81.4 .
+\]
+After mean imputation the deviations of the two new values are exactly zero,
+so the numerator is unchanged while the count rises to six:
+\[
+  \frac{26{,}516}{6} = 4{,}419,\qquad s = 66.5 .
+\]
+Variance fell by a third without a single new observation. In general,
+imputing $k$ values at the mean multiplies the variance by $n/(n+k)$ --- the
+more you impute, the more confident your data falsely looks.
+
+\emph{The consequence.} Every downstream standard error, confidence interval,
+and significance test is now too narrow. This is why the honest minimum is to
+add a \texttt{was\_missing} indicator column: it lets the model use the fact of
+absence, and it lets you find out later how much of your result rests on
+invented numbers.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 4.1.2 Data Integration -------------------------------------------------------------------------
@@ -399,6 +436,36 @@ zero and thereby claiming it is the first category.
 \captionof{table}{Selection keeps original columns and stays interpretable; extraction builds new combinations and usually does not.}
 \label{tab:data-selection-extraction}
 
+\begin{workedexample}[The same problem, solved both ways]
+Five features predicting loan default: \textsf{income}, \textsf{savings},
+\textsf{debt}, \textsf{age}, \textsf{postcode}.
+
+\emph{Selection} keeps a subset. Suppose a filter method ranks features by
+correlation with the target and drops the weakest two, leaving
+\textsf{income}, \textsf{savings}, \textsf{debt}. The surviving columns are
+untouched, so a decision can still be explained as ``declined because debt is
+high relative to income'' --- and \cref{ch:it-law} requires exactly that kind
+of explanation.
+
+\emph{Extraction} builds new features. PCA on the same five columns might
+produce a first component
+\[
+  z_1 = 0.62\,\textsf{income} + 0.55\,\textsf{savings}
+        - 0.51\,\textsf{debt} + 0.21\,\textsf{age} + 0.04\,\textsf{postcode},
+\]
+which captures more variance in one column than any single original feature.
+But $z_1$ is not ``income'' --- it is a blend that has no name, no unit, and no
+meaning to an applicant.
+
+\emph{The trade, stated plainly.} Extraction usually compresses better;
+selection stays explainable. Two practical notes: filter methods rank features
+independently and so cannot see that two useless features are predictive
+\emph{together}, while wrapper methods evaluate subsets against an actual model
+and are correspondingly slower; and both must be fitted inside the
+cross-validation fold, because selecting features using the full dataset leaks
+the test set just as surely as fitting a scaler on it does.
+\end{workedexample}
+
 \end{v3topic}
 \begin{v3topic}{PCA: Principal Component Analysis}
     PCA finds orthogonal directions (principal components) of maximum variance in the data\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}.
@@ -425,6 +492,35 @@ $\mathbf{Z}$ the $n\times k$ projected data.}
     \end{tblr}
 \captionof{table}{Sampling strategies. Stratification matters most exactly when the class of interest is rare, which is when a random split is least reliable.}
 \label{tab:data-sampling}
+
+\begin{workedexample}[Why stratification matters most when it matters most]
+A dataset of $100{,}000$ rows with $1\,\%$ positives ($1{,}000$ of them). You
+need a sample of $1{,}000$ rows.
+
+\emph{Simple random sampling.} The expected number of positives is
+$1{,}000 \times 0.01 = 10$. But the count is binomial, with standard deviation
+\[
+  \sqrt{np(1-p)} = \sqrt{1000 \times 0.01 \times 0.99} = \sqrt{9.9} = 3.15 .
+\]
+A $95\,\%$ range is therefore roughly $10 \pm 6$, i.e.\ \textbf{4 to 16
+positives}. On an unlucky draw you have four examples of the thing you are
+trying to model --- and you will not know, because the sample looks fine.
+
+\emph{Stratified sampling.} Draw $1\,\%$ from each class separately: exactly
+$10$ positives and $990$ negatives, every single time. The variance in the
+positive count is zero, not small.
+
+\emph{Read the general rule.} The relative error of the rare-class count in a
+random sample scales as $1/\sqrt{np}$, so it grows precisely as the class gets
+rarer. Stratification costs one extra line of code and removes that failure
+entirely --- which is why the same argument reappears for train/test splitting
+in \cref{ch:machine-learning}.
+
+\emph{One caution.} If you go further and \emph{oversample} the rare class to
+balance it, you have changed the base rate the model sees, so its predicted
+probabilities no longer match reality and the decision threshold must be
+recalibrated.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 4.1.5 Foundations of Data Systems --------------------------------------------------------------

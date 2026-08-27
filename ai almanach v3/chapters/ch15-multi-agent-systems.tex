@@ -417,6 +417,50 @@ cheaply built as such.
     \end{tblr}
 \captionof{table}{Standard interaction protocols and their message flow.}
 \label{tab:mas-protocols}
+
+\begin{workedexample}[Contract Net, run once]
+The task: \emph{deliver 40 pallets from Munich to Hamburg by Friday}. One
+manager agent and five carrier agents.
+
+\emph{1. Announce.} The manager broadcasts a call for proposals carrying the
+task specification, the constraints (volume, route, deadline), and a bid
+deadline. It does \emph{not} choose a carrier --- it does not know their
+capacity.
+
+\emph{2. Bid.} Each carrier evaluates locally against its own fleet and
+existing commitments, then answers:
+
+\smallskip
+\begin{tblr}{
+  width=0.78\linewidth,
+  colspec={Q[l,0.16\linewidth] Q[c] Q[c] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Carrier & Bid & Arrival & Response \\
+A & \euro1{,}720 & Saturday & bid \\
+B & \euro1{,}850 & Thursday & bid \\
+C & \euro2{,}100 & Friday & bid \\
+D & --- & --- & refuse (no capacity) \\
+E & --- & --- & refuse (route not served) \\
+\end{tblr}
+\smallskip
+
+\emph{3. Award.} The lowest bid is A's \euro1{,}720 --- but A arrives Saturday
+and misses the deadline, so it is infeasible rather than merely expensive. The
+award goes to B at \euro1{,}850.
+
+\emph{4. Report.} B eventually sends \textsf{inform} on completion or
+\textsf{failure} if it cannot deliver, at which point the manager may re-run
+the protocol with the remaining bidders.
+
+\emph{What the example shows.} Step~3 is the part that has to be designed:
+the award criterion must be defined \emph{before} the announcement, must
+combine price with feasibility, and must have a defined behaviour when no bid
+is feasible. Note also that the manager never learns why D and E refused ---
+Contract Net deliberately keeps each agent's internal state private, which is
+what makes it usable across organisations, and what makes global optimality
+impossible.
+\end{workedexample}
     \end{center}
 
 \end{v3topic}

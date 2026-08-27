@@ -1251,6 +1251,45 @@ feature space; the RBF kernel's space is infinite-dimensional, which the
 algorithm never has to represent because it only ever needs inner products.}
 \label{tab:ml-kernels}
 
+\begin{workedexample}[The kernel trick, computed both ways]
+Take two-dimensional points $\mathbf{x} = (1,2)$ and $\mathbf{z} = (3,1)$, and
+the polynomial kernel of degree $h=2$.
+
+\emph{The kernel way.} Two multiplications, one addition, one square:
+\[
+  \mathbf{x}\cdot\mathbf{z} = 1(3) + 2(1) = 5,
+  \qquad
+  K(\mathbf{x},\mathbf{z}) = (5+1)^2 = \mathbf{36}.
+\]
+
+\emph{The explicit way.} That kernel corresponds to the six-dimensional
+feature map
+\[
+  \phi(\mathbf{x}) = \bigl(1,\ \sqrt{2}x_1,\ \sqrt{2}x_2,\ x_1^2,\ x_2^2,\
+  \sqrt{2}x_1x_2\bigr),
+\]
+so $\phi(\mathbf{x}) = (1,\ 1.414,\ 2.828,\ 1,\ 4,\ 2.828)$ and
+$\phi(\mathbf{z}) = (1,\ 4.243,\ 1.414,\ 9,\ 1,\ 4.243)$. Their inner product:
+\[
+  1 + 6 + 4 + 9 + 4 + 12 = \mathbf{36}. \checkmark
+\]
+
+\emph{Identical answers.} The left-hand computation never constructed the
+six-dimensional space; it obtained the same number from the original
+two-dimensional coordinates. That is the entire trick.
+
+\emph{And why it matters.} For degree $h$ over $d$ features the explicit map has
+$\binom{d+h}{h}$ dimensions --- for $d=100,\ h=3$ that is over $176{,}000$ --- and
+for the RBF kernel the corresponding space is \emph{infinite}-dimensional and
+cannot be written down at all. The kernel is computable in both cases because
+the SVM's decision function only ever needs inner products, never the
+coordinates themselves.
+\end{workedexample}
+
+\where{$\mathbf{x}_i,\mathbf{x}_j$ are two data points, $h$ the polynomial
+degree, $\sigma$ the RBF width (small $\sigma$ makes the kernel see only very
+close neighbours), and $\kappa,\delta$ the sigmoid kernel's scale and offset.}
+
 \begin{engineernote}
 The RBF kernel is the sensible default for a small tabular dataset, with $C$
 and $\gamma$ tuned together by cross-validation --- they interact, so a grid

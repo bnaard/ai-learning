@@ -205,6 +205,47 @@ way into a published number.
     \end{tblr}
 \captionof{table}{Python's name resolution order. Nearly every surprising scope bug is a name found at an outer level when an inner one was intended.}
 \label{tab:prog-legb}
+
+\begin{workedexample}[LEGB resolution, and the error it causes]
+\emph{How the rule works.} Python looks for a name in four scopes, innermost
+first, and stops at the first match.
+
+\begin{lstlisting}[language=Python]
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        print(x)        # -> "enclosing"
+    inner()
+outer()
+\end{lstlisting}
+
+The name \texttt{x} is not Local to \texttt{inner}, so Python looks Enclosing
+and finds \texttt{outer}'s \texttt{x}. The Global \texttt{x} is never reached.
+
+\emph{Now the error every Python programmer meets once.}
+
+\begin{lstlisting}[language=Python]
+count = 0
+def bump():
+    count = count + 1   # UnboundLocalError
+\end{lstlisting}
+
+This raises \texttt{UnboundLocalError: cannot access local variable 'count'},
+which looks absurd --- \texttt{count} is clearly defined on the line above the
+function.
+
+\emph{Why.} Python decides scope at \emph{compile} time, per function, from
+whether the name is ever assigned in it. Because \texttt{count} is assigned
+somewhere in \texttt{bump}, it is Local \emph{throughout} \texttt{bump} ---
+including on the right-hand side, where it has not been given a value yet. The
+Global \texttt{count} is shadowed by a local that does not exist yet.
+
+\emph{The fixes,} in order of preference: pass the value in and return the new
+one; use \texttt{nonlocal} for an enclosing scope; use \texttt{global} only as
+a last resort. The rule to remember is that \emph{assignment anywhere in a
+function makes the name local everywhere in that function}.
+\end{workedexample}
 \end{v3topic}
 
 % ---- 3.2.2 Classes and inheritance --------------------------------------------------------------

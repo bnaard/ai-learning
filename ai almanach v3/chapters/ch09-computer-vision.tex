@@ -127,6 +127,44 @@ field of view. That trade-off cannot be trained away.
 \captionof{table}{Colour spaces and what each is good for. Converting to a space that separates intensity from colour makes many operations robust to lighting changes.}
 \label{tab:cv-colour-spaces}
 
+\begin{workedexample}[Why HSV survives a change in lighting and RGB does not]
+Take an orange pixel, $\text{RGB} = (200, 100, 50)$. Normalise to $[0,1]$:
+$R=0.784$, $G=0.392$, $B=0.196$.
+
+\emph{Convert to HSV.} With $\max = 0.784$, $\min = 0.196$, and
+$\Delta = 0.588$:
+\[
+\begin{aligned}
+  V &= \max = 0.784, \\
+  S &= \Delta/\max = 0.588/0.784 = 0.750, \\
+  H &= 60^\circ \times \frac{G-B}{\Delta}
+     = 60^\circ \times \frac{0.196}{0.588} = 20^\circ
+     \quad(\text{since } \max = R).
+\end{aligned}
+\]
+
+\emph{Now move the object into shade}, halving every channel:
+$\text{RGB} = (100, 50, 25)$, so $R=0.392$, $G=0.196$, $B=0.098$,
+$\max=0.392$, $\Delta=0.294$:
+\[
+  V = 0.392,\qquad
+  S = \frac{0.294}{0.392} = 0.750,\qquad
+  H = 60^\circ \times \frac{0.098}{0.294} = 20^\circ .
+\]
+
+\emph{Read the result.} \textbf{All three RGB values changed; only $V$
+changed in HSV.} Hue and saturation are exactly as they were, because the
+illumination change was a common scale factor that $S$ and $H$ both divide
+out.
+
+\emph{The engineering consequence.} A colour-based segmentation rule written
+in RGB (``red is above 180'') fails as soon as a cloud passes. The same rule
+written as ``hue between $10^\circ$ and $30^\circ$'' survives it. That is the
+entire reason HSV exists in a vision pipeline --- and also its limit: the
+division by $\max$ becomes numerically unstable for very dark pixels, where
+hue is meaningless.
+\end{workedexample}
+
 \end{v3topic}
 \begin{v3topic}{Morphological Operations}
     Morphology operates on binary (or grayscale) images using a \textbf{structuring element} $B$\textsuperscript{\cite[][pp.~627--636]{gonzalezWoods2018}}:
