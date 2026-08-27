@@ -1,632 +1,1970 @@
-% Generated semantic source for AI Almanach v3.
-% Edit v3 directly after initial generation; do not overwrite
-% editorial changes by rerunning the converter casually.
-
-% ==== Mathematical Foundations =============================================================================
-    \chapter{Mathematical Foundations}
-\chapterlead{Which mathematical objects make learning, uncertainty, and optimisation precise?}{Objects}{Transform}{Estimate}{Optimise}{mathematics}
-
-    \section{Advanced Mathematics}
-    \subsection{Calculus}
-    \subsubsection{Differentiation}
-\begin{v3topic}{Gradient}
-        The gradient for any function $y = f(x)$ is defined as follows. The gradient is also called the first derivative. The three notations $f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable\textsuperscript{\cite[][p89]{yangMathematicsCivilEngineers2018} and \cite[][p393]{bronsteinTaschenbuchMathematik2001}}.
-\visualseparator
-        \begin{equation}
-            f'(x) = \frac{dy}{dx} = \frac{df(x)}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
-        \end{equation}
-
-        \vspace*{4ex}
-        \centering
-        \captionsetup{hypcap=false}
-        \begin{tikzpicture}
-            \begin{axis}[
-                    width=8cm,
-                    height=6cm,
-                    axis lines=middle,
-                    axis line style={thick, -Stealth},
-                    xlabel={$x$},
-                    ylabel={$y = f(x)$},
-                    xmin=0, xmax=3,
-                    ymin=-0.5, ymax=5,
-                    enlarge y limits={upper=0.05},
-                    enlarge x limits={upper=0.05},
-                    samples=100,
-                    domain=0:2.2,
-                    legend cell align=left,
-                    legend style={font=\footnotesize, at={(1.1,1.1)}, anchor=north east, cells={anchor=west}},
-                    clip=false,
-                    ylabel style={at={(ticklabel cs:1.0)},anchor=south},
-                    xlabel style={at={(1.0,0.1)},anchor=south},
-                    % ytick={0,1,2,3,4},
-                    ytick distance=1,
-                    minor y tick num=0,
-                    grid=both,
-                    major grid style={draw=gray!20, thin},
-                    minor grid style={draw=gray!10, very thin},
-                ]
-                % Plot y = x^2
-                \addplot[thick, \maincolor!80!black, smooth] {x^2};
-                \addlegendentry{$y = x^2$}
-
-                % Tangent at point P (x=1, y=1)
-                % Derivative: y' = 2x, at x=1: y'(1) = 2
-                % Tangent line: y - 1 = 2(x - 1) => y = 2x - 1
-                \addplot[thick, red, dashed, domain=0.5:2.5] {2*x - 1};
-                \addlegendentry{Tangent $y = 2x - 1$ at $P$}
-
-                % Mark point P
-                \addplot[only marks, mark=*, mark size=2pt, blue] coordinates {(1,1)};
-                \node[above left, font=\footnotesize] at (axis cs:1,1) {$P$};
-
-                % Line M: vertical line from P down to x-axis (at x=1)
-                \draw[thick, blue] (axis cs:1,1) -- (axis cs:1,0);
-                \node[right, font=\footnotesize, blue] at (axis cs:1,0.5) {$y$};
-
-                % Line N: horizontal line from P to x=2 (parallel to x-axis)
-                \draw[thick, blue] (axis cs:1,1) -- (axis cs:2,1);
-
-                % Vertical line at x=2 from x-axis up
-                % y=x^2 at x=2: y=4, tangent y=2x-1 at x=2: y=3
-                \draw[thick, blue] (axis cs:2,0) -- (axis cs:2,4);
-
-                % Mark intersection points
-                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,1)};  % N meets vertical at x=2
-                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,3)};  % tangent at x=2
-                \addplot[only marks, mark=*, mark size=1.5pt, blue] coordinates {(2,4)};  % curve at x=2
-
-                % Label dy: from N (y=1) to tangent (y=3) at x=2
-                \draw[thick, orange, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.1,1) -- (axis cs:2.1,3);
-                \node[right, font=\footnotesize, orange] at (axis cs:2.15,2) {$dy$};
-
-                % Label delta y: from N (y=1) to curve (y=4) at x=2
-                \draw[thick, purple, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:2.4,1) -- (axis cs:2.4,4);
-                \node[right, font=\footnotesize, purple] at (axis cs:2.45,2.5) {$\Delta y$};
-
-                % Label x: from origin to where M hits x-axis (x=1)
-                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:0,-0.55) -- (axis cs:1,-0.55);
-                \node[below, font=\footnotesize, gray] at (axis cs:0.5,-0.75) {$x$};
-
-                % Label delta x = dx: from M (x=1) to x=2
-                \draw[thick, gray, decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:1,-0.55) -- (axis cs:2,-0.55);
-                \node[below, font=\footnotesize, gray] at (axis cs:1.5,-0.7) {$\Delta x = dx$};
-
-                % Angle alpha where tangent crosses x-axis
-                % Tangent y=2x-1 crosses x-axis at x=0.5
-                % where A, B, and C are the vertices, and B is the apex
-                \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) -- (1,1) coordinate (C) pic ["$\alpha$", draw, -latex, angle radius=25pt] {angle};
-                % \draw[thick, black] (axis cs:0.8,0) arc[start angle=0, end angle=63.43, radius=0.15cm];
-                % \node[above right, font=\footnotesize] at (axis cs:0.7,0.05) {$\alpha$};
-
-            \end{axis}
-        \end{tikzpicture}
-        \captionof{figure}{Graph of example function $f(x) = y = x^2$ with first derivative $f'(x) = 2x$, hence with tangent $y = mx + b = 2x - 1$ at point $P(1,1)$. The tangent's gradient is defined by angle $\alpha$, known as the angle of inclination of the tangent line.}\label{fig:derivative}
-
-\end{v3topic}
-
-\begin{v3topic}{Integration}
-        The \emph{indefinite integral} is the anti-derivative: if $F'(x) = f(x)$, then $\int f(x)\,dx = F(x) + C$, where $C$ is an arbitrary constant. The \emph{definite integral} over $[a,b]$ gives the signed area under the curve\textsuperscript{\cite{yangMathematicsCivilEngineers2018}}.
-\visualseparator
-        \begin{equation}
-            \int_a^b f(x)\,dx = F(b) - F(a)
-        \end{equation}
-        The \textbf{Fundamental Theorem of Calculus} links differentiation and integration: $\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$. Common rules: $\int x^n\,dx = \frac{x^{n+1}}{n+1} + C$ (power rule); $\int e^x\,dx = e^x + C$.
-
-\end{v3topic}
-\begin{v3topic}{Partial Differentiation}
-        For a function $f(x_1, x_2, \ldots, x_n)$ of several variables, the \emph{partial derivative} $\frac{\partial f}{\partial x_i}$ measures the rate of change with respect to $x_i$ while all other variables are held constant\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
-\visualseparator
-        \begin{equation}
-            \frac{\partial f}{\partial x_i} = \lim_{\Delta x_i \to 0} \frac{f(\ldots, x_i + \Delta x_i, \ldots) - f(\ldots, x_i, \ldots)}{\Delta x_i}
-        \end{equation}
-        The \textbf{gradient vector} collects all partial derivatives: $\nabla f = \left(\frac{\partial f}{\partial x_1}, \ldots, \frac{\partial f}{\partial x_n}\right)^\top$. In ML, the \textbf{chain rule} is essential for backpropagation: $\frac{\partial \ell}{\partial w} = \frac{\partial \ell}{\partial a}\cdot\frac{\partial a}{\partial z}\cdot\frac{\partial z}{\partial w}$.
-
-\end{v3topic}
-\begin{v3topic}{Vector Analysis: div, curl, Laplacian}
-        Three key differential operators act on scalar and vector fields\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The \textbf{divergence} of a vector field $\vec{F}$ measures net outward flux at a point. The \textbf{curl} measures rotation. The \textbf{Laplacian} $\Delta f$ generalises the second derivative to multiple dimensions and appears in diffusion processes and regularisation.
-\visualseparator
-        \begin{equation}
-            \operatorname{div}\vec{F} = \nabla \cdot \vec{F} = \sum_i \frac{\partial F_i}{\partial x_i}, \quad
-            \operatorname{curl}\vec{F} = \nabla \times \vec{F}, \quad
-            \Delta f = \nabla^2 f = \sum_i \frac{\partial^2 f}{\partial x_i^2}
-        \end{equation}
-
-\end{v3topic}
-
-    \subsection{Integral Transformations}
-
-\begin{v3topic}{Convolution}
-        Convolution $(f * g)(t)$ blends two functions by sliding one over the other and integrating their pointwise product\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. Intuitively: each output value is a weighted sum of past input values. In CNNs, learnable filters are convolved with input feature maps to detect local patterns such as edges or textures.
-\visualseparator
-        \begin{equation}
-            (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau
-        \end{equation}
-        Discrete convolution (used in practice): $(f * g)[n] = \sum_{k} f[k]\, g[n-k]$.
-
-\end{v3topic}
-\begin{v3topic}{Fourier Transformation}
-        The Fourier Transform decomposes a signal $f(t)$ into its constituent frequencies, transforming from the time domain into the frequency domain\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The inverse transform reconstructs the original signal. In deep learning, the convolution theorem states that convolution in the time domain equals pointwise multiplication in the frequency domain, enabling fast computation via FFT.
-\visualseparator
-        \begin{equation}
-            \hat{f}(\xi) = \int_{-\infty}^{\infty} f(t)\, e^{-2\pi i \xi t}\, dt, \qquad
-            f(t) = \int_{-\infty}^{\infty} \hat{f}(\xi)\, e^{2\pi i \xi t}\, d\xi
-        \end{equation}
-        The \textbf{Discrete Fourier Transform (DFT)}: $X_k = \sum_{n=0}^{N-1} x_n\, e^{-2\pi i kn/N}$.
-
-\end{v3topic}
-
-    \subsection{Vector Algebra}
-    \subsubsection{Scalars and Vectors}
-
-\begin{v3topic}{N-Dimensional Vector}
-        In broad terms, vectors are things one can add and linear functions are functions of vectors that respect vector addition\textsuperscript{\cite[][p.12]{cherneyLinearAlgebra2013}}. Order of components matters.
-
-        \begin{equation}
-            \vec{v} =
-            \begin{pNiceMatrix}
-                a_1 \\ a_2 \\ \vdots \\ a_n
-            \end{pNiceMatrix}
-            \neq
-            \begin{pNiceMatrix}
-                \CodeBefore
-                \cellcolor[HTML]{FFFF88}{1-1,2-1}
-                \Body
-                a_2 \\ a_1 \\ \vdots \\ a_n
-            \end{pNiceMatrix}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Length (Magnitude)}
-        Length (magnitude) of vector $\vec{x}$. Also called Euclidean norm or 2-norm \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
-\visualseparator
-        \begin{equation}
-            \hat{x} = \left\lvert \vec{x} \right\rvert = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Normalized vector (unit vector)}
-        Normalized vector (unit vector) in the same direction as $\vec{x}$ \textsuperscript{\cite[][p.262]{cherneyLinearAlgebra2013}}.
-\visualseparator
-        \begin{equation}
-            \frac{\vec{x}}{\left\lvert \vec{x} \right\rvert} =
-            \begin{pNiceMatrix}
-                \frac{x_1}{\left\lvert \vec{x} \right\rvert} \\ \frac{x_2}{\left\lvert \vec{x} \right\rvert} \\ \vdots \\ \frac{x_n}{\left\lvert \vec{x} \right\rvert}
-            \end{pNiceMatrix}
-        \end{equation}
-
-\end{v3topic}
-
-    \subsubsection{Addition and Subtraction of Vectors}
-    \subsubsection{Multiplication of Vectors, Vector Product, Scalar Product}
-
-\begin{v3topic}{Scalar Product (dot product)}
-        Scalar product (dot product) of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.89]{cherneyLinearAlgebra2013}}. The dot-product of 2 orthogonal vectors is 0 \textsuperscript{\cite[][p.30]{fischerMaschinellesLernenFuer2024}}.
-\visualseparator
-        \begin{equation}
-            \vec{v} \cdot \vec{u} =
-            \begin{pNiceMatrix}
-                v_1 \\ v_2 \\ \vdots \\ v_n
-            \end{pNiceMatrix}
-            \cdot
-            \begin{pNiceMatrix}
-                u_1 \\ u_2 \\ \vdots \\ u_n
-            \end{pNiceMatrix} = \sum_{i=1}^n v_i u_i = v_1 u_1 + v_2 u_2 + ... + v_n u_n
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Angle and Cosine Similarity}
-        The angle $\Theta$ of vectors $\vec{v}$ and $\vec{u}$ \textsuperscript{\cite[][p.90]{cherneyLinearAlgebra2013}}.
-
-        \begin{equation}
-            \vec{u} \cdot \vec{v} = \left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert \cos \Theta
-            \Rightarrow
-            \cos \Theta = \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert}
-            \Rightarrow
-            \Theta = \arccos \left( \frac{\vec{u} \cdot \vec{v}}{\left\lvert \vec{u} \right\rvert \left\lvert \vec{v} \right\rvert} \right)
-        \end{equation}
-
-        \vspace{2ex}
-
-        Cosine similarity is $\cos \Theta$. In case of normalized vectors $\hat{u}$ and $\hat{v}$, the cosine similarity is their dot product $\cos \Theta = \hat{u} \cdot \hat{v}$. Two vectors are more similar
-        the smaller the angle $\Theta$ between them. Hence, highest similarity $\rightarrow$ lowest similarity $\rightarrow$ highest similarity: $\cos \ang{0} = 1$ (pointing into same direction) $\rightarrow$ $\cos \ang{90} = 0$ (orthogonal vectors) $\rightarrow$ $\cos \ang{180} = -1$ (pointing into opposite directions) \textsuperscript{\cite[][p.31]{fischerMaschinellesLernenFuer2024}}.
-
-\end{v3topic}
-
-    \subsection{Vector Calculus}
-
-\begin{v3topic}{Jacobian Matrix}
-        When a vector-valued function $\vec{f}: \mathbb{R}^n \to \mathbb{R}^m$ is differentiated, the result is the \textbf{Jacobian matrix} $\mathbf{J}$, whose entry $J_{ij} = \frac{\partial f_i}{\partial x_j}$ gives the partial derivative of the $i$-th output with respect to the $j$-th input\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. The Jacobian generalises the scalar derivative and the gradient. In backpropagation, Jacobians describe how errors propagate through layer transformations.
-\visualseparator
-        \begin{equation}
-            \mathbf{J} =
-            \begin{pNiceMatrix}
-                \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\
-                \vdots & \ddots & \vdots \\
-                \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n}
-            \end{pNiceMatrix}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Scalar and Vector Fields}
-        A \textbf{scalar field} assigns a single number to every point in space, e.g.\ temperature $T(x,y,z)$. A \textbf{vector field} assigns a vector to every point, e.g.\ wind velocity $\vec{v}(x,y,z)$. The \textbf{gradient} of a scalar field $\nabla f$ is itself a vector field pointing in the direction of steepest ascent — exactly what gradient descent follows (in the negative direction)\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}.
-\visualseparator
-        \begin{equation}
-            \nabla f(x_1, \ldots, x_n) =
-            \begin{pNiceMatrix}
-                \frac{\partial f}{\partial x_1} \\ \vdots \\ \frac{\partial f}{\partial x_n}
-            \end{pNiceMatrix}
-        \end{equation}
-        Gradient descent update: $\vec{x} \leftarrow \vec{x} - \eta\, \nabla_{\vec{x}} \mathcal{L}$.
-
-\end{v3topic}
-
-    \subsection{Matrices and Vector Spaces}
-
-\begin{v3topic}{Basic Matrix Algebra}
-        A matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ has $m$ rows and $n$ columns. Matrix multiplication $\mathbf{C} = \mathbf{AB}$ is defined when $\mathbf{A} \in \mathbb{R}^{m \times k}$ and $\mathbf{B} \in \mathbb{R}^{k \times n}$; entry $C_{ij} = \sum_{l=1}^k A_{il} B_{lj}$\textsuperscript{\cite{cherneyLinearAlgebra2013}}. A system of linear equations $\mathbf{Ax} = \mathbf{b}$ is the backbone of linear regression, neural network layers, and many optimisation problems.
-\visualseparator
-        \begin{equation}
-            \mathbf{A}\mathbf{x} = \mathbf{b}
-            \quad \Longleftrightarrow \quad
-            \begin{pNiceMatrix}
-                a_{11} & \cdots & a_{1n} \\
-                \vdots & \ddots & \vdots \\
-                a_{m1} & \cdots & a_{mn}
-            \end{pNiceMatrix}
-            \begin{pNiceMatrix} x_1 \\ \vdots \\ x_n \end{pNiceMatrix}
-            =
-            \begin{pNiceMatrix} b_1 \\ \vdots \\ b_m \end{pNiceMatrix}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Transpose, Trace, Determinant, Inverse}
-        Four fundamental matrix properties\textsuperscript{\cite{cherneyLinearAlgebra2013}}:
-        \begin{itemize}
-            \item \textbf{Transpose} $\mathbf{A}^\top$: rows become columns; $(\mathbf{AB})^\top = \mathbf{B}^\top\mathbf{A}^\top$.
-            \item \textbf{Trace} $\operatorname{tr}(\mathbf{A}) = \sum_i A_{ii}$: sum of diagonal elements; equals sum of eigenvalues.
-            \item \textbf{Determinant} $\det(\mathbf{A})$: scalar measuring volume scaling; $\det(\mathbf{A}) = 0$ iff $\mathbf{A}$ is singular.
-            \item \textbf{Inverse} $\mathbf{A}^{-1}$: exists iff $\det(\mathbf{A}) \neq 0$; satisfies $\mathbf{A}\mathbf{A}^{-1} = \mathbf{I}$.
-        \end{itemize}
-\visualseparator
-        \begin{equation}
-            \text{For } \mathbf{A} = \begin{pNiceMatrix} a & b \\ c & d \end{pNiceMatrix}:
-            \quad \det(\mathbf{A}) = ad - bc, \quad
-            \mathbf{A}^{-1} = \frac{1}{ad-bc}\begin{pNiceMatrix} d & -b \\ -c & a \end{pNiceMatrix}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Eigenvalues and Eigenvectors}
-        A non-zero vector $\vec{v}$ is an \textbf{eigenvector} of $\mathbf{A}$ with \textbf{eigenvalue} $\lambda$ if it satisfies $\mathbf{A}\vec{v} = \lambda\vec{v}$ — the matrix only scales $\vec{v}$, it does not rotate it\textsuperscript{\cite{cherneyLinearAlgebra2013}}. Eigenvalues are found by solving $\det(\mathbf{A} - \lambda\mathbf{I}) = 0$. In \textbf{PCA}, the eigenvectors of the covariance matrix are the principal components; eigenvalues encode the explained variance along each direction.
-\visualseparator
-        \begin{equation}
-            \mathbf{A}\vec{v} = \lambda\vec{v}
-            \quad \Longrightarrow \quad
-            (\mathbf{A} - \lambda\mathbf{I})\vec{v} = \vec{0}
-            \quad \Longrightarrow \quad
-            \det(\mathbf{A} - \lambda\mathbf{I}) = 0
-        \end{equation}
-        Geometric meaning: eigenvectors define the invariant axes of the linear transformation; eigenvalues give the stretch factor along each axis.
-
-\end{v3topic}
-
-    \subsection{Information Theory}
-
-\begin{v3topic}{MSE and Linear Regression}
-        \textbf{Mean Squared Error (MSE)} is the most common regression loss function. For predictions $\hat{y}_i$ and targets $y_i$, it penalises large errors quadratically. \textbf{Simple linear regression} $\hat{y} = w_0 + w_1 x$ minimises MSE to find the best-fit line\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}.
-\visualseparator
-        \begin{equation}
-            \operatorname{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2
-        \end{equation}
-        Optimal coefficients via \textbf{Normal Equations}: $\hat{\mathbf{w}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}$, requiring $\mathbf{X}^\top\mathbf{X}$ to be invertible.
-
-\end{v3topic}
-\begin{v3topic}{Shannon Entropy}
-        \textbf{Entropy} $H(X)$ quantifies the average uncertainty or information content of a random variable $X$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. A uniform distribution has maximum entropy; a deterministic outcome has zero entropy. The unit is \emph{bits} (base-2 logarithm) or \emph{nats} (natural logarithm). Entropy is a foundational quantity for decision trees (information gain) and compression.
-\visualseparator
-        \begin{equation}
-            H(X) = -\sum_{x} p(x) \log_2 p(x)
-        \end{equation}
-        Example: a fair coin has $H = -2 \times 0.5 \log_2 0.5 = 1$ bit. A biased coin ($p=0.9$) has $H \approx 0.47$ bits — less uncertainty.
-
-\end{v3topic}
-\begin{v3topic}{Cross-Entropy Loss}
-        \textbf{Cross-entropy} $H(p, q)$ measures how many bits are needed to encode samples from the true distribution $p$ using an estimated distribution $q$\textsuperscript{\cite{mackayInformationTheoryInference2005}}. Minimising cross-entropy is equivalent to maximising log-likelihood. It is the standard loss function for classification in deep learning.
-\visualseparator
-        \begin{equation}
-            H(p, q) = -\sum_{x} p(x) \log q(x)
-        \end{equation}
-        For binary classification: $\mathcal{L} = -\left[y \log \hat{y} + (1-y) \log(1 - \hat{y})\right]$. Note: $H(p,q) = H(p) + D_{\mathrm{KL}}(p\,\|\,q)$, where $D_{\mathrm{KL}} \geq 0$ is the Kullback–Leibler divergence.
-
-\end{v3topic}
-
-    \section{Advanced Statistics}
-    \subsection{Introduction to Statistics}
-
-\begin{v3topic}{Random Variables}
-        A \textbf{random variable} $X$ is a function mapping outcomes of a random experiment to real numbers\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. \textbf{Discrete} random variables take countable values (e.g.\ number of heads in $n$ coin flips); \textbf{continuous} random variables take values in an uncountable range (e.g.\ height of a person). The three Kolmogorov axioms define a valid probability measure: (1) $P(A) \geq 0$; (2) $P(\Omega) = 1$; (3) $P(A \cup B) = P(A) + P(B)$ for disjoint $A, B$.
-
-\end{v3topic}
-\begin{v3topic}{Probability Distributions}
-        A \textbf{PMF} (probability mass function) gives $P(X = x)$ for discrete $X$. A \textbf{PDF} (probability density function) $f(x)$ satisfies $P(a \leq X \leq b) = \int_a^b f(x)\,dx$ for continuous $X$; note $f(x) \geq 0$ and $\int_{-\infty}^{\infty} f(x)\,dx = 1$. The \textbf{CDF} (cumulative distribution function) $F(x) = P(X \leq x)$ is monotonically non-decreasing and applies to both discrete and continuous variables\textsuperscript{\cite{brucePracticalStatisticsData2017}}. For a continuous variable with density $f$, it is given by the integral below; for a discrete variable it is a cumulative sum of probability masses.
-\visualseparator
-        \begin{equation}
-            F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Expectation Values and Moments}
-        The \textbf{expected value} (mean) $\mu = \mathbb{E}[X]$ is the probability-weighted average. The \textbf{variance} $\operatorname{Var}(X) = \mathbb{E}[(X-\mu)^2]$ measures spread; its square root is the standard deviation $\sigma$. Higher moments characterise shape: \textbf{skewness} (asymmetry) and \textbf{kurtosis} (tail heaviness)\textsuperscript{\cite{downeyThinkStatsExploratory2015}}.
-\visualseparator
-        \begin{equation}
-            \mathbb{E}[X] = \sum_x x\,P(X=x), \quad
-            \operatorname{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Central Limit Theorem}
-        The \textbf{Central Limit Theorem (CLT)} states that the properly standardised mean of $n$ independent, identically distributed random variables with finite mean $\mu$ and non-zero finite variance $\sigma^2$ converges in distribution to a standard Normal variable as $n \to \infty$\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. This supports Normal approximations for many sample means, but it does not make the original observations Gaussian and convergence can be slow for heavy-tailed or highly skewed distributions.
-\visualseparator
-        \begin{equation}
-            \frac{\sqrt{n}(\bar{X}_n-\mu)}{\sigma}
-            \;\xrightarrow{d}\; \mathcal{N}(0,1)
-            \quad \text{as } n \to \infty,
-            \qquad
-            \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i
-        \end{equation}
-        Practical implication: standard error of the mean $= \sigma / \sqrt{n}$ shrinks with sample size.
-
-\end{v3topic}
-\begin{v3topic}{Bayes’ Theorem}
-        \textbf{Bayes’ Theorem} relates the conditional and marginal probabilities of events, allowing one to update beliefs given new evidence\textsuperscript{\cite{downeyThinkBayes2016}}. $P(H)$ is the \emph{prior} (belief before evidence), $P(D|H)$ is the \emph{likelihood} (how probable the data is under hypothesis $H$), $P(D)$ is the \emph{marginal likelihood} (normalisation constant), and $P(H|D)$ is the \emph{posterior}.
-\visualseparator
-        \begin{equation}
-            P(H \mid D) = \frac{P(D \mid H)\, P(H)}{P(D)}
-        \end{equation}
-        Verbal form: \emph{posterior} $\propto$ \emph{likelihood} $\times$ \emph{prior}.
-
-\end{v3topic}
-
-    \subsection{Important Probability Distributions and their Applications}
-
-\begin{v3topic}{Normal (Gaussian) Distribution}
-        The \textbf{Normal distribution} $\mathcal{N}(\mu, \sigma^2)$ is the most important continuous distribution in statistics and ML. Its bell-shaped PDF is symmetric about the mean $\mu$; the standard deviation $\sigma$ controls the width\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{68-95-99.7 rule}: approximately 68\%, 95\%, and 99.7\% of values lie within 1, 2, and 3 standard deviations of the mean, respectively.
-\visualseparator
-        \factvisual{
-            \begin{equation*}
-                f(x) = \frac{1}{\sigma\sqrt{2\pi}}
-                \exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
-            \end{equation*}
-            \begin{itemize}
-                \item \textbf{Centre:} mean, median, and mode coincide at $\mu$.
-                \item \textbf{Width:} larger $\sigma$ produces a lower, wider bell.
-                \item \textbf{Area:} probability is area under the density, not bar height.
-                \item \textbf{Standardise:} $z=(x-\mu)/\sigma$ converts values to standard-deviation units.
-            \end{itemize}
-        }{
-            \begin{tikzpicture}
-                \begin{axis}[
-                    almanach axis,
-                    height=52mm,
-                    xmin=-3.4,xmax=3.4,
-                    ymin=0,ymax=0.46,
-                    xlabel={$z$-score},
-                    ylabel={density},
-                    ytick=\empty,
-                    xtick={-3,-2,-1,0,1,2,3},
-                    legend style={at={(0.5,1.02)},anchor=south},
-                    legend columns=2]
-                    \addplot+[ybar interval,
-                        fill=AlmanachTeal!24,
-                        draw=AlmanachTeal!45,
-                        mark=none] coordinates {
-                        (-3.2,0.008)(-2.8,0.015)(-2.4,0.030)
-                        (-2.0,0.060)(-1.6,0.120)(-1.2,0.205)
-                        (-0.8,0.300)(-0.4,0.375)(0,0.405)
-                        (0.4,0.370)(0.8,0.300)(1.2,0.205)
-                        (1.6,0.120)(2.0,0.060)(2.4,0.030)
-                        (2.8,0.015)(3.2,0.008)};
-                    \addlegendentry{sample histogram}
-                    \addplot[AlmanachOchre,very thick,smooth,
-                        domain=-3.3:3.3,samples=120]
-                        {0.39894228*exp(-x^2/2)};
-                    \addlegendentry{$\mathcal{N}(0,1)$ density}
-                    \draw[AlmanachInk!45,dashed]
-                        (axis cs:-1,0) -- (axis cs:-1,0.242);
-                    \draw[AlmanachInk!45,dashed]
-                        (axis cs:1,0) -- (axis cs:1,0.242);
-                    \draw[decorate,decoration={brace,mirror,amplitude=3pt},
-                        AlmanachTeal]
-                        (axis cs:-1,-0.012) -- (axis cs:1,-0.012)
-                        node[midway,below=3pt,font=\scriptsize] {$\approx68\%$};
-                \end{axis}
-            \end{tikzpicture}
-            \visualcaption{Illustrative observations form a histogram;
-              the Normal model is a continuous density. The central interval
-              $[-1\sigma,+1\sigma]$ contains about 68\% of its area.}
-              {fig:normal-histogram-density}
-        }
-
-\end{v3topic}
-\begin{v3topic}{Binomial Distribution}
-        The \textbf{Binomial distribution} $B(n, p)$ models the number of successes $k$ in $n$ independent Bernoulli trials each with success probability $p$\textsuperscript{\cite{downeyThinkBayes2016}}. Use when: fixed number of trials, each trial has exactly two outcomes, trials are independent, and $p$ is constant.
-\visualseparator
-        \begin{equation}
-            P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \ldots, n
-        \end{equation}
-        Mean $\mu = np$; variance $\sigma^2 = np(1-p)$. For large $n$: approximated by $\mathcal{N}(np,\, np(1-p))$ (CLT).
-
-\end{v3topic}
-
-    \subsection{Bayesian Statistics}
-
-\begin{v3topic}{Bayes’ Rule in Practice}
-        Bayesian inference updates a prior distribution $P(\theta)$ over model parameters $\theta$ using observed data $D$ to obtain the posterior $P(\theta \mid D)$\textsuperscript{\cite{downeyThinkBayes2016}}. The likelihood $P(D \mid \theta)$ encodes how well the model explains the data. Unlike point estimates, the posterior is a full distribution capturing remaining uncertainty.
-\visualseparator
-        \begin{equation}
-            P(\theta \mid D) = \frac{P(D \mid \theta)\,P(\theta)}{P(D)}, \qquad P(D) = \int P(D \mid \theta)\,P(\theta)\,d\theta
-        \end{equation}
-        In practice, $P(D)$ is often intractable; methods such as MCMC or variational inference are used to approximate the posterior.
-
-\end{v3topic}
-\begin{v3topic}{Bayesian vs.\ Frequentist Approach}
-        Two fundamentally different philosophies of probability\textsuperscript{\cite[][p.~9]{barberBayesianReasoningMachine2012}}:
-\visualseparator
-        \begin{tblr}{
-            colspec = {X[2,l] X[3,l] X[3,l]},
-            hlines, vlines,
-            row{1} = {font=\bfseries, bg=gray!20},
-        }
-            Aspect & Frequentist & Bayesian \\
-            Probability & Long-run frequency of events & Degree of belief / plausibility \\
-            Parameters & Fixed but unknown constants & Random variables with prior \\
-            Inference & Confidence intervals, $p$-values & Posterior distributions \\
-            Data use & Repeat-experiment model & Condition on observed data \\
-            Prior & Not used & Explicitly encoded \\
-        \end{tblr}
-\captionof{table}{Bayesian Statistics: Bayesian vs.\ Frequentist Approach.}
-\label{tab:ch02-mathematical-foundations-inline-01}
-
-\end{v3topic}
-
-    \subsection{Descriptive Statistics}
-
-\begin{v3topic}{Central Tendency}
-        Measures of \textbf{central tendency} summarise a dataset with a single representative value\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The \textbf{mean} $\bar{x} = \frac{1}{n}\sum x_i$ is sensitive to outliers. The \textbf{median} is the middle value after sorting; robust to outliers. The \textbf{mode} is the most frequent value; useful for categorical data. For symmetric distributions, mean = median = mode; for right-skewed data, mean $>$ median.
-\visualseparator
-        \begin{equation}
-            \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i, \qquad
-            \tilde{x} = \begin{cases} x_{(m+1)} & n = 2m+1 \\ \frac{x_{(m)} + x_{(m+1)}}{2} & n = 2m \end{cases}
-        \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Spread}
-        Measures of \textbf{spread} quantify variability around the centre\textsuperscript{\cite{brucePracticalStatisticsData2017}}. \textbf{Variance} $s^2$ and \textbf{standard deviation} $s$ are scale-dependent. The \textbf{Interquartile Range (IQR)} $= Q_3 - Q_1$ is robust to outliers; it spans the middle 50\% of data and forms the basis for box plots.
-\visualseparator
-        \begin{equation}
-            s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2, \quad
-            s = \sqrt{s^2}, \quad
-            \mathrm{IQR} = Q_3 - Q_1
-        \end{equation}
-        Outlier rule of thumb: observations beyond $Q_1 - 1.5\,\mathrm{IQR}$ or $Q_3 + 1.5\,\mathrm{IQR}$ are flagged as potential outliers.
-
-\end{v3topic}
-
-    \subsection{Data Visualization}
-
-\begin{v3topic}{Chart Types Overview}
-        Choosing the right chart type is key to clear visual communication\textsuperscript{\cite{brucePracticalStatisticsData2017}}:
-\visualseparator
-        \begin{tblr}{
-            colspec = {X[2,l] X[3,l] X[3,l]},
-            hlines, vlines,
-            row{1} = {font=\bfseries, bg=gray!20},
-        }
-            Chart & Purpose & Key features \\
-            Histogram & Distribution of one continuous variable & Bin width critical; reveals shape, skew, outliers \\
-            Box plot & Summarise distribution; compare groups & Shows median, IQR, whiskers, outliers \\
-            Scatter plot & Relationship between two continuous variables & Reveals correlation, clusters, non-linearity \\
-            Bar chart & Compare discrete categories & Heights encode quantity; grouped or stacked \\
-            Heat map & 2D matrix of values & Colour encodes magnitude; useful for correlation matrices \\
-        \end{tblr}
-\captionof{table}{Data Visualization: Chart Types Overview.}
-\label{tab:ch02-mathematical-foundations-inline-02}
-
-\end{v3topic}
-
-    \subsection{Parameter Estimation}
-
-\begin{v3topic}{Maximum Likelihood Estimation}
-        \textbf{Maximum Likelihood Estimation (MLE)} finds the parameter values $\hat{\theta}$ that make the observed data $\mathcal{D}$ most probable under the model\textsuperscript{\cite{hastieElementsStatisticalLearning2008}}. In practice, the \textbf{log-likelihood} $\ell(\theta)$ is maximised (log turns products into sums and is monotone). MLE is the foundation for training most supervised models.
-\visualseparator
-        \begin{equation}
-            \hat{\theta}_{\mathrm{MLE}} = \operatorname*{arg\,max}_\theta \prod_{i=1}^n p(x_i \mid \theta)
-            = \operatorname*{arg\,max}_\theta \sum_{i=1}^n \log p(x_i \mid \theta)
-        \end{equation}
-        Example: MLE for a Gaussian gives $\hat{\mu} = \bar{x}$ and $\hat{\sigma}^2 = \frac{1}{n}\sum(x_i - \bar{x})^2$.
-
-\end{v3topic}
-\begin{v3topic}{Ordinary Least Squares}
-        \textbf{Ordinary Least Squares (OLS)} estimates linear regression coefficients $\hat{\mathbf{w}}$ by minimising the sum of squared residuals\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}}. Geometrically, OLS projects the response vector $\mathbf{y}$ onto the column space of $\mathbf{X}$; the fitted values $\hat{\mathbf{y}} = \mathbf{H}\mathbf{y}$ with hat matrix $\mathbf{H} = \mathbf{X}(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top$.
-\visualseparator
-        \begin{equation}
-            \hat{\mathbf{w}} = \operatorname*{arg\,min}_{\mathbf{w}} \|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2_2
-            = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
-        \end{equation}
-        OLS is BLUE (Best Linear Unbiased Estimator) under Gauss-Markov conditions. When $\mathbf{X}^\top\mathbf{X}$ is ill-conditioned, Ridge regression adds $\lambda\mathbf{I}$ to stabilise the inverse.
-
-\end{v3topic}
-
-    \subsection{Hypothesis Test}
-
-\begin{v3topic}{Type I and Type II Errors}
-        Statistical hypothesis tests can make two kinds of errors\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. The \textbf{significance level} $\alpha$ controls the Type I error rate; common choice $\alpha = 0.05$. \textbf{Statistical power} $1 - \beta$ is the probability of correctly detecting a true effect; increasing sample size raises power.
-\visualseparator
-        \begin{tblr}{
-            colspec = {X[2,l] X[3,l] X[3,l]},
-            hlines, vlines,
-            row{1} = {font=\bfseries, bg=gray!20},
-            column{1} = {font=\bfseries},
-        }
-            & $H_0$ true & $H_0$ false \\
-            Reject $H_0$ & Type I error ($\alpha$, false positive) & Correct (power $= 1-\beta$) \\
-            Fail to reject $H_0$ & Correct (true negative) & Type II error ($\beta$, false negative) \\
-        \end{tblr}
-\captionof{table}{Hypothesis Test: Type I and Type II Errors.}
-\label{tab:ch02-mathematical-foundations-inline-03}
-
-\end{v3topic}
-\begin{v3topic}{p-Value}
-        The \textbf{p-value} is the probability of observing a test statistic at least as extreme as the one computed, \emph{assuming the null hypothesis $H_0$ is true}\textsuperscript{\cite{downeyThinkStatsExploratory2015}}. A small $p$-value (typically $< 0.05$) means the observed data would be rare under $H_0$, providing evidence against it. Common thresholds: $p < 0.05$ (significant), $p < 0.01$ (highly significant), $p < 0.001$ (very highly significant).
-
-        \textbf{Common misinterpretations:} The $p$-value is \emph{not} the probability that $H_0$ is true, nor the probability that the result is due to chance. It also does not measure effect size or practical significance — a very large sample can yield $p < 0.05$ for a negligible effect.
-\visualseparator
-        \begin{equation}
-            p = P\!\left(T \geq t_{\mathrm{obs}} \mid H_0\right)
-        \end{equation}
-        If $p < \alpha$: reject $H_0$. Statistical significance $\neq$ practical significance.
-
-\end{v3topic}
-
-    \section{Literature}
-    \begin{itemize}
-        \item Mathai, A. M., \& Haubold, H. J. (2017). Linear algebra, a course for physicists and engineers (1st ed.). De Gruyter.
-        \item Riley, K. F., Hobson, M. P., \& Bence, S. J. (2006). Mathematical methods for physics and engineering (2nd ed.). Cambridge University Press.
-        \item Yang, X.-S. (2018). Mathematics for Civil Engineers: An Introduction. Dunedin Academic Press.
-        \item Bruce, P., \& Bruce, A. (2017). Statistics for data scientists: 50 essential concepts. O’Reilley Publishing.
-        \item Downey, A. (2013). Think Bayes. O’Reilley Publishing.
-        \item Downey, A. (2014). Think stats. O’Reilley Publishing.
-        \item McKay, D. (2003). Information theory, inference and learning algorithms. Cambridge University Press.
-        \item Reinhart, A. (2015). Statistics done wrong. No Starch Press.
-    \end{itemize}
-
-%
-\section{Deep Dive: Numerical Stability and Honest Uncertainty}
-\begin{v3topic}{Conditioning Before Optimisation}
-An algorithm can be mathematically correct and numerically unreliable.
-Inspect scale, units, rank, and condition number before interpreting a large
-gradient or unstable coefficient.
-Standardisation, orthogonal decompositions, and regularisation often improve
-the problem being solved rather than merely speeding up a solver.
-
-\end{v3topic}
-\begin{v3topic}{Log-Sum-Exp}
-Directly computing $\log\sum_i e^{x_i}$ may overflow.
-With $m=\max_i x_i$,
+% ===========================================================================
+% Chapter 2 -- Mathematical Foundations
+% Rebuilt in the v3 didactic standard. Organised by what machine learning
+% actually uses, in dependency order, with a worked numeric example for
+% every mechanism.
+% ===========================================================================
+
+\chapter{Mathematical Foundations}
+\label{ch:mathematical-foundations}
+
+\chapterlead{Which mathematical objects make learning, uncertainty, and
+optimisation precise?}{Objects}{Transform}{Estimate}{Optimise}{mathematics}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item state the shape of every object in an expression before evaluating it,
+        and use a shape mismatch as a debugging tool;
+  \item compute the $L_1$, $L_2$, and $L_\infty$ norms of a vector and say which
+        one a given application needs;
+  \item multiply matrices by hand and predict the output shape from the inputs;
+  \item find the eigenvalues of a $2\times2$ matrix and check them against the
+        trace and determinant;
+  \item apply the chain rule to a composed function --- the single result that
+        makes backpropagation possible;
+  \item run three steps of gradient descent by hand and derive the learning
+        rate at which it diverges;
+  \item update a belief with Bayes' theorem and explain why a $99\,\%$ accurate
+        test can still be wrong half the time;
+  \item compute entropy, cross-entropy, and KL divergence, and show that KL is
+        not symmetric;
+  \item say what a $p$-value is not;
+  \item recognise when a result is mathematically correct and numerically
+        worthless.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Machine learning uses a surprisingly small amount of mathematics, but it uses
+it constantly. Four ideas carry almost everything: a \emph{vector} is a list of
+numbers you can treat as a point in space; a \emph{matrix} is a machine that
+turns one vector into another; a \emph{derivative} tells you which way to nudge
+a number to make an outcome better; and a \emph{probability} is a way of
+writing down that you are not certain. Every method later in this book is a
+particular arrangement of those four things.
+\end{plainlanguage}
+
+\begin{engineernote}
+You do not need to be fast at algebra to be good at this. You need to be
+\emph{unwilling to move on} when a symbol is unclear. Nearly every student who
+struggles with deep learning is struggling with a piece of notation nobody
+explained --- most often a shape, an index, or a subscript that silently
+changed meaning. When you meet a formula in this book, ask three questions
+before anything else: what shape is each object, what are its units, and what
+happens if I set it to zero.
+\end{engineernote}
+
+% ===========================================================================
+\section{How to Read Mathematics in This Book}
+% ===========================================================================
+
+\subsection{Four Objects, and the Shape Rule}
+
+Almost every expression in this book is built from four kinds of object. The
+core notation table in the front matter (\cref{tab:frontmatter-core-notation})
+gives the symbols; this section gives the habit.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75,align=center},
+  hd/.style={font=\sffamily\small\bfseries,color=AlmanachTeal},
+  cell/.style={draw=AlmanachTeal!55,fill=AlmanachMist,minimum size=5.5mm,
+    inner sep=0pt,font=\scriptsize}]
+
+  \node[hd] at (0,1.5) {scalar};
+  \node[cell] at (0,0.6) {$7$};
+  \node[lbl] at (0,-0.55) {one number\\\texttt{()}};
+
+  \node[hd] at (2.7,1.5) {vector};
+  \foreach \i in {0,1,2}{\node[cell] at (2.7,1.0-\i*5.5mm) {};}
+  \node[lbl] at (2.7,-0.55) {a point in space\\\texttt{(d,)}};
+
+  \node[hd] at (5.6,1.5) {matrix};
+  \foreach \i in {0,1,2}\foreach \j in {0,1}{
+    \node[cell] at (5.35+\j*5.5mm,1.0-\i*5.5mm) {};}
+  \node[lbl] at (5.6,-0.55) {a transformation\\\texttt{(m, n)}};
+
+  \node[hd] at (8.9,1.5) {tensor};
+  \foreach \k in {0,1}\foreach \i in {0,1,2}\foreach \j in {0,1}{
+    \node[cell,fill=AlmanachOchre!\the\numexpr14+\k*12\relax]
+      at (8.5+\j*5.5mm+\k*1.6mm, 1.0-\i*5.5mm+\k*1.6mm) {};}
+  \node[lbl] at (8.9,-0.55) {a batch of them\\\texttt{(B, m, n)}};
+\end{tikzpicture}
+\caption{The four objects, with the shape notation used throughout the book.
+The batch dimension $B$ on the right is the one most often forgotten; it is
+also the one that causes the most confusing errors, because a wrong batch
+dimension frequently still runs.}
+\label{fig:math-four-objects}
+\end{figure}
+
+\begin{engineernote}[The shape rule]
+Before you evaluate anything, write the shape of every object above it. Two
+objects can only be added if their shapes match; they can only be multiplied if
+the \emph{inner} dimensions match. Roughly nine out of ten errors in
+hand-written derivations and in code are shape errors, and a shape error is
+visible without doing any arithmetic at all.
+\end{engineernote}
+
+\begin{checkpoint}
+You are told $\mathbf{y} = W\mathbf{x} + \mathbf{b}$ where
+$\mathbf{x}\in\mathbb{R}^{5}$ and $\mathbf{y}\in\mathbb{R}^{3}$. Without any
+further information, state the shape of $W$ and of $\mathbf{b}$. Then say what
+goes wrong if you accidentally use $W^{\!\top}$.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Vectors: Data as Geometry}
+% ===========================================================================
+
+\subsection{What a Vector Is}
+
+In broad terms, vectors are things one can add, and linear functions are
+functions of vectors that respect that
+addition\textsuperscript{\cite[][p.~12]{cherneyLinearAlgebra2013}}. Order
+matters: a vector is an ordered list, so swapping two components produces a
+different object.
 \begin{equation}
-  \log\sum_i e^{x_i}=m+\log\sum_i e^{x_i-m}.
+  \vec{v} =
+  \begin{pNiceMatrix}
+    a_1 \\ a_2 \\ \vdots \\ a_n
+  \end{pNiceMatrix}
+  \neq
+  \begin{pNiceMatrix}
+    \CodeBefore
+    \cellcolor[HTML]{FFF3D6}{1-1,2-1}
+    \Body
+    a_2 \\ a_1 \\ \vdots \\ a_n
+  \end{pNiceMatrix}
+  \label{eq:math-vector-order}
 \end{equation}
-Subtracting $m$ changes neither the result nor softmax ratios, while keeping
-exponents in a representable range.
 
-\end{v3topic}
-\begin{v3topic}{Intervals Need Assumptions}
-A confidence, credible, bootstrap, prediction, or conformal interval answers a
-different question under different assumptions.
-For every interval, state the random object, conditioning information,
-coverage target, data-dependence assumptions, and whether tuning reused the
-calibration data.
-Check empirical coverage on relevant slices rather than trusting the nominal
-percentage by name.
-\end{v3topic}
+\begin{plainlanguage}
+A vector is a recipe for getting somewhere. ``Three steps east, four steps
+north'' is a two-dimensional vector. Everything that follows --- length,
+angle, similarity --- is just asking geometric questions about that walk. When
+a language model represents the word \emph{cat} as $576$ numbers, it is
+describing a walk in $576$ directions at once. You cannot picture that, but
+every formula you learn in two dimensions still applies unchanged.
+\end{plainlanguage}
+
+\subsection{Length, and the Three Norms You Will Meet}
+
+The \keyterm{norm} measures the size of a vector. The familiar one is the
+Euclidean or $2$-norm\textsuperscript{\cite[][p.~90]{cherneyLinearAlgebra2013}},
+but machine learning uses three:
+\begin{equation}
+  \lVert \vec{x}\rVert_1 = \sum_{i=1}^{n}\lvert x_i\rvert,
+  \qquad
+  \lVert \vec{x}\rVert_2 = \sqrt{\sum_{i=1}^{n} x_i^2},
+  \qquad
+  \lVert \vec{x}\rVert_\infty = \max_i \lvert x_i\rvert .
+  \label{eq:math-norms}
+\end{equation}
+
+\begin{workedexample}[All three norms of one vector]
+Let $\vec{x} = (3,\,-4,\,12)$.
+\[
+\begin{aligned}
+  \lVert\vec{x}\rVert_1 &= \lvert3\rvert+\lvert-4\rvert+\lvert12\rvert
+    = 3+4+12 = 19,\\
+  \lVert\vec{x}\rVert_2 &= \sqrt{3^2+(-4)^2+12^2}
+    = \sqrt{9+16+144} = \sqrt{169} = 13,\\
+  \lVert\vec{x}\rVert_\infty &= \max(3,4,12) = 12 .
+\end{aligned}
+\]
+Three different answers for the same vector, and all three are correct --- they
+answer different questions. Note the ordering
+$\lVert\vec{x}\rVert_\infty \le \lVert\vec{x}\rVert_2 \le
+\lVert\vec{x}\rVert_1$, which holds for every vector and is worth remembering
+as a sanity check on your arithmetic.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.15,
+  ax/.style={->,draw=AlmanachInk!55,>={Stealth[length=1.6mm]}},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  \foreach \dx/\name/\desc in {0/{$L_1$}/{diamond}, 3.4/{$L_2$}/{circle},
+      6.8/{$L_\infty$}/{square}}{
+    \draw[ax] (\dx-1.25,0) -- (\dx+1.25,0);
+    \draw[ax] (\dx,-1.25) -- (\dx,1.25);
+    \node[lbl] at (\dx,-1.65) {\name\ unit ball (a \desc)};}
+  \draw[thick,AlmanachTeal,fill=AlmanachTeal!12]
+    (-1,0) -- (0,1) -- (1,0) -- (0,-1) -- cycle;
+  \draw[thick,AlmanachTeal,fill=AlmanachTeal!12] (3.4,0) circle (1);
+  \draw[thick,AlmanachTeal,fill=AlmanachTeal!12]
+    (5.8,-1) rectangle (7.8,1);
+  \node[lbl,align=center,text width=32mm] at (3.4,1.95)
+    {every point on each shape has norm exactly $1$};
+\end{tikzpicture}
+\caption{The set of vectors of norm one, under each of the three norms. The
+corners of the $L_1$ diamond sit on the axes, which is the geometric reason
+$L_1$ regularisation drives coefficients to exactly zero while $L_2$ merely
+shrinks them --- a constrained optimum is far more likely to land on a corner
+than on a smooth arc.}
+\label{fig:math-unit-balls}
+\end{figure}
+
+\begin{engineernote}
+Pick the norm from the question, not from habit. $L_2$ is the default because
+it is smooth and differentiable everywhere. $L_1$ is the choice when you want
+sparsity or robustness to outliers, because it does not square the errors.
+$L_\infty$ is the choice when the worst single component is what matters ---
+a safety margin, a latency budget, an adversarial perturbation bound.
+\end{engineernote}
+
+The \keyterm{unit vector} in the direction of $\vec{x}$ is
+$\vec{x}/\lVert\vec{x}\rVert_2$, which has length
+one\textsuperscript{\cite[][p.~262]{cherneyLinearAlgebra2013}}. Normalising
+throws away magnitude and keeps only direction --- often exactly what you want
+when comparing documents of different lengths.
+
+\subsection{The Dot Product and Cosine Similarity}
+
+The \keyterm{dot product} of $\vec{u}$ and $\vec{v}$ multiplies matching
+components and sums\textsuperscript{\cite[][p.~89]{cherneyLinearAlgebra2013}}:
+\begin{equation}
+  \vec{u}\cdot\vec{v} = \sum_{i=1}^{n} u_i v_i
+  = \lVert\vec{u}\rVert\,\lVert\vec{v}\rVert\cos\Theta .
+  \label{eq:math-dot}
+\end{equation}
+The second equality is the useful one: the dot product secretly measures
+\emph{angle}. Two orthogonal vectors have dot product
+zero\textsuperscript{\cite[][p.~30]{fischerMaschinellesLernenFuer2024}}.
+Rearranging gives \keyterm{cosine similarity}:
+\begin{equation}
+  \cos\Theta = \frac{\vec{u}\cdot\vec{v}}
+                    {\lVert\vec{u}\rVert\,\lVert\vec{v}\rVert} .
+  \label{eq:math-cosine}
+\end{equation}
+
+\begin{workedexample}[Angle between two vectors, by hand]
+Let $\vec{u} = (2,1,2)$ and $\vec{v} = (1,2,2)$.
+
+\emph{Step 1 --- dot product.}
+$\vec{u}\cdot\vec{v} = 2(1) + 1(2) + 2(2) = 2+2+4 = 8$.
+
+\emph{Step 2 --- lengths.}
+$\lVert\vec{u}\rVert = \sqrt{4+1+4} = \sqrt{9} = 3$ and
+$\lVert\vec{v}\rVert = \sqrt{1+4+4} = \sqrt{9} = 3$.
+
+\emph{Step 3 --- cosine.}
+$\cos\Theta = \dfrac{8}{3\cdot3} = \dfrac{8}{9} = 0.889$.
+
+\emph{Step 4 --- angle.}
+$\Theta = \arccos(0.889) = 27.3^\circ$.
+
+\emph{Interpret.} The vectors point in noticeably similar directions. Because
+both happen to have length $3$, the normalisation did little work here --- but
+if $\vec{v}$ were $(10,20,20)$, ten times longer, the dot product would be $80$
+while the cosine would still be $0.889$. That invariance to magnitude is the
+entire reason embedding search uses cosine similarity rather than the raw dot
+product.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0,
+  v/.style={-{Stealth[length=2.4mm]},very thick},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  \foreach \dx/\ang/\txt/\val in {
+      0/12/{nearly aligned}/{$\cos\Theta\approx0.98$},
+      4.3/90/{orthogonal}/{$\cos\Theta = 0$},
+      8.6/168/{opposed}/{$\cos\Theta\approx-0.98$}}{
+    \draw[draw=AlmanachInk!25] (\dx,0) circle (1.15);
+    \draw[v,AlmanachTeal] (\dx,0) -- ++(0:1.15);
+    \draw[v,AlmanachOchre] (\dx,0) -- ++(\ang:1.15);
+    \node[lbl] at (\dx,-1.55) {\txt};
+    \node[lbl] at (\dx,-1.95) {\val};}
+  \draw[AlmanachRed] (0.55,0) arc (0:12:0.55);
+  \node[lbl,color=AlmanachRed] at (0.85,0.18) {$\Theta$};
+  \draw[AlmanachRed] (4.85,0) arc (0:90:0.55);
+  \draw[AlmanachRed] (9.15,0) arc (0:168:0.55);
+\end{tikzpicture}
+\caption{Cosine similarity across its whole range. Because the measure depends
+only on angle, both vectors can be rescaled arbitrarily without changing the
+answer --- which is what makes it the right similarity for embeddings, where
+vector magnitude often encodes frequency rather than meaning.}
+\label{fig:math-cosine-similarity}
+\end{figure}
+
+\begin{cautionbox}[High dimensions do not behave like the page]
+Your geometric intuition is trained in two and three dimensions and it will
+mislead you in $576$. In high-dimensional space, randomly chosen vectors are
+almost always close to orthogonal, and the distances between all pairs of
+points become nearly equal --- so ``nearest neighbour'' becomes progressively
+less meaningful as dimension grows. This is the \keyterm{concentration of
+distances}, one face of the curse of dimensionality. The practical consequence:
+a similarity score of $0.3$ may be a very strong match in a $1000$-dimensional
+embedding space even though it sounds weak. Always calibrate similarity
+thresholds against the actual distribution of scores in your data rather than
+against intuition.
+\end{cautionbox}
+
+\begin{checkpoint}
+Two document embeddings have cosine similarity $0.95$ but Euclidean distance
+$40$. Explain how both can be true at once, and state which measure you would
+report to a user searching for ``documents about the same topic''.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Matrices: Data as Transformation}
+% ===========================================================================
+
+A matrix $\mathbf{A}\in\mathbb{R}^{m\times n}$ has $m$ rows and $n$ columns.
+The product $\mathbf{C} = \mathbf{A}\mathbf{B}$ is defined when
+$\mathbf{A}\in\mathbb{R}^{m\times k}$ and $\mathbf{B}\in\mathbb{R}^{k\times n}$,
+with $C_{ij} = \sum_{l=1}^{k} A_{il}B_{lj}$\textsuperscript{\cite{cherneyLinearAlgebra2013},
+\cite[][ch.~2]{strangIntroductionLinearAlgebra2016}}.
+
+\begin{plainlanguage}
+Do not think of a matrix as a table of numbers. Think of it as a \emph{machine}
+with a fixed number of input slots and output slots. Feed it a vector of the
+right length and it returns a different vector. A neural network layer is
+exactly this machine plus one bend. Matrix multiplication is what you get when
+you bolt two machines together and ask what the combined machine does.
+\end{plainlanguage}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  dim/.style={font=\ttfamily\scriptsize,color=AlmanachTeal!80!black},
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,minimum height=11mm,
+    font=\sffamily\small}]
+  \node[bx,minimum width=17mm] (a) at (0,0) {$\mathbf{A}$};
+  \node[bx,minimum width=13mm] (b) at (2.6,0) {$\mathbf{B}$};
+  \node[font=\large] at (1.35,0) {$\cdot$};
+  \node[font=\large] at (4.0,0) {$=$};
+  \node[bx,minimum width=13mm,fill=AlmanachOchre!18,draw=AlmanachOchre]
+    (c) at (5.6,0) {$\mathbf{C}$};
+  \node[dim,above=1.5mm of a] {(m, \textbf{k})};
+  \node[dim,above=1.5mm of b] {(\textbf{k}, n)};
+  \node[dim,above=1.5mm of c] {(m, n)};
+  \draw[-{Stealth[length=1.8mm]},AlmanachRed,thick]
+    ($(a.south)+(6mm,-1mm)$) .. controls +(0,-7mm) and +(0,-7mm) ..
+    ($(b.south)+(-4mm,-1mm)$)
+    node[midway,below=1mm,lbl,color=AlmanachRed] {must match, and vanishes};
+  \draw[-{Stealth[length=1.8mm]},AlmanachTeal,thick]
+    ($(a.north west)+(1mm,3mm)$) .. controls +(0,9mm) and +(0,9mm) ..
+    ($(c.north west)+(1mm,3mm)$);
+  \draw[-{Stealth[length=1.8mm]},AlmanachTeal,thick]
+    ($(b.north east)+(-1mm,3mm)$) .. controls +(0,6mm) and +(0,6mm) ..
+    ($(c.north east)+(-1mm,3mm)$);
+\end{tikzpicture}
+\caption{The shape rule for matrix multiplication. The inner dimensions must
+agree and then disappear; the outer dimensions survive into the result. Reading
+a chain of products right to left with this rule is enough to catch most
+dimension bugs before running anything.}
+\label{fig:math-matmul-shape}
+\end{figure}
+
+\begin{workedexample}[Matrix multiplication, entry by entry]
+Let
+\[
+  \mathbf{A} = \begin{pNiceMatrix} 1 & 2 & 3\\ 4 & 5 & 6 \end{pNiceMatrix}
+  \ (2\times3),
+  \qquad
+  \mathbf{B} = \begin{pNiceMatrix} 7 & 8\\ 9 & 10\\ 11 & 12 \end{pNiceMatrix}
+  \ (3\times2).
+\]
+Inner dimensions are both $3$, so the product exists and is $2\times2$. Each
+entry is one row of $\mathbf{A}$ dotted with one column of $\mathbf{B}$:
+\[
+\begin{aligned}
+  C_{11} &= 1(7) + 2(9) + 3(11) = 7+18+33 = 58, &
+  C_{12} &= 1(8) + 2(10) + 3(12) = 8+20+36 = 64,\\
+  C_{21} &= 4(7) + 5(9) + 6(11) = 28+45+66 = 139, &
+  C_{22} &= 4(8) + 5(10) + 6(12) = 32+50+72 = 154.
+\end{aligned}
+\]
+\[
+  \mathbf{C} = \begin{pNiceMatrix} 58 & 64\\ 139 & 154 \end{pNiceMatrix}.
+\]
+Note that $\mathbf{B}\mathbf{A}$ is also defined here --- but it is
+$3\times3$, not $2\times2$. Matrix multiplication is \emph{not} commutative,
+and in general $\mathbf{A}\mathbf{B}$ and $\mathbf{B}\mathbf{A}$ do not even
+have the same shape.
+\end{workedexample}
+
+\subsection{Transpose, Trace, Determinant, Inverse}
+
+Four properties do most of the work\textsuperscript{\cite{cherneyLinearAlgebra2013}}:
+\begin{description}
+  \item[Transpose $\mathbf{A}^{\!\top}$] Rows become columns. Note the
+    order reversal: $(\mathbf{A}\mathbf{B})^{\!\top} =
+    \mathbf{B}^{\!\top}\mathbf{A}^{\!\top}$.
+  \item[Trace $\operatorname{tr}(\mathbf{A})$] The sum of the diagonal, which
+    also equals the sum of the eigenvalues.
+  \item[Determinant $\det(\mathbf{A})$] The factor by which the transformation
+    scales volume. It is zero exactly when the matrix is singular.
+  \item[Inverse $\mathbf{A}^{-1}$] The transformation that undoes
+    $\mathbf{A}$. It exists exactly when $\det(\mathbf{A})\neq 0$.
+\end{description}
+For the $2\times2$ case,
+\begin{equation}
+  \mathbf{A} = \begin{pNiceMatrix} a & b\\ c & d \end{pNiceMatrix}
+  \ \Longrightarrow\
+  \det(\mathbf{A}) = ad-bc,
+  \qquad
+  \mathbf{A}^{-1} = \frac{1}{ad-bc}
+  \begin{pNiceMatrix} d & -b\\ -c & a \end{pNiceMatrix}.
+  \label{eq:math-2x2-inverse}
+\end{equation}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.92,
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  v/.style={-{Stealth[length=2mm]},thick}]
+  \begin{scope}
+    \draw[draw=AlmanachInk!30,step=0.5,very thin] (-0.2,-0.2) grid (2.2,2.2);
+    \fill[AlmanachTeal!22,draw=AlmanachTeal,thick]
+      (0,0) -- (1,0) -- (1,1) -- (0,1) -- cycle;
+    \draw[v,AlmanachTeal] (0,0) -- (1,0);
+    \draw[v,AlmanachOchre] (0,0) -- (0,1);
+    \node[lbl] at (1.0,-0.65) {unit square, area $1$};
+  \end{scope}
+  \draw[-{Stealth[length=2.6mm]},very thick,AlmanachInk!60] (2.7,1) -- (4.1,1)
+    node[midway,above,lbl] {$\mathbf{A}$};
+  \begin{scope}[xshift=48mm]
+    \draw[draw=AlmanachInk!30,step=0.5,very thin] (-0.2,-0.2) grid (3.2,2.7);
+    \fill[AlmanachTeal!22,draw=AlmanachTeal,thick]
+      (0,0) -- (2,0.5) -- (2.5,2) -- (0.5,1.5) -- cycle;
+    \draw[v,AlmanachTeal] (0,0) -- (2,0.5);
+    \draw[v,AlmanachOchre] (0,0) -- (0.5,1.5);
+    \node[lbl] at (1.5,-0.65) {area $=\lvert\det\mathbf{A}\rvert = 2.75$};
+  \end{scope}
+\end{tikzpicture}
+\caption{What the determinant means. The matrix maps the unit square to a
+parallelogram, and the determinant is the factor by which area changed. A
+determinant of zero means the square was flattened onto a line --- information
+was destroyed, which is exactly why such a matrix cannot be inverted.}
+\label{fig:math-determinant-area}
+\end{figure}
+
+\begin{workedexample}[Inverting a $2\times2$ matrix and checking the result]
+Let $\mathbf{A} = \begin{pNiceMatrix} 4 & 7\\ 2 & 6\end{pNiceMatrix}$.
+
+\emph{Determinant.} $\det(\mathbf{A}) = 4(6) - 7(2) = 24-14 = 10 \neq 0$, so the
+inverse exists.
+
+\emph{Inverse.} By \cref{eq:math-2x2-inverse},
+\[
+  \mathbf{A}^{-1} = \frac{1}{10}
+  \begin{pNiceMatrix} 6 & -7\\ -2 & 4\end{pNiceMatrix}
+  = \begin{pNiceMatrix} 0.6 & -0.7\\ -0.2 & 0.4\end{pNiceMatrix}.
+\]
+
+\emph{Always check.} Multiply back:
+\[
+  \mathbf{A}\mathbf{A}^{-1} =
+  \begin{pNiceMatrix}
+    4(0.6)+7(-0.2) & 4(-0.7)+7(0.4)\\
+    2(0.6)+6(-0.2) & 2(-0.7)+6(0.4)
+  \end{pNiceMatrix}
+  = \begin{pNiceMatrix} 2.4-1.4 & -2.8+2.8\\ 1.2-1.2 & -1.4+2.4\end{pNiceMatrix}
+  = \begin{pNiceMatrix} 1 & 0\\ 0 & 1\end{pNiceMatrix}. \checkmark
+\]
+Multiplying back is a two-minute check that catches sign errors, which are by
+far the most common mistake in hand-computed inverses.
+\end{workedexample}
+
+\subsection{Eigenvalues and Eigenvectors}
+
+A non-zero $\vec{v}$ is an \keyterm{eigenvector} of $\mathbf{A}$ with
+\keyterm{eigenvalue} $\lambda$ when $\mathbf{A}\vec{v} =
+\lambda\vec{v}$\textsuperscript{\cite{cherneyLinearAlgebra2013}} --- the matrix
+scales $\vec{v}$ without rotating it. Eigenvalues solve the characteristic
+equation:
+\begin{equation}
+  \mathbf{A}\vec{v} = \lambda\vec{v}
+  \ \Longrightarrow\
+  (\mathbf{A}-\lambda\mathbf{I})\vec{v} = \vec{0}
+  \ \Longrightarrow\
+  \det(\mathbf{A}-\lambda\mathbf{I}) = 0 .
+  \label{eq:math-eigen}
+\end{equation}
+
+\begin{plainlanguage}
+Most vectors get knocked off course when a matrix acts on them. A few special
+directions survive: the matrix stretches or squashes them but leaves them
+pointing the same way. Those are the eigenvectors, and the stretch factor is
+the eigenvalue. They are the transformation's own natural axes --- the
+directions in which it is simplest to describe.
+\end{plainlanguage}
+
+\begin{workedexample}[Eigenvalues of a $2\times2$ matrix, with two checks]
+Let $\mathbf{A} = \begin{pNiceMatrix} 2 & 1\\ 1 & 2\end{pNiceMatrix}$.
+
+\emph{Characteristic polynomial.}
+\[
+  \det\!\begin{pNiceMatrix} 2-\lambda & 1\\ 1 & 2-\lambda\end{pNiceMatrix}
+  = (2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0 .
+\]
+Factorising, $(\lambda-1)(\lambda-3) = 0$, so $\lambda_1 = 1$ and
+$\lambda_2 = 3$.
+
+\emph{Check 1 --- trace.} $\operatorname{tr}(\mathbf{A}) = 2+2 = 4$ and
+$\lambda_1+\lambda_2 = 1+3 = 4$. \checkmark
+
+\emph{Check 2 --- determinant.} $\det(\mathbf{A}) = 4-1 = 3$ and
+$\lambda_1\lambda_2 = 1\times3 = 3$. \checkmark
+
+\emph{Eigenvectors.} For $\lambda=3$: $(2-3)v_1 + v_2 = 0 \Rightarrow v_2 = v_1$,
+so $\vec{v} = (1,1)$. For $\lambda=1$: $(2-1)v_1 + v_2 = 0 \Rightarrow
+v_2 = -v_1$, so $\vec{v} = (1,-1)$.
+
+\emph{Verify directly.}
+$\mathbf{A}(1,1) = (2+1,\,1+2) = (3,3) = 3\,(1,1)$. \checkmark
+
+Those two checks --- trace equals the sum, determinant equals the product ---
+cost seconds and catch nearly every algebra slip.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.95,
+  ax/.style={->,draw=AlmanachInk!45,>={Stealth[length=1.6mm]}},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  before/.style={-{Stealth[length=2mm]},thick,draw=AlmanachInk!55},
+  after/.style={-{Stealth[length=2.4mm]},very thick,draw=AlmanachOchre}]
+  \draw[ax] (-2.4,0) -- (2.6,0); \draw[ax] (0,-2.0) -- (0,2.4);
+  \draw[AlmanachTeal!45,dashed,thick] (-2.2,-2.2) -- (2.2,2.2);
+  \draw[AlmanachTeal!45,dashed,thick] (-1.8,1.8) -- (1.8,-1.8);
+  \draw[before] (0,0) -- (1,1);
+  \draw[after]  (0,0) -- (2.05,2.05);
+  \node[lbl,color=AlmanachOchre,anchor=west] at (1.55,2.25)
+    {$\lambda_2=3$: stretched $3\times$};
+  \draw[before] (0,0) -- (1,-1);
+  \draw[after]  (0,0) -- (1,-1);
+  \node[lbl,color=AlmanachOchre,anchor=west] at (1.1,-1.15)
+    {$\lambda_1=1$: unchanged};
+  \draw[before] (0,0) -- (0,1.4);
+  \draw[after]  (0,0) -- (0.7,1.4);
+  \node[lbl,anchor=west] at (0.75,1.15) {a non-eigenvector: rotated};
+\end{tikzpicture}
+\caption{Eigenvectors of $\mathbf{A}=\left(\begin{smallmatrix}2&1\\1&2
+\end{smallmatrix}\right)$. Vectors along the two dashed axes keep their
+direction and are only scaled; every other vector is rotated as well. Finding
+those axes is what principal component analysis does to a covariance matrix.}
+\label{fig:math-eigenvectors}
+\end{figure}
+
+\begin{engineernote}
+This is where principal component analysis comes from. Compute the covariance
+matrix of your data, find its eigenvectors, and you have the directions along
+which the data actually varies; the eigenvalues tell you how much variance each
+direction explains. ``Keep the top $k$ components'' means ``keep the $k$
+eigenvectors with the largest eigenvalues''. Nothing more mysterious than
+that.
+\end{engineernote}
+
+\begin{cautionbox}[Never actually invert a matrix]
+The formula $\hat{\mathbf{w}} = (\mathbf{X}^{\!\top}\mathbf{X})^{-1}
+\mathbf{X}^{\!\top}\mathbf{y}$ appears in every textbook, and you should almost
+never implement it that way. Forming and inverting
+$\mathbf{X}^{\!\top}\mathbf{X}$ \emph{squares} the condition number of the
+problem, so it destroys roughly twice as many digits of accuracy as necessary.
+Solve the linear system directly instead --- via QR or SVD, which is what
+\texttt{lstsq} does in every numerical
+library\textsuperscript{\cite[][ch.~20]{highamAccuracyStabilityNumerical2002}}.
+\Cref{sec:math-numerics} shows what ill-conditioning does with real numbers.
+\end{cautionbox}
+
+\begin{checkpoint}
+A matrix has eigenvalues $\{5, 2, 0\}$. State its determinant, its trace,
+whether it is invertible, and what happened geometrically to the volume of a
+unit cube passed through it.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Calculus: Slopes, and Why Machines Follow Them}
+% ===========================================================================
+
+\subsection{The Derivative}
+
+The \keyterm{derivative} of $y = f(x)$ is the limit of the rise over the
+run\textsuperscript{\cite[][p.~89]{yangMathematicsCivilEngineers2018},
+\cite[][p.~393]{bronsteinTaschenbuchMathematik2001}}. The three notations
+$f'(x)$, $dy/dx$ and $df(x)/dx$ are interchangeable:
+\begin{equation}
+  f'(x) = \frac{dy}{dx} = \lim_{\Delta x\to0}
+  \frac{f(x+\Delta x) - f(x)}{\Delta x}.
+  \label{eq:math-derivative}
+\end{equation}
+
+\begin{plainlanguage}
+The derivative answers one question: \emph{if I nudge the input a little, how
+much does the output move, and in which direction?} That is the only question
+machine learning ever asks of calculus. A positive derivative says ``increasing
+the input increases the output''. Training a model means asking that question
+about millions of parameters at once and then stepping every one of them
+slightly downhill.
+\end{plainlanguage}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+      width=10cm, height=6.4cm,
+      axis lines=middle,
+      axis line style={thick,-Stealth,draw=AlmanachInk!60},
+      xlabel={$x$}, ylabel={$y=f(x)$},
+      xmin=0, xmax=3, ymin=-0.5, ymax=5,
+      samples=100, domain=0:2.2,
+      legend cell align=left,
+      legend style={font=\scriptsize,at={(1.02,1.05)},anchor=north east,
+        cells={anchor=west},draw=none,fill=none},
+      tick label style={font=\scriptsize},
+      label style={font=\small\sffamily},
+      ytick distance=1, minor y tick num=0,
+      grid=both,
+      major grid style={draw=AlmanachInk!12},
+      minor grid style={draw=AlmanachInk!6},
+      clip=false,
+      ylabel style={at={(ticklabel cs:1.0)},anchor=south},
+      xlabel style={at={(1.0,0.1)},anchor=south}]
+    \addplot[very thick,AlmanachTeal,smooth] {x^2};
+    \addlegendentry{$y = x^2$}
+    \addplot[thick,AlmanachRed,dashed,domain=0.5:2.5] {2*x - 1};
+    \addlegendentry{tangent $y = 2x-1$ at $P$}
+    \addplot[only marks,mark=*,mark size=2pt,AlmanachInk]
+      coordinates {(1,1)};
+    \node[above left,font=\footnotesize] at (axis cs:1,1) {$P$};
+    \draw[thick,AlmanachInk!55] (axis cs:1,1) -- (axis cs:1,0);
+    \draw[thick,AlmanachInk!55] (axis cs:1,1) -- (axis cs:2,1);
+    \draw[thick,AlmanachInk!55] (axis cs:2,0) -- (axis cs:2,4);
+    \addplot[only marks,mark=*,mark size=1.5pt,AlmanachInk!70]
+      coordinates {(2,1) (2,3) (2,4)};
+    \draw[thick,AlmanachOchre,decorate,
+      decoration={brace,amplitude=4pt,mirror}]
+      (axis cs:2.1,1) -- (axis cs:2.1,3);
+    \node[right,font=\footnotesize,color=AlmanachOchre]
+      at (axis cs:2.15,2) {$dy$};
+    \draw[thick,AlmanachRed,decorate,
+      decoration={brace,amplitude=4pt,mirror}]
+      (axis cs:2.4,1) -- (axis cs:2.4,4);
+    \node[right,font=\footnotesize,color=AlmanachRed]
+      at (axis cs:2.45,2.5) {$\Delta y$};
+    \draw[thick,AlmanachInk!50,decorate,
+      decoration={brace,amplitude=4pt,mirror}]
+      (axis cs:1,-0.55) -- (axis cs:2,-0.55);
+    \node[below,font=\footnotesize,color=AlmanachInk!70]
+      at (axis cs:1.5,-0.7) {$\Delta x = dx$};
+    \path (1,0) coordinate (A) -- (0.5,0) coordinate (B) --
+      (1,1) coordinate (C)
+      pic ["$\alpha$",draw=AlmanachInk!70,-latex,angle radius=25pt] {angle};
+  \end{axis}
+\end{tikzpicture}
+\caption{The derivative as the slope of the tangent. The gap between $dy$ (what
+the tangent predicts) and $\Delta y$ (what the function actually does) is the
+error of the linear approximation. It shrinks quadratically as $\Delta x\to0$,
+which is why small steps are safe and large steps are not --- the same fact
+that governs the learning rate.}
+\label{fig:derivative}
+\end{figure}
+
+\subsection{The Chain Rule}
+
+Of all the rules, one matters more than the rest combined. If a function is a
+composition, $y = f(g(x))$, then
+\begin{equation}
+  \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx},
+  \qquad u = g(x).
+  \label{eq:math-chain-rule}
+\end{equation}
+
+\begin{engineernote}
+\Cref{eq:math-chain-rule} \emph{is} backpropagation. A neural network is a
+composition of a hundred functions; training it means applying the chain rule a
+hundred times and multiplying the results. Everything in
+\cref{ch:deep-learning} about vanishing and exploding gradients is a statement
+about what happens to a product of many such factors. If you learn one formula
+from this chapter, learn this one.
+\end{engineernote}
+
+\begin{table}[htbp]
+\centering
+\caption{The differentiation rules used in this book. The chain rule is listed
+last because everything else is a special case you will apply inside it.}
+\label{tab:math-diff-rules}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.16\textwidth] Q[l,0.30\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Rule & Statement & Where it appears \\
+Power & $\dfrac{d}{dx}x^{n} = nx^{n-1}$ & Squared-error losses \\
+Exponential & $\dfrac{d}{dx}e^{x} = e^{x}$ & Softmax, sigmoid, likelihoods \\
+Logarithm & $\dfrac{d}{dx}\ln x = \dfrac{1}{x}$ &
+  Cross-entropy, log-likelihood \\
+Product & $(uv)' = u'v + uv'$ & Gating in LSTM and attention \\
+Quotient & $\left(\dfrac{u}{v}\right)' =
+  \dfrac{u'v-uv'}{v^{2}}$ & Deriving the softmax gradient \\
+Chain & $\dfrac{dy}{dx} = \dfrac{dy}{du}\dfrac{du}{dx}$ &
+  Every layer of every network \\
+\end{tblr}
+\end{table}
+
+\begin{workedexample}[The chain rule, twice]
+\emph{(a) A pure calculus case.} Differentiate $f(x) = (3x^2+1)^5$.
+
+Set $u = 3x^2+1$, so $f = u^5$. Then $df/du = 5u^4$ and $du/dx = 6x$, giving
+\[
+  \frac{df}{dx} = 5u^4\cdot 6x = 30x\,(3x^2+1)^4 .
+\]
+At $x=1$: $u = 4$, so $df/dx = 30(1)(4^4) = 30\times256 = 7680$.
+
+\emph{Sanity check by finite difference.} $f(1) = 4^5 = 1024$ and
+$f(1.001) = (3.006003+1)^5 = 4.006003^5 = 1031.69$, so
+\[
+  \frac{1031.69-1024}{0.001} = 7690 \approx 7680 . \checkmark
+\]
+The small discrepancy is the linear-approximation error of
+\cref{fig:derivative}, not an algebra mistake.
+
+\emph{(b) The case you will actually meet.} A single sigmoid unit with loss
+$\mathcal{L} = \tfrac12(\sigma(z)-y)^2$ where $z = wx+b$ and
+$\sigma(z) = 1/(1+e^{-z})$. Chaining three links,
+\[
+  \frac{\partial\mathcal{L}}{\partial w}
+  = \underbrace{(\sigma(z)-y)}_{\partial\mathcal{L}/\partial\sigma}
+  \cdot\underbrace{\sigma(z)\bigl(1-\sigma(z)\bigr)}_{\partial\sigma/\partial z}
+  \cdot\underbrace{x}_{\partial z/\partial w}.
+\]
+With $w=0.5$, $x=2$, $b=0$, $y=1$: $z = 1$, $\sigma(1) = 0.7311$, so
+\[
+  \frac{\partial\mathcal{L}}{\partial w}
+  = (0.7311-1)(0.7311)(0.2689)(2)
+  = (-0.2689)(0.1966)(2) = -0.1057 .
+\]
+The sign is negative, so increasing $w$ \emph{decreases} the loss --- gradient
+descent will therefore increase $w$, moving $\sigma(z)$ closer to the target
+$y=1$. Exactly what it should do.
+\end{workedexample}
+
+\subsection{Partial Derivatives and the Gradient}
+
+For $f(x_1,\dots,x_n)$, the \keyterm{partial derivative} $\partial f/\partial
+x_i$ measures the change with respect to $x_i$ while everything else is held
+fixed\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}. Collecting all
+of them gives the \keyterm{gradient}, a vector:
+\begin{equation}
+  \nabla f =
+  \begin{pNiceMatrix}
+    \dfrac{\partial f}{\partial x_1}\\[6pt] \vdots\\[2pt]
+    \dfrac{\partial f}{\partial x_n}
+  \end{pNiceMatrix},
+  \qquad
+  \text{and gradient descent steps }
+  \vec{x} \leftarrow \vec{x} - \eta\,\nabla f .
+  \label{eq:math-gradient}
+\end{equation}
+The gradient points in the direction of \emph{steepest ascent}; descent
+therefore moves against it.
+
+\begin{workedexample}[A gradient computed by hand]
+Let $f(x,y) = x^2y + 3y^2$.
+\[
+  \frac{\partial f}{\partial x} = 2xy
+  \quad(\text{treat }y\text{ as a constant}),
+  \qquad
+  \frac{\partial f}{\partial y} = x^2 + 6y
+  \quad(\text{treat }x\text{ as a constant}).
+\]
+At the point $(2,1)$: $\nabla f = (2\cdot2\cdot1,\ 4 + 6) = (4,\,10)$.
+
+\emph{Interpret.} The steepest uphill direction from $(2,1)$ is
+$(4,10)$ --- mostly in $y$. Moving one small unit in $y$ raises $f$ about two
+and a half times as much as moving one unit in $x$. To \emph{minimise} $f$ you
+step along $(-4,-10)$.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0,
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  ax/.style={->,draw=AlmanachInk!50,>={Stealth[length=1.6mm]}}]
+  \draw[ax] (-2.6,0) -- (2.8,0) node[right,lbl] {$x$};
+  \draw[ax] (0,-2.2) -- (0,2.5) node[above,lbl] {$y$};
+  \foreach \r/\op in {0.6/18, 1.2/32, 1.8/46, 2.4/60}{
+    \draw[draw=AlmanachTeal!\op,thick] (0,0) ellipse ({\r} and {\r/1.4142});}
+  \node[lbl,anchor=west] at (2.5,1.75) {contours of $f=x^2+2y^2$};
+  \fill[AlmanachInk] (1.2,0.85) circle (1.2pt);
+  \draw[-{Stealth[length=2.2mm]},very thick,AlmanachOchre]
+    (1.2,0.85) -- (1.92,1.71);
+  \draw[-{Stealth[length=2.2mm]},very thick,AlmanachRed]
+    (1.2,0.85) -- (0.48,-0.01);
+  \node[lbl,color=AlmanachOchre,anchor=west] at (1.6,1.95) {$+\nabla f$ (uphill)};
+  \node[lbl,color=AlmanachRed,anchor=north west] at (0.15,-0.15)
+    {$-\nabla f$ (the descent step)};
+  \draw[AlmanachInk!45,dashed] (0.35,1.24) -- (2.05,0.46);
+  \node[lbl,anchor=west] at (2.05,0.42) {tangent to the contour};
+\end{tikzpicture}
+\caption{Contours of $f(x,y)=x^2+2y^2$, where each ring is a set of equal
+height. The gradient is always perpendicular to the contour through a point and
+points uphill; gradient descent follows the opposite arrow. The rings are
+elliptical rather than circular because $y$ is penalised twice as heavily,
+which is what makes plain descent zig-zag on badly scaled problems.}
+\label{fig:math-gradient-contours}
+\end{figure}
+
+\subsection{Gradient Descent, and the Learning Rate That Breaks It}
+
+\begin{workedexample}[Three steps of gradient descent, then divergence]
+Minimise $f(x) = x^2 - 4x + 5$. Its derivative is $f'(x) = 2x-4$, so the true
+minimum is at $x^\star = 2$ with $f(2) = 1$.
+
+\emph{With $\eta = 0.3$, starting at $x_0 = 0$:}
+
+\smallskip
+\begin{tblr}{
+  width=0.82\linewidth,
+  colspec={Q[c,0.10\linewidth] X[c] X[c] X[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Step & $x$ & $f'(x)=2x-4$ & $f(x)$ \\
+0 & $0.000$ & $-4.00$ & $5.000$ \\
+1 & $0-0.3(-4.00)=1.200$ & $-1.60$ & $1.640$ \\
+2 & $1.2-0.3(-1.60)=1.680$ & $-0.64$ & $1.102$ \\
+3 & $1.68-0.3(-0.64)=1.872$ & $-0.26$ & $1.016$ \\
+\end{tblr}
+\smallskip
+
+Each step closes $40\,\%$ of the remaining distance to $x^\star=2$. Smooth
+convergence.
+
+\emph{Now with $\eta = 1.1$, same start:}
+\[
+  x_1 = 0 - 1.1(-4) = 4.4,\quad
+  x_2 = 4.4 - 1.1(4.8) = -0.88,\quad
+  x_3 = -0.88 - 1.1(-5.76) = 5.456,\ \dots
+\]
+The iterate oscillates with growing amplitude and never returns.
+
+\emph{Why, exactly.} For a quadratic with $f''=2$, the update multiplies the
+distance from the optimum by $\lvert 1-\eta f''\rvert = \lvert1-2\eta\rvert$.
+That factor is below one only when
+\[
+  0 < \eta < \frac{2}{f''} = \frac{2}{2} = 1 .
+\]
+So $\eta = 0.3$ converges and $\eta = 1.1$ diverges, and the boundary is
+exactly $\eta = 1$. This is the cleanest available statement of why the
+learning rate is the hyperparameter that matters most: there is a hard
+threshold, set by the curvature, above which training cannot work at all.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=46mm, domain=-1.4:5.6, samples=120,
+  xlabel={$x$}, ylabel={$f(x)$},
+  ymin=0, ymax=13,
+  legend pos=north west]
+  \addplot[AlmanachInk!45,thick] {x^2-4*x+5}; \addlegendentry{$f(x)=x^2-4x+5$}
+  \addplot[AlmanachTeal,thick,mark=*,mark size=1.4pt,only marks]
+    coordinates {(0,5)(1.2,1.64)(1.68,1.102)(1.872,1.016)};
+    \addlegendentry{$\eta=0.3$ converges}
+  \addplot[AlmanachRed,thick,mark=square*,mark size=1.4pt,only marks]
+    coordinates {(0,5)(4.4,6.76)(-0.88,9.294)(5.456,12.945)};
+    \addlegendentry{$\eta=1.1$ diverges}
+  \addplot[AlmanachTeal,dashed,thick,mark=none]
+    coordinates {(0,5)(1.2,1.64)(1.68,1.102)(1.872,1.016)};
+  \addplot[AlmanachRed,dashed,thick,mark=none]
+    coordinates {(0,5)(4.4,6.76)(-0.88,9.294)(5.456,12.945)};
+\end{axis}
+\end{tikzpicture}
+\caption{The same starting point under two learning rates. Below the stability
+threshold $\eta<2/f''$ the iterates walk into the basin; above it they
+alternate sides while climbing. Nothing about the model, the data, or the loss
+changed --- only the step size.}
+\label{fig:math-gradient-descent}
+\end{figure}
+
+\subsection{Second Derivatives, Curvature, and Convexity}
+
+The \keyterm{Hessian} collects all second partial derivatives,
+$H_{ij} = \partial^2 f/\partial x_i\partial x_j$. It describes curvature. A
+function is \keyterm{convex} when its Hessian is positive semi-definite
+everywhere, which means every local minimum is also
+global\textsuperscript{\cite[][ch.~3]{boydConvexOptimization2004}}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=40mm,width=0.44\linewidth,
+  domain=-2.4:2.4,samples=120,xlabel={$x$},ylabel={$f(x)$},
+  ymin=-0.4,ymax=6,title={\small\sffamily convex},
+  title style={color=AlmanachTeal}]
+  \addplot[AlmanachTeal,very thick] {x^2};
+  \addplot[only marks,mark=*,mark size=1.6pt,AlmanachOchre]
+    coordinates {(0,0)};
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:0,0.35)
+    {one minimum};
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=40mm,width=0.44\linewidth,
+  domain=-2.4:2.4,samples=160,xlabel={$x$},ylabel={$f(x)$},
+  ymin=-2.6,ymax=4.2,title={\small\sffamily non-convex},
+  title style={color=AlmanachOchre}]
+  \addplot[AlmanachOchre,very thick] {x^4-4*x^2+0.6*x+1};
+  \addplot[only marks,mark=*,mark size=1.6pt,AlmanachRed]
+    coordinates {(-1.45,-3.2) (1.38,-3.55)};
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:-1.45,-2.1)
+    {local};
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:1.38,-2.4)
+    {global};
+\end{axis}
+\end{tikzpicture}
+\caption{Why convexity is worth so much. On the left, any downhill path reaches
+the answer and ``I found a minimum'' means ``I found the minimum''. On the
+right --- the situation for every neural network --- where you start decides
+where you stop, and no algorithm can certify that a better minimum does not
+exist elsewhere.}
+\label{fig:math-convexity}
+\end{figure}
+
+\begin{cautionbox}[Deep learning is not convex, and that is fine]
+Linear and logistic regression are convex, so their optima are unique and
+reproducible. Neural networks are emphatically not, which sounds alarming and
+mostly is not: in high dimensions, bad local minima turn out to be rare, and
+most stationary points that trap optimisers are saddle points which noise
+escapes. What you \emph{do} lose is guarantees. Two training runs of the same
+architecture on the same data with different seeds will land on different
+parameters --- so always report results across several seeds, never one.
+\end{cautionbox}
+
+\subsection{Integration}
+
+The \keyterm{indefinite integral} is the anti-derivative: if $F'(x) = f(x)$
+then $\int f(x)\,dx = F(x)+C$. The \keyterm{definite integral} gives the signed
+area under the curve\textsuperscript{\cite{yangMathematicsCivilEngineers2018}}:
+\begin{equation}
+  \int_a^b f(x)\,dx = F(b)-F(a).
+  \label{eq:math-integral}
+\end{equation}
+The \keyterm{fundamental theorem of calculus} ties the two operations together,
+$\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$.
+
+\begin{engineernote}
+Integration matters here for exactly one reason: probability of a continuous
+variable is \emph{area under a density}, never the height of the curve. When
+\cref{fig:normal-histogram-density} shows a bell curve reaching $0.399$ at its
+peak, that is a density value, not a probability --- densities may exceed $1$.
+Every expectation, every $p$-value, and every confidence interval in this book
+is an integral of a density.
+\end{engineernote}
+
+\begin{practicallab}[Check a derivative the way a numerical library does]
+\textbf{Goal.} Convince yourself that automatic differentiation computes the
+same thing your algebra does --- and learn the check that catches a wrong
+gradient.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Pick $f(x) = (3x^2+1)^5$ and differentiate it by hand at $x=1$. You
+        should get $7680$.
+  \item Compute the central finite difference
+        $\bigl(f(x+h)-f(x-h)\bigr)/2h$ for $h = 10^{-2}, 10^{-4}, 10^{-6},
+        10^{-8}$.
+  \item Plot the absolute error against $h$ on log axes. It falls, reaches a
+        minimum, and then \emph{rises} again.
+  \item Explain the rise. (It is not a bug in your code --- see
+        \cref{sec:math-numerics}.)
+  \item Repeat with any autodiff library and confirm it matches your analytic
+        answer to machine precision, with no $h$ to choose.
+\end{enumerate}
+
+\textbf{Why this matters.} Gradient checking by finite difference is the
+standard way to verify a hand-written backward pass. Knowing that the error
+curve has a floor tells you which disagreements are real bugs and which are
+just arithmetic.
+\end{practicallab}
+
+\begin{checkpoint}
+You are minimising a loss whose second derivative at the current point is
+$f''=50$. Give the largest learning rate that can converge. Then explain why a
+network with badly scaled inputs effectively has a very large $f''$ in some
+directions, and what that forces you to do to $\eta$.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Probability: Reasoning Under Uncertainty}
+% ===========================================================================
+
+\subsection{Random Variables and Distributions}
+
+A \keyterm{random variable} maps outcomes of a random process to numbers. It is
+\keyterm{discrete} when it takes countably many values (a die, a class label)
+and \keyterm{continuous} when it takes values on an interval (a temperature, a
+latency). Discrete variables have a \keyterm{probability mass function} where
+$P(X=x)$ is a genuine probability; continuous variables have a
+\keyterm{probability density function} where only areas are
+probabilities\textsuperscript{\cite[][ch.~1]{wassermanAllStatistics2004}}.
+
+\begin{cautionbox}[Density is not probability]
+For a continuous variable, $P(X = 3.7) = 0$ exactly --- a single point has no
+width and therefore no area. Only intervals have probability. A density value
+may be greater than $1$ without anything being wrong: a uniform distribution on
+$[0,\,0.5]$ has density $2$ everywhere on that interval. If you ever find
+yourself reading a probability off the $y$-axis of a density plot, stop.
+\end{cautionbox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=38mm,width=0.31\linewidth,
+  ybar,bar width=5pt,xlabel={$x$},ylabel={$P(X{=}x)$},
+  ymin=0,ymax=0.26,xmin=0.3,xmax=6.7,xtick={1,...,6},
+  title={\small\sffamily PMF (discrete)},title style={color=AlmanachTeal}]
+  \addplot[fill=AlmanachTeal!35,draw=AlmanachTeal]
+    coordinates {(1,0.1667)(2,0.1667)(3,0.1667)(4,0.1667)(5,0.1667)(6,0.1667)};
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=38mm,width=0.31\linewidth,
+  domain=-3.2:3.2,samples=120,xlabel={$x$},ylabel={$f(x)$},
+  ymin=0,ymax=0.46,
+  title={\small\sffamily PDF (continuous)},title style={color=AlmanachTeal}]
+  \addplot[AlmanachTeal,thick,fill=AlmanachTeal!18] {0.39894228*exp(-x^2/2)}
+    \closedcycle;
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:0,0.05)
+    {area $=$ probability};
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=38mm,width=0.31\linewidth,
+  domain=-3.2:3.2,samples=120,xlabel={$x$},ylabel={$F(x)$},
+  ymin=0,ymax=1.08,
+  title={\small\sffamily CDF},title style={color=AlmanachTeal}]
+  \addplot[AlmanachOchre,thick]
+    {0.5*(1+tanh(0.7978845608*(x+0.044715*x^3)))};
+  \draw[AlmanachInk!35,dashed] (axis cs:-3.2,1) -- (axis cs:3.2,1);
+\end{axis}
+\end{tikzpicture}
+\caption{The three ways to describe one distribution. The mass function gives
+probabilities directly; the density must be integrated to give them; the
+cumulative function $F(x)=P(X\le x)$ climbs monotonically to one and is what
+you actually read quantiles and $p$-values from.}
+\label{fig:math-pmf-pdf-cdf}
+\end{figure}
+
+\subsection{Expectation and Variance}
+
+The \keyterm{expectation} is the probability-weighted average; the
+\keyterm{variance} is the expected squared deviation from it:
+\begin{equation}
+  \mathbb{E}[X] = \sum_x x\,p(x)
+  \quad\text{or}\quad \int x f(x)\,dx,
+  \qquad
+  \operatorname{Var}(X) = \mathbb{E}\bigl[(X-\mathbb{E}[X])^2\bigr]
+  = \mathbb{E}[X^2] - \bigl(\mathbb{E}[X]\bigr)^2 .
+  \label{eq:math-expectation}
+\end{equation}
+
+\begin{workedexample}[Expectation and variance of a fair die]
+$X$ takes values $1$ to $6$ each with probability $1/6$.
+
+\emph{Expectation.}
+$\mathbb{E}[X] = \frac{1+2+3+4+5+6}{6} = \frac{21}{6} = 3.5$.
+
+Note that $3.5$ is not a value the die can show. An expectation is a balance
+point, not a prediction.
+
+\emph{Second moment.}
+$\mathbb{E}[X^2] = \frac{1+4+9+16+25+36}{6} = \frac{91}{6} = 15.167$.
+
+\emph{Variance} via the shortcut in \cref{eq:math-expectation}:
+\[
+  \operatorname{Var}(X) = 15.167 - (3.5)^2 = 15.167 - 12.25 = 2.917
+  = \tfrac{35}{12},
+  \qquad \sigma = \sqrt{2.917} = 1.708 .
+\]
+The shortcut $\mathbb{E}[X^2]-\mathbb{E}[X]^2$ is worth memorising; it turns a
+two-pass calculation into a one-pass one, which is how streaming variance
+estimators work.
+\end{workedexample}
+
+\subsection{Covariance, Correlation, and a Warning}
+
+\keyterm{Covariance} measures whether two variables move together;
+\keyterm{correlation} is covariance rescaled to $[-1,1]$:
+\begin{equation}
+  \operatorname{Cov}(X,Y) = \mathbb{E}\bigl[(X-\mu_X)(Y-\mu_Y)\bigr],
+  \qquad
+  \rho_{XY} = \frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y}.
+  \label{eq:math-covariance}
+\end{equation}
+
+\begin{workedexample}[Covariance and correlation from four points]
+Let $x = (1,2,3,4)$ and $y = (2,4,5,9)$, so $\bar x = 2.5$ and $\bar y = 5$.
+
+\smallskip
+\begin{tblr}{
+  width=0.8\linewidth,
+  colspec={Q[c]Q[c]Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+$x_i$ & $y_i$ & $x_i-\bar x$ & $y_i-\bar y$ & product \\
+1 & 2 & $-1.5$ & $-3$ & $4.5$ \\
+2 & 4 & $-0.5$ & $-1$ & $0.5$ \\
+3 & 5 & $+0.5$ & $\ \ 0$ & $0.0$ \\
+4 & 9 & $+1.5$ & $+4$ & $6.0$ \\
+\end{tblr}
+\smallskip
+
+$\operatorname{Cov} = \frac{4.5+0.5+0+6.0}{4} = \frac{11}{4} = 2.75$.
+
+$\operatorname{Var}(x) = \frac{2.25+0.25+0.25+2.25}{4} = 1.25$ and
+$\operatorname{Var}(y) = \frac{9+1+0+16}{4} = 6.5$, so
+\[
+  \rho = \frac{2.75}{\sqrt{1.25\times6.5}} = \frac{2.75}{2.850} = 0.965 .
+\]
+Strongly positive. Notice that covariance alone ($2.75$) is uninterpretable
+without knowing the scales --- multiply $y$ by $1000$ and the covariance
+becomes $2750$ while the correlation stays at $0.965$.
+\end{workedexample}
+
+\begin{cautionbox}[Zero correlation does not mean independence]
+Correlation detects \emph{linear} association only. Take $X$ uniform on
+$[-1,1]$ and $Y = X^2$. Then $Y$ is perfectly determined by $X$ --- as
+dependent as two variables can be --- yet $\operatorname{Cov}(X,Y) =
+\mathbb{E}[X^3] - \mathbb{E}[X]\mathbb{E}[X^2] = 0-0 = 0$, so $\rho = 0$.
+Independence implies zero correlation; the reverse is false. And neither
+implies causation: for that you need a causal model and, usually, an
+intervention\textsuperscript{\cite{pearlCausalInferenceStatistics2016}}.
+\end{cautionbox}
+
+\subsection{Important Distributions}
+
+The \keyterm{normal} (Gaussian) distribution $\mathcal{N}(\mu,\sigma^2)$ is
+symmetric about $\mu$, with $\sigma$ setting the
+width\textsuperscript{\cite{brucePracticalStatisticsData2017}}. The
+\keyterm{68--95--99.7 rule} states that roughly $68\,\%$, $95\,\%$ and
+$99.7\,\%$ of the mass lies within one, two and three standard deviations of
+the mean.
+
+\factvisual{
+  \begin{equation*}
+    f(x) = \frac{1}{\sigma\sqrt{2\pi}}
+    \exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+  \end{equation*}
+  \begin{itemize}
+    \item \textbf{Centre:} mean, median and mode all coincide at $\mu$.
+    \item \textbf{Width:} larger $\sigma$ gives a lower, wider bell.
+    \item \textbf{Area:} probability is area under the density, never bar
+      height.
+    \item \textbf{Standardise:} $z=(x-\mu)/\sigma$ converts any value into
+      standard-deviation units.
+  \end{itemize}
+}{
+  \begin{tikzpicture}
+    \begin{axis}[
+      almanach axis,
+      height=52mm,
+      xmin=-3.4,xmax=3.4,
+      ymin=0,ymax=0.46,
+      xlabel={$z$-score},
+      ylabel={density},
+      ytick=\empty,
+      xtick={-3,-2,-1,0,1,2,3},
+      legend style={at={(0.5,1.02)},anchor=south},
+      legend columns=2]
+      \addplot+[ybar interval,
+        fill=AlmanachTeal!24,
+        draw=AlmanachTeal!45,
+        mark=none] coordinates {
+        (-3.2,0.008)(-2.8,0.015)(-2.4,0.030)
+        (-2.0,0.060)(-1.6,0.120)(-1.2,0.205)
+        (-0.8,0.300)(-0.4,0.375)(0,0.405)
+        (0.4,0.370)(0.8,0.300)(1.2,0.205)
+        (1.6,0.120)(2.0,0.060)(2.4,0.030)
+        (2.8,0.015)(3.2,0.008)};
+      \addlegendentry{sample histogram}
+      \addplot[AlmanachOchre,very thick,smooth,
+        domain=-3.3:3.3,samples=120]
+        {0.39894228*exp(-x^2/2)};
+      \addlegendentry{$\mathcal{N}(0,1)$ density}
+      \draw[AlmanachInk!45,dashed]
+        (axis cs:-1,0) -- (axis cs:-1,0.242);
+      \draw[AlmanachInk!45,dashed]
+        (axis cs:1,0) -- (axis cs:1,0.242);
+      \draw[decorate,decoration={brace,mirror,amplitude=3pt},
+        AlmanachTeal]
+        (axis cs:-1,-0.012) -- (axis cs:1,-0.012)
+        node[midway,below=3pt,font=\scriptsize] {$\approx68\%$};
+    \end{axis}
+  \end{tikzpicture}
+  \visualcaption{Observations form a histogram; the Normal model is a
+    continuous density fitted to them. The central interval
+    $[-1\sigma,+1\sigma]$ contains about $68\,\%$ of its area.}
+    {fig:normal-histogram-density}
+}
+
+The \keyterm{binomial} distribution $B(n,p)$ counts successes in $n$
+independent trials each with probability
+$p$\textsuperscript{\cite{downeyThinkBayes2016}}:
+\begin{equation}
+  P(X=k) = \binom{n}{k}p^k(1-p)^{n-k},
+  \qquad \mu = np,\qquad \sigma^2 = np(1-p).
+  \label{eq:math-binomial}
+\end{equation}
+
+\subsection{The Central Limit Theorem}
+
+Sums and averages of many independent contributions tend toward a normal
+distribution \emph{whatever the shape of the original distribution}, provided
+the variance is finite. This is why the normal distribution is everywhere: it
+is not that nature prefers bells, but that averaging manufactures them.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=36mm,width=0.31\linewidth,
+  ybar,bar width=5.5pt,ymin=0,ymax=0.24,xlabel={one die},
+  xmin=0.3,xmax=6.7,xtick={2,4,6},ytick=\empty,
+  title={\small\sffamily $n=1$: flat},title style={color=AlmanachTeal}]
+  \addplot[fill=AlmanachTeal!35,draw=AlmanachTeal] coordinates
+    {(1,.1667)(2,.1667)(3,.1667)(4,.1667)(5,.1667)(6,.1667)};
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=36mm,width=0.31\linewidth,
+  ybar,bar width=3.4pt,ymin=0,ymax=0.20,xlabel={sum of two},
+  xmin=1.3,xmax=12.7,xtick={2,7,12},ytick=\empty,
+  title={\small\sffamily $n=2$: triangular},title style={color=AlmanachTeal}]
+  \addplot[fill=AlmanachTeal!35,draw=AlmanachTeal] coordinates
+    {(2,.0278)(3,.0556)(4,.0833)(5,.1111)(6,.1389)(7,.1667)
+     (8,.1389)(9,.1111)(10,.0833)(11,.0556)(12,.0278)};
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=36mm,width=0.31\linewidth,
+  ybar,bar width=1.5pt,ymin=0,ymax=0.10,xlabel={sum of five},
+  xmin=4,xmax=31,xtick={5,17.5,30},ytick=\empty,
+  title={\small\sffamily $n=5$: bell},title style={color=AlmanachTeal}]
+  \addplot[fill=AlmanachTeal!35,draw=AlmanachTeal] coordinates
+    {(5,.0001)(6,.0006)(7,.0019)(8,.0045)(9,.0090)(10,.0154)(11,.0231)
+     (12,.0316)(13,.0401)(14,.0473)(15,.0525)(16,.0548)(17,.0540)
+     (18,.0505)(19,.0446)(20,.0373)(21,.0294)(22,.0218)(23,.0150)
+     (24,.0096)(25,.0056)(26,.0029)(27,.0013)(28,.0005)(29,.0001)};
+  \addplot[AlmanachOchre,thick,smooth,domain=5:30,samples=80]
+    {0.0548*exp(-(x-17.5)^2/(2*3.82^2))};
+\end{axis}
+\end{tikzpicture}
+\caption{The central limit theorem visible in three steps. A single die is
+uniform; the sum of two is already triangular; the sum of five is
+indistinguishable from the fitted normal curve. Nothing about the die changed
+--- only how many were added.}
+\label{fig:math-clt}
+\end{figure}
+
+\subsection{Bayes' Theorem}
+
+\keyterm{Bayes' theorem} is the rule for updating a belief when evidence
+arrives:
+\begin{equation}
+  \underbrace{P(H\mid E)}_{\text{posterior}}
+  = \frac{\overbrace{P(E\mid H)}^{\text{likelihood}}\;
+          \overbrace{P(H)}^{\text{prior}}}
+         {\underbrace{P(E)}_{\text{evidence}}},
+  \qquad
+  P(E) = P(E\mid H)P(H) + P(E\mid\neg H)P(\neg H).
+  \label{eq:math-bayes}
+\end{equation}
+
+\begin{plainlanguage}
+Bayes' theorem says: how strongly you should believe something after seeing
+evidence depends not only on how convincing the evidence is, but on how likely
+the thing was to begin with. Extraordinary claims need extraordinary evidence,
+and this is the equation that says exactly how much.
+\end{plainlanguage}
+
+\begin{workedexample}[The $99\,\%$ accurate test that is right half the time]
+A disease affects $1\,\%$ of the population. A test detects it in $99\,\%$ of
+sick people (sensitivity) and correctly clears $99\,\%$ of healthy people
+(specificity). You test positive. What is the probability you are ill?
+
+Almost everyone answers $99\,\%$. Work it out.
+
+\emph{Set up.} $P(D) = 0.01$, $P(+\mid D) = 0.99$, $P(+\mid\neg D) = 0.01$.
+
+\emph{Evidence.}
+\[
+  P(+) = \underbrace{0.99\times0.01}_{\text{true positives}}
+       + \underbrace{0.01\times0.99}_{\text{false positives}}
+       = 0.0099 + 0.0099 = 0.0198 .
+\]
+
+\emph{Posterior.}
+\[
+  P(D\mid +) = \frac{0.0099}{0.0198} = \boxed{0.50}
+\]
+
+\emph{Why.} Look at the two terms in $P(+)$: they are \emph{equal}. In a
+population of $10{,}000$ there are $100$ sick people, of whom $99$ test
+positive --- and $9{,}900$ healthy people, of whom $99$ also test positive.
+The test is excellent, but there are so many more healthy people that false
+positives exactly match true ones. A coin flip.
+
+This is not a trick question; it is the everyday arithmetic of screening,
+fraud detection, and any classifier deployed on a rare class.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!80},
+  tiny/.style={font=\sffamily\tiny,color=AlmanachInk!70}]
+  \def\W{88}
+  \fill[AlmanachMist,draw=AlmanachInk!30] (0,0) rectangle (\W mm,34mm);
+  \fill[AlmanachOchre!30,draw=AlmanachOchre]
+    (0,0) rectangle (0.01*\W mm,34mm);
+  \draw[AlmanachInk!30] (0.01*\W mm,0) -- (0.01*\W mm,34mm);
+  \fill[AlmanachRed!45,draw=AlmanachRed]
+    (0,0) rectangle (0.0099*\W mm,33.66mm);
+  \fill[AlmanachRed!45,draw=AlmanachRed]
+    (0.01*\W mm,0) rectangle (0.0199*\W mm,34mm);
+  \node[tiny,anchor=south west] at (0.5mm,35mm) {sick 1\%};
+  \node[tiny,anchor=south west] at (0.022*\W mm,35mm) {healthy 99\%};
+  \draw[-{Stealth[length=1.6mm]},AlmanachRed]
+    (0.055*\W mm,-7mm) -- (0.014*\W mm,-1mm);
+  \node[lbl,anchor=west,color=AlmanachRed,align=left,text width=62mm]
+    at (0.06*\W mm,-8mm)
+    {The two red slivers are the positive tests: 99 true, 99 false.
+     Equal areas $\Rightarrow$ $P(\text{sick}\mid+)=1/2$.};
+\end{tikzpicture}
+\caption{The base-rate effect drawn to scale. The healthy population is so much
+wider that its $1\,\%$ false-positive rate produces exactly as many positive
+tests as the sick population's $99\,\%$ true-positive rate. Test quality alone
+never determines what a positive result means.}
+\label{fig:math-base-rate}
+\end{figure}
+
+\begin{engineernote}
+This is the mathematics behind every complaint that a fraud detector ``cries
+wolf''. If fraud is $0.1\,\%$ of transactions, even a $99.9\,\%$-specific model
+generates roughly one false alarm per true one. The fix is never ``make the
+model more accurate'' in the abstract --- it is to decide which error is more
+costly and move the decision threshold accordingly, then report precision and
+recall rather than accuracy. \Cref{ch:evaluation-mlops} takes this apart
+properly.
+\end{engineernote}
+
+\begin{checkpoint}
+Repeat the worked example with a disease prevalence of $10\,\%$ instead of
+$1\,\%$, keeping both test rates at $99\,\%$. Compute $P(D\mid+)$. Then state
+in one sentence what changed and why screening programmes care so much about
+who gets tested.
+\end{checkpoint}
+
+\subsection{Bayesian and Frequentist Inference}
+
+Bayesian inference applies \cref{eq:math-bayes} not to a single hypothesis but
+to a whole distribution over model parameters
+$\theta$\textsuperscript{\cite{downeyThinkBayes2016}}:
+\begin{equation}
+  P(\theta\mid D) = \frac{P(D\mid\theta)\,P(\theta)}{P(D)},
+  \qquad
+  P(D) = \int P(D\mid\theta)\,P(\theta)\,d\theta .
+  \label{eq:math-bayesian-posterior}
+\end{equation}
+The result is a full posterior distribution rather than a single number, so the
+remaining uncertainty is part of the answer instead of a footnote to it. The
+integral in the denominator is usually intractable, which is why Markov chain
+Monte Carlo and variational inference exist.
+
+\begin{table}[htbp]
+\centering
+\caption{Two philosophies of probability. Neither is wrong; they answer
+different questions, and the practical difference shows up in what you are
+allowed to say about the result.}
+\label{tab:math-bayes-vs-frequentist}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.17\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Aspect & Frequentist & Bayesian \\
+Probability means & Long-run frequency over repeated experiments &
+  Degree of belief given what is known \\
+Parameters are & Fixed but unknown constants &
+  Random variables with a prior distribution \\
+Inference yields & Confidence intervals, $p$-values &
+  A posterior distribution \\
+Data are treated as & One draw from a repeatable process &
+  Fixed evidence to condition on \\
+Prior knowledge & Not represented & Stated explicitly, and open to challenge \\
+You may say & ``$95\,\%$ of such intervals contain the true value'' &
+  ``There is a $95\,\%$ probability the value is in this interval'' \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+The last row is the one that trips people up. A frequentist $95\,\%$ confidence
+interval does \emph{not} give a $95\,\%$ probability that the parameter is
+inside it --- the parameter is a fixed constant, so it either is or is not. The
+$95\,\%$ describes the procedure across hypothetical repetitions. Only a
+Bayesian credible interval licenses the sentence everyone wants to
+say\textsuperscript{\cite[][p.~9]{barberBayesianReasoningMachine2012}}. If you
+report an interval, know which kind you computed.
+\end{engineernote}
+
+% ===========================================================================
+\section{Information Theory: Measuring Surprise}
+% ===========================================================================
+
+\keyterm{Entropy} quantifies average uncertainty in a random
+variable\textsuperscript{\cite{shannonMathematicalTheoryCommunication},
+\cite{mackayInformationTheoryInference2005}}:
+\begin{equation}
+  H(X) = -\sum_x p(x)\log_2 p(x) \quad[\text{bits}].
+  \label{eq:math-entropy}
+\end{equation}
+
+\begin{plainlanguage}
+Entropy is the average number of yes/no questions you need to pin down the
+answer. A fair coin needs exactly one question, so its entropy is one bit. A
+coin that lands heads $99\,\%$ of the time barely needs any question at all,
+because you can just guess heads --- so its entropy is near zero. Entropy
+measures how surprised you expect to be.
+\end{plainlanguage}
+
+\begin{workedexample}[Entropy of fair and biased coins]
+\emph{Fair coin}, $p = 0.5$:
+\[
+  H = -0.5\log_2 0.5 - 0.5\log_2 0.5 = -0.5(-1) - 0.5(-1) = 1.000 \text{ bit.}
+\]
+
+\emph{Biased coin}, $p = 0.9$:
+\[
+  H = -0.9\log_2 0.9 - 0.1\log_2 0.1
+    = -0.9(-0.152) - 0.1(-3.322)
+    = 0.137 + 0.332 = 0.469 \text{ bits.}
+\]
+
+\emph{Certain coin}, $p = 1.0$: $H = 0$ bits --- no uncertainty, no
+information in the outcome.
+
+Notice the asymmetry in the biased case: the \emph{rare} outcome contributes
+more ($0.332$) than the common one ($0.137$) despite occurring nine times less
+often. Rare events carry more information when they happen, which is exactly
+why $\log(1/p)$ is the right measure of surprise.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=44mm,
+  domain=0.001:0.999,samples=200,
+  xlabel={$p$ (probability of heads)},
+  ylabel={$H(p)$ in bits},
+  ymin=0,ymax=1.12,xmin=0,xmax=1]
+  \addplot[AlmanachTeal,very thick]
+    {-(x*ln(x)+(1-x)*ln(1-x))/ln(2)};
+  \addplot[only marks,mark=*,mark size=1.5pt,AlmanachOchre]
+    coordinates {(0.5,1) (0.9,0.469)};
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:0.5,1.02)
+    {fair: 1 bit};
+  \node[font=\scriptsize\sffamily,anchor=west] at (axis cs:0.915,0.5)
+    {$p{=}0.9$: 0.47};
+  \draw[AlmanachInk!35,dashed] (axis cs:0.5,0) -- (axis cs:0.5,1);
+\end{axis}
+\end{tikzpicture}
+\caption{Binary entropy. Uncertainty is maximal at $p=0.5$ and falls to zero at
+both extremes, where the outcome is certain. The curve is flat near its peak,
+which is why a class balance of $45/55$ is barely easier to predict than
+$50/50$, while $1/99$ is a completely different problem.}
+\label{fig:math-binary-entropy}
+\end{figure}
+
+\subsection{Cross-Entropy and KL Divergence}
+
+\keyterm{Cross-entropy} measures the cost of encoding samples from the true
+distribution $p$ using a model $q$; \keyterm{KL divergence} is the excess cost
+over the best possible\textsuperscript{\cite{kullbackInformationSufficiency1951},
+\cite[][ch.~2]{coverElementsInformationTheory2006}}:
+\begin{equation}
+  H(p,q) = -\sum_x p(x)\log q(x),
+  \qquad
+  D_{\mathrm{KL}}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)}
+  = H(p,q) - H(p).
+  \label{eq:math-kl}
+\end{equation}
+Since $H(p)$ does not depend on the model, \emph{minimising cross-entropy is
+identical to minimising KL divergence} --- which is why cross-entropy is the
+default classification loss.
+
+\begin{workedexample}[KL divergence is not symmetric]
+Let $p = (0.5,\,0.5)$ be the truth and $q = (0.9,\,0.1)$ the model.
+\[
+  D_{\mathrm{KL}}(p\,\|\,q)
+  = 0.5\log_2\frac{0.5}{0.9} + 0.5\log_2\frac{0.5}{0.1}
+  = 0.5(-0.848) + 0.5(2.322)
+  = 0.737 \text{ bits.}
+\]
+Now swap the roles:
+\[
+  D_{\mathrm{KL}}(q\,\|\,p)
+  = 0.9\log_2\frac{0.9}{0.5} + 0.1\log_2\frac{0.1}{0.5}
+  = 0.9(0.848) + 0.1(-2.322)
+  = 0.531 \text{ bits.}
+\]
+$0.737 \neq 0.531$. KL is \emph{not} a distance --- it fails symmetry and the
+triangle inequality. The direction encodes a real modelling choice:
+$D_{\mathrm{KL}}(p\|q)$ punishes the model heavily for assigning near-zero
+probability to something that actually happens (mode-covering), while
+$D_{\mathrm{KL}}(q\|p)$ punishes it for putting mass where there is none
+(mode-seeking). Variational inference and the VAE objective in
+\cref{ch:deep-learning} use the second form, which is part of why VAE samples
+can look blurry.
+\end{workedexample}
+
+\begin{checkpoint}
+A classifier outputs $q = (0.7, 0.2, 0.1)$ and the true label is class 1, so
+$p = (1,0,0)$. Compute the cross-entropy loss in bits. Then explain why
+$D_{\mathrm{KL}}(p\|q)$ equals the cross-entropy exactly in this case.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Statistics: From Sample to Claim}
+% ===========================================================================
+
+\subsection{Describing a Sample}
+
+\keyterm{Central tendency} is summarised by the mean (the balance point), the
+median (the middle value) and the mode (the most frequent value).
+\keyterm{Spread} is summarised by the variance and standard deviation, or by
+the interquartile range.
+
+\begin{workedexample}[Why the median survives an outlier and the mean does not]
+Five salaries, in thousands of euro: $40,\ 42,\ 45,\ 47,\ 50$.
+\[
+  \text{mean} = \frac{224}{5} = 44.8,
+  \qquad \text{median} = 45 .
+\]
+Now the company hires a chief executive on $1000$:
+\[
+  \text{mean} = \frac{1224}{6} = 204.0,
+  \qquad \text{median} = \frac{45+47}{2} = 46 .
+\]
+The mean rose by a factor of $4.6$; the median moved by $1$. A single
+observation moved the mean past every actual salary in the room. When a
+distribution is skewed or contaminated, the median is not a rougher summary ---
+it is a more honest one.
+\end{workedexample}
+
+\subsection{Maximum Likelihood Estimation}
+
+\keyterm{Maximum likelihood} picks the parameter that makes the observed data
+most probable\textsuperscript{\cite[][ch.~9]{wassermanAllStatistics2004}}.
+
+\begin{workedexample}[MLE for a coin, derived]
+You flip a coin $n=10$ times and see $k=7$ heads. Which $p$ makes that most
+likely?
+
+\emph{Likelihood.} $L(p) = \binom{10}{7}p^7(1-p)^3$.
+
+\emph{Take logs} (the maximum is in the same place, and sums are easier than
+products):
+\[
+  \ell(p) = \text{const} + 7\ln p + 3\ln(1-p).
+\]
+
+\emph{Differentiate and set to zero:}
+\[
+  \frac{d\ell}{dp} = \frac{7}{p} - \frac{3}{1-p} = 0
+  \ \Longrightarrow\ 7(1-p) = 3p
+  \ \Longrightarrow\ 7 = 10p
+  \ \Longrightarrow\ \hat p = 0.7 .
+\]
+The estimate is just the observed frequency --- which is reassuring, and also a
+warning: with $n=10$ this estimate is extremely uncertain. A $95\,\%$ interval
+runs roughly from $0.35$ to $0.93$. The MLE gives you a number; it does not
+give you the right to trust it.
+\end{workedexample}
+
+For linear regression, minimising squared error is maximum likelihood under
+Gaussian noise, and gives the \keyterm{normal equations}
+$\hat{\mathbf{w}} = (\mathbf{X}^{\!\top}\mathbf{X})^{-1}\mathbf{X}^{\!\top}
+\mathbf{y}$\textsuperscript{\cite{jamesIntroductionStatisticalLearning2013}} ---
+subject to the numerical caution given earlier.
+
+\subsection{Hypothesis Tests, Errors, and What a $p$-Value Is Not}
+
+A test weighs a null hypothesis $H_0$ against an alternative. Two errors are
+possible, and they trade off against each other.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,height=48mm,width=0.86\linewidth,
+  domain=-4:7.5,samples=220,
+  xlabel={test statistic},ylabel={density},
+  ymin=0,ymax=0.46,ytick=\empty,xtick=\empty,
+  legend style={at={(0.5,1.03)},anchor=south},legend columns=2]
+  \addplot[AlmanachTeal,thick] {0.39894228*exp(-x^2/2)};
+    \addlegendentry{under $H_0$}
+  \addplot[AlmanachOchre,thick] {0.39894228*exp(-(x-3.4)^2/2)};
+    \addlegendentry{under $H_1$}
+  \addplot[fill=AlmanachRed!35,draw=none,domain=1.96:4.4]
+    {0.39894228*exp(-x^2/2)} \closedcycle;
+  \addplot[fill=AlmanachOchre!45,draw=none,domain=-1:1.96]
+    {0.39894228*exp(-(x-3.4)^2/2)} \closedcycle;
+  \draw[AlmanachInk!70,thick,dashed]
+    (axis cs:1.96,0) -- (axis cs:1.96,0.42);
+  \node[font=\scriptsize\sffamily,anchor=south] at (axis cs:1.96,0.42)
+    {threshold};
+  \node[font=\scriptsize\sffamily,color=AlmanachRed,anchor=west]
+    at (axis cs:2.3,0.09) {Type I ($\alpha$)};
+  \node[font=\scriptsize\sffamily,color=AlmanachOchre!75!black,anchor=east]
+    at (axis cs:1.75,0.055) {Type II ($\beta$)};
+\end{axis}
+\end{tikzpicture}
+\caption{The two error types are areas on opposite sides of one threshold.
+Sliding the threshold right shrinks the red area and grows the orange one; the
+only way to shrink both at once is to move the curves apart, which means a
+larger sample or a bigger real effect. Statistical power is $1-\beta$.}
+\label{fig:math-type-i-ii}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{The four outcomes of a hypothesis test. The costs of the two errors
+are almost never equal, and deciding which one you can better afford is an
+engineering judgement, not a statistical one.}
+\label{tab:math-error-types}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.20\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+& $H_0$ actually true & $H_0$ actually false \\
+\textbf{Reject $H_0$} & \textcolor{AlmanachRed}{Type I error}, rate $\alpha$
+  --- a false alarm & Correct detection, probability $1-\beta$ (power) \\
+\textbf{Fail to reject} & Correct non-detection, probability $1-\alpha$ &
+  \textcolor{AlmanachOchre!75!black}{Type II error}, rate $\beta$ --- a
+  miss \\
+\end{tblr}
+\end{table}
+
+The \keyterm{$p$-value} is the probability of observing data at least as
+extreme as yours \emph{assuming the null hypothesis is true}.
+
+\begin{cautionbox}[Four things a $p$-value is not]
+The American Statistical Association issued a formal statement on this because
+misuse is so widespread\textsuperscript{\cite{wassersteinASAStatementPvalues2016}}.
+A $p$-value is \textbf{not}:
+\begin{itemize}
+  \item the probability that the null hypothesis is true --- it is computed
+        \emph{assuming} the null, so it cannot also measure it;
+  \item the probability that your result was due to chance;
+  \item a measure of effect size --- with a large enough sample, a trivially
+        small difference produces $p<0.001$;
+  \item a decision rule. $p = 0.049$ and $p = 0.051$ are the same evidence, and
+        treating $0.05$ as a boundary between truth and falsehood has no
+        statistical justification\textsuperscript{\cite{amrheinScientistsRiseUp2019}}.
+\end{itemize}
+Report an effect size with a confidence interval alongside any $p$-value. If
+you can report only one, report the
+interval\textsuperscript{\cite{reinhartStatisticsDoneWrong2015}}.
+\end{cautionbox}
+
+\begin{engineernote}
+This matters directly for machine learning. ``Model B beats model A,
+$p<0.05$'' says nothing about whether the improvement is large enough to
+justify deployment. Ask instead: how big is the difference, how uncertain is
+it, was the test set used more than once, and does the gain survive on the
+slices you care about? \Cref{ch:evaluation-mlops} builds this into a protocol.
+\end{engineernote}
+
+\begin{checkpoint}
+An A/B test on $2$ million users finds a conversion increase of $0.02$
+percentage points with $p = 0.001$. Your colleague wants to ship it. Give two
+questions you would ask before agreeing, and say which statistic you would
+demand to see.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Deep Dive: When Correct Mathematics Gives Wrong Answers}
+\label{sec:math-numerics}
+% ===========================================================================
+
+Everything above assumed real numbers. Computers use floating-point
+approximations with finite precision, governed by IEEE
+754\textsuperscript{\cite{ieee754-2019}}, and the gap between the two is where
+a great many silent failures live\textsuperscript{\cite{goldbergWhatEveryComputer1991}}.
+
+\subsection{Machine Epsilon and Catastrophic Cancellation}
+
+\begin{workedexample}[Two numbers that should differ by one, and do not]
+In \texttt{float32} the mantissa holds $24$ bits, so near a value $v$ the
+spacing between representable numbers is about $v\times2^{-23}$.
+
+At $v = 10^8$ that spacing is
+\[
+  10^8 \times 2^{-23} \approx 10^8 \times 1.19\times10^{-7} \approx 12 .
+\]
+So $10^8$ and $10^8+1$ round to the \emph{same} \texttt{float32} value, and
+\[
+  (10^8 + 1) - 10^8 = 0 \quad\text{instead of}\quad 1 .
+\]
+The relative error is $100\,\%$. This is \keyterm{catastrophic cancellation}:
+subtracting two nearly equal large numbers annihilates every significant digit
+of the answer.
+
+\emph{Where it bites in practice.} The one-pass variance formula
+$\mathbb{E}[X^2]-\mathbb{E}[X]^2$ from earlier is exactly this shape. For data
+with a large mean and small variance, both terms are large and nearly equal, and
+the computed variance can come out \emph{negative}. Numerical libraries use
+Welford's algorithm instead --- mathematically identical, numerically stable.
+\end{workedexample}
+
+\subsection{Log-Sum-Exp}
+
+Computing $\log\sum_i e^{x_i}$ directly overflows for moderately large inputs.
+With $m = \max_i x_i$,
+\begin{equation}
+  \log\sum_i e^{x_i} = m + \log\sum_i e^{x_i - m}.
+  \label{eq:math-logsumexp}
+\end{equation}
+Subtracting $m$ changes neither the exact result nor the softmax ratios, but
+keeps every exponent at most zero and therefore representable.
+
+\begin{workedexample}[The same expression, twice]
+Let $x = (1000,\ 1001,\ 1002)$.
+
+\emph{Naive.} $e^{1000}$ overflows \texttt{float64}, whose largest value is
+about $1.8\times10^{308}$ and whose exponential limit is around $e^{709}$. The
+computation returns \texttt{inf}, and then $\log(\texttt{inf}) =
+\texttt{inf}$. Total loss.
+
+\emph{Stabilised.} With $m = 1002$, the shifted values are $(-2,-1,0)$:
+\[
+  \log\bigl(e^{-2}+e^{-1}+e^{0}\bigr)
+  = \log(0.1353 + 0.3679 + 1.0000)
+  = \log(1.5032) = 0.4076,
+\]
+so the answer is $1002 + 0.4076 = 1002.4076$. Every intermediate value stayed
+between $0$ and $1$.
+
+The two expressions are algebraically identical. One returns the answer and one
+returns \texttt{inf}, which is why every serious softmax implementation
+subtracts the maximum first --- the point of the checkpoint at the end of
+\cref{ch:deep-learning}'s softmax example.
+\end{workedexample}
+
+\subsection{Conditioning}
+
+An algorithm can be mathematically correct and numerically unreliable. The
+\keyterm{condition number} measures how much a small change in the input can
+change the output.
+
+\begin{workedexample}[A $0.05\,\%$ change in the data, a $100\,\%$ change in the answer]
+Solve $\mathbf{A}\mathbf{x} = \mathbf{b}$ with
+\[
+  \mathbf{A} = \begin{pNiceMatrix} 1 & 1\\ 1 & 1.001\end{pNiceMatrix},
+  \qquad \mathbf{b} = \begin{pNiceMatrix} 2\\ 2.001\end{pNiceMatrix}.
+\]
+Subtracting the first equation from the second gives $0.001x_2 = 0.001$, so
+$x_2 = 1$ and $x_1 = 1$. The solution is $(1,1)$.
+
+Now perturb the last entry of $\mathbf{b}$ from $2.001$ to $2.002$ --- a change
+of $0.05\,\%$:
+\[
+  0.001x_2 = 0.002 \Rightarrow x_2 = 2,
+  \qquad x_1 = 2 - 2 = 0 .
+\]
+The solution jumped from $(1,1)$ to $(0,2)$.
+
+Nothing was computed incorrectly. The \emph{problem} amplifies input error,
+because the two rows of $\mathbf{A}$ are nearly parallel --- geometrically, we
+are intersecting two lines that meet at a very shallow angle, so sliding one
+slightly moves the intersection a long
+way\textsuperscript{\cite[][ch.~1]{highamAccuracyStabilityNumerical2002}}.
+Standardising features, using orthogonal decompositions, and adding
+regularisation all improve the conditioning of the problem itself rather than
+merely speeding up a solver.
+\end{workedexample}
+
+\begin{cautionbox}[Every interval answers a different question]
+A confidence, credible, bootstrap, prediction, or conformal interval is
+computed under different assumptions and licenses a different sentence. For
+every interval you report, state the random object, the conditioning
+information, the coverage target, the data-dependence assumptions, and whether
+any tuning reused the calibration data. Then check empirical coverage on the
+slices you care about rather than trusting the nominal percentage because of
+its name.
+\end{cautionbox}
+
+\begin{practicallab}[Break your own softmax]
+\textbf{Goal.} Produce all three numerical failures above yourself, so you
+recognise them in someone else's stack trace.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Implement softmax naively as \texttt{exp(x)/sum(exp(x))}. Feed it
+        $(1,2,3)$ and confirm it is correct. Feed it $(1000,1001,1002)$ and
+        record what happens.
+  \item Implement the stabilised version by subtracting $\max_i x_i$. Confirm
+        both inputs now work and that the first result is unchanged to machine
+        precision.
+  \item In \texttt{float32}, compute $(10^8+1)-10^8$. Then compute the variance
+        of $[10^8, 10^8+1, 10^8+2]$ using $\mathbb{E}[X^2]-\mathbb{E}[X]^2$ and
+        compare with the two-pass formula. Note the sign of your answer.
+  \item Solve the ill-conditioned system above with a library solver, perturb
+        $\mathbf{b}$ in the last digit, and measure the relative change in
+        $\mathbf{x}$ divided by the relative change in $\mathbf{b}$. That ratio
+        is the condition number in action.
+\end{enumerate}
+
+\textbf{Deliverable.} A short table: input, naive result, stabilised result,
+relative error. Keep it. When a training run produces \texttt{NaN} at step
+$3000$, this table is the first place to look.
+\end{practicallab}
+
+\begin{checkpoint}
+Your loss becomes \texttt{NaN} after a few hundred steps. List three
+numerically distinct causes drawn from this section, and for each one name the
+cheapest diagnostic that would confirm or eliminate it.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Integral Transforms}
+% ===========================================================================
+
+\keyterm{Convolution} combines two functions by sliding one across the other
+and integrating the overlap:
+\begin{equation}
+  (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\,g(t-\tau)\,d\tau .
+  \label{eq:math-convolution}
+\end{equation}
+This is the continuous parent of the discrete operation computed cell by cell
+in \cref{ch:deep-learning}; the sliding filter of a convolutional network is
+\cref{eq:math-convolution} with sums replacing integrals.
+
+The \keyterm{Fourier transform} re-expresses a signal as a sum of
+frequencies:
+\begin{equation}
+  \hat f(\omega) = \int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt .
+  \label{eq:math-fourier}
+\end{equation}
+Its practical importance here is the \keyterm{convolution theorem}: convolution
+in the time domain is multiplication in the frequency domain. That identity
+underlies fast filtering, spectrogram features for speech, and the frequency
+analysis used in condition monitoring.
+
+\begin{engineernote}
+When you meet a spectrogram in the speech sections of this book, remember what
+it is: the signal chopped into short windows, each one passed through
+\cref{eq:math-fourier}, and the magnitudes stacked as an image. That is why
+audio models can borrow convolutional architectures designed for pictures ---
+the transform turned a time series into a picture first.
+\end{engineernote}
+
+\subsection{Vector Calculus for Fields}
+
+For a vector-valued $\vec{f}:\mathbb{R}^n\to\mathbb{R}^m$, the derivative is
+the \keyterm{Jacobian} matrix with entries $J_{ij} = \partial f_i/\partial
+x_j$\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}:
+\begin{equation}
+  \mathbf{J} =
+  \begin{pNiceMatrix}
+    \frac{\partial f_1}{\partial x_1} & \cdots &
+      \frac{\partial f_1}{\partial x_n}\\
+    \vdots & \ddots & \vdots\\
+    \frac{\partial f_m}{\partial x_1} & \cdots &
+      \frac{\partial f_m}{\partial x_n}
+  \end{pNiceMatrix}.
+  \label{eq:math-jacobian}
+\end{equation}
+The Jacobian generalises both the scalar derivative ($m=n=1$) and the gradient
+($m=1$). In backpropagation, each layer contributes one Jacobian and the chain
+rule multiplies them --- which is the matrix-valued form of
+\cref{eq:math-chain-rule}.
+
+A \keyterm{scalar field} assigns a number to every point (a temperature
+$T(x,y,z)$); a \keyterm{vector field} assigns a vector (a wind velocity). The
+gradient of a scalar field is itself a vector field pointing uphill --- exactly
+the object gradient descent follows downhill.
+
+Three further operators act on such fields\textsuperscript{\cite{bronsteinTaschenbuchMathematik2001}}:
+\begin{equation}
+  \operatorname{div}\vec{F} = \nabla\cdot\vec{F}
+    = \sum_i \frac{\partial F_i}{\partial x_i},
+  \qquad
+  \operatorname{curl}\vec{F} = \nabla\times\vec{F},
+  \qquad
+  \Delta f = \nabla^2 f = \sum_i \frac{\partial^2 f}{\partial x_i^2}.
+  \label{eq:math-div-curl-laplacian}
+\end{equation}
+Divergence measures net outward flux at a point, curl measures local rotation,
+and the \keyterm{Laplacian} generalises the second derivative to several
+dimensions.
+
+\begin{engineernote}
+These look like fluid dynamics, and they are --- but two of them reappear here.
+The Laplacian is the operator behind diffusion, which is the physical process
+that diffusion models imitate when they denoise an image step by step. Its
+discrete analogue, the \keyterm{graph Laplacian} $L = D - A$ built from a
+degree matrix and an adjacency matrix, is the central object in spectral graph
+theory and in graph neural networks. Physics-informed networks use all three
+directly, by putting the governing differential equation into the loss.
+\end{engineernote}
 
 \chapterreview{Objects}{Transform}{Estimate}{Optimise}
+
+% ===========================================================================
+\section{Further Reading}
+% ===========================================================================
+
+\begin{v3topic}{Mathematics for machine learning specifically}
+\begin{itemize}
+  \item \fullcite{deisenrothMathematicsMachineLearning2020} --- the closest
+    match to this chapter's scope, and free online.
+  \item \fullcite{strangIntroductionLinearAlgebra2016} --- the standard
+    linear-algebra text; strong geometric intuition.
+  \item \fullcite{boydConvexOptimization2004} --- for when you need to know
+    whether an optimisation problem is genuinely hard.
+\end{itemize}
+\end{v3topic}
+
+\begin{v3topic}{Probability, statistics, and information}
+\begin{itemize}
+  \item \fullcite{wassermanAllStatistics2004} --- concise and rigorous;
+    good after this chapter rather than before it.
+  \item \fullcite{mackayInformationTheoryInference2005} --- information theory
+    and inference treated as one subject.
+  \item \fullcite{coverElementsInformationTheory2006} --- the reference for
+    entropy, KL divergence, and coding.
+  \item \fullcite{brucePracticalStatisticsData2017} --- practical framing for
+    data work.
+  \item \fullcite{reinhartStatisticsDoneWrong2015} --- a short catalogue of the
+    mistakes this chapter warns about.
+\end{itemize}
+\end{v3topic}
+
+\begin{v3topic}{Numerics, and general engineering mathematics}
+\begin{itemize}
+  \item \fullcite{goldbergWhatEveryComputer1991} --- still the best single
+    article on floating point.
+  \item \fullcite{highamAccuracyStabilityNumerical2002} --- the reference for
+    conditioning and stability.
+  \item \fullcite{rileyMathematicalMethodsPhysics2008} --- broad coverage of
+    engineering mathematics.
+  \item \fullcite{bronsteinTaschenbuchMathematik2001} --- the standard
+    German-language handbook; excellent as a lookup table.
+  \item \fullcite{mathaiLinearAlgebraCourse2017} --- linear algebra aimed at
+    physicists and engineers.
+\end{itemize}
+\end{v3topic}

@@ -8,10 +8,80 @@
 \chapterlead{How do pixels and geometry become testable statements about a scene?}{Sense}{Represent}{Infer}{Stress-test}{computer-vision}
 
 % ==== Section 1: Image Processing and Low-Level Vision ==========================================
+\label{ch:computer-vision}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item use the pinhole model to predict how many pixels tall an object will be
+        at a given distance --- and therefore whether it is detectable at all;
+  \item apply a Sobel kernel by hand and read gradient magnitude and direction
+        from the result;
+  \item compute intersection-over-union and explain why the same detection
+        passes at one threshold and fails at another;
+  \item calculate the receptive field of a stack of convolutions and justify
+        small kernels from the parameter count;
+  \item estimate activation memory for a training batch and explain why it,
+        not the weights, sets your batch size;
+  \item name the failure mode a vision model exhibits under distribution shift
+        and the test that would have caught it.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A camera destroys information on purpose. It flattens a three-dimensional world
+onto a grid of numbers, throwing away depth, and it samples that grid at finite
+resolution, throwing away detail. Computer vision is the business of putting
+back what the projection removed --- using geometry where geometry suffices,
+and learned priors where it does not. Almost every hard problem in this chapter
+is a consequence of that first, deliberate loss.
+\end{plainlanguage}
+
+\begin{engineernote}
+Vision systems fail on the boundary conditions of the sensor far more often
+than on the cleverness of the model: too few pixels on target, motion blur,
+glare, rain, an exposure setting that clips. Before improving an architecture,
+compute how many pixels the object of interest actually occupies at the range
+you care about. If the answer is twenty, no model will save you --- but a
+different lens will.
+\end{engineernote}
+
 \section{Image Processing and Low-Level Vision}
 
 % ---- 9.1.1 Image Acquisition ------------------------------------------------------------------
 \subsection{Image Acquisition}
+
+\begin{workedexample}[How many pixels is a pedestrian?]
+A camera with focal length $f = 8\,\text{mm}$ and a sensor whose pixels are
+$4\,\upmu\text{m}$ across. Under the pinhole model, an object of height $H$ at
+distance $Z$ projects to image height
+\[
+  h = f\,\frac{H}{Z} .
+\]
+
+\emph{A $1.7\,\text{m}$ pedestrian at $20\,\text{m}$:}
+\[
+  h = 8\,\text{mm}\times\frac{1700\,\text{mm}}{20{,}000\,\text{mm}}
+    = 0.68\,\text{mm}
+  \quad\Rightarrow\quad
+  \frac{0.68}{0.004} = 170 \text{ pixels tall.}
+\]
+Comfortable for any detector.
+
+\emph{The same pedestrian at $100\,\text{m}$:}
+\[
+  h = 8\times\frac{1700}{100{,}000} = 0.136\,\text{mm}
+  \quad\Rightarrow\quad 34 \text{ pixels tall.}
+\]
+
+\emph{Why this matters.} Detection performance degrades sharply below roughly
+$30$ pixels of object height. At $100\,\text{m}$ this camera is at the edge of
+being able to see a person at all --- and a vehicle travelling at
+$30\,\text{m/s}$ covers $100\,\text{m}$ in $3.3$ seconds. The sensing range,
+not the network, sets the safety margin. Note also that $h \propto 1/Z$: doubling
+the detection distance requires doubling the focal length, which halves the
+field of view. That trade-off cannot be trained away.
+\end{workedexample}
 
 \begin{v3topic}{The Human Visual System}
     The human retina contains approximately \textbf{120 million rods} (scotopic: low-light, achromatic) and
@@ -41,7 +111,7 @@
     A digital image is a discrete function $I: \mathbb{Z}^2 \to V$ where $V$ is the value set\textsuperscript{\cite[][p.~38]{gonzalezWoods2018}}.
     Common types: \textbf{binary} (0/1), \textbf{grayscale} ($0$--$255$), \textbf{colour} (3-channel), \textbf{depth/range} (float).
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X[l]|X[l]|}}
         \hline
         \textbf{Space} & \textbf{Channels} & \textbf{Key use} \\
         \hline
@@ -54,8 +124,8 @@
         YCbCr & Luma + two chrominance channels & JPEG/video compression \\
         \hline
     \end{tblr}
-\captionof{table}{Image Representation and Morphology: Image Types and Colour Spaces.}
-\label{tab:ch09-computer-vision-inline-01}
+\captionof{table}{Colour spaces and what each is good for. Converting to a space that separates intensity from colour makes many operations robust to lighting changes.}
+\label{tab:cv-colour-spaces}
 
 \end{v3topic}
 \begin{v3topic}{Morphological Operations}
@@ -110,8 +180,10 @@
         % Z axis
         \draw[arr, thin, gray] (2.0,0) -- (4.5, 0) node[right, font=\scriptsize] {$Z$};
     \end{tikzpicture}
-\captionof{figure}{Single and Multi-View Geometry: Pinhole Camera Model.}
-\label{fig:ch09-computer-vision-inline-01}
+\captionof{figure}{The pinhole camera model. Image height scales as $f H / Z$,
+so object size in pixels falls off as $1/Z$ --- the relationship that decides
+whether a detector can see anything at all at range.}
+\label{fig:cv-pinhole}
     \end{center}
 
 \end{v3topic}
@@ -165,7 +237,7 @@
     The \textbf{convolution theorem} states: $(f * h) \leftrightarrow F \cdot H$ — convolution in the spatial domain equals pointwise multiplication in the frequency domain.
     This allows large kernel convolutions to be performed efficiently via FFT in $O(MN\log MN)$.
 \visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|X[l]|X[l]|}}
         \hline
         \textbf{Filter} & \textbf{What it passes} & \textbf{Effect} \\
         \hline
@@ -176,8 +248,8 @@
         Band-pass & Specific range & Texture analysis, Gabor filters \\
         \hline
     \end{tblr}
-\captionof{table}{Filtering: Frequency Domain Filtering.}
-\label{tab:ch09-computer-vision-inline-02}
+\captionof{table}{Frequency-domain filters. Low-pass smooths and blurs; high-pass sharpens and amplifies noise --- the same trade in both directions.}
+\label{tab:cv-frequency-filters}
 \end{v3topic}
 
 % ---- 9.1.5 Texture ----------------------------------------------------------------------------
@@ -212,7 +284,40 @@
     \begin{equation}
         |\nabla I| = \sqrt{G_x^2 + G_y^2}, \quad
         G_x = \begin{bmatrix}-1&0&1\\-2&0&2\\-1&0&1\end{bmatrix} * I
+        \label{eq:cv-sobel}
     \end{equation}
+
+\begin{workedexample}[Sobel on a vertical edge, by hand]
+Take a $3\times3$ patch straddling a vertical intensity step:
+\[
+  I = \begin{pmatrix} 10 & 10 & 50\\ 10 & 10 & 50\\ 10 & 10 & 50 \end{pmatrix}.
+\]
+
+\emph{Horizontal gradient} with the $G_x$ kernel above, multiplying
+element-wise and summing row by row:
+\[
+  G_x = \underbrace{(-10+50)}_{\text{row 1}} + \underbrace{(-20+100)}_{\text{row 2}}
+      + \underbrace{(-10+50)}_{\text{row 3}} = 40+80+40 = 160 .
+\]
+
+\emph{Vertical gradient} with $G_y$ (the same kernel transposed):
+\[
+  G_y = (-10-20-50) + 0 + (10+20+50) = -80 + 80 = 0 .
+\]
+
+\emph{Magnitude and direction.}
+\[
+  |\nabla I| = \sqrt{160^2 + 0^2} = 160,
+  \qquad
+  \theta = \operatorname{atan2}(0,160) = 0^\circ .
+\]
+
+\emph{Read it.} A strong response, pointing purely in $x$. The gradient
+direction is perpendicular to the edge, so a gradient at $0^\circ$ means a
+\emph{vertical} edge --- a distinction worth getting right once and never
+having to re-derive. And note $G_y = 0$ exactly: the operator is blind to the
+edge along its own direction, which is why both components are always needed.
+\end{workedexample}
     The \textbf{Canny detector} (1986) is the standard pipeline:
     \begin{enumerate}
         \item Gaussian smoothing ($\sigma$)
@@ -239,7 +344,7 @@
 \begin{v3topic}{SIFT, SURF, and ORB}
     Scale- and rotation-invariant local feature descriptors\textsuperscript{\cite[][pp.~225--240]{szeliski2022}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,1.5cm]|X[l]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,1.5cm]|X[l]|X[l]|X[l]|}}
         \hline
         \textbf{Method} & \textbf{Detection} & \textbf{Descriptor} & \textbf{Properties} \\
         \hline
@@ -250,8 +355,8 @@
         ORB   & FAST keypoints + Harris score & 256-bit BRIEF binary descriptor & Real-time; patent-free; good for mobile/SLAM \\
         \hline
     \end{tblr}
-\captionof{table}{Edge and Feature Detection: SIFT, SURF, and ORB.}
-\label{tab:ch09-computer-vision-inline-03}
+\captionof{table}{Classical keypoint detectors and descriptors, with the invariances each provides. ORB is the one without patent constraints and is fast enough for real time.}
+\label{tab:cv-keypoints}
     \textbf{Feature matching}: nearest-neighbour in descriptor space; \textbf{Lowe's ratio test} ($d_1/d_2 < 0.8$) removes ambiguous matches. \textbf{RANSAC} robustly estimates a geometric model (homography) from potentially noisy correspondences.
 \end{v3topic}
 
@@ -302,7 +407,7 @@
 \begin{v3topic}{Deep Optical Flow}
     Deep learning overcomes limitations of classical methods on large displacements\textsuperscript{\cite[][p.~83]{fleuretLittleBookDeep}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X[l]|X[l]|}}
         \hline
         \textbf{Method} & \textbf{Key Idea} & \textbf{Contribution} \\
         \hline
@@ -313,8 +418,8 @@
         RAFT (2020)     & 4D all-pairs cost volume + iterative GRU updates & State-of-the-art; robust to large motions \\
         \hline
     \end{tblr}
-\captionof{table}{Motion and Optical Flow: Deep Optical Flow.}
-\label{tab:ch09-computer-vision-inline-04}
+\captionof{table}{Learned optical-flow methods and the idea each contributed.}
+\label{tab:cv-optical-flow}
     Deep methods generalise better to large motions and handle textureless regions via learned priors; they require large synthetic training datasets (FlyingChairs, Sintel, KITTI).
 \end{v3topic}
 
@@ -342,8 +447,11 @@
         \draw[arr] (meas) -- (upd);
         \draw[arr] (upd.east) -- ++(0.6,0) |- node[right, font=\tiny, pos=0.25] {next step} (pred.east);
     \end{tikzpicture}
-\captionof{figure}{Tracking: Kalman Filter: Predict-Update Cycle.}
-\label{fig:ch09-computer-vision-inline-02}
+\captionof{figure}{The Kalman filter's two alternating steps. Prediction moves
+the estimate forward and \emph{increases} uncertainty; the update folds in a
+measurement and decreases it. The filter is optimal only while its linear and
+Gaussian assumptions hold.}
+\label{fig:cv-kalman-cycle}
     \end{center}
 
 \end{v3topic}
@@ -398,7 +506,7 @@
     Cameras sample a 3D scene illuminated by light (visible spectrum: 380--700\,nm) and project it onto a 2D sensor\textsuperscript{\cite[][pp.~15--20]{jahneDigitalImageProcessing2005}}.
     Radiometry describes light transport (irradiance, radiance, BRDF); photometry weights by human perception.
 \visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|X[l]|}}
         \hline
         \textbf{Color Model} & \textbf{Use Case} \\
         \hline
@@ -411,8 +519,8 @@
         YCbCr & Video compression (JPEG, H.264) \\
         \hline
     \end{tblr}
-\captionof{table}{Image Formation and Acquisition: Light and Color Models.}
-\label{tab:ch09-computer-vision-inline-05}
+\captionof{table}{Colour models by use case: additive for displays, subtractive for print, perceptual for analysis.}
+\label{tab:cv-colour-models}
 
 \end{v3topic}
 \begin{v3topic}{Camera Calibration}
@@ -447,7 +555,7 @@
     Autonomous systems combine complementary sensors to overcome individual limitations:
     cameras provide rich texture/colour, LiDAR provides accurate 3D geometry, radar provides velocity and weather robustness.
 \visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|X[l]|}}
         \hline
         \textbf{Fusion Level} & \textbf{Description} \\
         \hline
@@ -458,8 +566,8 @@
         Late (decision) & Combine per-sensor detections/decisions \\
         \hline
     \end{tblr}
-\captionof{table}{Sensors for Autonomous Systems: Sensor Fusion.}
-\label{tab:ch09-computer-vision-inline-06}
+\captionof{table}{Fusion levels. Fusing earlier preserves more information and costs more bandwidth and calibration effort.}
+\label{tab:cv-sensor-fusion}
     State estimation typically uses \textbf{Kalman filters} (linear) or \textbf{particle filters} (non-linear, non-Gaussian) to fuse temporal sensor streams.
 \end{v3topic}
 
@@ -475,10 +583,72 @@
     \end{itemize}
 
 \end{v3topic}
+\begin{workedexample}[Intersection over union, and why the threshold matters]
+Boxes are $(x_1,y_1,x_2,y_2)$. Ground truth $B = (30,30,70,70)$, area
+$40\times40 = 1600$.
+
+\emph{Case 1 --- a loose prediction} $A = (10,10,50,50)$, area $1600$.
+\[
+\begin{aligned}
+  \text{overlap in }x &: \max(10,30)=30 \text{ to } \min(50,70)=50
+    \Rightarrow 20,\\
+  \text{overlap in }y &: 30 \text{ to } 50 \Rightarrow 20,\\
+  \text{intersection} &= 20\times20 = 400,\\
+  \text{union} &= 1600 + 1600 - 400 = 2800,\\
+  \mathrm{IoU} &= 400/2800 = \mathbf{0.14}.
+\end{aligned}
+\]
+Below the usual $0.5$ threshold, so this counts as a \emph{false positive} ---
+and the object also counts as \emph{missed}. One sloppy box costs twice.
+
+\emph{Case 2 --- a tight prediction} $A = (15,15,55,55)$:
+\[
+  \text{intersection} = 35\times35 = 1225,\qquad
+  \text{union} = 1600+1600-1225 = 1975,\qquad
+  \mathrm{IoU} = \mathbf{0.62}.
+\]
+This passes at $\mathrm{IoU}\ge0.5$ and \emph{fails} at $\mathrm{IoU}\ge0.75$.
+
+\emph{The lesson.} The same detector, unchanged, scores very differently
+depending on a threshold chosen by the benchmark. That is why modern reporting
+uses mAP averaged over thresholds from $0.50$ to $0.95$ --- and why a paper
+quoting mAP@0.5 alone is quoting the most flattering number available.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=0.55mm,y=0.55mm,
+  gt/.style={draw=AlmanachTeal,very thick,fill=AlmanachTeal!12},
+  pr/.style={draw=AlmanachOchre,very thick,dashed,fill=AlmanachOchre!12},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  % --- case 1: loose prediction ---
+  \draw[gt] (30,30) rectangle (70,70);
+  \draw[pr] (10,10) rectangle (50,50);
+  \fill[AlmanachRed!35] (30,30) rectangle (50,50);
+  \node[lbl] at (40,-14) {$\mathrm{IoU}=0.14$ --- rejected};
+  % --- case 2: tight prediction ---
+  \begin{scope}[xshift=55mm]
+    \draw[gt] (30,30) rectangle (70,70);
+    \draw[pr] (15,15) rectangle (55,55);
+    \fill[AlmanachRed!35] (30,30) rectangle (55,55);
+    \node[lbl] at (40,-14) {$\mathrm{IoU}=0.62$ --- accepted at 0.5};
+  \end{scope}
+  % --- legend ---
+  \node[lbl,color=AlmanachTeal,anchor=west]  at (215,62) {ground truth};
+  \node[lbl,color=AlmanachOchre,anchor=west] at (215,47) {prediction};
+  \node[lbl,color=AlmanachRed,anchor=west]   at (215,32) {intersection};
+\end{tikzpicture}
+\caption{Two predictions against the same ground-truth box. Intersection over
+union is the ratio of the shaded overlap to the total area covered by both; a
+shift of only $20\,\%$ of the box width moves the score across the standard
+acceptance threshold.}
+\label{fig:cv-iou}
+\end{figure}
+
 \begin{v3topic}{Deep Object Detection}
     Deep detectors learn features and localisation end-to-end\textsuperscript{\cite[][pp.~105--109]{fleuretLittleBookDeep}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|Q[c,m]|X[l]|}}
         \hline
         \textbf{Model} & \textbf{Type} & \textbf{Key Innovation} \\
         \hline
@@ -491,8 +661,8 @@
         DETR & Transformer & Bipartite matching; no anchors or NMS \\
         \hline
     \end{tblr}
-\captionof{table}{Object Detection and Tracking: Deep Object Detection.}
-\label{tab:ch09-computer-vision-inline-07}
+\captionof{table}{Deep detectors by family. Two-stage detectors trade latency for accuracy; single-stage detectors made real-time detection practical.}
+\label{tab:cv-detectors}
     Key concepts: \textbf{IoU} (Intersection over Union), \textbf{NMS} (Non-Maximum Suppression), \textbf{mAP} (mean Average Precision).
 
 \end{v3topic}
@@ -559,7 +729,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Verification vs.\ Identification}
-    \begin{tblr}{|Q[l,m]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|X[l]|X[l]|}}
         \hline
         \textbf{Task} & \textbf{Question} & \textbf{Complexity} \\
         \hline
@@ -568,8 +738,8 @@
         Identification & ``Who is this?'' (1:$N$) & Search entire gallery; harder \\
         \hline
     \end{tblr}
-\captionof{table}{Face Recognition: Verification vs.\ Identification.}
-\label{tab:ch09-computer-vision-inline-08}
+\captionof{table}{Verification asks a one-to-one question and identification a one-to-many one --- which is why identification error rates grow with gallery size.}
+\label{tab:cv-verification-identification}
     Different threat models: verification tolerates higher thresholds (fewer false accepts); identification must handle large galleries efficiently.
 \end{v3topic}
 
@@ -642,7 +812,7 @@
 \begin{v3topic}{Learning Without Labels}
     Self-supervised methods learn visual representations from unlabelled data, then transfer to downstream tasks:
 \visualseparator
-    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m]|Q[c,m]|X[l]|}}
         \hline
         \textbf{Method} & \textbf{Year} & \textbf{Key Idea} \\
         \hline
@@ -655,8 +825,8 @@
         MAE & 2021 & Mask 75\% of image patches; reconstruct; efficient scalable pre-training \\
         \hline
     \end{tblr}
-\captionof{table}{Self-Supervised and Contrastive Learning: Learning Without Labels.}
-\label{tab:ch09-computer-vision-inline-09}
+\captionof{table}{Self-supervised methods and the pretext task each uses to manufacture a training signal from unlabelled data.}
+\label{tab:cv-self-supervised}
     These methods approach or surpass supervised pre-training on ImageNet, especially when labelled data is scarce.
 \end{v3topic}
 
@@ -684,6 +854,101 @@
 
 % ==== Section 6: Further Reading =============================================================
 %
+\begin{workedexample}[Why three $3\times3$ layers beat one $7\times7$]
+\emph{Receptive field.} Stacking convolutions with stride $1$ grows the
+receptive field additively: each $k\times k$ layer adds $k-1$.
+\[
+  \text{after 1 layer: } 3,\qquad
+  \text{after 2: } 3+2 = 5,\qquad
+  \text{after 3: } 5+2 = 7 .
+\]
+Three $3\times3$ layers see exactly as much input as one $7\times7$ layer.
+
+\emph{Parameters}, for $C$ input and $C$ output channels:
+\[
+  3\times(3\times3\times C\times C) = 27C^2
+  \quad\text{versus}\quad
+  7\times7\times C\times C = 49C^2 .
+\]
+That is $45\,\%$ fewer parameters --- and two extra nonlinearities, so the
+stack is also strictly more expressive. This single comparison is VGG's entire
+design argument\textsuperscript{\cite{simonyanVeryDeepConvolutional2015}}, and
+it is why almost every convolutional architecture since uses small kernels.
+\end{workedexample}
+
+\begin{workedexample}[Activations, not weights, decide your batch size]
+Train on batches of $32$ RGB images at $224\times224$.
+
+\emph{The input tensor:}
+\[
+  32 \times 224 \times 224 \times 3 \times 4\,\text{bytes}
+  = 19.3\,\text{MB}.
+\]
+Negligible.
+
+\emph{One early activation map} with $64$ channels at full resolution:
+\[
+  32 \times 224\times224 \times 64 \times 4\,\text{bytes}
+  = 411\,\text{MB} \quad\text{--- for a single layer.}
+\]
+And backpropagation must \emph{keep} these activations for the backward pass
+(\cref{sec:dl-backprop}), across every layer.
+
+\emph{The consequence.} A network with $25$ million parameters occupies about
+$100\,\text{MB}$ of weights, while its stored activations at this batch size
+run to many gigabytes. When you hit an out-of-memory error, the fix is almost
+never a smaller model --- it is a smaller batch, a lower input resolution, or
+activation checkpointing, which trades roughly $30\,\%$ extra compute for a
+large memory saving.
+\end{workedexample}
+
+\begin{cautionbox}[Vision models latch onto the background]
+A classifier trained on photographs frequently learns the context rather than
+the object: cows on grass, boats on water, a ruler beside a skin lesion, a
+particular hospital's scanner watermark. Accuracy on a held-out split from the
+same source looks excellent, because the shortcut is present there too, and
+performance collapses the moment the context changes.
+
+Three cheap checks: evaluate on data from a genuinely different source; occlude
+the object and confirm the prediction degrades; and inspect saliency or occlusion
+maps on a sample of correct predictions, not just the errors. A model that is
+right for the wrong reason will be right until it is catastrophically wrong.
+\end{cautionbox}
+
+\begin{practicallab}[Find out what your vision model is actually looking at]
+\textbf{Goal.} Replace ``the model achieves 94\,\% accuracy'' with a statement
+about \emph{why}.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Take any pretrained classifier and a set of images it labels correctly
+        with high confidence.
+  \item \textbf{Occlusion test.} Slide a grey square across each image and
+        record how the confidence for the true class changes. Plot the result
+        as a heat map. Where does the evidence live?
+  \item \textbf{Background swap.} Segment the object and paste it onto three
+        unrelated backgrounds. Does the prediction survive?
+  \item \textbf{Corruption sweep.} Apply Gaussian noise, blur, JPEG
+        compression, and brightness shift at five severities each. Plot
+        accuracy against severity.
+  \item \textbf{Resolution sweep.} Downscale until accuracy collapses. Compare
+        the pixel height at that point with the pinhole calculation earlier in
+        this chapter.
+\end{enumerate}
+
+\textbf{Deliverable.} One heat map per class, one accuracy-versus-severity plot,
+and a sentence naming the corruption your model is least robust to.
+\textbf{The point:} step 3 regularly demotes an apparently excellent model, and
+it takes an afternoon.
+\end{practicallab}
+
+\begin{checkpoint}
+Your pedestrian detector scores mAP@0.5 of $0.91$ on the test set and fails in
+deployment at dusk. Using this chapter, list the three measurements you would
+take first --- one about the sensor, one about the evaluation protocol, and one
+about distribution shift --- and say what each would rule in or out.
+\end{checkpoint}
+
 \section{Deep Dive: Foundation Vision and Robust Perception}
 \begin{v3topic}{Prompts Change the Vision Interface}
 Promptable segmentation and vision--language models replace a fixed class list

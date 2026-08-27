@@ -8,6 +8,42 @@
 \chapterlead{How can AI improve a workflow without confusing scores with benefit?}{Need}{Evidence}{Integrate}{Monitor}{healthcare}
 
 % ==== Section 1: AI in Healthcare ==========================================
+\label{ch:healthcare}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute the positive predictive value of a screening test at a
+        realistic prevalence and explain the result to a non-specialist;
+  \item distinguish retrospective accuracy from clinical utility and name the
+        study design that establishes the second;
+  \item identify the shortcut a medical imaging model is most likely to learn;
+  \item explain why performance on one hospital's data says little about
+        another's;
+  \item state what a regulator requires of a clinical decision support tool
+        beyond a validation score.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Medicine is the domain where the arithmetic of \cref{ch:mathematical-foundations}
+stops being academic. A test that is right $99\,\%$ of the time can still be
+wrong more often than right when the disease is rare --- and that is not a
+paradox, it is the base rate. Almost every disappointment in clinical AI traces
+back either to that arithmetic or to a dataset that encoded the hospital rather
+than the disease.
+\end{plainlanguage}
+
+\begin{engineernote}
+The gap that matters here is between \emph{accuracy} and \emph{utility}. A model
+can be more accurate than a clinician and still change no outcome --- because it
+detects something at a stage where treatment does not differ, or because it
+fires too late in the workflow to act on, or because clinicians do not trust it
+and override it. Retrospective accuracy is necessary and nowhere near
+sufficient. The evidence that counts comes from a prospective study measuring
+patient outcomes, not model scores.
+\end{engineernote}
+
 \section{AI in Healthcare}
 
 % ---- 11.1.1 Healthcare Ecosystem --------------------------------------------------------------
@@ -16,7 +52,7 @@
 \begin{v3topic}{Healthcare Stakeholders}
     Modern healthcare involves a complex network of actors whose incentives, data, and workflows AI must accommodate\textsuperscript{\cite[][]{costigliolaHealthcareOverviewNew2012}}.
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X[l]|X[l]|}}
         \hline
         \textbf{Stakeholder} & \textbf{Primary Role} & \textbf{AI Opportunity} \\
         \hline
@@ -31,8 +67,8 @@
         \textbf{Patients / Society} & Care recipients, data subjects & Personal health monitoring, informed consent \\
         \hline
     \end{tblr}
-\captionof{table}{The Healthcare Ecosystem: Healthcare Stakeholders.}
-\label{tab:ch11-healthcare-inline-01}
+\captionof{table}{Healthcare stakeholders and where AI can help each. Note that the stakeholder who benefits is often not the one who must change behaviour.}
+\label{tab:health-stakeholders}
 
 \end{v3topic}
 \begin{v3topic}{Digital Health Transformation}
@@ -91,7 +127,7 @@
           {fig:drug-discovery-funnel}
     }
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X[l]|X[l]|}}
         \hline
         \textbf{Stage} & \textbf{Activity} & \textbf{AI Lever} \\
         \hline
@@ -108,8 +144,8 @@
         Regulatory / market & FDA/EMA approval & Automated documentation \\
         \hline
     \end{tblr}
-\captionof{table}{Drug Discovery: Traditional Drug Discovery Pipeline.}
-\label{tab:ch11-healthcare-inline-02}
+\captionof{table}{The drug discovery pipeline and where machine learning applies. Compression at an early stage is worth little if the later, more expensive stages are unchanged.}
+\label{tab:health-drug-pipeline}
 
 \end{v3topic}
 \begin{v3topic}{Virtual Screening and Molecular Graphs}
@@ -227,7 +263,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Modality Comparison}
-    \begin{tblr}{|Q[l,m,1.8cm]|X[l]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,1.8cm]|X[l]|X[l]|X[l]|}}
         \hline
         \textbf{Modality} & \textbf{Signal} & \textbf{Tissue contrast} & \textbf{Radiation} \\
         \hline
@@ -242,8 +278,8 @@
         Ultrasound & Echo reflection & Soft tissue & None \\
         \hline
     \end{tblr}
-\captionof{table}{Imaging Modalities: Modality Comparison.}
-\label{tab:ch11-healthcare-inline-03}
+\captionof{table}{Imaging modalities compared by signal, contrast, and radiation dose --- the three properties that decide which is clinically appropriate.}
+\label{tab:health-modalities}
     \textsuperscript{\cite[][pp.~1--30]{smithIntroductionMedicalImaging2010}}
 \end{v3topic}
 
@@ -253,7 +289,7 @@
 \begin{v3topic}{Classification: Skin Cancer and Retinopathy}
     Two landmark studies demonstrated specialist-level AI performance\textsuperscript{\cite[][p.~115]{estevaSkincancerDeepNeural2017}}\textsuperscript{\cite[][p.~2402]{gulshankumarRetinalFundusImages2016}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X[l]|X[l]|X[l]|}}
         \hline
         \textbf{Study} & \textbf{Task} & \textbf{Architecture} & \textbf{Key result} \\
         \hline
@@ -262,8 +298,8 @@
         Gulshan et al.\ (2016) & Diabetic retinopathy grading from fundus photos & Inception v3, 128,000 images & AUC $= 0.99$; sensitivity/specificity exceeded human graders \\
         \hline
     \end{tblr}
-\captionof{table}{AI for Medical Image Analysis: Classification: Skin Cancer and Retinopathy.}
-\label{tab:ch11-healthcare-inline-04}
+\captionof{table}{Landmark medical imaging results. Read the last column with the base-rate arithmetic of this chapter in mind before translating it into clinical value.}
+\label{tab:health-imaging-results}
     Both use \textbf{transfer learning}: ImageNet-pretrained CNN fine-tuned on medical dataset; critical when labelled medical data is scarce.
 
 \end{v3topic}
@@ -325,7 +361,7 @@
 \begin{v3topic}{Regulatory Approval: FDA and CE}
     Medical AI software is regulated as a \textbf{Software as a Medical Device (SaMD)}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.2cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.2cm]|X[l]|X[l]|}}
         \hline
         \textbf{Framework} & \textbf{Regulation} & \textbf{Key Requirement} \\
         \hline
@@ -336,8 +372,8 @@
         \textbf{Both} & Adaptive AI challenge & Locked vs.\ continuously-learning algorithms; change management \\
         \hline
     \end{tblr}
-\captionof{table}{Ground Truth and Clinical Integration: Regulatory Approval: FDA and CE.}
-\label{tab:ch11-healthcare-inline-05}
+\captionof{table}{Regulatory frameworks for clinical software and their central requirement. Time-sensitive: verify against current primary sources.}
+\label{tab:health-regulatory}
     Key principle: \textbf{intended use} defines risk class; diagnostic AI imaging tools are typically Class II (FDA) / Class IIa--IIb (EU MDR).
 \end{v3topic}
 
@@ -350,7 +386,7 @@
 \begin{v3topic}{Medical Terminologies and Coding}
     Clinical NLP must map free text to standardised terminologies to enable structured analysis\textsuperscript{\cite[][p.~463]{juhnArtificialIntelligenceNLP2020}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,2cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2cm]|X[l]|X[l]|}}
         \hline
         \textbf{System} & \textbf{Scope} & \textbf{Use} \\
         \hline
@@ -365,8 +401,8 @@
         \textbf{UMLS} & Meta-thesaurus integrating all above & NLP concept extraction backbone \\
         \hline
     \end{tblr}
-\captionof{table}{Clinical Text Processing: Medical Terminologies and Coding.}
-\label{tab:ch11-healthcare-inline-06}
+\captionof{table}{Clinical terminologies and coding systems. Mapping between them is lossy, which is a recurring source of error in multi-site studies.}
+\label{tab:health-terminologies}
 
 \end{v3topic}
 \begin{v3topic}{Clinical Text Characteristics}
@@ -464,7 +500,7 @@
 \begin{v3topic}{Robotic-Assisted Surgery: da Vinci System}
     The \textbf{da Vinci Surgical System} (Intuitive Surgical) is the dominant robotic platform for minimally invasive surgery\textsuperscript{\cite[][pp.~1--30]{schweikardMedicalRobotics2015}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X[l]|}}
         \hline
         \textbf{Component} & \textbf{Function} \\
         \hline
@@ -477,8 +513,8 @@
         \textbf{Vision system} & Dual-channel laparoscope for stereoscopic 3-D view; AI-overlay for anatomy annotation \\
         \hline
     \end{tblr}
-\captionof{table}{Surgical Robotics: Robotic-Assisted Surgery: da Vinci System.}
-\label{tab:ch11-healthcare-inline-07}
+\captionof{table}{Components of a surgical robot system. These are teleoperated instruments, not autonomous agents --- the surgeon remains in the loop throughout.}
+\label{tab:health-surgical-robot}
     Benefits: reduced blood loss, shorter hospital stay, finer dexterity in confined spaces. Limitation: haptic feedback limited; high acquisition cost.
 
 \end{v3topic}
@@ -521,7 +557,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Privacy-Preserving ML Techniques}
-    \begin{tblr}{|Q[l,m,2.5cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,2.5cm]|X[l]|X[l]|}}
         \hline
         \textbf{Technique} & \textbf{Mechanism} & \textbf{Trade-off} \\
         \hline
@@ -536,8 +572,8 @@
         \textbf{Synthetic data} & GAN/VAE generates privacy-safe surrogates & Quality depends on generator; may not capture rare events \\
         \hline
     \end{tblr}
-\captionof{table}{Data Privacy and GDPR: Privacy-Preserving ML Techniques.}
-\label{tab:ch11-healthcare-inline-08}
+\captionof{table}{Privacy-preserving techniques and what each costs. There is no option in this table that is free in both accuracy and complexity.}
+\label{tab:health-privacy-ml}
     \textsuperscript{\cite[][p.~52]{liTwoDecadesFederated2020}}
 \end{v3topic}
 
@@ -566,7 +602,7 @@
 \begin{v3topic}{Fairness Metrics and Regulation}
     \textbf{Fairness cannot be reduced to a single metric} — multiple definitions are mutually incompatible\textsuperscript{\cite[][pp.~2025--2026]{mccradddenPatientSafetyQuality2020}}:
 \visualseparator
-    \begin{tblr}{|Q[l,m,3cm]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|Q[l,m,3cm]|X[l]|X[l]|}}
         \hline
         \textbf{Metric} & \textbf{Definition} & \textbf{Healthcare implication} \\
         \hline
@@ -579,8 +615,8 @@
         \textbf{Individual fairness} & Similar individuals treated similarly & No two patients get opposite decisions for irrelevant reasons \\
         \hline
     \end{tblr}
-\captionof{table}{Bias and Fairness in Medical AI: Fairness Metrics and Regulation.}
-\label{tab:ch11-healthcare-inline-09}
+\captionof{table}{Fairness metrics and their clinical meaning. The metrics are mutually incompatible in general, so choosing one is a clinical and ethical decision, not a technical one.}
+\label{tab:health-fairness}
     Regulatory guidance (FDA AI/ML action plan, EU AI Act Art.~9) requires pre-market fairness analysis.
 \end{v3topic}
 
@@ -650,6 +686,92 @@ Monitor input and outcome delay, override patterns, incidents, and calibration.
 A safe update plan includes rollback and communication, not only a newer model
 file.
 \end{v3topic}
+
+
+\begin{workedexample}[A screening test at a realistic prevalence]
+A deep-learning screening tool reports $95\,\%$ sensitivity and $95\,\%$
+specificity for a condition with prevalence $0.5\,\%$. Screen $100{,}000$
+people.
+
+\smallskip
+\begin{tblr}{
+  width=0.86\linewidth,
+  colspec={Q[l,0.24\linewidth] Q[c] Q[c] Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+& Has condition & Does not & Total \\
+Test positive & $475$ & $4{,}975$ & $5{,}450$ \\
+Test negative & $25$ & $94{,}525$ & $94{,}550$ \\
+Total & $500$ & $99{,}500$ & $100{,}000$ \\
+\end{tblr}
+\smallskip
+
+\[
+  \text{PPV} = \frac{475}{5{,}450} = \mathbf{8.7\,\%},
+  \qquad
+  \text{NPV} = \frac{94{,}525}{94{,}550} = 99.97\,\% .
+\]
+
+\emph{Read it.} Of the people told they may have the condition, fewer than one
+in eleven does. Nearly $5{,}000$ healthy people receive a positive result and
+proceed to confirmatory testing --- with its own cost, waiting time, risk, and
+anxiety. Meanwhile $25$ genuine cases are missed.
+
+\emph{This is not a bad model.} $95/95$ is excellent. The number that dominates
+is the prevalence, and no improvement in the model changes that arithmetic
+much: pushing specificity to $99\,\%$ raises PPV to about $32\,\%$, which is
+better and still means two of every three positives are false. This is why
+screening programmes target enriched populations rather than everyone, and why
+sensitivity and specificity must never be quoted to patients as if they were
+predictive values.
+\end{workedexample}
+
+\begin{cautionbox}[Medical imaging models learn the hospital]
+Documented shortcuts, all of which produced excellent held-out accuracy:
+a model detecting pneumonia from the scanner model rather than the lung, because
+the sicker hospital used a different machine; a model detecting malignancy from
+the presence of a surgical ruler, placed in photographs only when a
+dermatologist already suspected cancer; a model reading a chest drain --- which
+is placed \emph{because} of the condition being predicted --- as evidence of the
+condition; a model using image laterality markers or patient-position text
+burned into the corner of the frame.
+
+Each is invisible in a random split, because the shortcut is present on both
+sides. The defence is external validation: data from a different hospital,
+scanner, and population, collected under a different protocol. A model that has
+not been validated externally has not been validated.
+\end{cautionbox}
+
+\begin{practicallab}[Turn an accuracy claim into a utility claim]
+\textbf{Goal.} Take a published medical AI result and work out what it would
+mean in a clinic.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Find a paper reporting sensitivity and specificity for a diagnostic
+        model. Record both, and the study population.
+  \item Look up the prevalence in the population where it would actually be
+        deployed --- not the study's enriched cohort.
+  \item Build the $2\times2$ table for $100{,}000$ people. Compute PPV and NPV.
+  \item Compute the downstream volume: how many confirmatory tests per year,
+        at what cost and waiting time.
+  \item Ask what changes for a patient. If the model fires, what happens next
+        that would not otherwise have happened?
+  \item Check the paper for external validation. Note the scanner, site, and
+        demographic range of the training data.
+\end{enumerate}
+
+\textbf{Deliverable.} The $2\times2$ table, the PPV, the annual confirmatory
+test volume, and one sentence on whether the model changes any decision.
+\textbf{The point:} step 5 is the question a clinician will ask first and the
+one papers most often leave unanswered.
+\end{practicallab}
+
+\begin{checkpoint}
+A vendor reports AUC $0.94$ for sepsis prediction, validated on data from three
+hospitals. List three questions you would ask before a pilot, one of which must
+concern how the alert fits into an existing clinical workflow.
+\end{checkpoint}
 
 \chapterreview{Need}{Evidence}{Integrate}{Monitor}
 

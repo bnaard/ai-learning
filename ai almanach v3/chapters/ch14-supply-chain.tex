@@ -8,6 +8,38 @@
 \chapterlead{How can uncertain demand and constrained resources be coordinated?}{Observe}{Forecast}{Optimise}{Recover}{supply-chain}
 
 % ==== Section 1: Supply Chain Management Fundamentals ===============================================================
+\label{ch:supply-chain}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute safety stock from demand variability and a service-level
+        target;
+  \item explain why forecast accuracy and inventory performance are different
+        objectives;
+  \item choose a forecast error metric appropriate to intermittent demand;
+  \item describe the bullwhip effect and the information that dampens it;
+  \item state why a chronological split is mandatory for demand forecasting.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A supply chain is a long chain of guesses about the future, each one made
+before the previous one's outcome is known. Forecasting is the visible part;
+the decisions the forecast feeds --- how much to hold, when to reorder, how much
+capacity to book --- are where the money is. A forecast that is more accurate
+but arrives too late, or in the wrong unit, or without an uncertainty range,
+changes nothing.
+\end{plainlanguage}
+
+\begin{engineernote}
+Do not optimise the forecast. Optimise the decision. A $5\,\%$ improvement in
+mean absolute error is worth nothing if the reorder policy rounds to pallet
+quantities anyway. Conversely, an unchanged point forecast paired with a
+credible \emph{prediction interval} can cut safety stock substantially, because
+safety stock is driven by uncertainty rather than by the central estimate.
+\end{engineernote}
+
 \section{Supply Chain Management Fundamentals}
 
 % ---- 14.1.1 Supply Chain Concepts -----------------------------------------------------------------------
@@ -126,8 +158,8 @@
         Multi-Agent Systems          & Distributed agents coordinate autonomously            & Decentralised supplier negotiation, fleet dispatch \\
         \hline
     \end{tblr}
-\captionof{table}{AI Techniques for Supply Chains: AI Technique Overview.}
-\label{tab:ch14-supply-chain-inline-01}
+\captionof{table}{Machine-learning techniques mapped to supply-chain applications.}
+\label{tab:sc-techniques}
 
 \end{v3topic}
 
@@ -311,8 +343,8 @@
         Cycle service level (\textbf{Type~I})   & $P(\text{no stockout per cycle}) = F(s)$      & 90--99\% \\
         Fill rate (\textbf{Type~II})             & Fraction of demand satisfied from stock       & 95--99.5\% \\
     \end{tblr}
-\captionof{table}{Inventory Policies and Service Levels: Service Levels and Safety Stock.}
-\label{tab:ch14-supply-chain-inline-02}
+\captionof{table}{Service-level definitions and typical targets. The relationship to safety stock is convex, so each additional nine costs disproportionately more inventory.}
+\label{tab:sc-service-levels}
     \textbf{Safety stock} (SS) is the buffer held against demand and lead-time variability:
     $\text{SS} = z_\alpha \sqrt{L \sigma_d^2 + \mu_d^2 \sigma_L^2}$
     where $\sigma_d$ = demand std.\ dev., $\sigma_L$ = lead-time std.\ dev.
@@ -531,6 +563,79 @@ Stress lead time, supplier failure, correlated disruption, and policy delay.
 Compare the learned policy with a transparent robust or stochastic-optimisation
 baseline.
 \end{v3topic}
+
+
+\begin{workedexample}[Safety stock, and what a service level costs]
+Weekly demand averages $\mu = 100$ units with standard deviation
+$\sigma = 20$. Lead time is $L = 4$ weeks. Target service level $95\,\%$
+($z = 1.65$).
+
+\emph{Demand over the lead time.} Assuming independent weeks, variability adds
+in quadrature, not linearly:
+\[
+  \sigma_L = \sigma\sqrt{L} = 20\sqrt{4} = 40 \text{ units.}
+\]
+
+\emph{Safety stock and reorder point.}
+\[
+  SS = z\,\sigma_L = 1.65\times40 = 66 \text{ units},
+  \qquad
+  ROP = \mu L + SS = 400 + 66 = 466 \text{ units.}
+\]
+
+\emph{Now raise the service level to $99\,\%$} ($z = 2.33$):
+\[
+  SS = 2.33\times40 = 93 \text{ units.}
+\]
+
+\emph{Read the trade.} Four extra percentage points of service cost $27$ extra
+units --- a $41\,\%$ increase in safety stock. The relationship is convex: each
+additional nine of service costs disproportionately more inventory, and
+$100\,\%$ is unreachable at any finite stock. The $\sqrt{L}$ term also explains
+why halving lead time is usually worth more than improving the forecast: it
+reduces $\sigma_L$ by $29\,\%$ directly.
+\end{workedexample}
+
+\begin{cautionbox}[MAPE fails exactly where demand is hardest]
+Mean absolute percentage error divides by the actual value, so a week with zero
+demand makes it undefined and a week with demand of $1$ makes it explode.
+Intermittent demand --- spare parts, slow movers, long-tail SKUs --- is precisely
+where this happens, and it is precisely where forecasting is hardest. MAPE also
+penalises over-forecasting more heavily than under-forecasting, which quietly
+biases a model toward stockouts.
+
+Use MASE, which scales by a naive seasonal baseline and stays defined at zero,
+or evaluate the decision directly in units and euros. And always report the
+naive baseline --- ``last week's value'' beats a surprising number of deployed
+forecasting systems.
+\end{cautionbox}
+
+\begin{practicallab}[Forecast, then cost the forecast]
+\textbf{Goal.} Show that forecast accuracy and business value are different
+things.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Take any public demand series. Split \emph{chronologically}.
+  \item Establish two naive baselines: last value, and same period last year.
+  \item Fit one statistical and one machine-learning forecaster. Report MASE
+        for all four.
+  \item Now convert each forecast into a reorder decision using the safety
+        stock formula above, at a $95\,\%$ target.
+  \item Simulate the resulting inventory: units held, stockouts, and total cost
+        with holding and shortage costs you choose.
+  \item Rank the four methods by MASE and by cost. Do the rankings agree?
+\end{enumerate}
+
+\textbf{Deliverable.} Two ranked tables and one sentence on any disagreement
+between them. \textbf{The point:} step 6 disagrees more often than people
+expect, and when it does, the cost ranking is the one that matters.
+\end{practicallab}
+
+\begin{checkpoint}
+Your forecast MASE improves from $0.95$ to $0.88$. Give two reasons this might
+produce no inventory saving at all, and name the change that would.
+\end{checkpoint}
 
 \chapterreview{Observe}{Forecast}{Optimise}{Recover}
 

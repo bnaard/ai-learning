@@ -17,12 +17,47 @@
 \end{v3aside}
 
 % ---- 17.1 Legal Foundations for AI Practitioners ------------------------------------------------
+\label{ch:it-law}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item determine which risk tier a described system falls into under the EU AI
+        Act, and what that implies;
+  \item distinguish anonymisation from pseudonymisation and explain why only
+        one removes data from GDPR scope;
+  \item identify when a Data Protection Impact Assessment is required;
+  \item explain what a right to explanation does and does not require of a
+        model;
+  \item state which engineering artefacts a conformity assessment expects to
+        already exist.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Law is not a constraint applied after the system is built --- it decides what
+you may build, what data you may use, and what you must be able to show. The
+useful mental model for an engineer is that regulation mostly asks for
+\emph{evidence}: that you assessed risk, documented data provenance, tested for
+bias, and can explain a decision to the person it affected. Almost all of that
+is engineering work.
+\end{plainlanguage}
+
+\begin{engineernote}
+Regulation is time-sensitive in a way the rest of this book is not. Everything
+in this chapter has a date attached and may have changed since. Use it to learn
+the \emph{structure} of the obligations --- risk tiers, lawful basis,
+documentation duties, human oversight --- and verify current requirements against
+the primary legal text and qualified counsel before any consequential decision.
+Nothing here is legal advice.
+\end{engineernote}
+
 \section{Legal Foundations for AI Practitioners}
 
 \subsection{Key Areas of IT Law}
 
 \begin{v3topic}{IT Law: Areas and AI Relevance}
-    \begin{tblr}{|X[2]|X[3]|X[3]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[3]|X[3]|}}
         \hline
         \textbf{Area} & \textbf{Core Concern} & \textbf{Relevant for AI When\ldots} \\
         \hline
@@ -39,8 +74,8 @@
         Product Liability & Liability for defective products / AI & AI causing harm to individuals or property \\
         \hline
     \end{tblr}
-\captionof{table}{Key Areas of IT Law: IT Law: Areas and AI Relevance.}
-\label{tab:ch17-it-law-inline-01}
+\captionof{table}{Areas of IT law and the conditions under which each becomes relevant to an AI system.}
+\label{tab:law-areas}
     \textsuperscript{\cite[][pp.~1--25]{lloydInformationTechnologyLaw2020}}
 
 \end{v3topic}
@@ -51,7 +86,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Regulatory Bodies}
-    \begin{tblr}{|X[2]|X[4]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Body} & \textbf{Role} \\
         \hline
@@ -64,8 +99,8 @@
         FTC (US) & Enforces against unfair/deceptive AI practices in the US \\
         \hline
     \end{tblr}
-\captionof{table}{Key Areas of IT Law: Regulatory Bodies.}
-\label{tab:ch17-it-law-inline-02}
+\captionof{table}{Regulatory bodies and their remits.}
+\label{tab:law-bodies}
 \end{v3topic}
 
 % ---- 17.2 Data Protection and Privacy ----------------------------------------------------------
@@ -89,7 +124,8 @@
 \end{v3topic}
 \begin{v3topic}{Legal Bases for Processing (Art.\ 6)}
     Every processing activity requires one of six legal bases\textsuperscript{\cite[][pp.~31--50]{itgovernanceprivacyteamEUGDPR2020}}:
-    \begin{tblr}{|X[2]|X[4]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Basis} & \textbf{When to use} \\
         \hline
@@ -106,8 +142,8 @@
         Legitimate interests & Balance test; cannot override data subject rights \\
         \hline
     \end{tblr}
-\captionof{table}{GDPR Essentials: Legal Bases for Processing (Art.\ 6).}
-\label{tab:ch17-it-law-inline-03}
+\captionof{table}{The lawful bases for processing personal data. Consent is the most visible and often the weakest, because it can be withdrawn and must be freely given.}
+\label{tab:law-lawful-bases}
     For ML: \emph{legitimate interests} or \emph{consent} are most common, but each has risks.
 
 \end{v3topic}
@@ -130,8 +166,8 @@
         Object (Art.\ 21) & Opt out of processing & Must honour objections to profiling \\
         \hline
     \end{tblr}
-\captionof{table}{GDPR Essentials: Data Subject Rights.}
-\label{tab:ch17-it-law-inline-04}
+\captionof{table}{Data subject rights and what each requires of a system. Several are engineering obligations --- deletion and portability in particular must be designed for.}
+\label{tab:law-subject-rights}
 \end{v3topic}
 
 \subsection{GDPR for AI/ML}
@@ -154,7 +190,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Anonymisation vs.\ Pseudonymisation}
-    \begin{tblr}{|X[2]|X[4]|X[4]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|X[4]|}}
         \hline
         & \textbf{Anonymisation} & \textbf{Pseudonymisation} \\
         \hline
@@ -167,8 +203,8 @@
         Challenge & True anonymisation is technically hard (re-identification attacks) & Key management is a critical security requirement \\
         \hline
     \end{tblr}
-\captionof{table}{GDPR for AI/ML: Anonymisation vs.\ Pseudonymisation.}
-\label{tab:ch17-it-law-inline-05}
+\captionof{table}{Anonymisation against pseudonymisation. Only the first removes data from GDPR scope, and the bar for it is far higher than removing identifiers.}
+\label{tab:law-anon-pseudo}
     Re-identification of ``anonymised'' datasets via auxiliary information is a well-documented ML attack vector\textsuperscript{\cite[][pp.~1--15]{voightGDPRPracticalGuide2017}}.
 \end{v3topic}
 
@@ -176,7 +212,8 @@
 
 \begin{v3topic}{Transferring Data Outside the EEA}
     GDPR restricts transfers of personal data to countries outside the European Economic Area (EEA) unless adequate protection is ensured\textsuperscript{\cite[][pp.~200--230]{itgovernanceprivacyteamEUGDPR2020}}:
-    \begin{tblr}{|X[2]|X[4]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Mechanism} & \textbf{How it works} \\
         \hline
@@ -189,8 +226,8 @@
         Derogations (Art.\ 49) & Explicit consent, vital interests, public interest; narrow scope \\
         \hline
     \end{tblr}
-\captionof{table}{International Data Transfers: Transferring Data Outside the EEA.}
-\label{tab:ch17-it-law-inline-06}
+\captionof{table}{Mechanisms for international data transfer. Time-sensitive: this area changes with case law, so verify before relying on any row.}
+\label{tab:law-transfers}
     \textbf{Schrems II (2020)}: The ECJ invalidated the EU-US Privacy Shield, requiring additional safeguards even when using SCCs.
     The EU-US Data Privacy Framework (2023) replaced it, but faces ongoing legal challenges.
     Cloud-based ML training that sends EU personal data to US servers must address this.
@@ -242,7 +279,8 @@
           here. It is an orientation aid, not a substitute for classification
           under the Act.}{fig:eu-ai-act-risk-pyramid}
     }
-    \begin{tblr}{|X[2]|X[4]|X[4]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|X[4]|}}
         \hline
         \textbf{Risk Level} & \textbf{Examples} & \textbf{Requirements} \\
         \hline
@@ -258,8 +296,8 @@
         Minimal Risk & Spam filters, AI-assisted games & No specific obligations; voluntary codes encouraged \\
         \hline
     \end{tblr}
-\captionof{table}{EU AI Act: EU AI Act: Risk-Based Classification.}
-\label{tab:ch17-it-law-inline-07}
+\captionof{table}{The EU AI Act's risk tiers and the obligations attached to each. The tier follows from the use case, not from the technology.}
+\label{tab:law-ai-act-tiers}
 
 \end{v3topic}
 \begin{v3topic}{High-Risk AI: Key Obligations}
@@ -293,7 +331,7 @@
 \subsection{Other Jurisdictions}
 
 \begin{v3topic}{Global AI Regulatory Landscape}
-    \begin{tblr}{|X[2]|X[4]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Jurisdiction} & \textbf{Approach} \\
         \hline
@@ -311,8 +349,8 @@
         effective dates before relying on a comparison. \\
         \hline
     \end{tblr}
-\captionof{table}{Other Jurisdictions: Global AI Regulatory Landscape.}
-\label{tab:ch17-it-law-inline-08}
+\captionof{table}{Regulatory approaches by jurisdiction. Time-sensitive: verify against current primary sources before use.}
+\label{tab:law-global-landscape}
 \end{v3topic}
 
 % ---- 17.4 Intellectual Property and AI ---------------------------------------------------------
@@ -346,7 +384,7 @@
 \subsection{Software and Open Source Licensing}
 
 \begin{v3topic}{Open-Source Licences for AI Models}
-    \begin{tblr}{|X[2]|X[2]|X[6]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[2]|X[6]|}}
         \hline
         \textbf{Licence} & \textbf{Type} & \textbf{Key Obligations / Restrictions} \\
         \hline
@@ -363,8 +401,8 @@
         Llama Community Licence & Proprietary & Usage restrictions above certain user thresholds; not OSI-approved \\
         \hline
     \end{tblr}
-\captionof{table}{Software and Open Source Licensing: Open-Source Licences for AI Models.}
-\label{tab:ch17-it-law-inline-09}
+\captionof{table}{Licences encountered around models and datasets. Several widely-used model licences are not open-source licences at all, despite being described as such.}
+\label{tab:law-licences}
     \textsuperscript{\cite[][pp.~210--240]{lloydInformationTechnologyLaw2020}} Always check: (1) model licence, (2) training data licence, (3) code licence — they are independent.
 \end{v3topic}
 
@@ -387,7 +425,8 @@
 \end{v3topic}
 \begin{v3topic}{eIDAS and Electronic Signatures}
     \textbf{eIDAS} (Regulation 910/2014, updated eIDAS2 under way) establishes a framework for electronic identification and trust services across the EU\textsuperscript{\cite[][pp.~320--340]{savinEUInternetLaw2017}}:
-    \begin{tblr}{|X[2]|X[4]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Type} & \textbf{Legal Status} \\
         \hline
@@ -398,8 +437,8 @@
         Qualified electronic signature (QES) & Equivalent to handwritten signature; highest assurance \\
         \hline
     \end{tblr}
-\captionof{table}{Information Security Law: eIDAS and Electronic Signatures.}
-\label{tab:ch17-it-law-inline-10}
+\captionof{table}{Electronic signature types and their legal standing.}
+\label{tab:law-eidas}
     Relevant for AI systems that automate contract execution or identity verification.
 \end{v3topic}
 
@@ -408,7 +447,8 @@
 \begin{v3topic}{Liability Gaps in AI Systems}
     Traditional product liability (EU Product Liability Directive) requires proof of defect, damage, and causation.
     AI creates accountability gaps\textsuperscript{\cite[][pp.~350--370]{lloydInformationTechnologyLaw2020}}:
-    \begin{tblr}{|X[2]|X[4]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[2]|X[4]|}}
         \hline
         \textbf{Challenge} & \textbf{Explanation} \\
         \hline
@@ -421,8 +461,8 @@
         Evolving systems & Models that update post-deployment may differ from what was tested \\
         \hline
     \end{tblr}
-\captionof{table}{AI Liability: Liability Gaps in AI Systems.}
-\label{tab:ch17-it-law-inline-11}
+\captionof{table}{Where existing liability frameworks fit AI poorly, and why each gap is difficult to close.}
+\label{tab:law-liability-gaps}
     \textbf{EU AI Liability Directive (proposed, 2022)}: Would introduce a rebuttable \emph{presumption of causality} — if a claimant can show an AI system violated a legal duty and caused harm, the burden shifts to the provider to disprove causation.
     Combined with the AI Act's obligations, non-compliant high-risk AI faces both regulatory fines \emph{and} civil liability exposure.
 \end{v3topic}
@@ -466,5 +506,73 @@ The legal chapter is orientation, not legal advice; current official text and
 qualified counsel govern consequential decisions.
 Reassess when purpose, data, model, geography, users, or autonomy changes.
 \end{v3topic}
+
+
+\begin{cautionbox}[Anonymisation is a much higher bar than it sounds]
+Under GDPR, \emph{pseudonymised} data --- identifiers replaced by keys --- is
+still personal data and remains fully in scope. Only genuinely
+\emph{anonymised} data, where re-identification is reasonably impossible for
+anyone, falls outside. That bar is far higher than removing names.
+
+Well-documented re-identification results show why: individuals have been
+re-identified from a handful of ratings in a supposedly anonymous film dataset
+by cross-referencing a public review site; from date of birth, sex, and postcode
+alone; and from a few timestamped locations in mobility traces. High-dimensional
+behavioural data is close to uniquely identifying by nature, so dropping the
+name column changes almost nothing.
+
+The practical consequence: assume your dataset is personal data unless a
+specialist has certified otherwise, and treat model outputs as personal data too
+when they can be linked back to an individual.
+\end{cautionbox}
+
+\begin{cautionbox}[What a ``right to explanation'' actually demands]
+It is commonly read as requiring an interpretable model. That is not what the
+obligation says. What is required is meaningful information about the
+\emph{logic involved} and the significance and consequences for the person ---
+which a complex model can satisfy with the right documentation, and which a
+simple model can fail to satisfy if nobody wrote anything down.
+
+What you are expected to be able to produce: which categories of data fed the
+decision, what the model was optimising, the main factors affecting this
+particular outcome, how the person can contest it, and who is accountable for
+the review. Note that the last two are process obligations, not modelling ones
+--- and they are the ones most often missing.
+\end{cautionbox}
+
+\begin{practicallab}[Assemble the compliance dossier for a system you have built]
+\textbf{Goal.} Discover which required artefacts already exist and which have
+never been written.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Take any model you have built. Write one paragraph on its purpose and
+        who is affected by its outputs.
+  \item Classify it: does it involve personal data? Does it materially affect a
+        person's access to a service, employment, credit, or safety? Which risk
+        tier would that suggest?
+  \item Document the data: sources, lawful basis, collection dates, retention,
+        and whether consent covered this use.
+  \item Document the model: architecture, training data, known limitations,
+        measured performance \emph{by subgroup}, and the date of the last
+        evaluation.
+  \item Write the explanation a person would receive if the decision went
+        against them.
+  \item Define human oversight: who reviews, on what signal, with what power to
+        override, and how that is logged.
+  \item List every item above that did not already exist.
+\end{enumerate}
+
+\textbf{Deliverable.} The dossier, plus the gap list from step 7.
+\textbf{The point:} the gap list is the real output. Nearly all of it is
+engineering work that was cheaper to do during development than to reconstruct
+afterwards.
+\end{practicallab}
+
+\begin{checkpoint}
+A recruitment screening tool ranks candidates. Name the risk tier you would
+expect it to attract, two obligations that follow, and the one measurement you
+would run monthly.
+\end{checkpoint}
 
 \chapterreview{Classify}{Identify}{Document}{Reassess}

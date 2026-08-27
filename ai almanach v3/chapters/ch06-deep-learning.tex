@@ -1,769 +1,2481 @@
-% Generated semantic source for AI Almanach v3.
-% Edit v3 directly after initial generation; do not overwrite
-% editorial changes by rerunning the converter casually.
-
-% ==== Deep Learning =============================================================================
-    \chapter{Deep Learning}
-
-\chapterlead{How do layered differentiable models learn representations at scale?}{Represent}{Differentiate}{Optimise}{Scale}{deep-learning}
-
-% ==== Section 1: Introduction to Neural Networks and Deep Learning ===========================
-\section{Introduction to Neural Networks and Deep Learning}
-
-% ---- 6.1.1 The Biological Brain -------------------------------------------------------------
-\subsection{The Biological Brain}
-
-\begin{v3topic}{The Biological Neuron}
-    Artificial neural networks draw inspiration from the structure of biological neurons\textsuperscript{\cite[][pp.~27--35]{Kriesel2007NeuralNetworks}}.
-    A biological neuron consists of:
-    \begin{itemize}
-        \item \textbf{Dendrites}: tree-like input branches that receive signals from other neurons
-        \item \textbf{Soma} (cell body): integrates incoming signals
-        \item \textbf{Axon}: long output fibre that transmits the signal onward
-        \item \textbf{Synapses}: junctions between neurons; neurotransmitter release modulates connection strength
-    \end{itemize}
-
-\end{v3topic}
-\begin{v3topic}{From Biology to Computation}
-    The neuron's membrane rests at approximately $-70\,\text{mV}$.
-    When excitatory inputs push the potential above a threshold ($\approx -55\,\text{mV}$), an \textbf{action potential} (spike) propagates down the axon\textsuperscript{\cite[][pp.~29--31]{Kriesel2007NeuralNetworks}}.
-    Chemical synapses strengthen or weaken over time (\textbf{synaptic plasticity}), providing a biological basis for learning.
-\visualseparator
-    The \textbf{100-step rule}: the brain performs complex recognition in ${\sim}500\,\text{ms}$; neurons fire at ${\sim}100\,\text{Hz}$, allowing at most ${\sim}100$ sequential processing steps.
-    This implies massive parallelism --- motivating parallel architectures in artificial networks.
-\end{v3topic}
-
-% ---- 6.1.2 Perceptron and Multi-Layer Perceptrons -------------------------------------------
-\subsection{Perceptron and Multi-Layer Perceptrons}
-
-\begin{v3topic}{The Perceptron}
-    The \textbf{perceptron} (Rosenblatt, 1957) is the simplest artificial neuron\textsuperscript{\cite[][pp.~57--62]{Kriesel2007NeuralNetworks}}.
-    It computes a weighted sum of inputs and applies a binary threshold:
-    \begin{equation}
-        y = \begin{cases} 1 & \text{if } \mathbf{w}^\top \mathbf{x} + b \geq 0 \\ 0 & \text{otherwise} \end{cases}
-    \end{equation}
-    The \textbf{perceptron convergence theorem} guarantees that the learning rule will find a separating hyperplane if the data is linearly separable.
-
-\end{v3topic}
-\begin{v3topic}{The XOR Problem and MLPs}
-    Minsky \& Papert (1969) proved that a single perceptron \emph{cannot} solve the XOR problem --- it can only represent linearly separable functions\textsuperscript{\cite[][pp.~63--65]{Kriesel2007NeuralNetworks}}.
-    This limitation contributed to the first ``AI winter''.
-    The solution is the \textbf{Multi-Layer Perceptron (MLP)}: stacking layers with nonlinear activation functions creates networks that can represent arbitrarily complex decision boundaries.
-\visualseparator
-    \begin{center}
-    \begin{tikzpicture}[
-        node distance=0.8cm and 1.2cm,
-        neuron/.style={circle, draw, minimum size=0.6cm, font=\scriptsize, inner sep=1pt},
-        arr/.style={-{Stealth[length=1.5mm]}, thick}
-    ]
-        % Input layer
-        \node[neuron, fill=blue!15] (i1) {$x_1$};
-        \node[neuron, fill=blue!15, below=of i1] (i2) {$x_2$};
-        % Hidden layer
-        \node[neuron, fill=orange!20, right=of i1, yshift=-0.4cm] (h1) {$h_1$};
-        \node[neuron, fill=orange!20, below=of h1] (h2) {$h_2$};
-        % Output
-        \node[neuron, fill=green!20, right=of h1, yshift=-0.4cm] (o) {$y$};
-
-        \foreach \i in {i1,i2} \foreach \h in {h1,h2} \draw[arr] (\i) -- (\h);
-        \foreach \h in {h1,h2} \draw[arr] (\h) -- (o);
-
-        \node[below=0.15cm of i2, font=\sffamily\tiny] {Input};
-        \node[below=0.15cm of h2, font=\sffamily\tiny] {Hidden};
-        \node[below=0.55cm of o, font=\sffamily\tiny] {Output};
-    \end{tikzpicture}
-\captionof{figure}{Perceptron and Multi-Layer Perceptrons: The XOR Problem and MLPs.}
-\label{fig:ch06-deep-learning-inline-01}
-    \end{center}
-
-\end{v3topic}
-\begin{v3topic}{From Perceptrons to Deep Learning}
-    The transition from single perceptrons to deep networks involved three key advances\textsuperscript{\cite[][pp.~1--3]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item \textbf{Hebbian learning} $\to$ \textbf{error-correction rules} $\to$ \textbf{backpropagation} (Rumelhart, Hinton \& Williams, 1986): enabled training of multi-layer networks by propagating gradients backward through layers
-        \item \textbf{Nonlinear activations}: sigmoid, tanh, and later ReLU allow hidden layers to learn complex feature hierarchies
-        \item \textbf{Hardware and data}: GPUs and large datasets made training deep networks practical from $\sim$2012 onward
-    \end{itemize}
-    \textbf{Deep learning} refers to neural networks with many hidden layers that learn hierarchical representations --- from low-level features (edges, textures) to high-level concepts (objects, semantics).
-\end{v3topic}
-
-% ---- 6.1.3 Activation Functions -------------------------------------------------------------
-\subsection{Activation Functions}
-
-\begin{v3topic}{Why Activation Functions Matter}
-    Without nonlinear activation functions, a multi-layer network collapses to a single linear transformation\textsuperscript{\cite[][p.~17]{fleuretLittleBookDeep}}.
-    The choice of activation function affects gradient flow, training speed, and representational capacity.
-\visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|X[l]|X[l]|}
-        \hline
-        \textbf{Function} & \textbf{Formula} & \textbf{Range} & \textbf{Key Property} \\
-        \hline
-        Sigmoid & $\sigma(x) = \frac{1}{1+e^{-x}}$ & $(0, 1)$ & Vanishing gradients for $|x| \gg 0$ \\
-        \hline
-        Tanh & $\tanh(x)$ & $(-1, 1)$ & Zero-centred; still saturates \\
-        \hline
-        ReLU & $\max(0, x)$ & $[0, \infty)$ & Fast; can ``die'' (zero gradient for $x < 0$) \\
-        \hline
-        Leaky ReLU & $\max(\alpha x, x)$ & $(-\infty, \infty)$ & Prevents dying neurons ($\alpha \approx 0.01$) \\
-        \hline
-        GELU & $x \cdot \Phi(x)$ & $\approx (-0.17, \infty)$ & Smooth; used in Transformers \\
-        \hline
-        Softmax & $\frac{e^{x_i}}{\sum_j e^{x_j}}$ & $(0, 1)$, sums to 1 & Output layer for classification \\
-        \hline
-    \end{tblr}
-\captionof{table}{Activation Functions: Why Activation Functions Matter.}
-\label{tab:ch06-deep-learning-inline-01}
-
-\end{v3topic}
-\begin{v3topic}{ReLU: The Default Choice}
-    The \textbf{Rectified Linear Unit} $\mathrm{ReLU}(x) = \max(0, x)$ became the default activation after Glorot et al.\ (2011) showed it greatly improves training of deep networks\textsuperscript{\cite[][]{glorotUnderstandingDifficultyTraining}}.
-    Its gradient is either $0$ or $1$ --- avoiding the vanishing gradient problem that plagues sigmoid and tanh in deep architectures.
-\visualseparator
-    The \textbf{dying ReLU problem}: if a neuron's pre-activation is always negative, its gradient is permanently zero and it stops learning.
-    Leaky ReLU and parametric ReLU (PReLU) mitigate this by allowing a small gradient for negative inputs.
-
-\end{v3topic}
-\begin{v3topic}{Softmax for Classification}
-    For multi-class classification, the \textbf{softmax} function converts a vector of raw scores (logits) into a probability distribution\textsuperscript{\cite[][p.~18]{fleuretLittleBookDeep}}:
-    \begin{equation}
-        \mathrm{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{K} e^{x_j}}
-    \end{equation}
-    All outputs are positive and sum to $1$.
-    Combined with cross-entropy loss, softmax provides useful gradients for training classifiers. Its outputs sum to one, but they are not automatically calibrated probabilities; calibration must be evaluated on held-out data.
-\end{v3topic}
-
-
-% ==== Section 2: Network Architectures =======================================================
-\section{Network Architectures}
-
-% ---- 6.2.1 Feed-Forward Networks ------------------------------------------------------------
-\subsection{Feed-Forward Networks}
-
-\begin{v3topic}{Dense Layers}
-    A \textbf{feed-forward network} (also called a \emph{fully connected} or \emph{dense} network) consists of layers where every neuron connects to all neurons in the next layer\textsuperscript{\cite[][pp.~15--17]{fleuretLittleBookDeep}}.
-    Each layer computes:
-    \begin{equation}
-        Y = \sigma(WX + b)
-    \end{equation}
-    where $W$ is the weight matrix, $b$ the bias vector, and $\sigma$ a nonlinear activation.
-    Information flows strictly forward --- there are no cycles or feedback connections.
-
-\end{v3topic}
-\begin{v3topic}{Universal Approximation}
-    The \textbf{Universal Approximation Theorem} (Cybenko, 1989; Hornik, 1991) states that a feed-forward network with a single hidden layer containing sufficiently many neurons can approximate any continuous function on a compact set to arbitrary precision\textsuperscript{\cite[][p.~16]{fleuretLittleBookDeep}}.
-    However, ``sufficiently many'' may be exponentially large.
-    \textbf{Deeper networks} are exponentially more parameter-efficient than wider shallow ones for many function classes\textsuperscript{\cite[][pp.~8--12]{robertsPrinciplesDeepLearning2022}} --- this is the fundamental motivation for \emph{deep} learning.
-\end{v3topic}
-
-% ---- 6.2.2 Convolutional Networks -----------------------------------------------------------
-\subsection{Convolutional Networks}
-
-\begin{v3topic}{The Convolution Operation}
-    A \textbf{Convolutional Neural Network (CNN)} replaces dense matrix multiplications with convolution operations\textsuperscript{\cite[][pp.~43--48]{fleuretLittleBookDeep}}.
-    Small learned \textbf{filters} (kernels) slide across the input, computing dot products at each position.
-    Key properties:
-    \begin{itemize}
-        \item \textbf{Weight sharing}: the same filter is applied everywhere $\to$ translation equivariance
-        \item \textbf{Local connectivity}: each output depends only on a small input region
-        \item \textbf{Parameter efficiency}: far fewer parameters than a dense layer of the same input/output size
-    \end{itemize}
-
-\end{v3topic}
-\begin{v3topic}{Pooling and Feature Hierarchies}
-    \textbf{Pooling layers} (max or average) reduce spatial dimensions and provide a degree of translation invariance\textsuperscript{\cite[][pp.~49--50]{fleuretLittleBookDeep}}.
-    Stacking convolution and pooling layers creates a \textbf{feature hierarchy}: early layers detect edges and textures; deeper layers detect parts and objects.
-    The \textbf{receptive field} --- the input region that influences a single output unit --- grows with network depth.
-
-\end{v3topic}
-\begin{v3topic}{Landmark CNN Architectures}
-\visualseparator
-    \begin{tblr}{|Q[l,m]|Q[c,m]|X[l]|}
-        \hline
-        \textbf{Architecture} & \textbf{Year} & \textbf{Key Innovation} \\
-        \hline
-        LeNet-5 & 1998 & First successful CNN; handwritten digit recognition \\
-        \hline
-        AlexNet & 2012 & ReLU activation, dropout, GPU training; won ImageNet \\
-        \hline
-        VGG & 2014 & Uniform $3\times3$ filters; demonstrated depth matters \\
-        \hline
-        ResNet & 2015 & Skip connections; enabled training of 100+ layer networks \\
-        \hline
-    \end{tblr}
-\captionof{table}{Convolutional Networks: Landmark CNN Architectures.}
-\label{tab:ch06-deep-learning-inline-02}
-\end{v3topic}
-
-% ---- 6.2.3 Recurrent Networks, Memory Cells and LSTMs --------------------------------------
-\subsection{Recurrent Networks, Memory Cells and LSTMs}
-
-\begin{v3topic}{Recurrent Neural Networks}
-    A \textbf{Recurrent Neural Network (RNN)} processes sequential data by maintaining a hidden state $h_t$ that is updated at each time step\textsuperscript{\cite[][pp.~55--58]{fleuretLittleBookDeep}}:
-    \begin{equation}
-        h_t = \sigma(W_h h_{t-1} + W_x x_t + b)
-    \end{equation}
-    Weight sharing across time steps means the same parameters handle sequences of any length.
-    The \textbf{vanishing gradient problem} makes it difficult for standard RNNs to learn long-range dependencies: gradients are multiplied through many time steps and either vanish or explode.
-
-\end{v3topic}
-\begin{v3topic}{LSTM: Long Short-Term Memory}
-    The \textbf{LSTM} (Hochreiter \& Schmidhuber, 1997) solves the vanishing gradient problem with a \textbf{cell state} $c_t$ and three multiplicative gates\textsuperscript{\cite[][pp.~59--61]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item \textbf{Forget gate} $f_t$: decides what to discard from cell state
-        \item \textbf{Input gate} $i_t$: decides what new information to store
-        \item \textbf{Output gate} $o_t$: decides what to output from cell state
-    \end{itemize}
-\visualseparator
-    \begin{equation}
-        c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t, \quad h_t = o_t \odot \tanh(c_t)
-    \end{equation}
-    The cell state provides a ``highway'' for gradients to flow through many time steps unimpeded.
-
-\end{v3topic}
-\begin{v3topic}{GRU: Gated Recurrent Unit}
-    The \textbf{GRU} (Cho et al., 2014) simplifies the LSTM by merging the cell state and hidden state and using only two gates\textsuperscript{\cite[][p.~62]{fleuretLittleBookDeep}}:
-    a \emph{reset gate} $r_t$ (controls how much past state to forget) and an \emph{update gate} $z_t$ (controls the mix of old state and new candidate).
-    GRUs have fewer parameters than LSTMs and often achieve similar performance on many tasks.
-    Both architectures have been largely superseded by Transformer-based models for most sequence tasks, but remain relevant for streaming and low-latency applications.
-\end{v3topic}
-
-
-% ==== Section 3: Neural Network Training =====================================================
-\section{Neural Network Training}
-
-% ---- 6.3.1 Forward Pass and Loss Functions --------------------------------------------------
-\subsection{Forward Pass and Loss Functions}
-
-\begin{v3topic}{The Forward Pass}
-    During the \textbf{forward pass}, input data propagates through the network layer by layer\textsuperscript{\cite[][pp.~20--22]{fleuretLittleBookDeep}}.
-    Each layer applies its learned transformation (weights, bias, activation), producing intermediate representations.
-    The final layer produces a prediction $\hat{y}$ that is compared to the true target $y$ using a \textbf{loss function} $\mathcal{L}(y, \hat{y})$.
-
-\end{v3topic}
-\begin{v3topic}{Common Loss Functions}
-\visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|Q[l,m]|}
-        \hline
-        \textbf{Loss} & \textbf{Formula} & \textbf{Task} \\
-        \hline
-        MSE & $\frac{1}{N}\sum(y_i - \hat{y}_i)^2$ & Regression \\
-        \hline
-        MAE & $\frac{1}{N}\sum|y_i - \hat{y}_i|$ & Regression (robust) \\
-        \hline
-        Cross-entropy & $-\sum y_i \log \hat{y}_i$ & Classification \\
-        \hline
-        Binary CE & $-[y\log\hat{y} + (1{-}y)\log(1{-}\hat{y})]$ & Binary classif. \\
-        \hline
-    \end{tblr}
-\captionof{table}{Forward Pass and Loss Functions: Common Loss Functions.}
-\label{tab:ch06-deep-learning-inline-03}
-\end{v3topic}
-
-% ---- 6.3.2 Weight Initialization and Transfer Function --------------------------------------
-\subsection{Weight Initialization and Transfer Function}
-
-\begin{v3topic}{Why Initialization Matters}
-    Initializing all weights to zero causes a \textbf{symmetry problem}: all neurons in a layer compute the same output and receive the same gradient, so they never differentiate\textsuperscript{\cite[][pp.~8--10]{robertsPrinciplesDeepLearning2022}}.
-    Too-large initial weights cause activations and gradients to explode; too-small weights cause them to vanish.
-    Proper initialization keeps the variance of activations and gradients approximately constant across layers.
-
-\end{v3topic}
-\begin{v3topic}{Xavier and He Initialization}
-    \textbf{Xavier/Glorot initialization}\textsuperscript{\cite[][]{glorotUnderstandingDifficultyTraining}} (for sigmoid/tanh):
-    \begin{equation}
-        W \sim \mathcal{N}\!\left(0,\; \frac{2}{n_{\mathrm{in}} + n_{\mathrm{out}}}\right)
-    \end{equation}
-    \textbf{He initialization} (for ReLU):
-    \begin{equation}
-        W \sim \mathcal{N}\!\left(0,\; \frac{2}{n_{\mathrm{in}}}\right)
-    \end{equation}
-    These schemes ensure that the expected variance of the output of each layer matches the variance of its input, preventing signal degradation in deep networks.
-\end{v3topic}
-
-% ---- 6.3.3 Backpropagation and Gradient Descent ---------------------------------------------
-\subsection{Backpropagation and Gradient Descent}
-
-\begin{v3topic}{Backpropagation}
-    \textbf{Backpropagation} computes the gradient of the loss with respect to every parameter by applying the chain rule layer by layer, from output back to input\textsuperscript{\cite[][pp.~1--4]{lecunTheoreticalFrameworkBack}}.
-    For a network with layers $f_1, f_2, \ldots, f_L$:
-    \begin{equation}
-        \frac{\partial \mathcal{L}}{\partial W_l} = \frac{\partial \mathcal{L}}{\partial a_L} \cdot \frac{\partial a_L}{\partial a_{L-1}} \cdots \frac{\partial a_{l+1}}{\partial a_l} \cdot \frac{\partial a_l}{\partial W_l}
-    \end{equation}
-    Each layer's local Jacobian is computed once and reused --- making the algorithm $O(N)$ in the number of parameters.
-
-\end{v3topic}
-\begin{v3topic}{Gradient Descent Variants}
-    Backpropagation computes gradients; an \textbf{optimiser} uses them to update weights\textsuperscript{\cite[][pp.~22--25]{fleuretLittleBookDeep}}.
-\visualseparator
-    \begin{tblr}{|Q[l,m]|X[l]|}
-        \hline
-        \textbf{Optimiser} & \textbf{Update Rule / Key Idea} \\
-        \hline
-        SGD & $\theta \leftarrow \theta - \eta \nabla\mathcal{L}$ \\
-        \hline
-        SGD + Momentum & Accumulates past gradients; smooths updates \\
-        \hline
-        RMSprop & Per-parameter adaptive learning rate \\
-        \hline
-        Adam & Momentum + RMSprop; default choice\textsuperscript{\cite[][]{kingmaAdamMethodStochastic2017}} \\
-        \hline
-    \end{tblr}
-\captionof{table}{Backpropagation and Gradient Descent: Gradient Descent Variants.}
-\label{tab:ch06-deep-learning-inline-04}
-
-\end{v3topic}
-\begin{v3topic}{Mini-Batch Gradient Descent}
-    In practice, gradients are computed on \textbf{mini-batches} (subsets of the training data, typically 32--512 examples)\textsuperscript{\cite[][p.~23]{fleuretLittleBookDeep}}.
-    This provides a compromise between full-batch gradient descent (low noise, expensive) and single-sample SGD (high noise, cheap).
-    Mini-batch SGD introduces beneficial stochastic noise that helps escape shallow local minima and saddle points.
-    The \textbf{learning rate} $\eta$ is the most important hyperparameter: too large $\to$ divergence; too small $\to$ slow convergence.
-\end{v3topic}
-
-% ---- 6.3.4 Training Loop -------------------------------------------------------------------
-\subsection{Training Loop}
-
-\begin{v3topic}{Epochs and Batches}
-    The training process iterates through the dataset in structured passes\textsuperscript{\cite[][pp.~24--26]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item \textbf{Epoch}: one complete pass through the entire training set
-        \item \textbf{Iteration/step}: one parameter update using a single mini-batch
-        \item \textbf{Batch size}: number of examples per mini-batch; affects gradient quality and memory usage
-    \end{itemize}
-    A typical training run uses tens to hundreds of epochs, with the dataset reshuffled between epochs.
-
-\end{v3topic}
-\begin{v3topic}{Data Splits and Early Stopping}
-    The data is split into \textbf{training}, \textbf{validation}, and \textbf{test} sets (common split: 70/15/15 or 80/10/10)\textsuperscript{\cite[][p.~26]{fleuretLittleBookDeep}}.
-    During training, the model is evaluated on the validation set after each epoch.
-    \textbf{Early stopping}: if validation loss does not improve for a set number of epochs (``patience''), training halts and the model reverts to the best checkpoint.
-    This is one of the most effective and simplest forms of regularisation.
-\visualseparator
-    \textbf{Learning rate scheduling} further improves training:
-    \begin{itemize}
-        \item \emph{Step decay}: reduce $\eta$ by a factor at fixed intervals
-        \item \emph{Cosine annealing}: smoothly decrease $\eta$ following a cosine curve
-        \item \emph{Warmup}: start with a very small $\eta$ and linearly increase it over the first few epochs
-    \end{itemize}
-\end{v3topic}
-
-% ---- 6.3.5 Regularization and Overtraining --------------------------------------------------
-\subsection{Regularization and Overtraining}
-
-\begin{v3topic}{Overfitting}
-    A model \textbf{overfits} when it memorises the training data (low training loss) but generalises poorly to unseen data (high validation loss)\textsuperscript{\cite[][pp.~27--29]{fleuretLittleBookDeep}}.
-    Deep networks with millions of parameters are particularly prone to overfitting when training data is limited.
-    \textbf{Regularisation} techniques constrain the model's capacity to reduce overfitting.
-
-\end{v3topic}
-\begin{v3topic}{Dropout}
-    During each training step, \textbf{dropout} randomly sets a fraction $p$ of neuron activations to zero\textsuperscript{\cite[][p.~28]{fleuretLittleBookDeep}}.
-    This prevents co-adaptation: neurons cannot rely on specific other neurons being active, forcing redundant representations.
-    At test time, dropout is turned off and activations are scaled by $(1 - p)$ to maintain expected values.
-
-\end{v3topic}
-\begin{v3topic}{Weight Regularisation}
-    Adding a penalty term to the loss discourages large weights:
-    \begin{itemize}
-        \item \textbf{L2} (weight decay): $\mathcal{L}_{\mathrm{reg}} = \mathcal{L} + \lambda \sum w_i^2$ --- encourages small, distributed weights
-        \item \textbf{L1}: $\mathcal{L}_{\mathrm{reg}} = \mathcal{L} + \lambda \sum |w_i|$ --- encourages sparsity (many weights exactly zero)
-    \end{itemize}
-    In practice, L2 regularisation (weight decay) is the most commonly used, often built directly into the optimiser.
-
-\end{v3topic}
-\begin{v3topic}{Batch Normalization}
-    \textbf{Batch Normalization} (BN)\textsuperscript{\cite[][]{ioffeBatchNormalizationAccelerating2015}} normalises the activations of each layer across the mini-batch to have zero mean and unit variance, then applies learned scale $\gamma$ and shift $\beta$ parameters.
-    Benefits: stabilises training, allows higher learning rates, and provides a mild regularisation effect.
-    BN is applied between the linear transformation and the activation function.
-
-\end{v3topic}
-\begin{v3topic}{Data Augmentation}
-    \textbf{Data augmentation} artificially expands the training set by applying label-preserving transformations\textsuperscript{\cite[][p.~29]{fleuretLittleBookDeep}}:
-    random flips, rotations, crops, colour jitter, or more advanced techniques like mixup and cutout.
-    This is particularly effective for image tasks and can reduce overfitting significantly without changing the model architecture.
-\end{v3topic}
-
-
-% ==== Section 4: Alternative Training Methods ================================================
-\section{Alternative Training Methods}
-
-% ---- 6.4.1 Attention -----------------------------------------------------------------------
-\subsection{Attention}
-
-\begin{v3topic}{Attention: Why It Matters}
-    Fully connected layers cannot handle variable-length inputs; convolutional layers propagate information only locally.
-    \textbf{Attention layers} address this by computing, for every component of the output, a weighted average over the \emph{entire} input tensor --- regardless of distance\textsuperscript{\cite[][p.~73]{fleuretLittleBookDeep}}.
-    This makes them the key building block for Transformers and modern large language models.
-
-\end{v3topic}
-\begin{v3topic}{Query, Key, Value}
-    The \textbf{attention operator} att$(Q, K, V)$ takes three tensors\textsuperscript{\cite[][pp.~74--76]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item $Q \in \mathbb{R}^{N^q \times D^{qk}}$ --- \emph{Queries}
-        \item $K \in \mathbb{R}^{N^{kv} \times D^{qk}}$ --- \emph{Keys}
-        \item $V \in \mathbb{R}^{N^{kv} \times D^v}$ --- \emph{Values}
-    \end{itemize}
-    For each query $Q_n$, attention scores $A_{n,m}$ measure how well $Q_n$ matches each key $K_m$.
-    The retrieved value $Y_n = \sum_m A_{n,m} V_m$ is a weighted average of all values.
-
-\end{v3topic}
-\begin{v3topic}{Scaled Dot-Product Attention}
-    Attention scores are computed as a scaled softmax of dot-products between queries and keys\textsuperscript{\cite[][p.~3]{vaswaniAttentionAllYou2023}}.
-    The scaling factor $1/\!\sqrt{D^{qk}}$ keeps the dot products in a range where softmax has useful gradients.
-\visualseparator
-    \begin{equation}
-        \mathrm{Attention}(Q, K, V)
-        = \mathrm{softmax}\!\left(\frac{QK^{\!\top}}{\sqrt{D^{qk}}}\right) V
-    \end{equation}
-
-\end{v3topic}
-\begin{v3topic}{Self- and Cross-Attention}
-    In a \textbf{self-attention} block, the three input sequences $X^q$, $X^k$, $X^v$ are identical\textsuperscript{\cite[][p.~79]{fleuretLittleBookDeep}}.
-    Every position can gather information from every other position in the same sequence --- enabling global context.
-
-    In a \textbf{cross-attention} block, $X^k$ and $X^v$ come from a different sequence (e.g., the encoder representation), while $X^q$ comes from the current sequence (e.g., the decoder).
-
-\end{v3topic}
-\begin{v3topic}{Multi-Head Attention}
-    A single attention head averages over all value positions and cannot attend to multiple subspaces simultaneously.
-    \textbf{Multi-Head Attention}\textsuperscript{\cite[][pp.~4--5]{vaswaniAttentionAllYou2023}} runs $H$ attention heads in parallel, each with its own learned projections $W^q_h, W^k_h, W^v_h$, then concatenates and projects:
-    \begin{equation}
-        \mathrm{MultiHead}(Q,K,V) = \mathrm{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_H)\,W^O
-    \end{equation}
-    Each head can learn to attend to a different type of relationship (syntactic, semantic, positional).
-\end{v3topic}
-
-% ---- 6.4.2 Transformer Architecture ---------------------------------------------------------
-\subsection{Transformer Architecture}
-
-\begin{v3topic}{Why Transformers Replaced RNNs}
-    Recurrent networks process sequences step-by-step, requiring $O(n)$ sequential operations --- preventing parallelism and making long-range dependencies hard to learn\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
-    Self-attention layers connect all positions with $O(1)$ sequential operations and constant path length between any two positions.
-    Transformers train significantly faster on modern hardware and scale to billions of parameters\textsuperscript{\cite[][p.~93]{fleuretLittleBookDeep}}.
-
-\end{v3topic}
-\begin{v3topic}{Encoder--Decoder Structure}
-    The original Transformer\textsuperscript{\cite[][p.~2]{vaswaniAttentionAllYou2023}} is designed for sequence-to-sequence tasks (e.g., translation):
-    \begin{itemize}
-        \item \textbf{Encoder:} $N$ identical layers, each with (1) multi-head self-attention and (2) position-wise feed-forward network (FFN); residual connections and layer normalisation around each sub-layer
-        \item \textbf{Decoder:} $N$ layers with (1) masked causal self-attention, (2) cross-attention over encoder output, and (3) FFN; causal masking prevents attending to future tokens
-    \end{itemize}
-
-\end{v3topic}
-\begin{v3topic}{Transformer Block Diagram}
-    The encoder processes the full input in parallel; the decoder generates output tokens autoregressively.
-\visualseparator
-    \begin{center}
-    \begin{tikzpicture}[
-        node distance=0.25cm and 0.7cm,
-        box/.style={draw, rounded corners=2pt, minimum width=2.8cm, minimum height=0.55cm,
-                    font=\sffamily\scriptsize, align=center, fill=blue!10},
-        addnorm/.style={draw, rounded corners=2pt, minimum width=2.8cm, minimum height=0.45cm,
-                    font=\sffamily\scriptsize, align=center, fill=orange!15},
-        lbl/.style={font=\sffamily\scriptsize, text=gray},
-        arr/.style={-{Stealth[length=2mm]}, thick},
-        brace/.style={decorate, decoration={brace, amplitude=4pt}}
-    ]
-        % ---- ENCODER (left column) ----
-        \node[box] (emb_e)                          {Embedding};
-        \node[box, above=of emb_e] (pe_e)            {+ Pos.\ Encoding};
-        \node[addnorm, above=of pe_e] (an1_e)       {Add \& Norm};
-        \node[box, above=of an1_e] (mha_e)          {Multi-Head\\Self-Attention};
-        \node[addnorm, above=of mha_e] (an2_e)      {Add \& Norm};
-        \node[box, above=of an2_e] (ffn_e)          {Feed Forward};
-        \node[addnorm, above=of ffn_e] (an3_e)      {Add \& Norm};
-        \node[lbl, left=0.15cm of mha_e] {$\times N$};
-
-        % ---- DECODER (right column) ----
-        \node[box, right=2.5cm of emb_e] (emb_d)         {Embedding};
-        \node[box, above=of emb_d] (pe_d)           {+ Pos.\ Encoding};
-        \node[addnorm, above=of pe_d] (an1_d)      {Add \& Norm};
-        \node[box, above=of an1_d] (cmha_d)        {Masked\\Self-Attention};
-        \node[addnorm, above=of cmha_d] (an2_d)    {Add \& Norm};
-        \node[box, above=of an2_d] (xatt_d)        {Cross-Attention};
-        \node[addnorm, above=of xatt_d] (an3_d)    {Add \& Norm};
-        \node[box, above=of an3_d] (ffn_d)         {Feed Forward};
-        \node[addnorm, above=of ffn_d] (an4_d)     {Add \& Norm};
-        \node[lbl, right=0.15cm of cmha_d] {$\times N$};
-
-        % Output
-        \node[box, above=0.3cm of an4_d, fill=green!15] (out) {Linear + Softmax};
-
-        % Encoder arrows
-        \draw[arr] (emb_e) -- (pe_e);
-        \draw[arr] (pe_e) -- (an1_e);
-        \draw[arr] (an1_e) -- (mha_e);
-        \draw[arr] (mha_e) -- (an2_e);
-        \draw[arr] (an2_e) -- (ffn_e);
-        \draw[arr] (ffn_e) -- (an3_e);
-
-        % Decoder arrows
-        \draw[arr] (emb_d) -- (pe_d);
-        \draw[arr] (pe_d) -- (an1_d);
-        \draw[arr] (an1_d) -- (cmha_d);
-        \draw[arr] (cmha_d) -- (an2_d);
-        \draw[arr] (an2_d) -- (xatt_d);
-        \draw[arr] (xatt_d) -- (an3_d);
-        \draw[arr] (an3_d) -- (ffn_d);
-        \draw[arr] (ffn_d) -- (an4_d);
-        \draw[arr] (an4_d) -- (out);
-
-        % Cross-attention connection from encoder
-        \draw[arr, dashed, gray] (an3_e.east) .. controls +(0.4,0.8) and +(-0.4,0) .. (xatt_d.west)
-            node[midway, above, font=\sffamily\tiny, gray] {K, V};
-
-        % Input labels
-        \node[lbl, below=0.1cm of emb_e] {Source tokens};
-        \node[lbl, below=0.1cm of emb_d] {Target tokens (shifted)};
-        \node[lbl, above=0.1cm of out] {Output probs};
-    \end{tikzpicture}
-\captionof{figure}{Transformer Architecture: Transformer Block Diagram.}
-\label{fig:ch06-deep-learning-inline-02}
-    \end{center}
-
-\end{v3topic}
-\begin{v3topic}{Positional Encoding}
-    Attention is permutation-invariant --- it has no notion of sequence order.
-    Position information is injected by adding a \textbf{positional encoding} to the input embeddings\textsuperscript{\cite[][pp.~81--82]{fleuretLittleBookDeep}}.
-    The original Transformer uses sinusoidal encoding:
-    \begin{equation}
-        \mathrm{PE}_{t,2i} = \sin\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right),
-        \quad
-        \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10^{4 \cdot 2i/D}}\right)
-    \end{equation}
-    The deterministic encoding can be evaluated at positions beyond those observed during training, but useful length extrapolation is an empirical property rather than a mathematical guarantee. Learned positional embeddings performed similarly in the original experiments\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}.
-
-\end{v3topic}
-\begin{v3topic}{GPT and BERT: Decoder- and Encoder-Only}
-    Modern large language models are typically \emph{decoder-only} or \emph{encoder-only}\textsuperscript{\cite[][pp.~97--99]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item \textbf{GPT} (Radford et al.\ 2018): decoder-only; stacked causal self-attention blocks; trained autoregressively on next-token prediction; scales to hundreds of billions of parameters
-        \item \textbf{BERT}\textsuperscript{\cite[][]{devlinBERTPretrainingDeep2019}} (Devlin et al.\ 2019): encoder-only; bidirectional; trained on masked language modeling and next-sentence prediction
-    \end{itemize}
-\end{v3topic}
-
-% ---- 6.4.3 Feedback Alignment ---------------------------------------------------------------
-\subsection{Feedback Alignment}
-
-\begin{v3topic}{The Weight Transport Problem}
-    Standard backpropagation transmits error signals using the \emph{transpose} of the forward weight matrix $W^\top$\textsuperscript{\cite[][p.~3]{fischerVorlesungGrundlagenNeuronale2024}}.
-    This requires the backward path to have exact knowledge of every forward weight --- a condition with no known biological mechanism, called the \textbf{weight transport problem}.
-
-\end{v3topic}
-\begin{v3topic}{Feedback Alignment}
-    Lillicrap et al.\ (2016) showed that replacing $W^\top$ with a \textbf{fixed random feedback matrix} $B$ still produces learning.
-    The forward weights $W$ gradually align with $B$ during training --- the network effectively ``shapes itself'' to match the random feedback.
-    \textbf{Direct Feedback Alignment} (N{\o}kland, 2016) extends this further: each layer receives error signals \emph{directly} from the output layer via separate random matrices, bypassing the chain entirely.
-\end{v3topic}
-
-% ---- 6.4.4 Synthetic Gradients --------------------------------------------------------------
-\subsection{Synthetic Gradients}
-
-\begin{v3topic}{Decoupled Neural Interfaces}
-    In standard backpropagation, no layer can update until the full forward and backward passes complete --- a constraint called \textbf{update locking}.
-    Jaderberg et al.\ (2017) introduced \textbf{Decoupled Neural Interfaces (DNI)}: a small auxiliary network $M_i$ attached to each layer that \emph{predicts} the gradient $\partial\mathcal{L}/\partial h_i$ without waiting for it to arrive.
-    The layer updates immediately using this synthetic gradient; $M_i$ is itself trained by the true gradient when it eventually arrives.
-    This enables asynchronous, modular training of deep networks --- each layer acts as an independent learning module with a local objective.
-\visualseparator
-    \begin{center}
-    \begin{tikzpicture}[
-        node distance=0.35cm and 0.5cm,
-        lay/.style={draw, rounded corners, minimum width=1.8cm, minimum height=0.6cm,
-                    font=\sffamily\scriptsize, fill=blue!10},
-        dni/.style={draw, rounded corners, minimum width=1.4cm, minimum height=0.5cm,
-                    font=\sffamily\scriptsize, fill=orange!20},
-        arr/.style={-{Stealth[length=2mm]}, thick},
-        darr/.style={-{Stealth[length=2mm]}, dashed, gray}
-    ]
-        \node[lay] (L1) {Layer 1};
-        \node[lay, right=of L1] (L2) {Layer 2};
-        \node[lay, right=of L2] (L3) {Layer 3};
-        \node[lay, right=of L3] (loss) {Loss};
-
-        \node[dni, below=of L1] (M1) {DNI $M_1$};
-        \node[dni, below=of L2] (M2) {DNI $M_2$};
-
-        \draw[arr] (L1) -- (L2) node[midway, above, font=\sffamily\tiny] {$h_1$};
-        \draw[arr] (L2) -- (L3) node[midway, above, font=\sffamily\tiny] {$h_2$};
-        \draw[arr] (L3) -- (loss);
-
-        \draw[arr] (L1) -- (M1);
-        \draw[arr] (L2) -- (M2);
-
-        \draw[darr] (M1) -- (L1) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_1$};
-        \draw[darr] (M2) -- (L2) node[midway, right, font=\sffamily\tiny, gray] {$\tilde{\delta}_2$};
-    \end{tikzpicture}
-\captionof{figure}{Synthetic Gradients: Decoupled Neural Interfaces.}
-\label{fig:ch06-deep-learning-inline-03}
-    \end{center}
-\end{v3topic}
-
-% ---- 6.4.5 Decoupled Network Interfaces -----------------------------------------------------
-\subsection{Decoupled Network Interfaces}
-
-\begin{v3topic}{Local Learning Signals}
-    The full Decoupled Neural Interface framework removes both \emph{update locking} (no backward pass needed) and \emph{forward locking} (synthetic activations can substitute for real forward signals).
-    Each module then has a \textbf{local learning signal} and can train asynchronously.
-    This is more aligned with how biological neural circuits are thought to operate --- local Hebbian-like updates rather than a global error signal broadcast through the entire network\textsuperscript{\cite[][p.~2]{fischerVorlesungGrundlagenNeuronale2024}}.
-    In practice, synthetic gradients are primarily a research contribution; standard backpropagation remains the dominant approach.
-\end{v3topic}
-
-
-% ==== Section 5: Further Network Architectures ===============================================
-\section{Further Network Architectures}
-
-% ---- 6.5.1 GANs -----------------------------------------------------------------------------
+% ===========================================================================
+% Chapter 6 -- Deep Learning
+% Rebuilt in the v3 didactic standard: every mechanism gets a plain-language
+% model, a formal statement, a worked numeric example, an adjacent figure,
+% a failure mode, and a retrieval prompt.
+% ===========================================================================
+
+\chapter{Deep Learning}
+\label{ch:deep-learning}
+
+\chapterlead{How do layered differentiable models learn representations at
+scale?}{Represent}{Differentiate}{Optimise}{Scale}{deep-learning}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item explain why a stack of linear layers collapses, and prove it in two
+        lines;
+  \item compute the output shape and parameter count of a dense, convolutional,
+        or attention layer before writing any code;
+  \item execute one backpropagation step by hand and verify that the loss
+        decreases;
+  \item calculate a scaled dot-product attention output from three tokens with
+        pencil and paper;
+  \item name the assumption that each regulariser enforces, and the failure it
+        cannot prevent;
+  \item choose between an RNN, a CNN, and a Transformer from the structure of
+        the data rather than from fashion;
+  \item estimate inference memory from a key--value cache and explain why
+        parameter count alone is not a deployment metric;
+  \item distinguish claims supported by primary evidence from claims that are
+        folklore.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A deep network is a long recipe made only of two repeating steps: multiply by
+a matrix, then bend the result with a simple nonlinear function. Nothing in the
+recipe is individually clever. What makes it powerful is that every number in
+every matrix can be nudged, and that we have an efficient bookkeeping method
+(backpropagation) for working out which way to nudge each one. Learning is a
+very large number of very small, very well-informed corrections.
+\end{plainlanguage}
+
+\begin{engineernote}
+Keep one habit from the first page to the last: \emph{track the shape}. Most
+deep-learning bugs are not conceptual, they are a transposed matrix or a
+forgotten batch dimension. If you can state the shape of the tensor entering
+and leaving every block, you can debug almost anything in this chapter.
+\end{engineernote}
+
+% ===========================================================================
+\section{From Biological Neurons to the Perceptron}
+% ===========================================================================
+
+\subsection{The Biological Starting Point}
+
+Artificial neural networks borrow a metaphor, not a
+blueprint\textsuperscript{\cite[][pp.~27--35]{Kriesel2007NeuralNetworks}}. A
+biological neuron collects signals through \keyterm{dendrites}, integrates them
+in the \keyterm{soma}, and---if the integrated membrane potential crosses a
+threshold---emits an \keyterm{action potential} down its \keyterm{axon} to
+\keyterm{synapses} that contact other neurons. The resting potential sits near
+$-70\,\text{mV}$ and the firing threshold near
+$-55\,\text{mV}$\textsuperscript{\cite[][pp.~29--31]{Kriesel2007NeuralNetworks}}.
+Synaptic strengths change over time, which is the biological anchor for the
+word \emph{learning}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  >={Stealth[length=2mm]},
+  soma/.style={circle,draw=AlmanachTeal,fill=AlmanachMist,minimum size=13mm,
+    font=\sffamily\scriptsize,align=center},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  sig/.style={->,thick,draw=AlmanachOchre}]
+  \node[soma] (s) at (0,0) {soma};
+  \foreach \a/\n in {150/1,180/2,210/3}{
+    \draw[sig] ($(s)+(\a:20mm)$) -- ($(s)+(\a:7.5mm)$);
+    \fill[AlmanachTeal!70] ($(s)+(\a:20mm)$) circle (0.7mm);}
+  \node[lbl,left=21mm of s,align=center] {dendrites\\(inputs $x_i$)};
+  \draw[very thick,draw=AlmanachTeal] (s.east) -- ++(26mm,0) coordinate (ax);
+  \node[lbl,above] at ($(s.east)+(13mm,1mm)$) {axon};
+  \foreach \d in {-4,0,4}{\draw[sig] (ax) -- ++(7mm,\d mm);}
+  \node[lbl,right=8mm of ax,align=center] {synapses\\(outputs)};
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror},AlmanachInk!55]
+    ($(s.south)+(-8mm,-3mm)$) -- ($(s.south)+(8mm,-3mm)$)
+    node[midway,below=3pt,lbl,align=center]
+    {integrate, then fire\\if $>-55$\,mV};
+\end{tikzpicture}
+\caption{The biological neuron reduced to the three operations an artificial
+unit keeps: weighted collection of inputs, integration into a single scalar,
+and a threshold that decides whether to pass a signal on. Everything else about
+the cell is discarded by the model.}
+\label{fig:dl-biological-neuron}
+\end{figure}
+
+\begin{v3aside}[The 100-step rule]
+The brain performs complex recognition in roughly $500\,\text{ms}$, while
+neurons fire at roughly $100\,\text{Hz}$. At most about 100 sequential
+processing steps therefore fit into a recognition
+event\textsuperscript{\cite[][pp.~29--31]{Kriesel2007NeuralNetworks}}. Whatever
+the brain is doing, it cannot be a long serial program. It must be massively
+parallel and shallow in sequence---which is exactly the shape of a layered
+network evaluated on parallel hardware.
+\end{v3aside}
+
+\begin{cautionbox}[The metaphor has a hard limit]
+Do not reason about artificial networks from neuroscience. Real neurons spike
+in continuous time, learn through local chemistry, and do not compute gradients
+of a global loss. The resemblance ends after \cref{fig:dl-biological-neuron}.
+When this chapter says ``neuron'' it means a weighted sum followed by a scalar
+function, nothing more.
+\end{cautionbox}
+
+\subsection{The Perceptron}
+
+Rosenblatt's \keyterm{perceptron} is the smallest complete
+unit\textsuperscript{\cite{rosenblattPerceptronProbabilisticModel1958},
+\cite[][pp.~57--62]{Kriesel2007NeuralNetworks}}. It scores an input by a
+weighted sum and thresholds the result:
+\begin{equation}
+  y =
+  \begin{cases}
+    1 & \text{if } \mathbf{w}^{\!\top}\mathbf{x} + b \geq 0,\\[2pt]
+    0 & \text{otherwise.}
+  \end{cases}
+  \label{eq:dl-perceptron}
+\end{equation}
+
+Geometrically, $\mathbf{w}^{\!\top}\mathbf{x} + b = 0$ is a
+\keyterm{hyperplane}. The weight vector $\mathbf{w}$ is its normal direction and
+$b$ shifts it away from the origin. The \keyterm{perceptron convergence
+theorem} guarantees that the learning rule finds such a separating hyperplane in
+a finite number of updates \emph{provided one exists}.
+
+\begin{plainlanguage}
+A perceptron is a bouncer with a clipboard. Each guest property (height, age,
+shoe colour) gets a score weight, positive or negative. The bouncer adds up the
+weighted scores, compares the total against a fixed cut-off, and says yes or
+no. Training means adjusting the weights every time the bouncer gets one wrong.
+\end{plainlanguage}
+
+\subsection{XOR: The Failure That Started a Winter}
+
+Minsky and Papert showed that a single perceptron cannot represent the
+exclusive-or function\textsuperscript{\cite{minskyPerceptronsIntroductionComputational1969},
+\cite[][pp.~63--65]{Kriesel2007NeuralNetworks}}. The reason is not subtle: XOR
+is not linearly separable, and \cref{eq:dl-perceptron} can only carve the input
+space with one straight cut. The result contributed to the first ``AI winter''.
+
+\begin{workedexample}[Solving XOR with two hidden units, by hand]
+The cure is one hidden layer with a nonlinearity. Take
+$\mathrm{ReLU}(z)=\max(0,z)$ and fix these weights---nothing is learned here,
+we are only proving that a solution \emph{exists}:
+\[
+  h_1 = \mathrm{ReLU}(x_1 + x_2 - 0),\qquad
+  h_2 = \mathrm{ReLU}(x_1 + x_2 - 1),\qquad
+  y   = h_1 - 2h_2 .
+\]
+Now evaluate all four cases:
+
+\smallskip
+\begin{tblr}{
+  width=0.86\linewidth,
+  colspec={Q[c]Q[c]Q[c]Q[c]Q[c]Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+$x_1$ & $x_2$ & $x_1{+}x_2$ & $h_1$ & $h_2$ & $y = h_1 - 2h_2$ \\
+0 & 0 & 0 & 0 & 0 & $0$ \\
+0 & 1 & 1 & 1 & 0 & $1$ \\
+1 & 0 & 1 & 1 & 0 & $1$ \\
+1 & 1 & 2 & 2 & 1 & $2-2 = 0$ \\
+\end{tblr}
+\smallskip
+
+The output column is exactly XOR. Notice \emph{what the hidden layer did}: both
+units read the same quantity $x_1+x_2$, but with different thresholds. Unit
+$h_1$ fires whenever anything is on; unit $h_2$ fires only when \emph{both} are
+on. Subtracting twice $h_2$ cancels the double-on case. The hidden layer did not
+memorise four rows---it invented the feature ``how many inputs are on'', which
+\emph{is} linearly separable.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0,
+  pt/.style={circle,draw=AlmanachInk,minimum size=4mm,inner sep=0pt,
+    font=\scriptsize},
+  cls0/.style={pt,fill=AlmanachMist},
+  cls1/.style={pt,fill=AlmanachOchre!70},
+  ax/.style={->,draw=AlmanachInk!60,>={Stealth[length=1.6mm]}},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+
+  \begin{scope}
+    \draw[ax] (-0.4,0) -- (2.5,0) node[right,lbl] {$x_1$};
+    \draw[ax] (0,-0.4) -- (0,2.5) node[above,lbl] {$x_2$};
+    \node[cls0] at (0,0) {}; \node[cls1] at (0,2) {};
+    \node[cls1] at (2,0) {}; \node[cls0] at (2,2) {};
+    \draw[thick,AlmanachRed,dashed] (-0.3,2.3) -- (2.4,-0.4);
+    \draw[thick,AlmanachRed,dashed] (-0.3,1.2) -- (2.4,-1.5);
+    \node[lbl,align=center] at (1.0,-1.1)
+      {\textbf{Input space}\\no single line works};
+  \end{scope}
+
+  \begin{scope}[xshift=62mm]
+    \draw[ax] (-0.4,0) -- (2.9,0) node[right,lbl] {$h_1$};
+    \draw[ax] (0,-0.4) -- (0,2.5) node[above,lbl] {$h_2$};
+    \node[cls0] at (0,0) {};
+    \node[cls1] at (1,0) {};
+    \node[cls0] at (2,1) {};
+    \node[lbl] at (1.0,0.42) {$(0,1)$ and $(1,0)$ coincide};
+    \draw[thick,AlmanachTeal] (-0.3,-0.55) -- (2.6,1.9);
+    \node[lbl,align=center] at (1.2,-1.1)
+      {\textbf{Hidden space}\\one line separates};
+  \end{scope}
+\end{tikzpicture}
+\caption{Why depth helps. XOR is unsolvable by one straight cut in the input
+space (left), but the hidden layer of the worked example re-coordinates the
+four points so that a single line does separate them (right). Depth does not add
+raw power to the classifier; it changes the space the classifier works in.}
+\label{fig:dl-xor-transform}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=9mm and 15mm,
+  neuron/.style={circle,draw=AlmanachTeal,minimum size=7mm,font=\scriptsize,
+    inner sep=1pt},
+  inn/.style={neuron,fill=AlmanachMist},
+  hid/.style={neuron,fill=AlmanachOchre!25},
+  outn/.style={neuron,fill=AlmanachTeal!22},
+  arr/.style={-{Stealth[length=1.5mm]},draw=AlmanachInk!45},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[inn] (i1) {$x_1$};
+  \node[inn,below=of i1] (i2) {$x_2$};
+  \node[hid,right=of i1,yshift=-4.5mm] (h1) {$h_1$};
+  \node[hid,below=of h1] (h2) {$h_2$};
+  \node[outn,right=of h1,yshift=-4.5mm] (o) {$y$};
+  \foreach \i in {i1,i2}\foreach \h in {h1,h2}{\draw[arr] (\i) -- (\h);}
+  \draw[arr] (h1) -- (o) node[midway,above,lbl] {$+1$};
+  \draw[arr] (h2) -- (o) node[midway,below,lbl] {$-2$};
+  \node[lbl,below=2mm of i2] {input};
+  \node[lbl,below=2mm of h2] {hidden (ReLU)};
+  \node[lbl,below=11mm of o] {output};
+  \node[lbl,above=2mm of h1] {bias $0$};
+  \node[lbl,below left=1mm and -2mm of h2] {bias $-1$};
+\end{tikzpicture}
+\caption{The two-unit network that realises XOR, with the exact weights of the
+worked example. Every edge from the input layer carries weight $+1$; the two
+hidden units differ only in their bias, and the output layer subtracts twice the
+second unit.}
+\label{fig:dl-xor-network}
+\end{figure}
+
+\begin{checkpoint}
+Change the output layer of the worked example to $y = h_1 - h_2$ and recompute
+all four rows. Which logical function do you get now, and what does that tell
+you about how much of the network's behaviour lives in the last layer?
+\end{checkpoint}
+
+% ===========================================================================
+\section{Activation Functions and Why Nonlinearity Is Mandatory}
+% ===========================================================================
+
+\subsection{The Collapse Argument}
+
+\begin{workedexample}[Two linear layers are one linear layer]
+Suppose we drop the activation entirely. Layer one computes
+$\mathbf{h} = W_1\mathbf{x} + \mathbf{b}_1$ and layer two computes
+$\mathbf{y} = W_2\mathbf{h} + \mathbf{b}_2$. Substitute:
+\[
+  \mathbf{y}
+  = W_2\left(W_1\mathbf{x} + \mathbf{b}_1\right) + \mathbf{b}_2
+  = \underbrace{\left(W_2W_1\right)}_{=:W'}\mathbf{x}
+  + \underbrace{\left(W_2\mathbf{b}_1 + \mathbf{b}_2\right)}_{=:\mathbf{b}'} .
+\]
+The composition is a single affine map $W'\mathbf{x}+\mathbf{b}'$. Stacking
+$100$ such layers gives another single affine map. Depth without nonlinearity
+buys \emph{nothing}: no extra expressiveness, only extra
+multiplications\textsuperscript{\cite[][p.~17]{fleuretLittleBookDeep}}.
+\end{workedexample}
+
+This is the whole justification for activation functions. They are the only
+reason depth is not a waste of electricity.
+
+\subsection{The Standard Repertoire}
+
+\begin{table}[htbp]
+\centering
+\caption{Activation functions and the engineering property that decides when
+each is appropriate. The ``gradient risk'' column is the reason most modern
+hidden layers use a rectifier family rather than a saturating sigmoid.}
+\label{tab:dl-activations}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.15\textwidth] Q[l,0.24\textwidth] Q[c,0.15\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Function & Definition & Range & Gradient risk and typical use \\
+Sigmoid & $\sigma(z)=\dfrac{1}{1+e^{-z}}$ & $(0,1)$ &
+  Saturates both sides; $\sigma'\le 0.25$, so gradients shrink by
+  ${\ge}4\times$ per layer. Use only for a binary output. \\
+Tanh & $\tanh(z)$ & $(-1,1)$ &
+  Zero-centred, still saturates. Common in classic RNN cells. \\
+ReLU & $\max(0,z)$ & $[0,\infty)$ &
+  Gradient is exactly $0$ or $1$: no shrinkage on the active side. Default
+  hidden activation\textsuperscript{\cite{glorotUnderstandingDifficultyTraining}}. \\
+Leaky ReLU & $\max(\alpha z, z)$, $\alpha\!\approx\!0.01$ &
+  $(-\infty,\infty)$ &
+  Keeps a small negative gradient so units cannot die permanently. \\
+GELU & $z\,\Phi(z)$ & ${\approx}(-0.17,\infty)$ &
+  Smooth near the origin; standard inside Transformer feed-forward blocks. \\
+Softmax & $\dfrac{e^{z_i}}{\sum_j e^{z_j}}$ & $(0,1)$, sums to $1$ &
+  Output layer for multi-class problems. Not an activation for hidden layers. \\
+\end{tblr}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=44mm,
+  domain=-4:4,
+  samples=161,
+  ymin=-1.3,ymax=2.6,
+  xlabel={pre-activation $z$},
+  ylabel={output},
+  legend pos=north west,
+  legend columns=2]
+  \addplot[AlmanachTeal,thick]   {1/(1+exp(-x))};   \addlegendentry{sigmoid}
+  \addplot[AlmanachOchre,thick]  {tanh(x)};         \addlegendentry{tanh}
+  \addplot[AlmanachRed,thick]    {max(0,x)};        \addlegendentry{ReLU}
+  \addplot[AlmanachInk,thick,dashed]
+    {0.5*x*(1+tanh(0.7978845608*(x+0.044715*x^3)))}; \addlegendentry{GELU}
+\end{axis}
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=44mm,
+  domain=-4:4,
+  samples=161,
+  ymin=-0.1,ymax=1.15,
+  xlabel={pre-activation $z$},
+  ylabel={derivative},
+  legend pos=north west]
+  \addplot[AlmanachTeal,thick]  {exp(-x)/(1+exp(-x))^2};
+    \addlegendentry{$\sigma'$}
+  \addplot[AlmanachOchre,thick] {1-(tanh(x))^2}; \addlegendentry{$\tanh'$}
+  \addplot[AlmanachRed,thick]   {x>0};           \addlegendentry{ReLU$'$}
+\end{axis}
+\end{tikzpicture}
+\caption{The functions (left) look broadly similar; their derivatives (right)
+explain everything. The sigmoid derivative never exceeds $0.25$ and collapses
+toward zero away from the origin, so a deep stack multiplies many small numbers
+together. The ReLU derivative is $1$ wherever the unit is active, which is why
+rectifiers made deep stacks trainable.}
+\label{fig:dl-activation-curves}
+\end{figure}
+
+\begin{workedexample}[Why saturation kills depth: multiply the numbers]
+Backpropagation multiplies one derivative per layer (\cref{sec:dl-backprop}).
+Suppose every layer sits in a mildly saturated sigmoid regime with
+$\sigma' \approx 0.2$. After $10$ layers the gradient reaching layer one is
+scaled by
+\[
+  0.2^{10} = 1.024\times10^{-7},
+\]
+and after $20$ layers by $1.05\times10^{-14}$. In \texttt{float32}, whose
+resolution near $1$ is about $1.2\times10^{-7}$, the early layers have stopped
+receiving a usable signal. Repeat with ReLU units that are active,
+$\left(1\right)^{20} = 1$: the signal arrives undiminished. This single
+calculation is the practical content of the phrase \emph{vanishing gradient}.
+\end{workedexample}
+
+\begin{engineernote}
+Default to ReLU or GELU in hidden layers, sigmoid only on a binary output,
+softmax only on a multi-class output. Choosing an exotic activation is almost
+never the highest-value change available to you; fixing the learning rate,
+the data, or the normalisation usually is.
+\end{engineernote}
+
+\begin{cautionbox}[Dying ReLU]
+If a unit's pre-activation is negative for \emph{every} training example, its
+gradient is exactly zero forever and the unit is dead weight---it can never
+recover, because the gradient that would move it is itself zero. A too-large
+learning rate is the usual cause: one enormous update pushes the bias far
+negative. Symptoms: a fraction of units with permanently zero activation, and a
+loss that plateaus above the achievable value. Remedies: lower the learning
+rate, use Leaky ReLU or GELU, and check He initialisation
+(\cref{sec:dl-init}).
+\end{cautionbox}
+
+\subsection{Softmax and Cross-Entropy}
+
+For $K$ classes, the \keyterm{softmax} turns raw scores (\keyterm{logits}) into
+a distribution\textsuperscript{\cite[][p.~18]{fleuretLittleBookDeep}}:
+\begin{equation}
+  p_i = \mathrm{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}},
+  \qquad p_i > 0,\quad \sum_{i=1}^{K} p_i = 1 .
+  \label{eq:dl-softmax}
+\end{equation}
+Paired with \keyterm{cross-entropy} loss $\mathcal{L} = -\log p_{c}$ for the
+true class $c$, the gradient with respect to the logits is remarkably clean:
+\begin{equation}
+  \frac{\partial \mathcal{L}}{\partial z_i} = p_i - y_i ,
+  \label{eq:dl-softmax-grad}
+\end{equation}
+where $y$ is the one-hot target.
+
+\begin{workedexample}[Softmax and cross-entropy with real numbers]
+Let the logits be $z = (2.0,\; 1.0,\; 0.1)$ and let the true class be the first
+one, $y = (1,0,0)$.
+
+\emph{Step 1---exponentiate.}
+$e^{2.0}=7.389$, $e^{1.0}=2.718$, $e^{0.1}=1.105$.
+
+\emph{Step 2---normalise.} The sum is $7.389+2.718+1.105 = 11.212$, so
+\[
+  p = \left(\tfrac{7.389}{11.212},\ \tfrac{2.718}{11.212},\
+  \tfrac{1.105}{11.212}\right) = (0.659,\ 0.242,\ 0.099).
+\]
+Check: $0.659+0.242+0.099 = 1.000$. \checkmark
+
+\emph{Step 3---loss.} $\mathcal{L} = -\log(0.659) = 0.417$ nats.
+
+\emph{Step 4---gradient.} By \cref{eq:dl-softmax-grad},
+\[
+  \frac{\partial \mathcal{L}}{\partial z}
+  = p - y = (0.659-1,\ 0.242,\ 0.099)
+  = (-0.341,\ +0.242,\ +0.099).
+\]
+Check: the components sum to $0.000$. \checkmark\ They must, because softmax
+outputs are constrained to sum to one---pushing one logit up necessarily pushes
+the others down. \emph{Read the signs}: the gradient is negative for the true
+class (increase that logit) and positive for the wrong ones (decrease them).
+That is the entire learning signal of a classifier.
+\end{workedexample}
+
+\begin{cautionbox}[Softmax outputs are not calibrated probabilities]
+A softmax output of $0.659$ does \emph{not} mean the model is right $65.9\,\%$
+of the time on inputs like this one. Modern networks are typically
+overconfident. Calibration is a separate empirical property that must be
+measured on held-out data (see \cref{ch:evaluation-mlops}) and, if needed,
+corrected---for example by temperature scaling. Never quote a raw softmax value
+as a probability in a report without a calibration check.
+\end{cautionbox}
+
+\begin{checkpoint}
+Add the same constant $c=10$ to all three logits in the worked example and
+recompute $p$. Why is the result unchanged, and why do numerical libraries
+subtract $\max_i z_i$ before exponentiating?
+\end{checkpoint}
+
+% ===========================================================================
+\section{Feed-Forward Networks, Shapes, and Capacity}
+% ===========================================================================
+
+\subsection{The Dense Layer}
+
+A \keyterm{feed-forward} (fully connected, dense) layer applies one affine map
+followed by one activation\textsuperscript{\cite[][pp.~15--17]{fleuretLittleBookDeep}}:
+\begin{equation}
+  \begin{gathered}
+    \mathbf{h} = \phi\!\left(W\mathbf{x} + \mathbf{b}\right),\\[2pt]
+    W \in \mathbb{R}^{n_{\text{out}}\times n_{\text{in}}},\qquad
+    \mathbf{b}\in\mathbb{R}^{n_{\text{out}}} .
+  \end{gathered}
+  \label{eq:dl-dense}
+\end{equation}
+Information flows strictly forward; there are no cycles.
+
+\begin{workedexample}[Counting parameters before writing code]
+A layer mapping a flattened $28\times28$ greyscale image to $128$ hidden units
+has $n_{\text{in}} = 784$ and $n_{\text{out}} = 128$:
+\[
+  \underbrace{784\times128}_{\text{weights } W} +
+  \underbrace{128}_{\text{biases } \mathbf{b}} = 100{,}352 + 128 = 100{,}480
+  \text{ parameters.}
+\]
+At $4$ bytes each in \texttt{float32} that is $401{,}920$ bytes, about
+$0.4\,\text{MB}$---for \emph{one} layer. Now add the optimiser: Adam stores two
+extra moment estimates per parameter, so training memory is roughly
+$3\times$ the parameter memory before activations are counted at all. This is
+why ``how big is the model'' and ``how much memory does training need'' are
+different questions with answers that differ by an order of magnitude.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm,
+  blk/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=21mm,font=\sffamily\scriptsize,
+    align=center},
+  act/.style={blk,fill=AlmanachOchre!20,draw=AlmanachOchre,minimum width=13mm},
+  shp/.style={font=\ttfamily\scriptsize,color=AlmanachTeal!75!black},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55}]
+  \node[blk] (x) {input};
+  \node[blk,right=of x] (l1) {dense\\$784\!\to\!128$};
+  \node[act,right=of l1] (a1) {ReLU};
+  \node[blk,right=of a1] (l2) {dense\\$128\!\to\!10$};
+  \node[act,right=of l2] (a2) {softmax};
+  \foreach \a/\b in {x/l1,l1/a1,a1/l2,l2/a2}{\draw[arr] (\a) -- (\b);}
+  \node[shp,below=1.5mm of x]  {(B, 784)};
+  \node[shp,below=1.5mm of l1] {(B, 128)};
+  \node[shp,below=1.5mm of a1] {(B, 128)};
+  \node[shp,below=1.5mm of l2] {(B, 10)};
+  \node[shp,below=1.5mm of a2] {(B, 10)};
+  \node[font=\sffamily\scriptsize,color=AlmanachInk!70,above=1.5mm of l1]
+    {100{,}480 params};
+  \node[font=\sffamily\scriptsize,color=AlmanachInk!70,above=1.5mm of l2]
+    {1{,}290 params};
+\end{tikzpicture}
+\caption{A shape-tracking diagram for a minimal classifier, with the batch
+dimension $B$ carried explicitly. Annotating every arrow with its tensor shape
+turns most debugging into arithmetic: if two adjacent shapes do not match, the
+bug is located before the code is ever run.}
+\label{fig:dl-shape-tracking}
+\end{figure}
+
+\subsection{Universal Approximation, and What It Does Not Promise}
+
+Cybenko and Hornik proved that a feed-forward network with a single hidden
+layer and enough units can approximate any continuous function on a compact set
+to arbitrary accuracy\textsuperscript{\cite{cybenkoApproximationSuperpositionsSigmoidal1989,
+hornikApproximationCapabilitiesMultilayer1991}}.
+
+\begin{cautionbox}[The most over-quoted theorem in the field]
+Universal approximation is an \emph{existence} statement about representation.
+It does not say that:
+\begin{itemize}
+  \item the required width is practical---it may grow exponentially with input
+        dimension;
+  \item gradient descent will \emph{find} the approximating weights;
+  \item the found function will generalise beyond the training data.
+\end{itemize}
+Depth is the practical answer: for many function classes, deep networks are
+exponentially more parameter-efficient than wide shallow
+ones\textsuperscript{\cite[][pp.~8--12]{robertsPrinciplesDeepLearning2022}}.
+That is the actual motivation for the word \emph{deep}. Anyone who cites this
+theorem as evidence that a network will work on their problem has misread it.
+\end{cautionbox}
+
+\begin{checkpoint}
+Your colleague proposes a single hidden layer with $10^6$ units instead of ten
+layers of $10^3$ units, citing universal approximation. Give two concrete
+engineering objections and one situation in which they would nevertheless be
+right.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Training: Loss, Backpropagation, and Optimisation}
+\label{sec:dl-backprop}
+% ===========================================================================
+
+\subsection{The Forward Pass and the Loss}
+
+In the \keyterm{forward pass}, data flows through the layers and the final
+prediction $\hat y$ is compared to the target $y$ by a \keyterm{loss function}
+$\mathcal{L}(y,\hat y)$\textsuperscript{\cite[][pp.~20--22]{fleuretLittleBookDeep}}.
+The loss is the only place where the engineer states what ``good'' means, and
+it is chosen, not discovered.
+
+\begin{table}[htbp]
+\centering
+\caption{Standard losses and the assumption each one encodes. Choosing a loss
+is choosing which errors you are willing to tolerate.}
+\label{tab:dl-losses}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.17\textwidth] Q[l,0.29\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Loss & Definition & What it assumes, and its failure mode \\
+MSE & $\frac1N\sum_i (y_i-\hat y_i)^2$ &
+  Gaussian noise, symmetric cost. Quadratic penalty means a single outlier can
+  dominate the gradient. \\
+MAE & $\frac1N\sum_i \lvert y_i-\hat y_i\rvert$ &
+  Laplacian noise; robust to outliers, but the gradient has constant magnitude
+  and does not shrink near the optimum. \\
+Cross-entropy & $-\sum_i y_i\log\hat y_i$ &
+  The target is a distribution. Unbounded when the model is confidently wrong,
+  which is what makes it train well. \\
+Binary CE & $-\left[y\log\hat y + (1{-}y)\log(1{-}\hat y)\right]$ &
+  Two outcomes. Silently misleading under strong class imbalance---report
+  precision, recall, and a baseline alongside it. \\
+\end{tblr}
+\end{table}
+
+\subsection{Backpropagation Is the Chain Rule with Bookkeeping}
+
+\keyterm{Backpropagation}\textsuperscript{%
+\cite{rumelhartLearningRepresentationsBackpropagating1986},
+\cite[][pp.~1--4]{lecunTheoreticalFrameworkBack}} computes
+$\partial\mathcal{L}/\partial\theta$ for every parameter by applying the chain
+rule backwards from the output:
+\begin{equation}
+  \frac{\partial\mathcal{L}}{\partial W_l}
+  = \frac{\partial\mathcal{L}}{\partial a_L}\,
+    \frac{\partial a_L}{\partial a_{L-1}}\cdots
+    \frac{\partial a_{l+1}}{\partial a_l}\,
+    \frac{\partial a_l}{\partial W_l}.
+  \label{eq:dl-backprop}
+\end{equation}
+The algorithmic insight is that each intermediate factor is computed
+\emph{once} and reused by every earlier layer. That reuse is what makes the cost
+of the backward pass a small constant multiple of the forward pass rather than
+proportional to the number of parameters.
+
+\begin{plainlanguage}
+Imagine a long assembly line that produces a defective part. To assign
+responsibility you walk backwards from the inspector to the first station,
+asking at each step: ``given how much the next station's output was off, how
+much of that came from my settings?'' Backpropagation is exactly this walk, and
+its efficiency comes from the fact that each station passes its answer to the
+one before it instead of everyone recomputing the whole line.
+\end{plainlanguage}
+
+\begin{workedexample}[One complete backpropagation step, by hand]
+Take the smallest network that still has a hidden layer:
+\[
+  z_1 = w_1x + b_1,\quad a_1 = \mathrm{ReLU}(z_1),\quad
+  \hat y = z_2 = w_2a_1 + b_2,\quad
+  \mathcal{L} = \tfrac12(\hat y - y)^2 .
+\]
+Initialise $w_1=0.5$, $b_1=0$, $w_2=-1$, $b_2=1$, and take the training pair
+$x=2$, $y=1$, with learning rate $\eta = 0.1$.
+
+\emph{Forward.}
+$z_1 = 0.5\cdot2 + 0 = 1.0$;
+$a_1 = \mathrm{ReLU}(1.0) = 1.0$;
+$\hat y = -1\cdot1.0 + 1 = 0.0$;
+$\mathcal{L} = \tfrac12(0-1)^2 = \mathbf{0.5}$.
+
+\emph{Backward.} Start at the loss and walk left, writing
+$\delta_u := \partial\mathcal{L}/\partial u$ to keep the lines short:
+
+\smallskip
+\begin{tblr}{
+  width=0.95\linewidth,
+  colspec={Q[l,0.13\linewidth] X[l] Q[r,0.13\linewidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Quantity & Chain-rule expression & Value \\
+$\delta_{\hat y}$ & $\hat y - y$ & $-1$ \\
+$\delta_{w_2}$ & $\delta_{\hat y}\cdot a_1 = (-1)(1.0)$ & $-1$ \\
+$\delta_{b_2}$ & $\delta_{\hat y}$ & $-1$ \\
+$\delta_{a_1}$ & $\delta_{\hat y}\cdot w_2 = (-1)(-1)$ & $+1$ \\
+$\delta_{z_1}$ & $\delta_{a_1}\cdot \mathrm{ReLU}'(z_1) = (1)(1)$ & $+1$ \\
+$\delta_{w_1}$ & $\delta_{z_1}\cdot x = (1)(2)$ & $+2$ \\
+$\delta_{b_1}$ & $\delta_{z_1}$ & $+1$ \\
+\end{tblr}
+\smallskip
+
+\emph{Update} with $\theta \leftarrow \theta - \eta\,\partial\mathcal{L}/
+\partial\theta$:
+\[
+  w_1 = 0.5 - 0.1(2) = 0.3,\quad b_1 = 0 - 0.1(1) = -0.1,\quad
+  w_2 = -1 + 0.1 = -0.9,\quad b_2 = 1 + 0.1 = 1.1 .
+\]
+
+\emph{Verify.} Run the forward pass again:
+$z_1 = 0.3\cdot2 - 0.1 = 0.5$, $a_1 = 0.5$,
+$\hat y = -0.9\cdot0.5 + 1.1 = 0.65$, so
+\[
+  \mathcal{L}_{\text{new}} = \tfrac12(0.65-1)^2 = \tfrac12(0.1225)
+  = \mathbf{0.061}.
+\]
+The loss fell from $0.5$ to $0.061$ in one step. \checkmark\ Notice that
+$\partial\mathcal{L}/\partial w_1 = 2$ is the largest gradient in the network
+purely because $x=2$ is the largest activation feeding it---gradients scale with
+the activations they multiply, which is the reason input normalisation matters
+so much.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=7mm and 13mm,
+  op/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=7mm,minimum width=15mm,font=\sffamily\scriptsize},
+  val/.style={font=\scriptsize,color=AlmanachTeal!75!black},
+  grad/.style={font=\scriptsize,color=AlmanachRed},
+  fw/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachTeal},
+  bw/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachRed,dashed}]
+  \node[op] (x)  {$x$};
+  \node[op,right=of x]  (z1) {$z_1$};
+  \node[op,right=of z1] (a1) {$a_1$};
+  \node[op,right=of a1] (y)  {$\hat y$};
+  \node[op,right=of y]  (L)  {$\mathcal{L}$};
+  \foreach \a/\b in {x/z1,z1/a1,a1/y,y/L}{\draw[fw] (\a) -- (\b);}
+  \foreach \a/\b in {L/y,y/a1,a1/z1,z1/x}{
+    \draw[bw] ([yshift=-3.6mm]\a.south) -- ([yshift=-3.6mm]\b.south);}
+  \node[val,above=1mm of x]  {$2.0$};
+  \node[val,above=1mm of z1] {$1.0$};
+  \node[val,above=1mm of a1] {$1.0$};
+  \node[val,above=1mm of y]  {$0.0$};
+  \node[val,above=1mm of L]  {$0.5$};
+  \node[grad,below=5mm of z1] {$1$};
+  \node[grad,below=5mm of a1] {$1$};
+  \node[grad,below=5mm of y]  {$-1$};
+  \node[font=\sffamily\scriptsize,color=AlmanachTeal,above=6mm of a1]
+    {forward: values};
+  \node[font=\sffamily\scriptsize,color=AlmanachRed,below=10mm of a1]
+    {backward: gradients};
+\end{tikzpicture}
+\caption{The computation graph of the worked example, carrying forward values
+above each node and backward gradients below. Every deep-learning framework
+builds exactly this graph at run time; ``automatic differentiation'' is the
+mechanical replay of the lower row.}
+\label{fig:dl-computation-graph}
+\end{figure}
+
+\subsection{Optimisers}
+
+Backpropagation supplies gradients; an \keyterm{optimiser} decides what to do
+with them\textsuperscript{\cite[][pp.~22--25]{fleuretLittleBookDeep}}.
+
+\begin{table}[htbp]
+\centering
+\caption{Optimisers as successive fixes to one problem: raw SGD steps are noisy
+and badly scaled. Each row adds a correction and a new hyperparameter.}
+\label{tab:dl-optimisers}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.17\textwidth] Q[l,0.30\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Optimiser & Core update & What it fixes, and what it costs \\
+SGD & $\theta \leftarrow \theta - \eta\nabla\mathcal{L}$ &
+  Nothing yet. Cheap, unbiased, but noisy and sensitive to feature scaling. \\
+SGD + momentum & $v \leftarrow \beta v + \nabla\mathcal{L}$;
+  $\theta \leftarrow \theta - \eta v$ &
+  Damps oscillation across narrow valleys. Adds $\beta$ and one extra buffer
+  per parameter. \\
+RMSprop & Divide by a running RMS of recent gradients &
+  Per-parameter scaling, so rarely updated weights still move. \\
+Adam & Momentum $+$ RMSprop with bias
+  correction\textsuperscript{\cite{kingmaAdamMethodStochastic2017}} &
+  Robust default. Costs \emph{two} extra buffers per parameter---triple the
+  optimiser memory. \\
+AdamW & Adam with weight decay applied
+  separately\textsuperscript{\cite{loshchilovDecoupledWeightDecay2019}} &
+  Fixes the fact that L2 inside Adam is \emph{not} equivalent to weight decay.
+  Standard for Transformers. \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+Use AdamW unless you have a measured reason not to. The historically important
+detail is the one Loshchilov and Hutter
+identified\textsuperscript{\cite{loshchilovDecoupledWeightDecay2019}}: adding an
+L2 term to the loss and calling it ``weight decay'' gives different behaviour
+under Adam, because the adaptive denominator rescales the penalty too. If you
+inherit code that sets \texttt{weight\_decay} on a plain \texttt{Adam}, that is
+a real bug, not a stylistic difference.
+\end{engineernote}
+
+\subsection{Mini-Batches, Learning Rate, and Schedules}
+
+Gradients are computed on \keyterm{mini-batches}, typically $32$ to $512$
+examples\textsuperscript{\cite[][p.~23]{fleuretLittleBookDeep}}. This trades the
+low noise and high cost of full-batch descent against the high noise and low
+cost of single-sample updates. The residual noise is not purely a nuisance: it
+helps escape saddle points and sharp minima.
+
+The \keyterm{learning rate} $\eta$ is the single most consequential
+hyperparameter. Too large and the loss diverges or oscillates; too small and
+training stalls in an apparently converged plateau.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=44mm,
+  domain=0:100,
+  samples=201,
+  xlabel={training step},
+  ylabel={learning rate $\eta$},
+  ymin=0,ymax=1.15,
+  legend pos=north east]
+  \addplot[AlmanachTeal,thick]
+    {x<10 ? x/10 : 0.5*(1+cos(deg(pi*(x-10)/90)))};
+    \addlegendentry{warmup + cosine}
+  \addplot[AlmanachOchre,thick,dashed]
+    {x<33 ? 1 : (x<66 ? 0.3 : 0.09)};
+    \addlegendentry{step decay}
+  \addplot[AlmanachRed,thick,dotted] {1};
+    \addlegendentry{constant}
+\end{axis}
+\end{tikzpicture}
+\caption{Three learning-rate schedules. The warmup ramp exists because the very
+first updates act on randomly initialised weights where gradient estimates are
+unreliable; the cosine decay then anneals the step size so late training can
+settle into a minimum instead of bouncing around it.}
+\label{fig:dl-lr-schedules}
+\end{figure}
+
+\begin{cautionbox}[Diagnose the learning rate before anything else]
+When a network will not train, the learning rate is the first suspect, not the
+architecture. Read the loss curve:
+\begin{itemize}
+  \item loss becomes \texttt{NaN} or rises steeply $\rightarrow$ $\eta$ far too
+        large;
+  \item loss falls then oscillates on a plateau $\rightarrow$ $\eta$ slightly
+        too large, or the schedule decays too slowly;
+  \item loss falls smoothly but far too slowly $\rightarrow$ $\eta$ too small;
+  \item training loss will not fall even on a \emph{single batch}
+        $\rightarrow$ the bug is not the learning rate. It is the data
+        pipeline, the loss, or the label alignment.
+\end{itemize}
+That last test---can the model overfit one batch to near-zero loss?---is the
+cheapest and most informative check in deep learning. Run it before every
+serious experiment.
+\end{cautionbox}
+
+\begin{checkpoint}
+You double the batch size from $64$ to $128$. State what happens to (a) the
+variance of the gradient estimate, (b) the number of updates per epoch, and
+(c) the learning rate you should now use. Justify (c) from (a).
+\end{checkpoint}
+
+% ===========================================================================
+\section{Initialisation, Normalisation, and Residual Paths}
+\label{sec:dl-init}
+% ===========================================================================
+
+\subsection{Why Initialisation Is Not Arbitrary}
+
+Initialising all weights to zero creates a \keyterm{symmetry
+problem}\textsuperscript{\cite[][pp.~8--10]{robertsPrinciplesDeepLearning2022}}:
+every unit in a layer computes the same output, receives the same gradient, and
+stays identical forever. The layer behaves as if it had one unit. Random
+initialisation breaks the symmetry, but the \emph{scale} of the randomness
+decides whether the signal survives depth.
+
+\keyterm{Xavier/Glorot} initialisation targets sigmoid and tanh
+layers\textsuperscript{\cite{glorotUnderstandingDifficultyTraining}}, and
+\keyterm{He} initialisation corrects it for
+rectifiers\textsuperscript{\cite{heDelvingDeepRectifiers2015}}:
+\begin{equation}
+  W_{\text{Xavier}} \sim
+  \mathcal{N}\!\left(0,\ \frac{2}{n_{\text{in}}+n_{\text{out}}}\right),
+  \qquad
+  W_{\text{He}} \sim
+  \mathcal{N}\!\left(0,\ \frac{2}{n_{\text{in}}}\right).
+  \label{eq:dl-init}
+\end{equation}
+
+\begin{workedexample}[Where the factor of two comes from]
+Consider one unit with $n_{\text{in}}$ inputs, weights drawn independently with
+variance $\sigma_w^2$, and inputs with variance $\sigma_x^2$. For the
+pre-activation $z=\sum_{i=1}^{n_{\text{in}}} w_ix_i$,
+\[
+  \operatorname{Var}(z) = n_{\text{in}}\,\sigma_w^2\,\sigma_x^2 .
+\]
+To keep $\operatorname{Var}(z) = \sigma_x^2$---signal neither growing nor
+shrinking with depth---we need $\sigma_w^2 = 1/n_{\text{in}}$.
+
+Now add ReLU. It zeroes the negative half, which for a symmetric distribution
+removes about half the variance. Compensating requires doubling:
+$\sigma_w^2 = 2/n_{\text{in}}$, which is exactly He initialisation.
+
+\emph{Numerically}: with $n_{\text{in}}=256$ and unit-variance inputs, He gives
+$\sigma_w = \sqrt{2/256} = 0.088$. If you instead used $\sigma_w = 1$, the
+pre-activation variance would be $256$, so activations would be around
+$\pm16$---deep into saturation for any sigmoid and numerically hostile for any
+activation. Over $10$ layers the blow-up factor is $256^{5} \approx
+1.1\times10^{12}$.
+\end{workedexample}
+
+\subsection{Normalisation Layers}
+
+\keyterm{Batch normalisation} normalises each feature across the
+mini-batch\textsuperscript{\cite{ioffeBatchNormalizationAccelerating2015}}, then
+restores expressiveness with learned scale $\gamma$ and shift $\beta$:
+\begin{equation}
+  \hat x_i = \frac{x_i-\mu_{\mathcal{B}}}
+                  {\sqrt{\sigma^2_{\mathcal{B}}+\varepsilon}},
+  \qquad
+  y_i = \gamma\hat x_i + \beta .
+  \label{eq:dl-batchnorm}
+\end{equation}
+\keyterm{Layer normalisation} performs the same computation but across the
+\emph{features of a single example} rather than across the
+batch\textsuperscript{\cite{baLayerNormalization2016}}. That difference matters
+enormously: layer norm is independent of batch size and of other examples, which
+is why Transformers use it and why it works in autoregressive generation with
+batch size one.
+
+\begin{workedexample}[Layer normalisation on four numbers]
+Let one token's feature vector be $x = (2,\,4,\,6,\,8)$.
+
+\emph{Mean}: $\mu = (2+4+6+8)/4 = 5$.
+
+\emph{Variance}: $\sigma^2 = \frac{(-3)^2+(-1)^2+1^2+3^2}{4}
+= \frac{9+1+1+9}{4} = 5$, so $\sigma = 2.236$.
+
+\emph{Normalise}: $\hat x = \left(\frac{-3}{2.236},\frac{-1}{2.236},
+\frac{1}{2.236},\frac{3}{2.236}\right) = (-1.342,\,-0.447,\,0.447,\,1.342)$.
+
+Check: the mean is $0$ and the variance is $1$. \checkmark\ Every token now
+enters the next layer at a comparable scale regardless of how large its raw
+activations were, which is precisely the property that keeps a $30$-layer stack
+numerically stable.
+\end{workedexample}
+
+\begin{cautionbox}[Batch norm has a train/test asymmetry]
+During training, batch norm uses the statistics of the current mini-batch. At
+inference it must use \emph{running} estimates accumulated during training. Two
+classic failures follow: forgetting to switch the module into evaluation mode
+(so predictions depend on which other examples happen to share the batch---a
+genuine information leak between test samples), and using very small batches,
+where the batch statistics are too noisy to be useful. If either applies,
+prefer layer norm or group norm.
+\end{cautionbox}
+
+\subsection{Residual Connections}
+
+A \keyterm{residual} block computes $y = x + F(x)$ rather than $y =
+F(x)$\textsuperscript{\cite{heDeepResidualLearning2016}}. Differentiating shows
+why this single change made networks with hundreds of layers trainable:
+\begin{equation}
+  \frac{\partial y}{\partial x} = I + \frac{\partial F}{\partial x}.
+  \label{eq:dl-residual}
+\end{equation}
+The identity term guarantees a gradient path of magnitude one straight through
+the block. Even if the learned branch $F$ contributes nothing---at
+initialisation it very nearly does not---the gradient still reaches the layers
+below undiminished.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm,
+  blk/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=7mm,minimum width=20mm,font=\sffamily\scriptsize,
+    align=center},
+  plus/.style={circle,draw=AlmanachOchre,fill=white,inner sep=1pt,
+    font=\scriptsize},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  hi/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachOchre},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+
+  \node[lbl] (t1) at (0,2.3) {\textbf{Plain block}};
+  \node[blk] (px) at (0,1.5) {$x$};
+  \node[blk,below=of px] (pf) {$F(\cdot)$};
+  \node[blk,below=of pf] (py) {$y=F(x)$};
+  \draw[arr] (px) -- (pf); \draw[arr] (pf) -- (py);
+  \node[lbl,right=1mm of pf,align=left,text width=17mm]
+    {$\partial y/\partial x=\partial F/\partial x$};
+
+  \node[lbl] (t2) at (6.3,2.3) {\textbf{Residual block}};
+  \node[blk] (rx) at (6.3,1.5) {$x$};
+  \node[blk,below=of rx] (rf) {$F(\cdot)$};
+  \node[plus,below=of rf] (rp) {$+$};
+  \node[blk,below=of rp] (ry) {$y=x+F(x)$};
+  \draw[arr] (rx) -- (rf); \draw[arr] (rf) -- (rp);
+  \draw[arr] (rp) -- (ry);
+  \draw[hi] (rx.west) -- ++(-9mm,0) |- (rp.west);
+  \node[lbl,left=1mm of rf,align=right,text width=13mm,color=AlmanachOchre]
+    {identity\\shortcut};
+  \node[lbl,right=1mm of rp,align=left,text width=18mm]
+    {$\partial y/\partial x=I+\partial F/\partial x$};
+\end{tikzpicture}
+\caption{The residual shortcut in one picture. In the plain block the gradient
+must survive multiplication by every Jacobian on the way down; in the residual
+block the identity term adds a lossless path, so depth no longer attenuates the
+learning signal.}
+\label{fig:dl-residual}
+\end{figure}
+
+\begin{checkpoint}
+Twenty stacked plain blocks each have $\lVert\partial F/\partial x\rVert
+\approx 0.7$. Estimate the gradient magnitude reaching the first block. Repeat
+for twenty residual blocks using \cref{eq:dl-residual}. Which number explains
+the depth records set after 2015?
+\end{checkpoint}
+
+% ===========================================================================
+\section{Regularisation and Generalisation}
+% ===========================================================================
+
+A model \keyterm{overfits} when training loss keeps falling while validation
+loss rises: it is memorising rather than
+generalising\textsuperscript{\cite[][pp.~27--29]{fleuretLittleBookDeep}}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=46mm,
+  domain=1:60,
+  samples=120,
+  xlabel={epoch},
+  ylabel={loss},
+  ymin=0,ymax=1.5,
+  legend pos=north east]
+  \addplot[AlmanachTeal,thick]  {0.08+1.2*exp(-x/9)};
+    \addlegendentry{training loss}
+  \addplot[AlmanachOchre,thick] {0.34+1.0*exp(-x/7)+0.00055*(x-18)^2};
+    \addlegendentry{validation loss}
+  \draw[AlmanachRed,dashed,thick] (axis cs:22,0) -- (axis cs:22,1.5);
+  \node[font=\sffamily\scriptsize,color=AlmanachRed,anchor=west]
+    at (axis cs:23.5,1.28) {early-stopping point};
+\end{axis}
+\end{tikzpicture}
+\caption{The canonical overfitting signature. Training loss decreases
+monotonically while validation loss turns upward; the minimum of the validation
+curve, not the end of training, identifies the checkpoint worth keeping. Note
+that the training curve alone contains no evidence of the problem.}
+\label{fig:dl-overfitting}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Regularisers, the prior each one encodes, and what it cannot fix. No
+regulariser compensates for unrepresentative data.}
+\label{tab:dl-regularisers}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.18\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Technique & Assumption it encodes & Blind spot \\
+Early stopping & The best generaliser appears before convergence &
+  Needs a validation set that genuinely resembles deployment \\
+L2 / weight decay & Small, distributed weights generalise better &
+  Does not prevent memorising through many small weights \\
+L1 & Few features actually matter &
+  Unstable selection among correlated features \\
+Dropout\textsuperscript{\cite{srivastavaDropoutSimpleWay2014}} &
+  No unit may be indispensable &
+  Interacts badly with batch norm; rarely used in modern Transformers \\
+Data augmentation & Known transforms preserve the label &
+  A wrong invariance teaches a wrong fact \\
+More data & Coverage beats constraint &
+  Only if the new data covers the failing region \\
+\end{tblr}
+\end{table}
+
+\subsection{Dropout, Stated Correctly}
+
+During training, \keyterm{dropout} zeroes each activation independently with
+probability $p$\textsuperscript{\cite{srivastavaDropoutSimpleWay2014}}. Units
+cannot co-adapt, because no unit can rely on any particular partner being
+present.
+
+\begin{cautionbox}[Inverted dropout: what your framework actually does]
+The original paper describes keeping activations unscaled during training and
+multiplying by $(1-p)$ at test time. Every mainstream framework does the
+opposite, called \keyterm{inverted dropout}: it divides the surviving
+activations by $(1-p)$ \emph{during training} and does nothing at all at test
+time. The expected value is the same, but the inference path stays a plain
+forward pass, which matters for export and deployment. If you read the $(1-p)$
+test-time rule in a textbook and then look for it in framework source code, you
+will not find it---and the discrepancy is a common source of confusion when
+re-implementing dropout by hand.
+\end{cautionbox}
+
+\begin{workedexample}[Dropout preserves the expected activation]
+Let a unit output $a = 4.0$ with drop probability $p = 0.25$. Under inverted
+dropout the training-time output is
+\[
+  \tilde a =
+  \begin{cases}
+    a/(1-p) = 4.0/0.75 = 5.333 & \text{with probability } 0.75,\\
+    0 & \text{with probability } 0.25.
+  \end{cases}
+\]
+Then $\mathbb{E}[\tilde a] = 0.75\times5.333 + 0.25\times0 = 4.0 = a$.
+\checkmark\ The next layer therefore sees the same expected input scale whether
+dropout is on or off, which is exactly why no test-time correction is needed.
+\end{workedexample}
+
+\begin{cautionbox}[Overfitting is not the only generalisation story]
+Two results should stop you from over-applying the classical picture. First,
+deep networks can fit \emph{random labels} perfectly, so classical capacity
+measures do not explain their
+generalisation\textsuperscript{\cite{zhangUnderstandingDeepLearning2021}}.
+Second, test error can follow a \keyterm{double descent} curve: it rises as the
+model approaches the interpolation threshold and then falls \emph{again} as the
+model grows past
+it\textsuperscript{\cite{nakkiranDeepDoubleDescent2020}}. The textbook
+U-shaped bias--variance picture is a good first model and a poor last word.
+Measure the curve for your own setting rather than assuming its shape.
+\end{cautionbox}
+
+\begin{checkpoint}
+Your validation accuracy is $94\,\%$ and your test accuracy is $71\,\%$. List
+three causes that regularisation would \emph{not} fix, and name the diagnostic
+that distinguishes them.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Convolutional Networks}
+% ===========================================================================
+
+A \keyterm{convolutional neural network} replaces the dense matrix product with
+a small learned \keyterm{filter} slid across the
+input\textsuperscript{\cite[][pp.~43--48]{fleuretLittleBookDeep}}. Three
+properties follow, and all three are consequences of the sliding, not extra
+assumptions:
+
+\begin{description}
+  \item[Weight sharing] The same filter is applied at every position, so a
+    feature detected in one corner is detected in all of them
+    (\emph{translation equivariance}).
+  \item[Local connectivity] Each output depends on a small neighbourhood, which
+    encodes the prior that nearby pixels are related.
+  \item[Parameter efficiency] Parameters scale with the filter, not with the
+    input size.
+\end{description}
+
+\begin{plainlanguage}
+A convolution is a rubber stamp with a scoring pattern on it. You press the same
+stamp at every position of the image and write down how strongly the pattern
+matched there. Learning a filter means learning what the stamp should look like;
+using many filters means carrying a whole set of stamps for edges, textures,
+and later, eyes and wheels.
+\end{plainlanguage}
+
+\begin{workedexample}[A convolution computed by hand]
+Take a $3\times3$ input containing a bright vertical edge, and a $2\times2$
+vertical-edge filter:
+\[
+  X = \begin{pmatrix}
+    1 & 1 & 8\\ 1 & 1 & 8\\ 1 & 1 & 8
+  \end{pmatrix},
+  \qquad
+  K = \begin{pmatrix} 1 & -1\\ 1 & -1 \end{pmatrix}.
+\]
+With stride $1$ and no padding the output is $2\times2$. Each entry is the sum
+of the element-wise product over the covered window:
+\[
+\begin{aligned}
+  Y_{11} &= 1(1) + 1(-1) + 1(1) + 1(-1) = 0, &
+  Y_{12} &= 1(1) + 8(-1) + 1(1) + 8(-1) = -14,\\
+  Y_{21} &= 1(1) + 1(-1) + 1(1) + 1(-1) = 0, &
+  Y_{22} &= 1(1) + 8(-1) + 1(1) + 8(-1) = -14.
+\end{aligned}
+\]
+\[
+  Y = \begin{pmatrix} 0 & -14\\ 0 & -14 \end{pmatrix}.
+\]
+\emph{Read the result.} The filter output is zero in the flat region and
+strongly negative exactly where the intensity jumps from $1$ to $8$. The filter
+did not detect ``brightness''; it detected \emph{change} in the horizontal
+direction, and it did so with four parameters applied identically everywhere.
+The sign tells you the direction of the edge---a filter with $K$ negated would
+return $+14$ on the same image.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  cell/.style={draw=AlmanachInk!35,minimum size=7.5mm,font=\scriptsize,
+    inner sep=0pt},
+  incell/.style={cell,fill=AlmanachMist},
+  kcell/.style={cell,fill=AlmanachOchre!25,draw=AlmanachOchre},
+  ocell/.style={cell,fill=AlmanachTeal!18,draw=AlmanachTeal},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachOchre}]
+
+  \foreach \r [count=\i from 0] in {{1,1,8},{1,1,8},{1,1,8}}{
+    \foreach \v [count=\j from 0] in \r {
+      \node[incell] at (\j*7.5mm, -\i*7.5mm) {\v};}}
+  \draw[AlmanachOchre,line width=1pt]
+    (-3.75mm,3.75mm) rectangle (11.25mm,-11.25mm);
+  \node[lbl] at (7.5mm,-26mm) {input $X$ ($3\times3$)};
+  \node[lbl,color=AlmanachOchre] at (3.75mm,9mm) {window};
+
+  \node[lbl] at (34mm,-7.5mm) {$\ast$};
+
+  \foreach \r [count=\i from 0] in {{1,-1},{1,-1}}{
+    \foreach \v [count=\j from 0] in \r {
+      \node[kcell] at (46mm+\j*7.5mm, -\i*7.5mm) {\v};}}
+  \node[lbl] at (49.75mm,-26mm) {filter $K$};
+
+  \draw[arr] (60mm,-7.5mm) -- (72mm,-7.5mm);
+
+  \foreach \r [count=\i from 0] in {{0,-14},{0,-14}}{
+    \foreach \v [count=\j from 0] in \r {
+      \node[ocell,minimum size=9mm] at (80mm+\j*9mm, -\i*9mm) {\v};}}
+  \node[lbl] at (84.5mm,-26mm) {output $Y$ ($2\times2$)};
+\end{tikzpicture}
+\caption{The worked convolution in full. The highlighted window slides across
+every valid position; at each stop the filter values multiply the covered
+inputs and the products are summed. The output is zero over the flat region and
+$-14$ exactly at the edge, so four shared parameters have produced a
+position-independent edge detector.}
+\label{fig:dl-convolution}
+\end{figure}
+
+\subsection{Output Size and Parameter Count}
+
+For a square input of side $W$, filter side $F$, padding $P$, and stride $S$:
+\begin{equation}
+  W_{\text{out}} = \left\lfloor \frac{W - F + 2P}{S} \right\rfloor + 1 .
+  \label{eq:dl-conv-size}
+\end{equation}
+
+\begin{workedexample}[Shapes and the parameter saving, with numbers]
+\emph{Output size.} A $32\times32$ input, $3\times3$ filter, padding $1$,
+stride $1$:
+\[
+  W_{\text{out}} = \left\lfloor \frac{32-3+2}{1} \right\rfloor + 1
+  = 31 + 1 = 32 .
+\]
+Padding of $1$ with a $3\times3$ filter preserves the spatial size---this is why
+``same'' padding is the default in most architectures.
+
+\emph{Parameter count.} A convolutional layer with $C_{\text{in}}$ input
+channels, $C_{\text{out}}$ filters of side $F$ has
+$F^2 C_{\text{in}} C_{\text{out}} + C_{\text{out}}$ parameters. For
+$C_{\text{in}}=1$, $C_{\text{out}}=32$, $F=3$:
+\[
+  9 \times 1 \times 32 + 32 = 288 + 32 = 320 \text{ parameters.}
+\]
+Compare with the dense layer from the earlier example, $100{,}480$ parameters
+for a $784\to128$ map. The convolution uses
+\[
+  100{,}480 / 320 \approx 314\times \text{ fewer parameters}
+\]
+while producing $32$ feature maps over the \emph{whole} image rather than a
+single fixed-size vector. That ratio is the entire economic argument for
+convolution on grid-structured data.
+\end{workedexample}
+
+\subsection{Pooling, Receptive Fields, and Landmark Architectures}
+
+\keyterm{Pooling} (max or average) reduces spatial resolution and buys a degree
+of translation \emph{invariance}\textsuperscript{\cite[][pp.~49--50]{fleuretLittleBookDeep}}.
+Stacking convolution and pooling builds a \keyterm{feature hierarchy}: edges and
+textures early, parts and objects late. The \keyterm{receptive field}---the
+input region influencing one output unit---grows with depth, which is why deep
+CNNs can reason about large structures using only small filters.
+
+\begin{table}[htbp]
+\centering
+\caption{Landmark convolutional architectures, each cited to its original
+paper. The column that matters is the third: every entry solved a specific
+obstacle rather than simply being larger.}
+\label{tab:dl-cnn-landmarks}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.14\textwidth] Q[c,0.09\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Architecture & Year & Obstacle removed \\
+LeNet-5\textsuperscript{\cite{lecunGradientBasedLearningApplied1998}} & 1998 &
+  Showed end-to-end gradient training on images was practical at all \\
+AlexNet\textsuperscript{\cite{krizhevskyImageNetClassificationDeep2012}} &
+  2012 & ReLU, dropout, and GPU training made large-scale vision feasible \\
+VGG\textsuperscript{\cite{simonyanVeryDeepConvolutional2015}} & 2014 &
+  Demonstrated that stacked $3\times3$ filters beat larger ones at equal cost \\
+ResNet\textsuperscript{\cite{heDeepResidualLearning2016}} & 2015 &
+  Residual shortcuts removed the depth barrier (\cref{eq:dl-residual}) \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+Convolution encodes a prior: \emph{nearby inputs are related and the same
+pattern can occur anywhere}. That prior is true for images, spectrograms, and
+many time series. It is false for tabular data, where column order is
+arbitrary. Applying a CNN to a spreadsheet is not a conservative default---it is
+an assertion about your columns that is almost certainly wrong.
+\end{engineernote}
+
+\begin{checkpoint}
+A network stacks three $3\times3$ convolutions with stride $1$ and no pooling.
+What is the receptive field of one output unit, in input pixels? Compare the
+parameter count with a single $7\times7$ convolution achieving the same
+receptive field, and explain VGG's design choice from your two numbers.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Sequence Models: RNN, LSTM, and GRU}
+% ===========================================================================
+
+A \keyterm{recurrent neural network} carries a hidden state $h_t$ forward
+through time\textsuperscript{\cite[][pp.~55--58]{fleuretLittleBookDeep}}:
+\begin{equation}
+  h_t = \phi\!\left(W_h h_{t-1} + W_x x_t + b\right).
+  \label{eq:dl-rnn}
+\end{equation}
+The same parameters handle sequences of any length, which is the appeal. The
+repeated multiplication by $W_h$ is also the problem.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=11mm,
+  cellb/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=12mm,font=\sffamily\scriptsize},
+  io/.style={font=\scriptsize,color=AlmanachInk!75},
+  arr/.style={-{Stealth[length=1.7mm]},thick,draw=AlmanachInk!55},
+  rec/.style={-{Stealth[length=1.7mm]},thick,draw=AlmanachOchre}]
+  \foreach \t [count=\i from 0] in {1,2,3,4}{
+    \node[cellb] (c\t) at (\i*22mm,0) {$\phi$};
+    \node[io,below=6mm of c\t] (x\t) {$x_\t$};
+    \node[io,above=6mm of c\t] (y\t) {$h_\t$};
+    \draw[arr] (x\t) -- (c\t);
+    \draw[arr] (c\t) -- (y\t);}
+  \foreach \a/\b in {c1/c2,c2/c3,c3/c4}{
+    \draw[rec] (\a) -- (\b) node[midway,above,io,color=AlmanachOchre]
+      {$W_h$};}
+  \node[io,left=8mm of c1] (h0) {$h_0$};
+  \draw[rec] (h0) -- (c1);
+  \draw[decorate,decoration={brace,amplitude=3.5pt,mirror},AlmanachRed]
+    ($(c1.south west)+(-2mm,-13mm)$) -- ($(c4.south east)+(2mm,-13mm)$)
+    node[midway,below=4pt,io,color=AlmanachRed,align=center]
+    {gradient is multiplied by $W_h$ once per step};
+\end{tikzpicture}
+\caption{An RNN unrolled over four time steps. The same weights are reused at
+every step, so the network handles any sequence length---but the backward pass
+multiplies by the same $W_h$ once per step, which is the exact mechanism behind
+vanishing and exploding gradients.}
+\label{fig:dl-rnn-unrolled}
+\end{figure}
+
+\begin{workedexample}[Vanishing and exploding gradients, quantified]
+Gradients flowing back $T$ steps are scaled by roughly $\lVert W_h\rVert^T$.
+Take a sequence of $T = 100$ steps:
+\[
+  0.9^{100} = 2.66\times10^{-5},
+  \qquad
+  0.99^{100} = 0.366,
+  \qquad
+  1.1^{100} = 1.38\times10^{4}.
+\]
+A spectral norm of $0.9$---only slightly contractive---already attenuates the
+learning signal by a factor of $37{,}600$ across a $100$-token sentence. A norm
+of $1.1$ explodes it by a comparable factor in the other direction. The window
+in which plain recurrence trains stably is uncomfortably narrow, and it narrows
+further as sequences lengthen. Gradient clipping treats the explosion; it does
+nothing for the vanishing case.
+\end{workedexample}
+
+\subsection{LSTM: An Additive Path Through Time}
+
+The \keyterm{LSTM} adds a \keyterm{cell state} $c_t$ and three multiplicative
+gates\textsuperscript{\cite{hochreiterLongShortTermMemory1997},
+\cite[][pp.~59--61]{fleuretLittleBookDeep}}:
+\begin{equation}
+  c_t = f_t\odot c_{t-1} + i_t\odot\tilde c_t,
+  \qquad
+  h_t = o_t\odot\tanh(c_t).
+  \label{eq:dl-lstm}
+\end{equation}
+
+The decisive detail is the $+$ in \cref{eq:dl-lstm}. The cell state is
+\emph{added to}, not repeatedly multiplied by a weight matrix, so when the
+forget gate $f_t$ stays near $1$ the gradient path along $c$ is close to the
+identity---the same trick as the residual connection in
+\cref{eq:dl-residual}, discovered nearly two decades earlier.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  gate/.style={draw=AlmanachOchre,fill=AlmanachOchre!20,rounded corners=1mm,
+    minimum height=6mm,minimum width=9mm,font=\sffamily\scriptsize},
+  opn/.style={circle,draw=AlmanachTeal,fill=white,inner sep=0.7pt,
+    font=\scriptsize},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  hw/.style={-{Stealth[length=1.8mm]},line width=1.1pt,draw=AlmanachTeal},
+  arr/.style={-{Stealth[length=1.6mm]},draw=AlmanachInk!55}]
+
+  \node[lbl] (cin) at (-1.5,1.6) {$c_{t-1}$};
+  \node[opn] (mul) at (0.6,1.6) {$\times$};
+  \node[opn] (add) at (3.0,1.6) {$+$};
+  \node[lbl] (cout) at (5.2,1.6) {$c_t$};
+  \draw[hw] (cin) -- (mul);
+  \draw[hw] (mul) -- (add);
+  \draw[hw] (add) -- (cout);
+  \node[lbl,above=1mm of add,color=AlmanachTeal,align=center]
+    {additive path:\\gradient survives};
+
+  \node[gate] (f) at (0.6,0.2) {$f_t$};
+  \node[gate] (i) at (2.3,0.2) {$i_t$};
+  \node[gate] (g) at (3.7,0.2) {$\tilde c_t$};
+  \node[gate] (o) at (5.2,0.2) {$o_t$};
+  \node[opn]  (mi) at (3.0,0.9) {$\times$};
+
+  \draw[arr] (f) -- (mul);
+  \draw[arr] (i) -- (mi); \draw[arr] (g) -- (mi);
+  \draw[arr] (mi) -- (add);
+
+  \node[opn] (th) at (5.2,0.95) {$\tanh$};
+  \node[opn] (mo) at (5.2,-0.75) {$\times$};
+  \draw[arr] (add.south) .. controls +(0,-0.25) and +(0,0.3) .. (th);
+  \draw[arr] (th) -- (o);
+  \draw[arr] (o) -- (mo);
+  \node[lbl] at (6.3,-0.75) {$h_t$};
+  \draw[arr] (mo) -- (6.05,-0.75);
+
+  \node[lbl] at (0.6,-0.75) {forget};
+  \node[lbl] at (3.0,-0.75) {write};
+  \node[lbl,anchor=north] at (5.2,-1.15) {read};
+  \node[lbl,align=center] at (1.7,-1.6)
+    {inputs $x_t$ and $h_{t-1}$ feed every gate};
+\end{tikzpicture}
+\caption{The LSTM cell viewed as memory hardware: the forget gate decides what
+to erase, the input gate what to write, and the output gate what to read. The
+thick horizontal line is the cell state---an additive highway that lets
+gradients travel many time steps without repeated matrix multiplication.}
+\label{fig:dl-lstm-cell}
+\end{figure}
+
+The \keyterm{GRU} merges the cell and hidden state and uses two gates---a reset
+gate and an update gate---achieving similar quality with fewer
+parameters\textsuperscript{\cite{choLearningPhraseRepresentations2014},
+\cite[][p.~62]{fleuretLittleBookDeep}}.
+
+\begin{engineernote}
+Transformers have displaced recurrence for most sequence tasks, but recurrent
+models are not obsolete. They keep a genuine structural advantage where the
+input arrives one element at a time and memory is bounded: an RNN carries
+$O(1)$ state per step, whereas an attention model over a growing context carries
+$O(T)$. For streaming keyword spotting on a microcontroller, that difference
+decides the architecture.
+\end{engineernote}
+
+\begin{checkpoint}
+An LSTM's forget gate saturates at $f_t \approx 1$ for a long span. Describe
+what happens to (a) the information stored in $c_t$ and (b) the gradient flowing
+back through that span. Then name the failure this creates if $f_t$ never
+drops.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Attention and the Transformer}
+\label{sec:dl-attention}
+% ===========================================================================
+
+Dense layers cannot handle variable-length input; convolutions move information
+only locally; recurrence moves it sequentially. \keyterm{Attention} computes,
+for every output position, a weighted average over the \emph{entire} input,
+regardless of distance\textsuperscript{\cite[][p.~73]{fleuretLittleBookDeep}}.
+
+\begin{plainlanguage}
+Attention is a soft library lookup. Each position writes a \emph{query}---``I am
+a verb, I need my subject.'' Every position also advertises a \emph{key}---``I am
+a plural noun''---and holds \emph{value} content. Match each query against all
+keys to get a relevance score, turn the scores into percentages, and mix the
+values in those proportions. Unlike a real library, you do not get one book: you
+get a blend of all of them, weighted by relevance.
+\end{plainlanguage}
+
+\subsection{Scaled Dot-Product Attention}
+
+Given queries $Q\in\mathbb{R}^{N_q\times d_k}$, keys
+$K\in\mathbb{R}^{N_{kv}\times d_k}$, and values
+$V\in\mathbb{R}^{N_{kv}\times d_v}$\textsuperscript{\cite[][pp.~74--76]{fleuretLittleBookDeep}}:
+\begin{equation}
+  \mathrm{Attention}(Q,K,V)
+  = \mathrm{softmax}\!\left(\frac{QK^{\!\top}}{\sqrt{d_k}}\right)V .
+  \label{eq:dl-attention}
+\end{equation}
+Read it right to left as four steps: score every query against every key
+($QK^{\!\top}$), rescale ($/\sqrt{d_k}$), normalise into weights (softmax), then
+mix the values ($\cdot V$).
+
+\begin{workedexample}[Attention on three tokens, computed by hand]
+Work in $d_k = d_v = 2$ with three tokens. Let
+\[
+  K = \begin{pmatrix} 1&0\\ 0&1\\ 1&1 \end{pmatrix},
+  \qquad
+  V = \begin{pmatrix} 2&0\\ 0&2\\ 1&1 \end{pmatrix},
+\]
+and take the query of the third token, $q_3 = (1,\,1)$.
+
+\emph{Step 1---score.} Dot products against each key row:
+\[
+  q_3\!\cdot\!k_1 = 1,\qquad q_3\!\cdot\!k_2 = 1,\qquad q_3\!\cdot\!k_3 = 2 .
+\]
+
+\emph{Step 2---scale} by $1/\sqrt{d_k} = 1/\sqrt{2} = 0.7071$:
+\[
+  s = (0.7071,\ 0.7071,\ 1.4142).
+\]
+
+\emph{Step 3---softmax.} $e^{0.7071}=2.028$, $e^{1.4142}=4.113$; the sum is
+$2.028+2.028+4.113 = 8.169$, so
+\[
+  \alpha = (0.248,\ 0.248,\ 0.503).
+\]
+Check: $0.248+0.248+0.503 = 0.999 \approx 1$. \checkmark
+
+\emph{Step 4---mix the values.}
+\[
+  y_3 = 0.248\begin{pmatrix}2\\0\end{pmatrix}
+      + 0.248\begin{pmatrix}0\\2\end{pmatrix}
+      + 0.503\begin{pmatrix}1\\1\end{pmatrix}
+      = \begin{pmatrix}0.497+0.503\\ 0.497+0.503\end{pmatrix}
+      = \begin{pmatrix}1.00\\ 1.00\end{pmatrix}.
+\]
+
+\emph{Interpret.} Token three attends slightly more than half its budget to
+itself (its key matches its own query best) and splits the rest evenly between
+the other two. The output is a blend, not a selection. Every number in
+\cref{eq:dl-attention} has now been exercised on real values---if you can
+reproduce this table from memory, you understand attention mechanically.
+\end{workedexample}
+
+\begin{workedexample}[Why divide by $\sqrt{d_k}$?]
+Repeat step 3 of the previous example \emph{without} the scaling. The raw scores
+are $(1,1,2)$, giving $e^1=2.718$, $e^2=7.389$, sum $12.826$, and
+\[
+  \alpha_{\text{unscaled}} = (0.212,\ 0.212,\ 0.576)
+  \quad\text{versus}\quad
+  \alpha_{\text{scaled}} = (0.248,\ 0.248,\ 0.503).
+\]
+The unscaled distribution is noticeably peakier. Now consider why this gets
+worse with dimension: if query and key components are independent with unit
+variance, the dot product $q\!\cdot\!k$ has variance $d_k$, so its typical
+magnitude grows like $\sqrt{d_k}$. At $d_k = 64$ the raw scores would spread
+about eight times wider than at $d_k = 1$, driving softmax into a near-one-hot
+regime where its gradient is almost zero. Dividing by $\sqrt{d_k}$ cancels that
+growth exactly and keeps the softmax in a trainable
+range\textsuperscript{\cite[][p.~4]{vaswaniAttentionAllYou2023}}.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  cell/.style={draw=AlmanachInk!30,minimum size=9mm,font=\scriptsize,
+    inner sep=0pt},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  hd/.style={font=\sffamily\scriptsize,color=AlmanachTeal}]
+
+  \node[hd] at (13.5mm,12mm) {attention weights $\alpha$};
+  \foreach \r [count=\i from 0] in {
+    {1.00/100,0.00/0,0.00/0},
+    {0.27/27,0.73/73,0.00/0},
+    {0.25/25,0.25/25,0.50/50}}{
+    \foreach \pair [count=\j from 0] in \r {
+      \foreach \v/\s in \pair {
+        \node[cell,fill=AlmanachTeal!\s] at (\j*9mm,-\i*9mm) {\v};}}}
+  \foreach \t [count=\i from 0] in {the,cat,sat}{
+    \node[lbl,left=1mm] at (-4.5mm,-\i*9mm) {\t};}
+  \foreach \t [count=\j from 0] in {the,cat,sat}{
+    \node[lbl,above=1mm] at (\j*9mm,4.5mm) {\t};}
+  \node[lbl,rotate=90] at (-15mm,-9mm) {query};
+  \node[lbl] at (13.5mm,-33mm) {key};
+
+  \node[lbl,align=left,anchor=west,text width=52mm] at (36mm,-9mm)
+    {The upper triangle is \emph{masked} to zero: when predicting a token,
+    the model may not look at tokens that come after it. Each row sums to
+    one, so every query spends exactly one unit of attention budget.};
+\end{tikzpicture}
+\caption{A causal attention matrix for a three-token sequence. Row $i$ shows how
+query $i$ distributes its attention over the keys; the enforced zeros above the
+diagonal are what make a decoder autoregressive rather than clairvoyant.}
+\label{fig:dl-attention-matrix}
+\end{figure}
+
+\subsection{Self-Attention, Cross-Attention, and Multiple Heads}
+
+In \keyterm{self-attention} the queries, keys, and values are all projections of
+the same sequence, so every position can gather from every
+other\textsuperscript{\cite[][p.~79]{fleuretLittleBookDeep}}. In
+\keyterm{cross-attention} the keys and values come from a different sequence,
+which is how a decoder reads an encoder.
+
+A single head averages over all positions and cannot track several kinds of
+relationship at once. \keyterm{Multi-head attention} runs $H$ heads in
+parallel, each with its own projections, then concatenates and
+projects\textsuperscript{\cite[][pp.~4--5]{vaswaniAttentionAllYou2023}}:
+\begin{equation}
+  \mathrm{MultiHead}(Q,K,V)
+  = \mathrm{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_H)\,W^O .
+  \label{eq:dl-multihead}
+\end{equation}
+
+\begin{workedexample}[Multi-head bookkeeping]
+Take $d_{\text{model}} = 512$ and $H = 8$ heads. Each head works in
+$d_k = d_v = 512/8 = 64$ dimensions. The projections cost
+\[
+  \underbrace{3 \times 512 \times 512}_{W^Q, W^K, W^V}
+  + \underbrace{512 \times 512}_{W^O}
+  = 4 \times 262{,}144 = 1{,}048{,}576 \text{ parameters.}
+\]
+Splitting into heads therefore costs \emph{nothing} in parameters or
+computation: the same $512$ dimensions are partitioned, not duplicated. What is
+bought is representational---eight separate score matrices instead of one
+averaged view. This is why the head count is a cheap knob and the model
+dimension is an expensive one.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=4.5mm,
+  blk/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=6.5mm,minimum width=17mm,font=\sffamily\scriptsize,
+    align=center},
+  hb/.style={blk,fill=AlmanachOchre!22,draw=AlmanachOchre,minimum width=15mm},
+  arr/.style={-{Stealth[length=1.6mm]},draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[blk] (in) {input $X$\\\scriptsize $(T,512)$};
+  \node[hb,above right=6mm and 6mm of in] (h2) {head 2\\\scriptsize $(T,64)$};
+  \node[hb,above=of h2] (h1) {head 1\\\scriptsize $(T,64)$};
+  \node[hb,below=of h2] (hd) {$\dots$};
+  \node[hb,below=of hd] (h8) {head 8\\\scriptsize $(T,64)$};
+  \node[blk,right=24mm of h2,yshift=-6mm] (cc)
+    {concat\\\scriptsize $(T,512)$};
+  \node[blk,right=of cc] (wo) {$W^O$\\\scriptsize $(T,512)$};
+  \foreach \h in {h1,h2,hd,h8}{\draw[arr] (in) -- (\h); \draw[arr] (\h) -- (cc);}
+  \draw[arr] (cc) -- (wo);
+  \node[lbl,below=8mm of in,align=center,text width=70mm]
+    {$8\times64 = 512$: the heads partition the model dimension,
+     they do not enlarge it};
+\end{tikzpicture}
+\caption{Multi-head attention splits the model dimension across heads and
+reassembles it. Because $H \times d_k = d_{\text{model}}$, adding heads changes
+what the layer can represent without changing what it costs.}
+\label{fig:dl-multihead}
+\end{figure}
+
+\subsection{Positional Encoding}
+
+Attention is permutation-invariant: shuffle the tokens and
+\cref{eq:dl-attention} returns the same multiset of outputs. Order must be
+injected explicitly\textsuperscript{\cite[][pp.~81--82]{fleuretLittleBookDeep}}.
+The original Transformer adds a sinusoidal
+encoding\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}}:
+\begin{equation}
+  \mathrm{PE}_{t,2i}   = \sin\!\left(\frac{t}{10000^{2i/d}}\right),
+  \qquad
+  \mathrm{PE}_{t,2i+1} = \cos\!\left(\frac{t}{10000^{2i/d}}\right).
+  \label{eq:dl-posenc}
+\end{equation}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[almanach axis,
+  height=42mm,
+  domain=0:60,
+  samples=241,
+  xlabel={token position $t$},
+  ylabel={$\mathrm{PE}_{t,2i}$},
+  ymin=-1.3,ymax=1.7,
+  legend pos=north east,
+  legend columns=3]
+  \addplot[AlmanachTeal,thick]  {sin(deg(x/1))};    \addlegendentry{$i=0$}
+  \addplot[AlmanachOchre,thick] {sin(deg(x/6.3))};  \addlegendentry{$i=2$}
+  \addplot[AlmanachRed,thick]   {sin(deg(x/40))};   \addlegendentry{$i=4$}
+\end{axis}
+\end{tikzpicture}
+\caption{Sinusoidal position channels at three frequencies. Fast channels
+distinguish neighbouring tokens; slow channels encode coarse position in the
+sequence. Together they give every position a unique signature whose
+\emph{differences} vary smoothly with distance, which is the property attention
+can exploit.}
+\label{fig:dl-positional-encoding}
+\end{figure}
+
+\begin{cautionbox}[Length extrapolation is empirical, not guaranteed]
+Because \cref{eq:dl-posenc} is a deterministic formula, it \emph{can} be
+evaluated at positions never seen in training. That is often misreported as a
+guarantee that the model will work on longer sequences. It is not. The encoding
+is defined there; whether the trained attention layers behave sensibly there is
+an empirical question, and in practice quality degrades beyond the trained
+context length. Learned positional embeddings performed comparably in the
+original experiments\textsuperscript{\cite[][p.~6]{vaswaniAttentionAllYou2023}},
+and modern models use rotary or relative schemes precisely because this problem
+is unsolved by sinusoids alone. Always re-evaluate at the length you intend to
+deploy.
+\end{cautionbox}
+
+\subsection{The Transformer Block}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=0.25cm and 0.7cm,
+  box/.style={draw=AlmanachTeal,rounded corners=2pt,minimum width=2.8cm,
+    minimum height=0.55cm,font=\sffamily\scriptsize,align=center,
+    fill=AlmanachMist},
+  addnorm/.style={draw=AlmanachOchre,rounded corners=2pt,minimum width=2.8cm,
+    minimum height=0.45cm,font=\sffamily\scriptsize,align=center,
+    fill=AlmanachOchre!18},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!65},
+  arr/.style={-{Stealth[length=2mm]},thick,draw=AlmanachInk!55}]
+  \node[box] (emb_e) {Embedding};
+  \node[box,above=of emb_e] (pe_e) {$+$ Pos.\ Encoding};
+  \node[addnorm,above=of pe_e] (an1_e) {Add \& Norm};
+  \node[box,above=of an1_e] (mha_e) {Multi-Head\\Self-Attention};
+  \node[addnorm,above=of mha_e] (an2_e) {Add \& Norm};
+  \node[box,above=of an2_e] (ffn_e) {Feed Forward};
+  \node[addnorm,above=of ffn_e] (an3_e) {Add \& Norm};
+  \node[lbl,left=0.15cm of mha_e] {$\times N$};
+
+  \node[box,right=2.5cm of emb_e] (emb_d) {Embedding};
+  \node[box,above=of emb_d] (pe_d) {$+$ Pos.\ Encoding};
+  \node[addnorm,above=of pe_d] (an1_d) {Add \& Norm};
+  \node[box,above=of an1_d] (cmha_d) {Masked\\Self-Attention};
+  \node[addnorm,above=of cmha_d] (an2_d) {Add \& Norm};
+  \node[box,above=of an2_d] (xatt_d) {Cross-Attention};
+  \node[addnorm,above=of xatt_d] (an3_d) {Add \& Norm};
+  \node[box,above=of an3_d] (ffn_d) {Feed Forward};
+  \node[addnorm,above=of ffn_d] (an4_d) {Add \& Norm};
+  \node[lbl,right=0.15cm of cmha_d] {$\times N$};
+  \node[box,above=0.3cm of an4_d,fill=AlmanachTeal!22] (out)
+    {Linear $+$ Softmax};
+
+  \foreach \a/\b in {emb_e/pe_e,pe_e/an1_e,an1_e/mha_e,mha_e/an2_e,
+    an2_e/ffn_e,ffn_e/an3_e}{\draw[arr] (\a) -- (\b);}
+  \foreach \a/\b in {emb_d/pe_d,pe_d/an1_d,an1_d/cmha_d,cmha_d/an2_d,
+    an2_d/xatt_d,xatt_d/an3_d,an3_d/ffn_d,ffn_d/an4_d,an4_d/out}{
+    \draw[arr] (\a) -- (\b);}
+  \draw[arr,dashed,draw=AlmanachOchre] (an3_e.east)
+    .. controls +(0.4,0.8) and +(-0.4,0) .. (xatt_d.west)
+    node[midway,above,font=\sffamily\tiny,color=AlmanachOchre] {$K$, $V$};
+  \node[lbl,below=0.1cm of emb_e] {Source tokens};
+  \node[lbl,below=0.1cm of emb_d] {Target tokens (shifted right)};
+  \node[lbl,above=0.1cm of out] {Output probabilities};
+\end{tikzpicture}
+\caption{The original encoder--decoder Transformer. The encoder reads the whole
+source in parallel; the decoder generates one token at a time, masked so it
+cannot see the future, and reaches into the encoder through cross-attention.
+Every sub-layer is wrapped in the residual-plus-normalisation pattern of
+\cref{eq:dl-residual}.}
+\label{fig:dl-transformer}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Cost comparison per layer, for sequence length $T$ and width $d$. The
+Transformer buys a constant path length with a quadratic term in $T$---the
+trade that defines modern sequence modelling.}
+\label{tab:dl-seq-complexity}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.16\textwidth] Q[c,0.20\textwidth] Q[c,0.20\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Layer & Compute per layer & Sequential steps & Longest path between positions \\
+Recurrent & $O(T d^2)$ & $O(T)$ & $O(T)$ \\
+Convolutional & $O(F T d^2)$ & $O(1)$ & $O(\log_F T)$ \\
+Self-attention & $O(T^2 d)$ & $O(1)$ & $O(1)$ \\
+\end{tblr}
+\end{table}
+
+\subsection{Encoder-Only and Decoder-Only Descendants}
+
+Most deployed models drop half of \cref{fig:dl-transformer}. \keyterm{BERT} is
+encoder-only and bidirectional, trained with masked language
+modelling\textsuperscript{\cite{devlinBERTPretrainingDeep2019}};
+\keyterm{GPT} is decoder-only and causal, trained on next-token
+prediction\textsuperscript{\cite{radfordImprovingLanguageUnderstanding2018}}.
+The distinction is not stylistic: bidirectional models see the whole input and
+suit classification and retrieval, while causal models can generate.
+
+\begin{practicallab}[Attention without a GPU]
+This lab needs a spreadsheet or twenty lines of NumPy---no model, no training.
+
+\textbf{Goal.} Convert \cref{eq:dl-attention} from a formula you have read into
+one you can predict.
+
+\textbf{Steps.}
+\begin{enumerate}
+  \item Reproduce the three-token worked example numerically and confirm
+        $y_3 = (1.00, 1.00)$ to two decimals.
+  \item Compute $y_1$ and $y_2$ as well, then assemble the full $3\times3$
+        weight matrix. Verify every row sums to $1$.
+  \item Apply a causal mask: set the upper triangle of the score matrix to
+        $-\infty$ \emph{before} the softmax. Confirm you reproduce the pattern
+        in \cref{fig:dl-attention-matrix}, and explain why masking before
+        rather than after the softmax is the only correct order.
+  \item Multiply all keys and queries by $10$. Recompute $\alpha$ and record
+        how peaked it becomes. You have just simulated what happens when
+        $\sqrt{d_k}$ scaling is omitted.
+  \item Set $V$ equal to the identity rows. What does the output tell you about
+        the attention weights themselves?
+\end{enumerate}
+
+\textbf{Evidence to keep.} A table of the four weight matrices from steps 2--4
+and one sentence per step on what changed and why.
+
+\textbf{Success criterion.} You can predict the direction of change in
+$\alpha$---peakier or flatter---before running each step. Predicting beats
+observing; an experiment you cannot predict is a demonstration, not a test.
+\end{practicallab}
+
+\begin{checkpoint}
+A sequence of $2{,}048$ tokens is processed by a self-attention layer with
+$d=512$. Using \cref{tab:dl-seq-complexity}, compute the ratio of attention
+cost to feed-forward cost. At which sequence length do the two become equal?
+\end{checkpoint}
+
+% ===========================================================================
+\section{Beyond the Dense Transformer}
+\label{sec:dl-beyond-transformer}
+% ===========================================================================
+
+\Cref{tab:dl-seq-complexity} named the Transformer's price: attention costs
+$O(T^2 d)$ in sequence length, and every parameter is used for every token.
+Two independent lines of work attack those two costs, and current frontier
+models generally use both.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  ax/.style={->,draw=AlmanachInk!55,>={Stealth[length=1.7mm]}},
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=26mm,font=\sffamily\scriptsize,
+    align=center},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75}]
+  \draw[ax] (0,0) -- (86mm,0)
+    node[right,lbl,align=left,text width=22mm] {cheaper per\\token};
+  \draw[ax] (0,0) -- (0,42mm)
+    node[above,lbl,align=center,text width=26mm] {more capacity\\per FLOP};
+  \node[bx] at (22mm,6mm) {dense Transformer\\\scriptsize $O(T^2)$, all
+    parameters};
+  \node[bx,fill=AlmanachOchre!20,draw=AlmanachOchre] at (22mm,32mm)
+    {sparse MoE\\\scriptsize few experts active};
+  \node[bx] at (68mm,6mm) {SSM / linear\\\scriptsize $O(T)$, fixed state};
+  \node[bx,fill=AlmanachTeal!25] at (68mm,32mm)
+    {hybrid $+$ MoE\\\scriptsize e.g.\ Jamba};
+  \node[lbl,anchor=west,align=left,text width=40mm] at (0,-9mm)
+    {the two axes are independent --- a model can move along either, or both};
+\end{tikzpicture}
+\caption{Two independent economies. Moving right reduces the cost of
+\emph{sequence length}; moving up reduces the cost of \emph{parameter count}.
+Mixture-of-experts and state-space methods solve different problems and
+compose, which is why recent architectures combine them.}
+\label{fig:dl-architecture-axes}
+\end{figure}
+
+\subsection{Mixture of Experts: Decoupling Capacity from Compute}
+
+In a dense network every parameter participates in every forward pass, so
+capacity and compute are locked together. A \keyterm{mixture-of-experts} (MoE)
+layer breaks that link: it holds $N$ parallel expert sub-networks and a
+\keyterm{router} that sends each token to only the top $k$ of
+them\textsuperscript{\cite{shazeerOutrageouslyLargeNeural2017}}. Typically the
+MLP block of each Transformer layer is replaced.
+
+\begin{equation}
+  y = \sum_{i \in \mathrm{TopK}(g(x))} g_i(x)\, E_i(x),
+  \qquad
+  g(x) = \mathrm{softmax}\bigl(W_g x\bigr),
+  \label{eq:dl-moe}
+\end{equation}
+where $E_i$ is the $i$-th expert and $g$ the routing distribution. Because
+only $k$ of $N$ experts run, compute scales with $k$ while capacity scales
+with $N$.
+
+\begin{plainlanguage}
+A dense model is a single generalist who personally answers every question. A
+mixture-of-experts model is a large firm with a receptionist: the firm employs
+hundreds of specialists, but any one question is routed to two of them. The
+payroll is enormous; the cost of answering one question is not. What you save
+is time, not salary --- and that is exactly the trade, because all the experts
+must still be held in memory.
+\end{plainlanguage}
+
+\begin{workedexample}[Total against active parameters]
+Mixtral 8$\times$7B has eight experts per layer and routes each token to two of
+them\textsuperscript{\cite{jiangMixtralExperts2024}}. Its parameter counts are
+often misread, so separate them:
+
+\smallskip
+\begin{tblr}{
+  width=0.86\linewidth,
+  colspec={Q[l,0.30\linewidth] Q[c] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Quantity & Value & Determines \\
+Total parameters & ${\approx}46.7$B & Memory to load the model \\
+Active per token & ${\approx}12.9$B & Compute and latency per token \\
+Experts per layer & 8 & Capacity \\
+Routed per token & 2 & Cost \\
+\end{tblr}
+\smallskip
+
+\emph{Read the consequence.} You must provision memory for $46.7$B parameters
+but pay compute for roughly $12.9$B --- so the model has the quality profile of
+something much larger than its speed suggests, and the hardware footprint of
+something much larger than its speed suggests too. \emph{Both} statements are
+true, and vendors tend to quote whichever flatters.
+
+\emph{Why the name ``8$\times$7B'' misleads.} $8 \times 7 = 56 \neq 46.7$,
+because only the MLP blocks are replicated across experts; attention and
+embeddings are shared. Never infer memory from an MoE model's name.
+\end{workedexample}
+
+\begin{cautionbox}[Routing is a load-balancing problem, and it can collapse]
+Nothing in \cref{eq:dl-moe} prevents the router from sending most tokens to a
+few popular experts. Left alone it usually does --- a rich-get-richer loop in
+which a slightly better expert receives more tokens, trains faster, and becomes
+more attractive still. The result is \keyterm{expert collapse}: nominal
+capacity of $N$ experts, effective capacity of two or three.
+
+The standard remedy is an \keyterm{auxiliary load-balancing loss} that
+penalises uneven routing, plus a per-expert capacity factor that drops or
+reroutes overflow tokens\textsuperscript{\cite{fedusSwitchTransformersScaling2022}}.
+Both introduce their own artefacts: token dropping makes the forward pass
+depend on which \emph{other} tokens happen to share the batch, which breaks the
+usual assumption that inference is per-example deterministic. If you are
+evaluating an MoE model, fix the batch composition before comparing runs.
+\end{cautionbox}
+
+\subsection{State-Space Models: Linear Cost in Sequence Length}
+
+Attention compares every token with every other token, which is what makes it
+both powerful and quadratic. \keyterm{State-space models} (SSMs) return to a
+recurrent formulation --- but one designed so that training can still be
+parallelised.
+
+A continuous linear system, discretised, gives
+\begin{equation}
+  h_t = \bar{A}h_{t-1} + \bar{B}x_t,
+  \qquad
+  y_t = C h_t ,
+  \label{eq:dl-ssm}
+\end{equation}
+which is an RNN at inference time --- $O(1)$ state per step, $O(T)$ overall ---
+but, because it is \emph{linear} in $h$, it can also be evaluated as a global
+convolution and therefore trained in
+parallel\textsuperscript{\cite{guEfficientlyModelingLong2022}}.
+
+\keyterm{Mamba} adds the missing ingredient:
+\keyterm{selectivity}\textsuperscript{\cite{guMambaLinearTimeSequence2024}}.
+In S4 the matrices are fixed, so the model compresses history the same way
+regardless of content. Mamba makes $\bar B$, $C$, and the discretisation step
+\emph{functions of the input}, letting the model choose what to keep and what
+to forget --- recovering much of what attention provides. Because that breaks
+the convolution trick, Mamba supplies a hardware-aware parallel scan instead.
+
+\begin{table}[htbp]
+\centering
+\caption{The three sequence-mixing families compared on the properties that
+decide deployment. The last row is the one that matters most in practice and is
+quoted least often.}
+\label{tab:dl-sequence-families}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.21\textwidth] X[c] X[c] X[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+& Attention & SSM (Mamba) & Linear/RNN-style (RWKV) \\
+Training cost in $T$ & $O(T^2)$ & $O(T)$ & $O(T)$ \\
+Inference state & grows with $T$ (KV cache) & fixed size & fixed size \\
+Per-token latency & rises with context & constant & constant \\
+Exact recall from context & strong & weaker & weaker \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+The honest summary as of this book's date: SSMs win decisively on long-sequence
+cost and lose on precise retrieval from context. A fixed-size state must
+compress everything it has seen, so tasks that require quoting an exact string
+from 50{,}000 tokens ago --- the ``needle in a haystack'' family --- favour
+attention, which keeps every key and value.
+
+That asymmetry is why the dominant production answer is neither pure
+architecture but a \keyterm{hybrid}: mostly SSM layers for cheap sequence
+mixing, with attention layers interleaved at intervals to preserve exact
+recall, and MoE on top for
+capacity\textsuperscript{\cite{lieberJambaHybridTransformerMamba2024}}. Treat
+any claim that one family has simply won as a claim to check against a
+benchmark that includes long-context retrieval.
+\end{engineernote}
+
+\subsection{Cheaper Attention, Without Replacing It}
+
+Between ``keep dense attention'' and ``replace it'' sits a set of
+modifications that keep the mechanism and reduce its cost. These are the
+changes most likely to appear in a model you actually deploy.
+
+\begin{table}[htbp]
+\centering
+\caption{Attention-preserving efficiency techniques. Note which column each one
+attacks: several reduce \emph{memory} rather than compute, which is usually the
+binding constraint at inference (\cref{ch:practical-llm-engineering}).}
+\label{tab:dl-attention-variants}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.22\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Technique & Mechanism & What it costs \\
+Multi-query / grouped-query attention\textsuperscript{\cite{shazeerFastTransformerDecoding2019,ainslieGQATrainingGeneralized2023}}
+  & Several query heads share one key/value head, shrinking the KV cache
+  & A small quality loss; GQA is the compromise between MQA and full MHA \\
+Sliding-window / local attention\textsuperscript{\cite{beltagyLongformerLongDocumentTransformer2020}}
+  & Each token attends only within a window, plus a few global tokens
+  & Long-range links must be built up across layers \\
+FlashAttention\textsuperscript{\cite{daoFlashAttentionFastMemory2022}}
+  & Tiles the computation to avoid writing the $T\times T$ matrix to memory
+  & Nothing in accuracy --- it is exact --- but it is kernel-specific \\
+Multi-head latent attention\textsuperscript{\cite{deepseekaiDeepSeekV3TechnicalReport2024}}
+  & Compresses keys and values into a low-rank latent cache
+  & Extra projection work, for a large cache reduction \\
+Rotary position embedding\textsuperscript{\cite{suRoFormerEnhancedTransformer2024}}
+  & Encodes position by rotating query and key vectors
+  & Now the default; extending beyond trained length still needs care \\
+Speculative decoding\textsuperscript{\cite{leviathanFastInferenceTransformers2023}}
+  & A small draft model proposes tokens; the large model verifies in parallel
+  & Output is \emph{identical} to the large model; gains depend on draft
+  agreement \\
+\end{tblr}
+\end{table}
+
+\begin{workedexample}[What grouped-query attention saves]
+Take the key--value cache calculation from the deep dive later in this chapter,
+but vary only the number of key/value heads. With $L=32$ layers, head dimension
+$d_h=128$, \texttt{float16}, and a $8{,}192$-token context:
+
+\[
+  \text{cache} = 2 \times L \times H_{kv} \times d_h \times 2\,\text{bytes}
+  \times T .
+\]
+
+\smallskip
+\begin{tblr}{
+  width=0.9\linewidth,
+  colspec={Q[l,0.30\linewidth] Q[c] Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Scheme & $H_{kv}$ & Cache at 8{,}192 tokens \\
+Multi-head (MHA) & 32 & $4.29$ GB \\
+Grouped-query (GQA) & 8 & $1.07$ GB \\
+Multi-query (MQA) & 1 & $0.13$ GB \\
+\end{tblr}
+\smallskip
+
+\emph{Read it.} Going from $32$ to $8$ key/value heads cuts the cache by
+$4\times$ for a small, measurable quality cost --- which is why GQA is now
+near-universal. Going all the way to one head saves $32\times$ but costs more
+quality, so MQA appears mainly where memory is the hard constraint.
+
+\emph{And note what did not change.} The parameter count barely moves; only the
+\emph{cache} shrinks. This is a memory optimisation, and it raises the batch
+size you can serve rather than the speed of any single request.
+\end{workedexample}
+
+\begin{cautionbox}[Architecture claims date fastest of anything in this book]
+This section describes a landscape in motion. Specific models named here will
+be superseded; the parameter counts and the relative standing of SSMs against
+attention will change; and a paradigm currently absent may dominate.
+
+What is stable is the \emph{structure} of the trade-offs, and that is what to
+carry forward: capacity can be decoupled from compute, but only by paying in
+memory; sequence cost can be made linear, but only by compressing history into
+a fixed state, which costs exact recall; and every efficiency technique in
+\cref{tab:dl-attention-variants} reduces one resource by spending another. When
+you meet a new architecture, ask which of those three trades it is making
+rather than whether it is better.
+\end{cautionbox}
+
+\begin{checkpoint}
+A vendor offers a ``$120$B parameter'' MoE model that is ``as fast as a $15$B
+dense model''. State what both numbers most likely refer to, what you must
+provision, and the single question you would ask to size the hardware. Then say
+which benchmark family you would insist on seeing before accepting a
+long-context claim for an SSM-based model.
+\end{checkpoint}
+
+% ===========================================================================
+\section{Generative Architectures}
+% ===========================================================================
+
 \subsection{Generative Adversarial Networks}
 
-\begin{v3topic}{Generator and Discriminator}
-    A \textbf{Generative Adversarial Network (GAN)} introduced by Goodfellow et al.\ (2014) pits two networks against each other\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}:
-    \begin{itemize}
-        \item \textbf{Generator} $G(z)$: takes random noise $z \sim p(z)$ and produces a structured output (e.g., an image) that mimics real data
-        \item \textbf{Discriminator} $D(x)$: takes either a real sample or $G(z)$; outputs probability that the input is real
-    \end{itemize}
-    At equilibrium, $G$ produces samples indistinguishable from real data and $D$ outputs $0.5$ everywhere.
+A \keyterm{GAN} trains two networks against each
+other\textsuperscript{\cite{goodfellowGenerativeAdversarialNets2014},
+\cite[][p.~125]{fleuretLittleBookDeep}}. The \keyterm{generator} $G(z)$ maps
+noise $z\sim p(z)$ to a sample; the \keyterm{discriminator} $D(x)$ estimates the
+probability that its input is real. They optimise opposite objectives:
+\begin{equation}
+  \min_G \max_D\ \Bigl[\,
+    \mathbb{E}_{x\sim p_{\text{data}}}\bigl[\log D(x)\bigr]
+    + \mathbb{E}_{z\sim p(z)}\bigl[\log\bigl(1 - D(G(z))\bigr)\bigr]
+  \,\Bigr].
+  \label{eq:dl-gan}
+\end{equation}
+At the theoretical optimum $G$ reproduces the data distribution and $D$ outputs
+$0.5$ everywhere---it can do no better than guessing.
 
-\end{v3topic}
-\begin{v3topic}{The Minimax Objective}
-    Training is formulated as a two-player minimax game\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}: $D$ maximises its ability to distinguish real from fake; $G$ minimises the probability that $D$ identifies its outputs as fake.
-\visualseparator
-    \begin{equation}
-        \min_G \max_D \;\bigl[\,\mathbb{E}[\log D(x)] + \mathbb{E}[\log(1 - D(G(z)))]\,\bigr]
-    \end{equation}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 13mm,
+  blk/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=20mm,font=\sffamily\scriptsize,
+    align=center},
+  gen/.style={blk,fill=AlmanachOchre!22,draw=AlmanachOchre},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  gr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachRed,dashed},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[blk] (z) {noise $z$};
+  \node[gen,right=of z] (g) {Generator\\$G$};
+  \node[blk,right=of g] (fake) {fake $G(z)$};
+  \node[blk,below=14mm of fake] (real) {real $x$};
+  \node[blk,right=of fake,yshift=-7mm] (d) {Discriminator\\$D$};
+  \node[blk,right=of d] (p) {$P(\text{real})$};
+  \draw[arr] (z) -- (g); \draw[arr] (g) -- (fake);
+  \draw[arr] (fake) -- (d); \draw[arr] (real) -- (d); \draw[arr] (d) -- (p);
+  \draw[gr] (p.north) .. controls +(0,1.4) and +(0,1.4) .. (g.north)
+    node[midway,above,lbl,color=AlmanachRed]
+    {gradient: ``which cue gave you away?''};
+  \node[lbl,below=1mm of d,align=center,text width=32mm]
+    {maximises accuracy};
+  \node[lbl,below=1mm of g,align=center,text width=26mm]
+    {minimises $D$'s accuracy};
+\end{tikzpicture}
+\caption{The adversarial loop. The discriminator's gradient tells the generator
+exactly which cues betrayed the fake, and the generator removes them. Training
+succeeds only while neither player is decisively winning---which is why GAN
+training is delicate rather than merely slow.}
+\label{fig:dl-gan}
+\end{figure}
 
-\end{v3topic}
-\begin{v3topic}{Training Dynamics and Mode Collapse}
-    GAN training is notoriously unstable.
-    When the discriminator is too strong, gradients to the generator vanish; when it is too weak, the generator does not learn useful structure.
-    A key failure mode is \textbf{mode collapse}: the generator learns to produce a small variety of outputs that fool the discriminator, ignoring most of the real data distribution.
-    As gradients flow from $D$ back to $G$, the discriminator informs the generator about the cues it detects --- the generator then learns to eliminate those cues\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
-    Variants such as Wasserstein GAN (WGAN) and spectral normalisation address training stability.
-\end{v3topic}
+\begin{cautionbox}[Mode collapse and the balance problem]
+GAN training is famously unstable, in two specific ways.
+\emph{Imbalance:} if $D$ becomes too strong, $\log(1-D(G(z)))$ saturates and
+the generator receives almost no gradient; if $D$ is too weak, its signal
+carries no information. \emph{Mode collapse:} the generator discovers a narrow
+family of outputs that reliably fools $D$ and abandons the rest of the data
+distribution---the samples look excellent and the diversity is gone. Note that
+neither failure shows up in the loss curves, which is what makes them
+dangerous. You must evaluate coverage explicitly. Wasserstein
+GANs\textsuperscript{\cite{arjovskyWassersteinGAN2017}} and spectral
+normalisation address the first problem directly by supplying a gradient that
+does not saturate.
+\end{cautionbox}
 
-% ---- 6.5.2 Autoencoders ---------------------------------------------------------------------
-\subsection{Autoencoders}
+\subsection{Autoencoders and Variational Autoencoders}
 
-\begin{v3topic}{Encoder--Bottleneck--Decoder}
-    An \textbf{autoencoder} consists of an \emph{encoder} $f_\phi$ and a \emph{decoder} $g_\theta$\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
-    The encoder maps the high-dimensional input $x$ to a low-dimensional latent vector $z = f_\phi(x)$; the decoder reconstructs $\hat{x} = g_\theta(z)$.
-    The bottleneck forces the network to learn a compact representation of the data manifold.
-\visualseparator
-    \begin{itemize}
-        \item Loss: $\mathcal{L} = \|x - \hat{x}\|^2$ (MSE) or cross-entropy
-        \item Applications: dimensionality reduction, denoising, anomaly detection, pre-training
-        \item A \textbf{denoising autoencoder} receives corrupted $\tilde{x}$ as input but targets clean $x$, forcing more robust representations
-    \end{itemize}
+An \keyterm{autoencoder} pairs an encoder $f_\phi$ with a decoder $g_\theta$
+through a narrow \keyterm{bottleneck}\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
+The bottleneck is the whole design: forcing $x$ through a low-dimensional $z$
+means only reconstructable structure can survive.
 
-\end{v3topic}
-\begin{v3topic}{Variational Autoencoder (VAE)}
-    The \textbf{Variational Autoencoder} (Kingma \& Welling, 2013) imposes a prior distribution on the latent space\textsuperscript{\cite[][p.~125]{fleuretLittleBookDeep}}.
-    The encoder outputs parameters $(\mu, \sigma)$ of a Gaussian; the \emph{reparameterisation trick} ($z = \mu + \sigma \odot \varepsilon$, $\varepsilon \sim \mathcal{N}(0,I)$) makes sampling differentiable.
-\visualseparator
-    \begin{equation}
-        \mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}\bigl[\log p_\theta(x|z)\bigr]
-        - \mathrm{KL}\bigl(q_\phi(z|x) \,\|\, p(z)\bigr)
-    \end{equation}
-    The KL term regularises the latent space towards $\mathcal{N}(0,I)$, enabling new samples to be drawn by sampling $z \sim \mathcal{N}(0,I)$ and decoding.
-\end{v3topic}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55}]
+  \fill[AlmanachMist,draw=AlmanachTeal,rounded corners=1mm]
+    (0,-1.1) -- (1.9,-0.42) -- (1.9,0.42) -- (0,1.1) -- cycle;
+  \node[lbl] at (0.95,0) {encoder};
+  \node[draw=AlmanachOchre,fill=AlmanachOchre!25,rounded corners=1mm,
+    minimum width=8mm,minimum height=9mm,font=\sffamily\scriptsize]
+    (z) at (2.5,0) {$z$};
+  \fill[AlmanachMist,draw=AlmanachTeal,rounded corners=1mm]
+    (3.1,-0.42) -- (5.0,-1.1) -- (5.0,1.1) -- (3.1,0.42) -- cycle;
+  \node[lbl] at (4.05,0) {decoder};
+  \node[lbl,left=2mm] at (0,0) {$x$};
+  \node[lbl,right=2mm] at (5.0,0) {$\hat x$};
+  \draw[arr] (-0.75,0) -- (-0.1,0);
+  \draw[arr] (5.1,0) -- (5.75,0);
+  \node[lbl,below=2mm of z,color=AlmanachOchre,align=center]
+    {bottleneck\\$\dim z \ll \dim x$};
+  \draw[arr,draw=AlmanachRed,dashed] (5.9,-0.35)
+    .. controls +(0,-1.1) and +(0,-1.1) .. (-0.9,-0.35)
+    node[midway,below,lbl,color=AlmanachRed]
+    {reconstruction loss $\lVert x-\hat x\rVert^2$};
+\end{tikzpicture}
+\caption{The autoencoder. Because the only training signal is reconstruction,
+the bottleneck must retain whatever is needed to rebuild the input and may
+discard everything else---which is what turns it into a learned compressor,
+denoiser, or anomaly detector.}
+\label{fig:dl-autoencoder}
+\end{figure}
 
-% ---- 6.5.3 Restricted Boltzmann Machines ----------------------------------------------------
+A \keyterm{denoising autoencoder} receives a corrupted $\tilde x$ but targets
+the clean $x$, which forces representations robust to the corruption used.
+
+The \keyterm{variational autoencoder} makes the latent space a distribution
+rather than a point\textsuperscript{\cite{kingmaAutoEncodingVariationalBayes2014}}.
+The encoder emits $(\mu,\sigma)$; the \keyterm{reparameterisation trick}
+$z = \mu + \sigma\odot\varepsilon$ with $\varepsilon\sim\mathcal{N}(0,I)$ moves
+the randomness into an input so gradients can flow through the sampling step.
+Training maximises the evidence lower bound:
+\begin{equation}
+  \mathcal{L}_{\text{ELBO}}
+  = \mathbb{E}_{q_\phi(z\mid x)}\bigl[\log p_\theta(x\mid z)\bigr]
+  - \mathrm{KL}\bigl(q_\phi(z\mid x)\,\|\,p(z)\bigr).
+  \label{eq:dl-elbo}
+\end{equation}
+The first term rewards reconstruction; the second pulls the latent distribution
+towards $\mathcal{N}(0,I)$ so that decoding a fresh sample $z\sim\mathcal{N}(0,I)$
+produces something plausible. A plain autoencoder has no such guarantee---its
+latent space may be full of holes that decode to nonsense.
+
 \subsection{Restricted Boltzmann Machines}
 
-\begin{v3topic}{Energy-Based Generative Model}
-    A \textbf{Restricted Boltzmann Machine (RBM)} is a bipartite undirected graphical model with visible units $v$ and hidden units $h$, and no intra-layer connections.
-    The joint probability is defined via an energy function:
-    \begin{equation}
-        E(v, h) = -v^\top W h - b^\top v - c^\top h
-    \end{equation}
-    with $P(v, h) \propto \exp(-E(v,h))$.
-    The restriction to bipartite structure makes conditional distributions tractable: $P(h|v)$ and $P(v|h)$ are independent Bernoulli.
+An \keyterm{RBM} is a bipartite energy-based model over visible units $v$ and
+hidden units $h$, with no connections inside a layer:
+\begin{equation}
+  E(v,h) = -v^{\!\top}Wh - b^{\!\top}v - c^{\!\top}h,
+  \qquad P(v,h)\propto e^{-E(v,h)} .
+  \label{eq:dl-rbm}
+\end{equation}
+The bipartite restriction makes $P(h\mid v)$ and $P(v\mid h)$ factorise into
+independent Bernoullis, which is what makes sampling tractable. Exact maximum
+likelihood is not tractable, because it requires the partition function;
+\keyterm{contrastive divergence} approximates the
+gradient\textsuperscript{\cite[][]{Kriesel2007NeuralNetworks}} by contrasting a
+data-clamped phase with a short Gibbs-sampled model phase. RBMs powered the
+greedy layer-wise pre-training that made deep belief nets trainable in
+2006\textsuperscript{\cite{hintonFastLearningAlgorithm2006}}---historically
+decisive, and now superseded by better initialisation and normalisation.
 
-\end{v3topic}
-\begin{v3topic}{Contrastive Divergence Training}
-    Exact maximum-likelihood training requires computing the partition function (intractable).
-    \textbf{Contrastive Divergence (CD-k)} approximates the gradient\textsuperscript{\cite[][]{Kriesel2007NeuralNetworks}}:
-    \begin{itemize}
-        \item \emph{Positive phase}: clamp real data $v$; sample $h \sim P(h|v)$
-        \item \emph{Negative phase}: run $k$ steps of Gibbs sampling to get model sample $(\tilde{v},\tilde{h})$
-        \item Update: $\Delta W \propto \langle vh \rangle_\mathrm{data} - \langle \tilde{v}\tilde{h} \rangle_\mathrm{model}$
-    \end{itemize}
-    RBMs were used for greedy layer-wise pre-training of deep belief networks (Hinton et al., 2006) but have been largely superseded by modern training methods.
-\end{v3topic}
+\begin{checkpoint}
+For each of GAN, VAE, and autoencoder, state (a) what you can sample from it,
+(b) whether it gives you a likelihood, and (c) the failure mode you would check
+first. Which one would you choose to detect anomalous sensor readings, and why?
+\end{checkpoint}
 
-% ---- 6.5.4 Capsule Networks -----------------------------------------------------------------
-\subsection{Capsule Networks}
+% ===========================================================================
+\section{Research Directions Beyond Backpropagation}
+% ===========================================================================
 
-\begin{v3topic}{Capsules and Dynamic Routing}
-    Proposed by Sabour, Frosst \& Hinton (2017) to address a fundamental limitation of CNNs: pooling operations are viewpoint-invariant but discard spatial and pose information.
-    A \textbf{capsule} is a group of neurons whose \emph{activity vector} encodes both the presence (vector length) and instantiation parameters such as pose, scale, and orientation (vector direction) of an entity.
-    Lower-level capsules send \textbf{votes} to candidate higher-level capsules; an iterative \textbf{dynamic routing} algorithm (3 iterations) selects the higher-level capsule whose pose best agrees with the votes.
-    This enables \textbf{equivariance}: as viewpoint changes, the capsule representation changes predictably, preserving part-whole relationships\textsuperscript{\cite[][]{fleuretLittleBookDeep}}.
-\visualseparator
-    \begin{itemize}
-        \item Advantage: encodes spatial hierarchies, more interpretable than CNNs
-        \item Limitation: $O(n^2)$ routing cost; does not scale well to complex datasets such as ImageNet
-    \end{itemize}
-\end{v3topic}
+\subsection{The Weight Transport Problem and Feedback Alignment}
 
-% ---- 6.5.5 Spiking Networks -----------------------------------------------------------------
-\subsection{Spiking Networks}
+Backpropagation sends error signals backwards using the \emph{transpose} of the
+forward weights, $W^{\!\top}$\textsuperscript{\cite[][p.~3]{fischerVorlesungGrundlagenNeuronale2024}}.
+The backward path must therefore know every forward weight exactly---the
+\keyterm{weight transport problem}, for which no biological mechanism is known.
 
-\begin{v3topic}{Third-Generation Neural Networks}
-    \textbf{Spiking Neural Networks (SNNs)}, introduced by Maass (1997), are described as the ``third generation'' of neural networks.
-    Rather than communicating through continuous activations, neurons emit discrete \textbf{spike} events.
-    The \textbf{Leaky Integrate-and-Fire (LIF)} neuron model accumulates input in a membrane potential $V(t)$; when $V$ exceeds a threshold $\theta$, a spike is emitted and $V$ resets.
-    Information can be encoded in spike rates or precise spike timing.
-\visualseparator
-    \begin{itemize}
-        \item \textbf{Energy efficiency}: sparse spike events map naturally onto neuromorphic hardware (Intel Loihi, IBM TrueNorth) with orders-of-magnitude lower power than GPU-based ANNs
-        \item \textbf{Biological plausibility}: closer to cortical computation than rate-coded networks
-        \item \textbf{Training challenge}: the spike function is non-differentiable; \emph{surrogate gradients} (smooth approximations) enable gradient-based training
-        \item \textbf{Current status}: promising for edge and embedded AI; not yet competitive with ANNs on standard benchmarks
-    \end{itemize}
-\end{v3topic}
+Lillicrap and colleagues showed that replacing $W^{\!\top}$ with a \emph{fixed
+random} matrix $B$ still supports
+learning\textsuperscript{\cite{lillicrapRandomSynapticFeedback2016}}: the
+forward weights gradually align with $B$, so the network shapes itself to make
+the random feedback useful. \keyterm{Direct feedback alignment} goes further,
+delivering the error from the output layer to every hidden layer through
+separate random matrices, bypassing the chain
+entirely\textsuperscript{\cite{noklandDirectFeedbackAlignment2016}}.
 
+\subsection{Synthetic Gradients}
 
-% ==== Section 6: Further Reading =============================================================
-%
-\section{Deep Dive: Modern Training and Inference}
-\begin{v3topic}{Residual Pre-Norm Blocks}
-Modern deep networks stabilise optimisation with residual paths and
-normalisation.
-In a pre-norm Transformer block,
-$x' = x + \mathrm{Attention}(\mathrm{Norm}(x))$ and
-$y = x' + \mathrm{MLP}(\mathrm{Norm}(x'))$.
-The residual path carries information and gradients even when a learned branch
-is initially poor.
+In standard training no layer may update until the full forward and backward
+passes finish---\keyterm{update locking}. \keyterm{Decoupled neural interfaces}
+attach a small predictor $M_i$ to each layer that \emph{estimates} the incoming
+gradient, letting the layer update
+immediately\textsuperscript{\cite{jaderbergDecoupledNeuralInterfaces2017}}. Each
+$M_i$ is then trained against the true gradient when it eventually arrives.
 
-\end{v3topic}
-\begin{v3topic}{Training Parallelism vs Inference}
-Self-attention can process training positions in parallel, but dense attention
-still has quadratic interaction cost in sequence length.
-Autoregressive generation remains sequential across new tokens.
-A key--value cache avoids recomputing earlier keys and values, trading memory
-for lower per-token latency.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 10mm,
+  lay/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum width=17mm,minimum height=6.5mm,font=\sffamily\scriptsize},
+  dni/.style={draw=AlmanachOchre,fill=AlmanachOchre!22,rounded corners=1mm,
+    minimum width=15mm,minimum height=6mm,font=\sffamily\scriptsize},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  darr/.style={-{Stealth[length=1.8mm]},dashed,draw=AlmanachRed},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[lay] (L1) {Layer 1};
+  \node[lay,right=of L1] (L2) {Layer 2};
+  \node[lay,right=of L2] (L3) {Layer 3};
+  \node[lay,right=of L3] (loss) {Loss};
+  \node[dni,below=of L1] (M1) {DNI $M_1$};
+  \node[dni,below=of L2] (M2) {DNI $M_2$};
+  \draw[arr] (L1) -- (L2) node[midway,above,lbl] {$h_1$};
+  \draw[arr] (L2) -- (L3) node[midway,above,lbl] {$h_2$};
+  \draw[arr] (L3) -- (loss);
+  \draw[arr] (L1) -- (M1); \draw[arr] (L2) -- (M2);
+  \draw[darr] (M1) -- (L1)
+    node[midway,right,lbl,color=AlmanachRed] {$\tilde\delta_1$};
+  \draw[darr] (M2) -- (L2)
+    node[midway,right,lbl,color=AlmanachRed] {$\tilde\delta_2$};
+  \node[lbl,below=3mm of M1,align=center,text width=42mm]
+    {each layer updates on a \emph{predicted} gradient
+     without waiting for the loss};
+\end{tikzpicture}
+\caption{Decoupled neural interfaces. The dashed arrows are synthetic
+gradients supplied locally, which removes update locking and allows layers to
+train asynchronously---at the cost of learning from an estimate rather than the
+true error signal.}
+\label{fig:dl-synthetic-gradients}
+\end{figure}
 
-\end{v3topic}
-\begin{v3topic}{Efficiency Is Multi-Dimensional}
-Quantisation, distillation, sparsity, low-rank adaptation, activation
-checkpointing, batching, and distributed sharding reduce different costs and
-introduce different errors.
-Benchmark end-to-end quality, latency, throughput, peak memory, energy, and
-operational complexity under the intended workload; parameter count alone is
-not a deployment metric.
-\end{v3topic}
+\subsection{Capsules and Spiking Networks}
+
+\keyterm{Capsule networks} address a real limitation of pooling: it buys
+invariance by discarding pose\textsuperscript{\cite{sabourDynamicRoutingCapsules2017}}.
+A capsule is a group of neurons whose activity \emph{vector} encodes both
+presence (its length) and instantiation parameters such as pose and orientation
+(its direction). An iterative \keyterm{dynamic routing} procedure sends each
+lower capsule's output to whichever higher capsule its prediction agrees with,
+yielding \emph{equivariance}---the representation changes predictably as the
+viewpoint changes. The cost is quadratic routing, and the approach has not
+scaled to large datasets.
+
+\keyterm{Spiking neural networks} communicate through discrete events rather
+than continuous activations\textsuperscript{\cite{maassNetworksSpikingNeurons1997}}.
+A leaky integrate-and-fire unit accumulates input in a membrane potential and
+emits a spike when it crosses threshold. Sparse events map naturally onto
+neuromorphic hardware at far lower power than dense GPU arithmetic. The
+obstacle is training: the spike function is not differentiable, so
+\keyterm{surrogate gradients} substitute a smooth approximation in the backward
+pass only.
+
+\begin{engineernote}
+Everything in this section is scientifically interesting and, as of the date on
+this book's title page, none of it displaces backpropagation in production.
+Report it as an open research direction, not as an available option. The honest
+summary is: these methods answer ``could learning work differently?'' with yes,
+and ``should you use them tomorrow?'' with no.
+\end{engineernote}
+
+% ===========================================================================
+\section{Deep Dive: The Economics of Training and Inference}
+% ===========================================================================
+
+\subsection{Pre-Norm Residual Blocks}
+
+Modern Transformers normalise \emph{before} each sub-layer rather than after:
+\[
+  x' = x + \mathrm{Attention}\bigl(\mathrm{Norm}(x)\bigr),
+  \qquad
+  y = x' + \mathrm{MLP}\bigl(\mathrm{Norm}(x')\bigr).
+\]
+The residual stream then runs from input to output without passing through any
+normalisation, so the identity path of \cref{eq:dl-residual} stays exactly
+intact. This is what allows very deep stacks to train without a carefully tuned
+warmup.
+
+\subsection{Why Generation Is Slower Than Training}
+
+Self-attention processes all training positions in parallel, but autoregressive
+generation is irreducibly sequential: token $t+1$ cannot be computed before
+token $t$. A \keyterm{key--value cache} stores the keys and values already
+computed so each new token attends to history without recomputing it---trading
+memory for latency.
+
+\begin{workedexample}[Sizing a key--value cache]
+Take a model with $L = 30$ layers, $H_{kv} = 3$ key/value heads, head dimension
+$d_h = 64$, in \texttt{float16} ($2$ bytes). Per token the cache holds keys
+\emph{and} values in every layer:
+\[
+  2 \times L \times H_{kv} \times d_h \times 2\,\text{bytes}
+  = 2 \times 30 \times 3 \times 64 \times 2
+  = 23{,}040\ \text{bytes} \approx 22.5\ \text{KiB per token.}
+\]
+For a $4{,}096$-token context:
+\[
+  4096 \times 23{,}040\ \text{bytes} \approx 94.4\ \text{MB.}
+\]
+With a batch of $32$ concurrent requests that is about $3.0\,\text{GB}$ of cache
+alone---on top of the weights. \emph{This is why serving throughput is usually
+memory-bound rather than compute-bound}, and why grouped-query attention (here
+$3$ key/value heads shared by $9$ query heads) exists at all: it divides this
+number by the sharing factor. The same architecture is examined end to end in
+\cref{ch:practical-llm-engineering}.
+\end{workedexample}
+
+\subsection{Scaling Laws, and Their Correction}
+
+Model quality follows smooth power laws in parameters, data, and
+compute\textsuperscript{\cite{kaplanScalingLawsNeural2020}}. That result was
+widely read as ``make the model bigger''. Hoffmann and colleagues later showed
+that the models of that era were substantially
+\emph{under-trained}: for a fixed compute budget, parameters and training tokens
+should grow in roughly equal
+proportion\textsuperscript{\cite{hoffmannTrainingComputeOptimal2022}}.
+
+\begin{engineernote}
+This is a case worth remembering for its methodology, not only its result. Both
+papers were careful and empirical; the second overturned the practical reading
+of the first by varying a factor the first had held nearly fixed. Scaling laws
+are fitted curves over a studied range, not laws of nature. Quote them with
+their range, their date, and their architecture, or do not quote them.
+\end{engineernote}
+
+\begin{table}[htbp]
+\centering
+\caption{Efficiency techniques and the cost each one actually reduces. No entry
+improves everything, and every entry introduces an error or a constraint that
+must be measured rather than assumed.}
+\label{tab:dl-efficiency}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.19\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Technique & Reduces & Introduces \\
+Quantisation & Weight memory, bandwidth &
+  Rounding error, worst on outlier activation channels \\
+Distillation & Parameters, latency &
+  A student ceiling set by the teacher's own errors \\
+Pruning / sparsity & Parameters, sometimes compute &
+  Irregular access patterns that hardware may not exploit \\
+LoRA\textsuperscript{\cite{huLoRALowRank2021}} & Trainable parameters,
+  optimiser memory & A rank limit on what adaptation can express \\
+Activation checkpointing & Training memory &
+  Roughly $30\,\%$ extra compute from recomputation \\
+FlashAttention\textsuperscript{\cite{daoFlashAttentionFastMemory2022}} &
+  Memory traffic, peak memory &
+  Nothing in accuracy---it is exact---but it is kernel- and
+  hardware-specific \\
+KV cache & Repeated computation & Memory linear in context $\times$ batch \\
+\end{tblr}
+\end{table}
+
+\begin{practicallab}[Measure the trade-off instead of assuming it]
+\textbf{Goal.} Replace the sentence ``quantisation is basically free'' with a
+number you measured yourself.
+
+\textbf{Setup.} Any small instruct model you can run locally---the checkpoint
+used in \cref{ch:practical-llm-engineering} is a good choice---plus a fixed
+prompt set of at least $50$ items with reference answers.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Record the environment: exact model revision, library versions,
+        hardware, and random seed. Without this the rest is anecdote.
+  \item Establish the baseline in full precision. Measure quality on your
+        prompt set, time to first token, decode tokens per second, and peak
+        memory.
+  \item Repeat with 8-bit and 4-bit quantisation, changing \emph{one} variable
+        at a time.
+  \item Plot quality against peak memory. Mark the configuration where quality
+        first drops below your acceptance threshold.
+  \item Run each configuration three times and report the spread, not just the
+        mean.
+\end{enumerate}
+
+\textbf{Deliverable.} A one-page dossier with a table of four measurements per
+configuration, the variance across repeats, and one sentence naming the
+configuration you would deploy and the evidence for it.
+
+\textbf{The point.} Parameter count is not a deployment metric. Quality,
+latency, throughput, peak memory, energy, and operational complexity each move
+differently, and only measurement tells you which one binds in your setting.
+\end{practicallab}
+
+\begin{checkpoint}
+Using the key--value cache calculation, work out the maximum batch size that
+fits in $16\,\text{GB}$ of memory at a $8{,}192$-token context, ignoring
+weights. Then state which single architectural change would double it.
+\end{checkpoint}
 
 \chapterreview{Represent}{Differentiate}{Optimise}{Scale}
 
+% ===========================================================================
 \section{Further Reading}
+% ===========================================================================
 
-\begin{v3topic}{Recommended Sources for Deep Learning}
-    \begin{itemize}
-        \item \fullcite{fleuretLittleBookDeep} — Concise yet comprehensive overview of deep learning: architectures, training, attention, transformers, and generative models.
-        \item \fullcite{Kriesel2007NeuralNetworks} — Thorough introduction to biological foundations, perceptrons, MLPs, and RBMs with historical context.
-        \item \fullcite{robertsPrinciplesDeepLearning2022} — Theoretical perspective on initialization, depth, and why deep networks generalize.
-        \item \fullcite{vaswaniAttentionAllYou2023} — The original Transformer paper: self-attention, multi-head attention, positional encoding, and encoder--decoder architecture.
-        \item \fullcite{devlinBERTPretrainingDeep2019} — BERT: bidirectional pre-training with masked language modelling and next-sentence prediction.
-        \item \fullcite{fischerVorlesungGrundlagenNeuronale2024} — German-language lecture notes covering neural network foundations, feedback alignment, and biological plausibility.
-        \item \fullcite{dhamaniIntroductionGenerativeAI2024} — Practical introduction to generative AI: LLMs, GANs, VAEs, and transformer-based generation.
-    \end{itemize}
+\begin{v3topic}{Primary sources for the mechanisms in this chapter}
+\begin{itemize}
+  \item \fullcite{rumelhartLearningRepresentationsBackpropagating1986} ---
+    the paper that made multi-layer training practical.
+  \item \fullcite{vaswaniAttentionAllYou2023} --- the Transformer:
+    self-attention, multi-head attention, positional encoding.
+  \item \fullcite{heDeepResidualLearning2016} --- residual learning, the change
+    that removed the depth barrier.
+  \item \fullcite{hochreiterLongShortTermMemory1997} --- the LSTM, and the
+    additive memory path.
+  \item \fullcite{kingmaAdamMethodStochastic2017} and
+    \fullcite{loshchilovDecoupledWeightDecay2019} --- the optimiser you will
+    actually use, and the correction that made it right.
+  \item \fullcite{hoffmannTrainingComputeOptimal2022} --- compute-optimal
+    scaling, and a model case of a careful result revising an earlier one.
+\end{itemize}
+\end{v3topic}
+
+\begin{v3topic}{Textbook treatments}
+\begin{itemize}
+  \item \fullcite{fleuretLittleBookDeep} --- compact and unusually well judged
+    on what to leave out.
+  \item \fullcite{Kriesel2007NeuralNetworks} --- biological foundations,
+    perceptrons, and RBMs with historical context.
+  \item \fullcite{robertsPrinciplesDeepLearning2022} --- a theoretical account
+    of initialisation, depth, and generalisation.
+  \item \fullcite{zhangUnderstandingDeepLearning2021} --- why the classical
+    generalisation story is incomplete.
+\end{itemize}
 \end{v3topic}

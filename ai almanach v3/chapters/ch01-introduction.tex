@@ -6,6 +6,42 @@
     \chapter{Introduction to AI and Data Analytics}
 \chapterlead{How do intelligent systems turn goals and data into defensible decisions?}{Frame}{Represent}{Learn}{Evaluate}{orientation}
 
+\label{ch:introduction}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item place the main AI paradigms --- symbolic, statistical, and learned ---
+        in the order they appeared and say what each one could not do;
+  \item explain what caused both AI winters and recognise the pattern when it
+        recurs;
+  \item distinguish narrow from general AI precisely enough to spot the
+        conflation in a product claim;
+  \item name the four ingredients that made deep learning work after 2012, and
+        identify which one was genuinely new;
+  \item state, for any proposed AI application, what the non-AI baseline is and
+        what evidence would justify replacing it.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+``Artificial intelligence'' has never named one thing. It has named a moving
+target: whatever computers cannot yet do. Chess was AI until a computer won,
+and then it was search. Reading handwriting was AI until it worked, and then it
+was classification. This chapter follows that moving target through three
+distinct technical traditions, each of which solved the previous one's blocking
+problem and then met its own.
+\end{plainlanguage}
+
+\begin{engineernote}
+Read the history for the failures, not the triumphs. Both AI winters followed
+the same sequence: an early result that genuinely worked on small problems, an
+extrapolation to problems of a different kind, funding on the strength of the
+extrapolation, and a collapse when the scaling assumption proved false. The
+useful skill this chapter can give you is the ability to tell a demonstration
+from a system --- which is exactly the skill the current moment demands.
+\end{engineernote}
+
     \section{Industry 4.0}
 
 \begin{v3topic}{Information Management Cycle}
@@ -29,8 +65,11 @@
 
             \end{tikzpicture}
         }
-        \captionof{figure}{Industry 4.0: Information Management Cycle.}
-        \label{fig:ch01-introduction-inline-01}
+        \captionof{figure}{The information management cycle. Note that it closes:
+the users who stated the requirement are the ones who receive the product, so
+a system that never returns to them has no way to learn it answered the wrong
+question.}
+        \label{fig:intro-information-cycle}
 
 \end{v3topic}
 \begin{v3topic}{Data Analytics, Big Data and AI Application Areas}
@@ -62,8 +101,11 @@
                 \draw [line] (big-data) -- (smart-data);
                 \draw [line] (smart-data) -- (decisions);
             \end{tikzpicture}
-\captionof{figure}{Industry 4.0: Data Analytics Decision Making.}
-\label{fig:ch01-introduction-inline-02}
+\captionof{figure}{The four analytics questions, in increasing order of both
+value and difficulty. Each level depends on the one below it, and the jump from
+predictive to prescriptive is the one that requires causal assumptions rather
+than more data.}
+\label{fig:intro-analytics-levels}
 
         \vspace{2ex}
 
@@ -151,7 +193,7 @@
 \begin{v3topic}{Landmark Achievements (1997--present)}
         A series of high-profile results demonstrated that AI could surpass human experts in well-defined domains\textsuperscript{\cite{adjaouteAI2024}}.
 \visualseparator
-        \begin{tblr}{
+        \begin{tblr}{width=\linewidth,
             colspec = {c X[2,l] X[5,l]},
             hlines, vlines,
             row{1} = {font=\bfseries, bg=gray!20},
@@ -164,8 +206,8 @@
             2017 & Transformer & Vaswani et al.\ introduce \emph{Attention is All You Need}, replacing recurrence with self-attention and enabling massively parallel training. \\
             2022 & ChatGPT & OpenAI releases a dialogue-optimised LLM (GPT-3.5), reaching 100M users in two months and bringing generative AI into mainstream discourse. \\
         \end{tblr}
-\captionof{table}{Notable Advances in AI: Landmark Achievements (1997--present).}
-\label{tab:ch01-introduction-inline-01}
+\captionof{table}{Landmark results, each of which was called artificial intelligence until it worked and then was renamed after its method.}
+\label{tab:intro-landmarks}
 \end{v3topic}
 
     \section{Expert Systems}
@@ -252,6 +294,144 @@
 
         \textbf{Architecture:} The cortex is organised into specialised regions (visual cortex, motor cortex, prefrontal cortex for executive function). Massive parallelism enables real-time perception far exceeding sequential digital computation at low power ($\approx$20 W).
 \end{v3topic}
+
+\begin{v3topic}{Gross Anatomy: Cortex, Deep Nuclei, and Pathways}
+        Beneath the folded sheet of cortex lies a set of deep grey-matter
+        structures --- \keyterm{nuclei} --- that are not decorative relay
+        stations but the organising hubs of the whole
+        system\textsuperscript{\cite[][chs.~1--3]{purvesNeuroscience2018}}.
+
+        \begin{description}
+          \item[Thalamus] The obligatory gateway. Almost every sensory
+            signal except smell is relayed through a thalamic nucleus before
+            reaching cortex --- vision through the \emph{lateral geniculate
+            nucleus} (LGN), hearing through the \emph{medial geniculate
+            nucleus} (MGN). Crucially, the traffic is not one-way: cortex
+            sends more fibres \emph{back} to the thalamus than it receives,
+            so the ``input stage'' is under continuous top-down control.
+          \item[Basal ganglia] A group of nuclei --- striatum (caudate and
+            putamen), globus pallidus, subthalamic nucleus, substantia nigra
+            --- that select and gate actions. Dopaminergic projections from
+            the substantia nigra and ventral tegmental area carry a
+            \keyterm{reward prediction error}, the biological signal that
+            temporal-difference learning in \cref{ch:reinforcement-learning}
+            was built to mirror.
+          \item[Hippocampus] Forms new declarative memories and binds them to
+            spatial and temporal context. It does not store memories
+            permanently: consolidation gradually transfers them to cortex.
+          \item[Amygdala] Assigns emotional and threat salience, and modulates
+            how strongly an experience is encoded elsewhere.
+          \item[Cerebellum] Roughly $80\,\%$ of all neurons in the brain, in a
+            strikingly regular circuit. Handles timing, coordination, and
+            predictive correction of movement --- and, on current evidence,
+            of cognition too.
+          \item[Brainstem nuclei] Locus coeruleus (noradrenaline, arousal),
+            raphe nuclei (serotonin), and others broadcast diffusely and set
+            the global operating regime rather than carrying specific content.
+        \end{description}
+\end{v3topic}
+
+\begin{v3topic}{Sensory Centres and the Hierarchies Above Them}
+        Each modality has a primary cortical area that receives thalamic
+        input, and a cascade of higher areas that build progressively more
+        abstract descriptions\textsuperscript{\cite[][chs.~11--13]{purvesNeuroscience2018},
+        \cite[][part~V]{kandelPrinciplesNeuralScience2021}}.
+
+        \textbf{Visual pathway.} Retina $\to$ optic nerve $\to$ LGN of the
+        thalamus $\to$ primary visual cortex (V1, occipital lobe) $\to$
+        V2, V4, MT $\to$ two divergent streams: a \emph{ventral} (``what'')
+        stream into inferotemporal cortex for object identity, and a
+        \emph{dorsal} (``where/how'') stream into parietal cortex for
+        location and action guidance. Receptive fields grow and become more
+        selective along the hierarchy --- from oriented edges in V1 to
+        object-level selectivity in inferotemporal cortex.
+
+        \textbf{Auditory pathway.} Cochlea $\to$ cochlear nuclei $\to$
+        superior olivary complex (where inter-aural timing differences
+        localise sound) $\to$ inferior colliculus $\to$ MGN of the thalamus
+        $\to$ primary auditory cortex (A1, superior temporal lobe) $\to$
+        belt and parabelt areas $\to$ language areas in the dominant
+        hemisphere. Note that the auditory pathway performs substantial
+        computation \emph{below} cortex, which the visual pathway largely
+        does not.
+
+        \textbf{Convergence.} Higher association cortex --- prefrontal,
+        posterior parietal, and the temporo-parietal junction --- receives
+        from several modalities at once and is where perception, memory from
+        the hippocampus, and value signals from the basal ganglia are
+        combined into a decision.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=5mm,
+  sens/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=7mm,minimum width=19mm,font=\sffamily\scriptsize,
+    align=center},
+  nuc/.style={sens,fill=AlmanachOchre!22,draw=AlmanachOchre},
+  ctx/.style={sens,fill=AlmanachTeal!18},
+  hi/.style={sens,fill=AlmanachTeal!30},
+  arr/.style={-{Stealth[length=1.7mm]},draw=AlmanachInk!55},
+  back/.style={-{Stealth[length=1.7mm]},draw=AlmanachRed,dashed},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+
+  \node[sens] (eye) at (0,9mm) {retina};
+  \node[nuc,right=of eye] (lgn) {LGN\\\scriptsize thalamus};
+  \node[ctx,right=of lgn] (v1) {V1};
+  \node[ctx,right=of v1] (v4) {V2/V4/MT};
+  \node[hi,right=of v4] (it) {IT\\\scriptsize ``what''};
+  \node[hi,above right=1mm and 5mm of it] (par) {parietal\\\scriptsize ``where''};
+  \foreach \a/\b in {eye/lgn,lgn/v1,v1/v4,v4/it}{\draw[arr] (\a) -- (\b);}
+  \draw[arr] (v4) -- (par);
+
+  \node[sens] (coch) at (0,-11mm) {cochlea};
+  \node[nuc,right=of coch] (cn) {cochlear\\\scriptsize nuclei};
+  \node[nuc,right=of cn] (ic) {olive /\\\scriptsize colliculus};
+  \node[nuc,right=of ic] (mgn) {MGN\\\scriptsize thalamus};
+  \node[ctx,right=of mgn] (a1) {A1};
+  \foreach \a/\b in {coch/cn,cn/ic,ic/mgn,mgn/a1}{\draw[arr] (\a) -- (\b);}
+
+  \node[hi] (assoc) at (108mm,-1mm) {association\\cortex};
+  \draw[arr] (it) -- (assoc);
+  \draw[arr] (a1) -- (assoc);
+  \draw[back] (v1.south) ++(0,-1mm) -- ++(0,-4mm) -| ([xshift=-3mm]lgn.south)
+    node[near end,below,lbl,color=AlmanachRed] {top-down};
+  \node[lbl,anchor=west] at (0,20mm)
+    {\textbf{Visual}: thalamic relay, then a long cortical hierarchy};
+  \node[lbl,anchor=west] at (0,-22mm)
+    {\textbf{Auditory}: much of the work happens \emph{before} cortex};
+\end{tikzpicture}
+\caption{The visual and auditory pathways from receptor to association
+cortex, with the thalamic nuclei that gate both. The dashed arrow is the
+larger, and usually forgotten, half of the story: cortex projects back to the
+thalamus more heavily than the thalamus projects forward, so sensory input is
+filtered by expectation before it is ever consciously available.}
+\label{fig:intro-sensory-pathways}
+\end{figure}
+
+\end{v3topic}
+
+\begin{cautionbox}[Where the brain analogy helps and where it misleads]
+Three ideas in this book genuinely descend from neuroscience: hierarchical
+feature extraction in convolutional networks, borrowed from the visual
+pathway; attention as selective amplification; and temporal-difference
+learning, which was proposed as an algorithm and \emph{later} found to match
+the firing of dopaminergic neurons remarkably well --- one of the few
+genuinely bidirectional exchanges between the two fields.
+
+Four differences matter more than the similarities. Biological neurons
+communicate with discrete spikes in continuous time, not real-valued
+activations. Learning is local and neuromodulated; there is no known
+mechanism for propagating a global error backwards through the cortex
+(\cref{ch:deep-learning} covers the weight transport problem this creates).
+The brain runs on about $20\,\text{W}$, roughly a thousandth of a training
+cluster. And it learns continually from single examples without catastrophic
+forgetting, which no current architecture does well.
+
+Treat the analogy as a source of hypotheses, never as evidence. ``The brain
+does it this way'' has motivated both major advances and long dead ends, and
+you cannot tell which in advance.
+\end{cautionbox}
 
     \subsection{Cognitive Processes}
 
@@ -358,8 +538,8 @@
             4 & High automation in defined geographic area \\
             5 & Full automation -- no human needed \\
         \end{tblr}
-\captionof{table}{Autonomous Vehicles \& Mobility: Autonomous Vehicles: SAE Levels and Technology.}
-\label{tab:ch01-introduction-inline-02}
+\captionof{table}{The SAE automation levels. The jump that matters is from level~2 to level~3, where responsibility for monitoring transfers from the human to the system.}
+\label{tab:intro-sae-levels}
         \end{center}
 
         \textbf{Sensor Fusion:} Autonomous vehicles combine data from LiDAR (3D point clouds), cameras (texture/colour), radar (velocity in adverse weather), and GPS/HD maps. Deep neural networks fuse these streams into a unified scene representation.
@@ -408,7 +588,7 @@
         \end{description}
 \end{v3topic}
 
-    \section{Literature}
+    \section{Further Reading}
     \begin{itemize}
         \item Chowdhary, K. R. (2020). Fundamentals of Artificial Intelligence. Springer India.
         \item Russell, S., \& Norvig, P. (2022). Artificial intelligence. A modern approach (4th ed.). Pearson Education.
@@ -441,5 +621,30 @@ At every arrow, name what can be lost, distorted, attacked, or misunderstood.
 Then choose one metric and one qualitative investigation that could reveal the
 failure before deployment.
 \end{v3topic}
+
+
+\begin{cautionbox}[Reading an AI claim]
+Marketing language and engineering language have drifted far apart. Four
+questions separate them, and they work on any claim in any domain:
+\begin{enumerate}
+  \item \textbf{What is the baseline?} ``$94\,\%$ accurate'' means nothing
+        without the number a trivial rule achieves
+        (\cref{ch:machine-learning}).
+  \item \textbf{Measured on what?} A benchmark score is a statement about that
+        benchmark. Ask whether the test data could have appeared in training.
+  \item \textbf{Under which conditions?} Latency, hardware, input distribution,
+        and failure rate at the operating threshold --- not the best case.
+  \item \textbf{What happens when it is wrong?} A system with no defined
+        behaviour for its own errors is a demonstration, not a product.
+\end{enumerate}
+A claim that survives all four is worth investigating. Most do not survive the
+first.
+\end{cautionbox}
+
+\begin{checkpoint}
+Pick any AI product you have seen advertised this month. Answer the four
+questions above from publicly available information alone. Note which ones you
+could not answer --- that gap is the actual finding.
+\end{checkpoint}
 
 \chapterreview{Frame}{Represent}{Learn}{Evaluate}

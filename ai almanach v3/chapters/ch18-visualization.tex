@@ -8,6 +8,37 @@
 \chapterlead{How can a visual make evidence clearer without overstating it?}{Question}{Encode}{Compare}{Explain}{visualization}
 
 % ==== Section 1: Foundations of Data Visualization ==========================================
+\label{ch:visualization}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item choose an encoding from the accuracy ranking of visual channels rather
+        than from chart-type habit;
+  \item identify the three chart conventions that mislead most reliably;
+  \item explain why a truncated axis is sometimes correct and usually not;
+  \item design a colour scale that survives greyscale printing and colour
+        vision deficiency;
+  \item state what a visualisation must show alongside a point estimate.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+A chart is an argument. It selects what to show, what to leave out, and which
+comparison to make easy --- and the reader's eye follows those choices before
+their reasoning engages. Good visualisation is therefore less about making
+things attractive than about making the honest comparison the effortless one.
+\end{plainlanguage}
+
+\begin{engineernote}
+Encode the most important quantity in the most accurately-read channel.
+Position along a common scale is read best; then length; then angle and slope;
+then area; then colour intensity, and last colour hue. This ranking is why a
+dot plot usually beats a pie chart and why bubble size should never carry your
+headline number --- readers systematically underestimate area, and a bubble
+scaled by radius rather than area exaggerates by roughly the square.
+\end{engineernote}
+
 \section{Foundations of Data Visualization}
 
 % ---- 19.1.1 Why Visualization Matters ------------------------------------------------------
@@ -60,8 +91,11 @@
             \node[font=\tiny,below] at (1.5,-0.3) {IV: Leverage};
         \end{scope}
     \end{tikzpicture}
-\captionof{figure}{Why Visualization Matters: Anscombe's Quartet.}
-\label{fig:ch18-visualization-inline-01}
+\captionof{figure}{Anscombe's quartet: four datasets with identical means,
+variances, correlation, and regression line, and nothing else in common. Every
+summary statistic agrees; only the plot distinguishes them. This is the
+argument for looking at data before summarising it.}
+\label{fig:viz-anscombe}
     \end{center}
 
 \end{v3topic}
@@ -90,7 +124,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Exploratory vs.\ Explanatory Visualization}
-    \begin{tblr}{|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[l]|X[l]|}}
         \hline
         \textbf{Exploratory}                   & \textbf{Explanatory}                    \\
         \hline
@@ -105,8 +139,8 @@
         Tools: notebooks, pandas, seaborn      & Tools: Plotly, Flourish, Tableau        \\
         \hline
     \end{tblr}
-\captionof{table}{Why Visualization Matters: Exploratory vs.\ Explanatory Visualization.}
-\label{tab:ch18-visualization-inline-01}
+\captionof{table}{Exploratory against explanatory visualisation. They have different audiences and different standards: one may be rough and fast, the other must not mislead.}
+\label{tab:viz-exploratory-explanatory}
     Most ML work is exploratory; results presentations require explanatory
     quality\textsuperscript{\cite[][pp.~1--18]{loducaDataStorytellingAltair2024}}.
 \end{v3topic}
@@ -164,8 +198,8 @@
         Common Fate         & Objects moving together are grouped                       & Animated transitions in interactive vis         \\
         \hline
     \end{tblr}
-\captionof{table}{Visual Encoding: Gestalt Principles in Chart Design.}
-\label{tab:ch18-visualization-inline-02}
+\captionof{table}{Gestalt principles and their chart applications. These describe what the reader's eye groups automatically --- before any conscious reading of the axes.}
+\label{tab:viz-gestalt}
 \end{v3topic}
 
 % ---- 19.1.3 Colour in Visualization --------------------------------------------------------
@@ -283,7 +317,8 @@
           chooses the simplest mark that exposes the required evidence.}
           {fig:distribution-chart-decision-tree}
     }
-    \begin{tblr}{|X[l]|X[l]|}
+
+    \begin{tblr}{width=\linewidth,colspec={|X[l]|X[l]|}}
         \hline
         \textbf{Goal}                        & \textbf{Chart type}                    \\
         \hline
@@ -300,8 +335,8 @@
         Show ranking                         & Sorted horizontal bar chart            \\
         \hline
     \end{tblr}
-\captionof{table}{Comparison and Distribution: When to Use Which Distribution Chart.}
-\label{tab:ch18-visualization-inline-03}
+\captionof{table}{Distribution charts by analytical goal. With small samples, show the observations themselves rather than a summary of them.}
+\label{tab:viz-distribution-charts}
 \end{v3topic}
 
 % ---- 19.2.2 Relationships and Correlation -------------------------------------------------
@@ -537,7 +572,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Common Dashboard Anti-Patterns}
-    \begin{tblr}{|X[l,1]|X[l,3]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[l,1]|X[l,3]|}}
         \hline
         \textbf{Anti-pattern}          & \textbf{Why it fails / what to do instead}                                              \\
         \hline
@@ -556,8 +591,8 @@
         Chart junk (gradients, icons)  & Increases cognitive load; remove all decoration that carries no data                     \\
         \hline
     \end{tblr}
-\captionof{table}{Dashboard Design: Common Dashboard Anti-Patterns.}
-\label{tab:ch18-visualization-inline-04}
+\captionof{table}{Dashboard anti-patterns and their remedies. Most of them share a cause: showing everything available rather than what a decision requires.}
+\label{tab:viz-antipatterns}
 \end{v3topic}
 
 % ---- 19.3.2 Data Storytelling --------------------------------------------------------------
@@ -686,7 +721,7 @@
     Streamlit but supports complex multi-page apps, custom HTML/CSS, and production
     deployment. Best for: production dashboards, complex user interactions.
 
-    \begin{tblr}{|X[l]|X[l]|X[l]|}
+    \begin{tblr}{width=\linewidth,colspec={|X[l]|X[l]|X[l]|}}
         \hline
         \textbf{Feature}          & \textbf{Streamlit}              & \textbf{Dash}                     \\
         \hline
@@ -699,8 +734,8 @@
         Customization             & Limited                         & Full HTML/CSS control             \\
         \hline
     \end{tblr}
-\captionof{table}{Python Ecosystem: Streamlit and Dash: Dashboard Frameworks.}
-\label{tab:ch18-visualization-inline-05}
+\captionof{table}{Streamlit against Dash. Streamlit optimises for speed of construction, Dash for control over layout and callbacks.}
+\label{tab:viz-frameworks}
 \end{v3topic}
 
 % ---- 19.4.2 Other Tools --------------------------------------------------------------------
@@ -761,6 +796,89 @@ performance, subgroup behaviour, incidents, and business outcomes.
 Annotate model or policy changes so the chart can support causal investigation
 rather than merely display motion.
 \end{v3topic}
+
+
+\begin{workedexample}[The same data, three defensible charts, one dishonest one]
+Quarterly revenue: $\text{\euro}100$M, $\text{\euro}102$M,
+$\text{\euro}101$M, $\text{\euro}104$M.
+
+\emph{Zero-baseline bar chart.} The bars are nearly equal; the reader correctly
+sees a flat business with slight growth. Total change: $+4\,\%$.
+
+\emph{Line chart, axis from $98$ to $106$.} Now the line climbs steeply across
+the frame. The axis is labelled, so nothing is hidden --- and for a line chart
+tracking change over time this is often the \emph{right} choice, because the
+variation is the subject.
+
+\emph{Bar chart, axis from $98$ to $106$.} The last bar is roughly three times
+the height of the first, for a $4\,\%$ difference. This is dishonest, and the
+reason is specific: a bar encodes value by \emph{length}, so truncating the
+axis breaks the proportionality the encoding promises. A line encodes by
+position, which carries no such promise.
+
+\emph{The rule.} Bars must start at zero. Lines need not. The distinction is
+not aesthetic --- it follows from what each mark type claims.
+\end{workedexample}
+
+\begin{cautionbox}[Three conventions that mislead reliably]
+\begin{itemize}
+  \item \textbf{Dual axes.} Two series on different scales can be made to
+        correlate, anti-correlate, or cross wherever the designer chooses, by
+        selecting the two ranges. The apparent relationship is an artefact of
+        that choice. Prefer two aligned panels, or index both series to a common
+        baseline.
+  \item \textbf{Bubble area scaled by radius.} If a value is mapped to radius,
+        a doubling of the value produces a fourfold increase in area. Scale by
+        area, always.
+  \item \textbf{Rainbow colour scales.} They are not perceptually uniform:
+        they create false boundaries where the hue changes fast and hide real
+        differences where it changes slowly. They also collapse in greyscale
+        and are unreadable with common colour vision deficiencies. Use a
+        perceptually uniform sequential scale, and check it by converting to
+        greyscale.
+\end{itemize}
+\end{cautionbox}
+
+\begin{cautionbox}[A point estimate without uncertainty is not a result]
+A bar chart of four group means, drawn without error bars, invites the reader
+to rank the groups --- and they will, even when the differences are well inside
+the noise. Show the uncertainty: error bars with a stated definition
+(a standard deviation, a standard error, and a confidence interval are three
+different things and must be labelled), or plot the underlying distribution
+directly with a box, violin, or strip plot. When $n$ is small, show the points
+themselves; nothing communicates ``four observations'' as honestly as four
+dots.
+\end{cautionbox}
+
+\begin{practicallab}[Redesign a chart that misleads]
+\textbf{Goal.} Move a real chart from persuasive to honest, and notice what is
+lost.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Find a published chart you suspect. News, an annual report, and vendor
+        benchmark pages are reliable sources.
+  \item Write down the claim it makes in one sentence.
+  \item List every design choice serving that claim: axis range, aspect ratio,
+        colour, ordering, aggregation, what is omitted.
+  \item Reconstruct the underlying numbers and redraw with a zero baseline, a
+        neutral aspect ratio, and uncertainty shown.
+  \item Write the sentence the honest chart supports. Compare with step 2.
+  \item Now the hard part: produce a third version that is honest \emph{and}
+        makes the real finding easy to see. Honesty is not the same as
+        refusing to guide the reader.
+\end{enumerate}
+
+\textbf{Deliverable.} Three charts and two sentences. \textbf{The point:} step 6
+is the actual skill --- the goal is not a neutral chart, it is a chart whose
+easiest reading is the true one.
+\end{practicallab}
+
+\begin{checkpoint}
+You must show model accuracy across six subgroups with sample sizes from $30$
+to $30{,}000$. Name the encoding you would use, what you would show for
+uncertainty, and how you would stop the reader misreading the smallest group.
+\end{checkpoint}
 
 \chapterreview{Question}{Encode}{Compare}{Explain}
 

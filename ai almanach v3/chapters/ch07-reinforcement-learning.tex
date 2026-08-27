@@ -8,6 +8,42 @@
 \chapterlead{How should an agent learn when its actions change later observations?}{Model}{Act}{Update}{Evaluate}{reinforcement-learning}
 
     % -------------------------------------------------------
+\label{ch:reinforcement-learning}
+
+\begin{learningobjectives}
+After working through this chapter you should be able to:
+\begin{itemize}
+  \item compute a discounted return and convert a discount factor into an
+        effective planning horizon;
+  \item propagate values backwards through a small MDP by hand;
+  \item execute one Q-learning update and say what each term contributed;
+  \item explain why SARSA and Q-learning behave differently near a cliff;
+  \item compare $\epsilon$-greedy and UCB numerically on the same arm counts;
+  \item state why a constant $\epsilon$ never stops paying for exploration;
+  \item distinguish a correlation, an intervention, and a counterfactual;
+  \item detect Simpson's paradox in a real table of outcomes.
+\end{itemize}
+\end{learningobjectives}
+
+\begin{plainlanguage}
+Everything before this chapter learned from answers that were handed over.
+Reinforcement learning has no answers --- only consequences, and usually late
+ones. An agent acts, the world changes, and eventually a number arrives saying
+roughly how things are going. The whole subject is the problem of assigning
+credit: which of the last two hundred decisions earned that number? Everything
+here --- value functions, discounting, temporal-difference updates --- is
+machinery for answering that one question.
+\end{plainlanguage}
+
+\begin{engineernote}
+RL is the most oversold technique in this book and the one most likely to waste
+a year. It needs an enormous number of interactions, a reward you can actually
+compute, and either a simulator or a very tolerant environment. Before choosing
+RL, ask whether the problem is really sequential: if each decision does not
+change the situation the next decision faces, you have a supervised or bandit
+problem, and both are dramatically cheaper to solve and to verify.
+\end{engineernote}
+
     \section{Introduction to Reinforcement Learning}
 
 
@@ -57,8 +93,11 @@
                 node[below, font=\footnotesize]{state $s_{t+1}$, reward $r_{t+1}$}
                 (agent.south);
         \end{tikzpicture}
-\captionof{figure}{Introduction to Reinforcement Learning: Agent--Environment Interaction Loop.}
-\label{fig:ch07-reinforcement-learning-inline-01}
+\captionof{figure}{The agent--environment loop. The agent never receives a
+correct action, only a reward that may arrive many steps after the decision
+that earned it --- which is the credit-assignment problem the rest of this
+chapter exists to solve.}
+\label{fig:rl-agent-environment-loop}
         \end{center}
 
 \end{v3topic}
@@ -77,7 +116,7 @@
 
 \end{v3topic}
 \begin{v3topic}{RL vs.\ Supervised vs.\ Unsupervised}
-        \begin{tblr}{
+        \begin{tblr}{width=\linewidth,
             colspec={X[l]X[l]X[l]},
             hlines, vlines,
             row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -89,8 +128,8 @@
             Generalise & Discover structure & Maximise return \\
             No exploration & No exploration & Exploration essential \\
         \end{tblr}
-\captionof{table}{Introduction to Reinforcement Learning: RL vs.\ Supervised vs.\ Unsupervised.}
-\label{tab:ch07-reinforcement-learning-inline-01}
+\captionof{table}{The three learning paradigms compared by what supervision each receives. Reinforcement learning's distinguishing feature is that feedback is evaluative and delayed rather than instructive and immediate.}
+\label{tab:rl-paradigms}
         \textsuperscript{\cite[][p.~323]{hurbansGrokkingArtificialIntelligence2020}}
 
 \end{v3topic}
@@ -139,6 +178,29 @@
         $\gamma \to 1$ (far-sighted, all future equally weighted).
         For $\gamma < 1$, the sum converges even for infinite horizons.
 
+\begin{workedexample}[What the discount factor actually chooses]
+\emph{A finite return.} Rewards $r_1 = 1$, $r_2 = 2$, $r_3 = 3$ with
+$\gamma = 0.5$:
+\[
+  G = 1 + 0.5(2) + 0.5^2(3) = 1 + 1 + 0.75 = 2.75 .
+\]
+
+\emph{An infinite one.} A constant reward of $1$ forever:
+\[
+  G = \sum_{k=0}^{\infty}\gamma^k = \frac{1}{1-\gamma}
+  \quad\Rightarrow\quad
+  \gamma = 0.9 \Rightarrow 10,
+  \qquad \gamma = 0.99 \Rightarrow 100 .
+\]
+
+\emph{The interpretation that matters.} $1/(1-\gamma)$ is the \keyterm{effective
+horizon} --- roughly how many steps ahead the agent cares about. At
+$\gamma = 0.9$ the agent is planning about ten steps out; at $\gamma = 0.99$,
+about a hundred. So $\gamma$ is not a numerical convenience, it is a statement
+about how far-sighted you want the behaviour to be, and changing it from
+$0.9$ to $0.99$ changes the problem, not just the arithmetic.
+\end{workedexample}
+
 \end{v3topic}
 \begin{v3topic}{Value Functions}
         \textbf{State-value function} under policy $\pi$:
@@ -165,7 +227,73 @@
         \begin{equation}
             V^*(s) = \max_a \sum_{s'} P(s'|s,a)
                      \bigl[R(s,a) + \gamma V^*(s')\bigr]
+            \label{eq:rl-bellman-optimality}
         \end{equation}
+
+\begin{plainlanguage}
+The Bellman equation says something almost obvious once you hear it: the value
+of where you are equals the reward you get for your next step plus the
+discounted value of wherever that step lands you. It turns one impossible
+question --- ``what is this whole future worth?'' --- into a one-step question
+asked over and over.
+\end{plainlanguage}
+
+\begin{workedexample}[Value propagating backwards along a chain]
+Four states in a line. From each state the only action moves right. All rewards
+are $0$ except entering state $4$ (terminal), which pays $+1$. Let
+$\gamma = 0.9$.
+
+Work backwards from the end, because that is the only place a known value
+exists:
+\[
+\begin{aligned}
+  V(4) &= 0 &&\text{(terminal)},\\
+  V(3) &= 1 + 0.9\,V(4) = 1 + 0 &&= 1.000,\\
+  V(2) &= 0 + 0.9\,V(3) = 0.9(1) &&= 0.900,\\
+  V(1) &= 0 + 0.9\,V(2) = 0.9(0.9) &&= 0.810 .
+\end{aligned}
+\]
+
+\emph{Read the numbers.} No state except the last one ever pays anything, yet
+every state has a positive value --- the reward has propagated backwards,
+decaying by a factor $\gamma$ per step of distance. That decaying trail is what
+lets an agent in state $1$ prefer moving right without ever having reached the
+goal in this calculation. It is also why sparse rewards are hard: at
+$\gamma = 0.9$ and a goal $100$ steps away, the value at the start is
+$0.9^{99} \approx 3\times10^{-5}$ --- numerically indistinguishable from
+nothing.
+\end{workedexample}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  st/.style={circle,draw=AlmanachTeal,fill=AlmanachMist,minimum size=11mm,
+    font=\sffamily\small},
+  term/.style={st,fill=AlmanachOchre!30,draw=AlmanachOchre},
+  arr/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachInk!55},
+  back/.style={-{Stealth[length=1.8mm]},thick,draw=AlmanachRed,dashed},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!75},
+  val/.style={font=\sffamily\scriptsize,color=AlmanachTeal!75!black}]
+  \foreach \i/\n in {1/1,2/2,3/3}{
+    \node[st] (s\n) at (\i*24mm-24mm,0) {$s_\n$};}
+  \node[term] (s4) at (72mm,0) {$s_4$};
+  \foreach \a/\b in {s1/s2,s2/s3}{\draw[arr] (\a) -- (\b) node[midway,above,lbl] {$r{=}0$};}
+  \draw[arr] (s3) -- (s4) node[midway,above,lbl,color=AlmanachOchre] {$r{=}{+}1$};
+  \node[val,below=3mm of s1] {$0.810$};
+  \node[val,below=3mm of s2] {$0.900$};
+  \node[val,below=3mm of s3] {$1.000$};
+  \node[val,below=3mm of s4] {$0$};
+  \draw[back] ([yshift=8mm]s4.north) -- ([yshift=8mm]s1.north)
+    node[midway,above,lbl,color=AlmanachRed]
+    {values are computed in this direction};
+\end{tikzpicture}
+\caption{Value propagating backwards from the only rewarded transition. The
+agent moves left to right; the \emph{information} travels right to left,
+shrinking by the discount factor at each step. Sparse-reward problems are hard
+precisely because this trail becomes numerically invisible over long
+distances.}
+\label{fig:rl-value-propagation}
+\end{figure}
 
 \end{v3topic}
 \begin{v3topic}{Value Iteration}
@@ -208,8 +336,11 @@
             \draw[arr, bend right=20] (s3) to
                 node[below, font=\footnotesize]{$a_2$} (s1);
         \end{tikzpicture}
-\captionof{figure}{Markov Decision Processes: MDP State Transitions.}
-\label{fig:ch07-reinforcement-learning-inline-02}
+\captionof{figure}{Transitions in a Markov decision process. Because the next
+state depends only on the current state and action, the entire history can be
+discarded --- which is what makes dynamic programming possible and what makes
+choosing the state representation the critical modelling decision.}
+\label{fig:rl-mdp-transitions}
         \end{center}
 
 \end{v3topic}
@@ -282,8 +413,35 @@
         \end{itemize}
         \textsuperscript{\cite[][p.~336]{hurbansGrokkingArtificialIntelligence2020}}
 
+\begin{workedexample}[What a constant $\epsilon$ costs, forever]
+Two arms with true means $\mu_1 = 0.6$ (the best) and $\mu_2 = 0.2$. Suppose
+the agent has already learned which is which, and runs $\epsilon$-greedy with
+$\epsilon = 0.1$.
+
+\emph{Action probabilities.} The greedy arm is chosen either by exploitation
+($1-\epsilon = 0.9$) or by landing on it during random exploration
+($\epsilon/2 = 0.05$), so $P(\text{arm 1}) = 0.95$ and
+$P(\text{arm 2}) = 0.05$.
+
+\emph{Expected reward per pull.}
+\[
+  0.95(0.6) + 0.05(0.2) = 0.570 + 0.010 = 0.580 .
+\]
+
+\emph{Regret.} The best possible is $0.6$, so the agent loses $0.020$ per pull
+--- $20$ reward over $1{,}000$ pulls, and it never stops. The agent knows the
+answer and keeps paying to re-confirm it.
+
+That is the argument for decaying $\epsilon$ over time, and the argument for
+UCB, which spends its exploration where uncertainty actually is.
+\end{workedexample}
+
 \end{v3topic}
 \begin{v3topic}{Upper Confidence Bound (UCB)}
+        The UCB1 algorithm and its regret bound are due to Auer,
+        Cesa-Bianchi and
+        Fischer\textsuperscript{\cite{auerFinitetimeAnalysisMultiarmed2002}}.
+
         Explore arms with high \emph{uncertainty} rather than randomly.
         \textbf{UCB1} selects:
         \begin{equation}
@@ -294,6 +452,32 @@
         controls exploration width.
         UCB1 achieves $O(\ln T)$ regret --- asymptotically
         optimal.\textsuperscript{\cite[][p.~337]{hurbansGrokkingArtificialIntelligence2020}}
+
+\begin{workedexample}[UCB deliberately picks the worse-looking arm]
+At time $t = 12$, with $c = 2$:
+arm~A has been pulled $10$ times with mean $0.6$; arm~B has been pulled twice
+with mean $0.5$.
+
+\[
+\begin{aligned}
+  \text{UCB}(A) &= 0.6 + 2\sqrt{\tfrac{\ln 12}{10}}
+    = 0.6 + 2\sqrt{\tfrac{2.485}{10}}
+    = 0.6 + 2(0.499) = 1.597,\\[3pt]
+  \text{UCB}(B) &= 0.5 + 2\sqrt{\tfrac{\ln 12}{2}}
+    = 0.5 + 2\sqrt{1.242}
+    = 0.5 + 2(1.115) = 2.729 .
+\end{aligned}
+\]
+
+UCB picks \textbf{B}, the arm with the \emph{lower} observed mean --- because
+with only two samples its estimate could easily be wrong by more than the
+$0.1$ gap. The bonus term $\sqrt{\ln t / N_t(a)}$ shrinks as $N_t(a)$ grows, so
+once B has been pulled enough times its bonus collapses and the decision
+reverts to the means.
+
+This is the whole idea: \emph{optimism in the face of uncertainty}. Explore
+what you do not know, not what a coin tells you to.
+\end{workedexample}
 
 \end{v3topic}
 \begin{v3topic}{Thompson Sampling}
@@ -317,6 +501,58 @@
     \section{Q-Learning and Deep Reinforcement Learning}
 
 
+\begin{v3topic}{Monte Carlo Methods}
+        \keyterm{Monte Carlo} methods estimate values by \emph{averaging
+        complete returns}. They need no model of $P$ or $R$ and make no
+        bootstrapping assumption --- but they can only learn from episodes
+        that terminate\textsuperscript{\cite[][ch.~5]{suttonReinforcementLearningIntroduction2018}}.
+
+        \textbf{First-visit MC prediction}: for each state $s$, average the
+        returns $G_t$ observed after the first visit to $s$ in each episode:
+        \begin{equation}
+            V(s) \leftarrow \operatorname{average}\bigl(G_t \mid
+            S_t = s,\ \text{first visit}\bigr).
+            \label{eq:rl-mc-prediction}
+        \end{equation}
+        The estimate is unbiased and converges to $V^{\pi}(s)$ as the number
+        of visits grows.
+
+        \textbf{MC control} alternates policy evaluation with greedy policy
+        improvement, using \emph{exploring starts} or an $\epsilon$-soft
+        policy to guarantee that every state--action pair keeps being visited.
+
+\begin{workedexample}[Monte Carlo against temporal difference on one episode]
+An episode visits $A \to B \to$ terminal, receiving reward $0$ then $1$, with
+$\gamma = 1$. Current estimates are $V(A) = 0.5$ and $V(B) = 0.5$; take
+$\alpha = 0.1$.
+
+\emph{Monte Carlo} waits for the episode to end and uses the actual return
+from each state: $G_A = 0 + 1 = 1$ and $G_B = 1$. So
+\[
+  V(A) \leftarrow 0.5 + 0.1(1 - 0.5) = 0.55,
+  \qquad
+  V(B) \leftarrow 0.5 + 0.1(1 - 0.5) = 0.55 .
+\]
+
+\emph{TD(0)} updates $A$ immediately, using its \emph{current estimate} of
+$B$ rather than waiting:
+\[
+  V(A) \leftarrow 0.5 + 0.1\bigl(0 + 1(0.5) - 0.5\bigr) = 0.5 \ \text{(no change)},
+\]
+then on the next transition
+$V(B) \leftarrow 0.5 + 0.1(1 + 0 - 0.5) = 0.55$.
+
+\emph{Read the difference.} MC moved $A$ on the strength of what actually
+happened; TD did not move $A$ at all, because its estimate of $B$ already
+agreed with the observed step. MC is unbiased but high variance --- the whole
+noisy return enters the update. TD is biased --- it trusts its own estimate ---
+but low variance, and it can learn from incomplete episodes and from
+continuing tasks that never terminate. That bias--variance trade is the axis
+along which every method in this chapter sits, and $n$-step methods and
+TD($\lambda$) interpolate along it.
+\end{workedexample}
+
+\end{v3topic}
 \begin{v3topic}{Temporal Difference Learning}
         \textbf{TD learning} is \emph{model-free}: learns directly from
         sampled transitions without a model of $P$ or $R$, and updates
@@ -348,8 +584,49 @@
         $Q^*$ regardless of behaviour
         policy.\textsuperscript{\cite[][p.~346]{hurbansGrokkingArtificialIntelligence2020}}
 
+\begin{workedexample}[One Q-learning update, term by term]
+Current estimate $Q(s,a) = 2.0$. The agent acts, receives $r = 1$, and lands in
+$s'$ where the best action is worth $\max_{a'} Q(s',a') = 5.0$. Take
+$\gamma = 0.9$ and $\alpha = 0.1$.
+
+\[
+\begin{aligned}
+  \text{TD target} &= r + \gamma\max_{a'}Q(s',a') = 1 + 0.9(5.0) = 5.5,\\
+  \text{TD error } \delta &= 5.5 - 2.0 = 3.5,\\
+  Q_{\text{new}}(s,a) &= 2.0 + 0.1(3.5) = \mathbf{2.35}.
+\end{aligned}
+\]
+
+\emph{Read the terms.} The target $5.5$ is a \emph{better-informed guess} than
+the old $2.0$, because it contains one real observed reward and only then falls
+back on an estimate. The error $\delta = 3.5$ says the old estimate was
+badly pessimistic. And $\alpha = 0.1$ means we move only a tenth of the way ---
+the target is itself an estimate, so trusting it fully would make learning
+unstable. Every value-based RL algorithm in this chapter is a variation on
+these three lines.
+\end{workedexample}
+
+\begin{cautionbox}[On-policy and off-policy diverge exactly where it matters]
+SARSA uses the action actually taken; Q-learning uses the best available
+action. On a gridworld with a cliff along the shortest path, this produces
+genuinely different behaviour: Q-learning learns the optimal path along the
+cliff edge, because $\max_{a'}$ assumes it will never make an exploratory
+mistake. SARSA learns a longer, safer path, because its target includes the
+$\epsilon$-greedy chance of stepping off.
+
+Neither is wrong. Q-learning answers ``what is best if I act perfectly?'';
+SARSA answers ``what is best given that I sometimes explore?'' If your agent
+will explore in the real environment --- a robot, a treatment policy, a trading
+system --- SARSA is answering your question and Q-learning is not.
+\end{cautionbox}
+
 \end{v3topic}
 \begin{v3topic}{Deep Q-Networks (DQN)}
+        DQN is due to Mnih and
+        colleagues\textsuperscript{\cite{mnihHumanlevelControlDeep2015}}; the
+        tabular algorithm it generalises is due to Watkins and
+        Dayan\textsuperscript{\cite{watkinsQlearning1992}}.
+
         For large or continuous state spaces, a Q-table is intractable.
         \textbf{DQN} approximates the Q-function with a deep neural network
         $Q(s,a;\theta) \approx Q^*(s,a)$, trained to minimise:
@@ -426,7 +703,7 @@
 
 \end{v3topic}
 \begin{v3topic}{Value-Based vs.\ Policy-Based Methods}
-        \begin{tblr}{
+        \begin{tblr}{width=\linewidth,
             colspec={X[l]X[l]},
             hlines, vlines,
             row{1}={font=\bfseries\small, bg=LimeGreen!20},
@@ -439,8 +716,8 @@
             Deterministic output & Stochastic policy \\
             Can be unstable & High variance gradients \\
         \end{tblr}
-\captionof{table}{Q-Learning and Deep Reinforcement Learning: Value-Based vs.\ Policy-Based Methods.}
-\label{tab:ch07-reinforcement-learning-inline-02}
+\captionof{table}{Value-based against policy-based methods. Value methods need a tractable maximisation over actions, which is why continuous action spaces usually call for policy methods.}
+\label{tab:rl-value-policy}
         \textsuperscript{\cite[][p.~360]{hurbansGrokkingArtificialIntelligence2020}}
 
 \end{v3topic}
@@ -579,6 +856,73 @@
         \item Used in robotics, process control, AlphaZero (MCTS + learned model)
         \item Horizon $H$ trades off computation vs.\ look-ahead quality
     \end{itemize}
+
+\end{v3topic}
+
+    \subsection{Hierarchical Reinforcement Learning}
+
+\begin{v3topic}{Temporal Abstraction and Options}
+        Flat RL chooses a primitive action every step, which makes long tasks
+        with sparse rewards effectively unlearnable --- the credit-assignment
+        chain is simply too long (see the value-decay calculation earlier in
+        this chapter). \keyterm{Hierarchical reinforcement learning} attacks
+        this by letting the agent choose over \emph{temporally extended}
+        behaviours rather than single actions.
+
+        The \keyterm{options framework}\textsuperscript{\cite{suttonBetweenMDPsSemiMDPs1999}}
+        formalises an option as a triple
+        \begin{equation}
+            \omega = \bigl(\mathcal{I}_\omega,\ \pi_\omega,\
+            \beta_\omega\bigr),
+            \label{eq:rl-option}
+        \end{equation}
+        where $\mathcal{I}_\omega \subseteq \mathcal{S}$ is the set of states
+        in which the option may be started, $\pi_\omega$ is the policy it
+        follows while running, and $\beta_\omega(s) \in [0,1]$ is the
+        probability of terminating in state $s$. A primitive action is the
+        special case of an option that always terminates after one step.
+
+        Because options take variable time, the decision problem over options
+        is a \keyterm{semi-Markov decision process} rather than an MDP, and
+        the Bellman equations carry a discount raised to the option's random
+        duration.
+
+        \textbf{MAXQ}\textsuperscript{\cite{dietterichHierarchicalReinforcementLearning2000}}
+        takes a complementary route: it decomposes the value function itself
+        along a given task hierarchy, so that sub-task value functions can be
+        learned once and reused wherever the sub-task appears.
+
+\begin{plainlanguage}
+Flat reinforcement learning is like navigating a city by deciding which way to
+face at every single footstep. Hierarchical RL lets the agent decide ``go to
+the station'', hand control to a sub-policy that knows how to walk there, and
+only make the next high-level decision on arrival. The rewards are the same;
+the number of decisions between action and consequence collapses.
+\end{plainlanguage}
+
+\begin{workedexample}[Why abstraction rescues a sparse reward]
+A goal lies $100$ primitive steps away and pays $+1$ on arrival, with
+$\gamma = 0.9$. At the start state the value is
+\[
+  V \approx \gamma^{99} = 0.9^{99} = 3.0\times10^{-5},
+\]
+numerically indistinguishable from zero, so the gradient of the start-state
+value with respect to anything is negligible.
+
+Now suppose four options each cover about $25$ primitive steps. At the option
+level the goal is $4$ decisions away. If the discount is applied per
+\emph{decision} rather than per step, the start-state value becomes
+\[
+  \gamma^{3} = 0.9^{3} = 0.729 ,
+\]
+a signal four orders of magnitude larger. Nothing about the environment or the
+reward changed --- only the granularity at which credit is assigned.
+
+\emph{The catch.} The options must come from somewhere. Hand-designing them
+requires the domain knowledge you were hoping to learn, and discovering them
+automatically remains an open research problem. That gap is why hierarchical
+RL is conceptually compelling and comparatively rare in production.
+\end{workedexample}
 
 \end{v3topic}
 
@@ -972,6 +1316,57 @@
     (recovery: 50\% drug vs.\ 40\% no-drug) but is \emph{harmful} in each
     subgroup (males: 60\% vs.\ 70\%; females: 20\% vs.\ 30\%).
 
+\begin{workedexample}[Simpson's paradox in real clinical data]
+Two treatments for kidney stones, from a study of $700$
+patients\textsuperscript{\cite{charigComparisonTreatmentRenal1986}}:
+
+\smallskip
+\begin{tblr}{
+  width=\linewidth,
+  colspec={Q[l,0.22\linewidth] Q[c] Q[c] Q[c]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+& Small stones & Large stones & \textbf{Overall} \\
+Treatment A & $81/87 = \mathbf{93\,\%}$ & $192/263 = \mathbf{73\,\%}$ &
+  $273/350 = 78\,\%$ \\
+Treatment B & $234/270 = 87\,\%$ & $55/80 = 69\,\%$ &
+  $289/350 = \mathbf{83\,\%}$ \\
+\end{tblr}
+\smallskip
+
+Read the table twice. Treatment~A wins on small stones ($93$ vs $87$). Treatment
+A wins on large stones ($73$ vs $69$). Treatment~A \emph{loses} overall
+($78$ vs $83$).
+
+\emph{This is not an arithmetic error.} Check it: $81+192 = 273$ out of
+$87+263 = 350$, and $234+55 = 289$ out of $270+80 = 350$. Both columns are
+correct.
+
+\emph{The resolution is causal, not statistical.} Look at the group sizes.
+Treatment~A was given mostly to \emph{large}-stone patients ($263$ of $350$),
+which are the harder cases; treatment~B mostly to small-stone patients ($270$
+of $350$). Stone size affects both which treatment was chosen and whether the
+patient recovers --- it is a confounder. The overall column silently compares a
+hard caseload against an easy one.
+
+\emph{Which number should a doctor use?} The subgroup ones. The correct
+quantity is $p(\text{recovery}\mid \mathrm{do}(\text{treatment}))$, obtained by
+adjusting for stone size, not $p(\text{recovery}\mid\text{treatment})$ read off
+the aggregate. No amount of extra data fixes the aggregate figure, because the
+problem is not sampling error --- it is that the question being answered is the
+wrong one.
+\end{workedexample}
+
+\begin{cautionbox}[You cannot detect this from the aggregate alone]
+Nothing in the overall column signals that it is misleading. The only defence
+is to know, in advance and from domain knowledge, which variables might
+influence both the treatment and the outcome --- and then to check whether the
+effect survives conditioning on them. This is why a causal diagram is drawn
+before the analysis, not after. It is also why ``we have millions of rows'' is
+no protection at all: more data makes a confounded estimate more precise, not
+less wrong.
+\end{cautionbox}
+
     \textbf{Resolution}: The paradox conflates $p(R|D)$ (observational)
     with $p(R|\mathrm{do}(D))$ (interventional). Gender is a confounder
     affecting both drug choice and recovery. Applying the backdoor
@@ -1034,24 +1429,6 @@
 \end{v3topic}
 
     % -------------------------------------------------------
-    \section{Further Reading}
-
-\begin{v3topic}{Recommended Sources for Reinforcement Learning and Causality}
-    \begin{itemize}
-        \item \fullcite{suttonReinforcementLearningIntroduction2018} --- The definitive RL textbook: MDPs, TD learning, policy gradients, function approximation, and applications.
-        \item \fullcite{hurbansGrokkingArtificialIntelligence2020} --- Accessible introduction to RL with visual examples, Q-learning, and exploration strategies.
-        \item \fullcite{barberBayesianReasoningMachine2012} --- Bayesian inference, graphical models, MDPs, and value iteration with rigorous probabilistic treatment.
-        \item \fullcite{downeyThinkBayes2016} --- Practical Bayesian statistics with Python: conjugate priors, MCMC, and sequential updating.
-        \item \fullcite{pearlCausalityModelsReasoning2009} --- The foundational text on structural causal models, do-calculus, and causal identification.
-        \item \fullcite{pearlBookWhyNew2018} --- Popular-science introduction to the ``ladder of causation'' and the do-operator.
-        \item \fullcite{pearlCausalInferenceStatistics2016} --- Concise primer on causal inference: DAGs, adjustment, frontdoor/backdoor criteria.
-        \item \fullcite{hernanCausalInferenceWhat2020} --- Practical causal inference for health sciences: RCTs, observational studies, time-varying treatments.
-        \item \fullcite{nessCausalAI2025} --- Modern perspective on causal AI, including Granger causality, causal discovery, and missing data.
-    \end{itemize}
-
-\end{v3topic}
-
-%
 \section{Deep Dive: Offline, Safe, and Preference-Based Learning}
 \begin{v3topic}{Offline RL and Coverage}
 Offline RL learns from a fixed behaviour dataset.
@@ -1078,4 +1455,64 @@ Report effective sample size, sensitivity to clipping, and where evaluation
 depends on extrapolation.
 \end{v3topic}
 
+
+\begin{practicallab}[Watch an agent learn, and then watch it cheat]
+\textbf{Goal.} Build the smallest RL system that exhibits all three classic
+failure modes, so you recognise them before they cost you a quarter.
+
+\textbf{Setup.} A $4\times4$ gridworld with a goal, one pit, and deterministic
+moves. Tabular Q-learning. No libraries needed beyond an array.
+
+\textbf{Protocol.}
+\begin{enumerate}
+  \item Implement Q-learning with $\gamma = 0.9$, $\alpha = 0.1$,
+        $\epsilon = 0.1$. Plot return per episode until it plateaus.
+  \item Print the value table and check it against
+        \cref{fig:rl-value-propagation}: values should decay by roughly
+        $\gamma$ per step of distance from the goal.
+  \item \textbf{Sparse reward.} Move the goal to the far corner and give reward
+        only there. Record how many episodes are needed now. Then set
+        $\gamma = 0.99$ and repeat.
+  \item \textbf{Reward hacking.} Add a small $+0.1$ for stepping on any tile
+        the agent has not visited this episode. Watch what the agent does
+        instead of reaching the goal.
+  \item \textbf{On-policy vs off-policy.} Put a pit alongside the shortest
+        path. Train Q-learning and SARSA with the same $\epsilon$. Compare the
+        routes they learn and explain the difference from the update rule.
+  \item Re-run step 1 with three different random seeds and plot all three.
+\end{enumerate}
+
+\textbf{Deliverable.} Four plots and one paragraph per step 3--5 explaining the
+behaviour from the update equation. \textbf{The point:} step 4 takes about five
+minutes to produce and is the entire reason reward design is the hardest part
+of applied RL. Step 6 is why single-seed RL results should not be believed.
+\end{practicallab}
+
+\begin{checkpoint}
+You are asked to use RL to set prices in a live marketplace. Give three
+questions you would need answered before agreeing, drawn from this chapter:
+one about the reward, one about exploration cost in a real environment, and one
+about how you would evaluate the new policy before deploying it.
+\end{checkpoint}
+
 \chapterreview{Model}{Act}{Update}{Evaluate}
+
+
+    \section{Further Reading}
+
+\begin{v3topic}{Recommended Sources for Reinforcement Learning and Causality}
+    \begin{itemize}
+        \item \fullcite{suttonReinforcementLearningIntroduction2018} --- The definitive RL textbook: MDPs, TD learning, policy gradients, function approximation, and applications.
+        \item \fullcite{hurbansGrokkingArtificialIntelligence2020} --- Accessible introduction to RL with visual examples, Q-learning, and exploration strategies.
+        \item \fullcite{barberBayesianReasoningMachine2012} --- Bayesian inference, graphical models, MDPs, and value iteration with rigorous probabilistic treatment.
+        \item \fullcite{downeyThinkBayes2016} --- Practical Bayesian statistics with Python: conjugate priors, MCMC, and sequential updating.
+        \item \fullcite{pearlCausalityModelsReasoning2009} --- The foundational text on structural causal models, do-calculus, and causal identification.
+        \item \fullcite{pearlBookWhyNew2018} --- Popular-science introduction to the ``ladder of causation'' and the do-operator.
+        \item \fullcite{pearlCausalInferenceStatistics2016} --- Concise primer on causal inference: DAGs, adjustment, frontdoor/backdoor criteria.
+        \item \fullcite{hernanCausalInferenceWhat2020} --- Practical causal inference for health sciences: RCTs, observational studies, time-varying treatments.
+        \item \fullcite{nessCausalAI2025} --- Modern perspective on causal AI, including Granger causality, causal discovery, and missing data.
+    \end{itemize}
+
+\end{v3topic}
+
+%
