@@ -50,6 +50,51 @@ failures stop being numerical and start being linguistic and social.
 
 \section{Natural Language Processing Foundations}
 
+\begin{v3topic}{From Pixels to Words: Why Language Is Harder}
+It is worth being explicit about why language needed different machinery from
+the image problems of \cref{ch:computer-vision}, because each difference forces
+a specific architectural choice\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+
+\begin{table}[htbp]
+\centering
+\caption{What makes language structurally harder than a fixed-size image
+classification problem, and the mechanism each difficulty forced into
+existence.}
+\label{tab:nlp-why-language-is-harder}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.20\textwidth] X[l] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Property & Images & Language, and what it forces \\
+Input size & Fixed: every MNIST digit is $784$ pixels &
+  Variable: five words or five thousand. Forces a mechanism that works at any
+  length \\
+Structure & A 2D grid; neighbours are related by construction &
+  No grid. ``The dog bit the man'' and ``the man bit the dog'' share every word
+  and differ in meaning, so \emph{order} must be encoded explicitly \\
+Dependency range & Local; convolution's small kernels suffice &
+  Arbitrary. In ``the cat that the dog chased ran away'', \emph{ran} belongs to
+  \emph{cat}, not the nearer \emph{dog}. Forces a mechanism with constant path
+  length between any two positions \\
+Output & One of ten labels &
+  A sequence, generated one token at a time from a vocabulary of $30{,}000$ or
+  more. Forces autoregressive decoding \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+Read the right-hand column as a derivation of the Transformer rather than a
+list of complaints. Variable length rules out a fixed input layer; the absence
+of a grid rules out convolution as the primary mixer and requires positional
+encoding; arbitrary dependency range is precisely what
+self-attention's $O(1)$ path length provides
+(\cref{tab:dl-seq-complexity}); and generation rather than classification is
+what makes the causal mask necessary. Nothing about the architecture is
+arbitrary --- each piece answers one row of this table.
+\end{engineernote}
+\end{v3topic}
+
 % ---- 12.1.1 What is NLP? -------------------------------------------------------------------
 \subsection{What is NLP?}
 
@@ -454,6 +499,73 @@ regularity is real but weaker and more selective than the popular examples
 suggest, and it holds far better for frequent words than for rare ones.}
 \label{fig:nlp-embedding-space}
 \end{figure}
+
+\begin{v3topic}{Why the Dimensions Have to Be Many}
+Two dimensions suffice to separate cats from cars. But a single token must
+simultaneously carry that \emph{bank} may be a financial institution or a river
+edge, that \emph{run} may be a verb or a noun, and that \emph{Java} may be a
+language or an island. Each dimension can encode a different aspect of usage,
+and a token's position encodes all of its potential meanings at once ---
+context later selects among them.
+
+\begin{engineernote}
+An embedding table is a $V\times d$ array and a lookup is a single memory read
+of $d$ numbers --- no arithmetic at all. It is also large: at $V = 50{,}000$ and
+$d = 4{,}096$ in 16-bit precision the table alone is
+$50{,}000 \times 4{,}096 \times 2 = 400$\,MB. That makes it the one component
+of a model that is already cheap in operations and expensive in memory, which
+is exactly the wrong way round for the memory wall described in
+\cref{ch:deep-learning}.
+\end{engineernote}
+
+\begin{cautionbox}[Embeddings are inherently continuous]
+The difference between \emph{happy} and \emph{joyful} is a small displacement
+in this space. Rounding each dimension to a single bit would destroy precisely
+the fine distinctions the representation exists to carry --- which is why
+aggressive quantisation is usually applied to the weight matrices rather than
+to the embeddings, and why embedding tables are often kept at higher precision
+than the rest of the model.
+\end{cautionbox}
+\end{v3topic}
+
+\begin{v3topic}{How Meaning Survives Subword Splitting}
+If embeddings carry meaning and the vocabulary is made of fragments, an obvious
+objection follows: BPE may split \emph{prince} into \texttt{prin} + \texttt{ce},
+and neither piece means anything.
+
+The resolution is that the embedding table only supplies raw material; the
+Transformer layers compose meaning from it.
+
+\begin{enumerate}
+  \item \textbf{Lookup.} \texttt{prin} and \texttt{ce} each receive their own
+    vector. After training, \texttt{prin} encodes whatever
+    \emph{prince}, \emph{print}, and \emph{principal} have in common --- a
+    partial, ambiguous signal.
+  \item \textbf{Attention assembles the word.} In the first layer, \texttt{prin}
+    attends to \texttt{ce} and vice versa, and each representation absorbs the
+    other.
+  \item \textbf{Depth completes it.} After a few layers the vector that began
+    as \texttt{prin} effectively represents \emph{prince in this sentence}. By
+    the deeper layers the representations are not about subword pieces at all.
+\end{enumerate}
+
+\begin{plainlanguage}
+The model does not distinguish between assembling a word out of fragments and
+assembling a sentence out of words. Both are the same operation applied at a
+different scale, which is why an unfamiliar word, a misspelling, or a line of
+source code is not a special case for a language model --- \texttt{princ} +
+\texttt{ess} composes exactly as \texttt{prin} + \texttt{ce} does.
+\end{plainlanguage}
+
+\begin{engineernote}
+This also explains a limit. Because composition happens \emph{in the layers},
+a fragment's meaning depends on there being enough layers above it to do the
+assembling. It is one reason why heavily fragmented text --- an
+under-represented language, an unusual identifier, a long number --- is handled
+less well: the model spends its early layers reconstructing what a
+better-matched tokenizer would have handed it for free.
+\end{engineernote}
+\end{v3topic}
 
 \begin{v3topic}{Word2Vec: Learning Dense Embeddings}
     Word2Vec is due to Mikolov and

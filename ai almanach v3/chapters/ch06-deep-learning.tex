@@ -1871,6 +1871,174 @@ compose, which is why recent architectures combine them.}
 \label{fig:dl-architecture-axes}
 \end{figure}
 
+\subsection{What Operations Actually Cost}
+
+Every efficiency argument in this section rests on a hardware fact that is
+rarely stated: the operations a network performs differ in cost by four orders
+of magnitude, and the most expensive one is not arithmetic at
+all\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+
+\begin{table}[htbp]
+\centering
+\caption{Approximate energy per operation at a 45\,nm process
+node\textsuperscript{\cite{horowitzComputingsEnergyProblem2014}}. Modern nodes
+are $5$--$10\times$ lower in absolute terms, but the \emph{ratios} are set by
+circuit complexity --- a multiplier needs $O(n^2)$ gates, an adder $O(n)$, a
+bitwise operation $O(1)$ per bit --- and are therefore far more stable than the
+absolute figures.}
+\label{tab:dl-operation-energy}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={X[l] Q[r,0.18\textwidth] Q[r,0.18\textwidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Operation & Energy (pJ) & Relative \\
+Bitwise AND / OR / XOR & 0.1 & $1\times$ \\
+Bit shift & 0.1 & $1\times$ \\
+Integer add (8-bit) & 0.03 & $0.3\times$ \\
+Integer multiply (8-bit) & 0.2 & $2\times$ \\
+Integer add (32-bit) & 0.1 & $1\times$ \\
+Integer multiply (32-bit) & 3.1 & $31\times$ \\
+Floating-point add (32-bit) & 0.9 & $9\times$ \\
+Floating-point multiply (32-bit) & 3.7 & $37\times$ \\
+Memory access (SRAM) & 5.0 & $50\times$ \\
+\textbf{Memory access (DRAM)} & \textbf{640.0} & $\mathbf{6400\times}$ \\
+\end{tblr}
+\end{table}
+
+\begin{cautionbox}[The memory wall: moving data costs more than computing on it]
+Read the last two rows again. A single DRAM access costs $6{,}400$ times a
+logic gate and roughly $170$ times a floating-point multiply. \textbf{The most
+expensive thing a chip does is not arithmetic --- it is fetching the operands.}
+
+Three consequences run through this whole chapter. It explains why
+FlashAttention is a large speed-up while changing no arithmetic at all: it
+avoids writing the $T\times T$ score matrix to memory. It explains why
+inference on a large model is memory-bandwidth-bound rather than
+compute-bound, and therefore why the key--value cache calculation later in this
+chapter matters more than the FLOP count. And it explains why quantisation
+helps even when the arithmetic is not the bottleneck --- halving the bits
+halves the bytes moved.
+
+The engineering rule: \emph{count memory traffic before counting operations.}
+A method that does more arithmetic on data already in cache routinely beats one
+that does less arithmetic on data it must fetch.
+\end{cautionbox}
+
+\begin{engineernote}
+The same ranking holds in clock cycles, not just
+energy\textsuperscript{\cite{fogInstructionTables2026}}. Bitwise logic and
+fixed shifts complete in one cycle and several can issue per cycle; addition is
+comparable; multiplication costs several; division costs double-digit cycles
+and --- unlike the others --- barely improves with wider SIMD registers, because
+the divider's structural cost cannot be hidden by parallelism. This is why
+quantisation schemes work so hard to replace division and square roots with
+shifts, and why an architecture is best judged by which of these it needs
+rather than by how many operations it performs.
+\end{engineernote}
+
+\subsection{Where the Parameters Live}
+
+Before deciding what to shrink, it is worth knowing where the weight is. Every
+matrix in a dense Transformer block falls into one of two groups: the four
+attention projections $W^Q, W^K, W^V, W^O$, each $d\times d$ once the heads are
+stacked, and the two feed-forward matrices $W_1, W_2$. With the conventional
+expansion $d_{\text{ff}} = 4d$, attention contributes $4d^2$ per layer and the
+feed-forward pair $8d^2$. Normalisation adds $O(d)$, which is negligible.
+Summed over $N$ layers this gives the standard
+approximation\textsuperscript{\cite{kaplanScalingLawsNeural2020}}:
+\begin{equation}
+  N_{\text{params}} \approx 12Nd^2 + 2Vd .
+  \label{eq:dl-parameter-budget}
+\end{equation}
+\where{$N$ is the number of layers, $d$ the model dimension, and $V$ the
+vocabulary size; the second term covers the input embedding table and the
+output head, which some models tie together and so pay for only once.}
+
+\begin{workedexample}[The parameter budget of a 7-billion-parameter model]
+Take $d = 4{,}096$, $N = 32$ layers, $V = 32{,}000$, untied embeddings. Since
+$d^2 = 16{,}777{,}216$, each single $d\times d$ matrix costs
+$32 \times d^2 = 536.9$M parameters across all layers.
+
+\smallskip
+\begin{tblr}{
+  width=\textwidth,
+  colspec={X[l] Q[l,0.20\textwidth] Q[r,0.15\textwidth] Q[r,0.11\textwidth]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Component & Formula & Parameters & Share \\
+Query, key, value, output projections & $4d^2$ per layer & $2.15$B &
+  $32.0\,\%$ \\
+Feed-forward $W_1$ and $W_2$ & $8d^2$ per layer & $4.29$B & $64.1\,\%$ \\
+Normalisation & ${\approx}2Nd$ & $0.26$M & $<0.01\,\%$ \\
+\textbf{All transformer blocks} & $12Nd^2$ & $\mathbf{6.44}$\textbf{B} &
+  $96.1\,\%$ \\
+Embedding table & $Vd$ & $131.1$M & $2.0\,\%$ \\
+Output head (untied) & $Vd$ & $131.1$M & $2.0\,\%$ \\
+\textbf{Total} & & $\mathbf{6.70}$\textbf{B} & $100\,\%$ \\
+\end{tblr}
+\smallskip
+
+\emph{The result that surprises people.} \textbf{The feed-forward blocks hold
+twice as many parameters as attention} --- $64\,\%$ against $32\,\%$. Attention
+gets the diagrams, the papers, and the name, but two thirds of the weight sits
+in the plain two-layer MLP that follows it. That is why mixture-of-experts
+replaces the \emph{MLP} rather than the attention, and why quantisation work
+targets it first.
+
+\emph{And normalisation is nothing.} At $0.26$M out of $6.70$B, LayerNorm
+parameters are numerically irrelevant --- though, as the next subsection shows,
+their \emph{arithmetic} is not.
+
+\emph{One caveat on the formula.} \Cref{eq:dl-parameter-budget} assumes the
+classic two-matrix feed-forward block. Models using a gated variant such as
+SwiGLU have \emph{three} feed-forward matrices and compensate with a smaller
+$d_{\text{ff}}$, arriving at a similar total by a different route. Use the
+formula for order-of-magnitude planning and the model's own configuration for
+anything exact.
+\end{workedexample}
+
+\subsection{The Feed-Forward Block}
+
+Since it holds most of the parameters, it deserves more than a mention.
+After attention has let tokens exchange information, each token is processed
+\emph{independently} through a two-layer network:
+\begin{equation}
+  \mathrm{FFN}(x) = W_2\,\sigma\!\left(W_1 x + b_1\right) + b_2 .
+  \label{eq:dl-ffn}
+\end{equation}
+\where{$W_1$ expands from $d$ to $d_{\text{ff}}$ (conventionally $4d$), $W_2$
+projects back down, and $\sigma$ is the activation. No token sees any other
+token here --- all mixing happened in the attention sub-layer.}
+
+\begin{plainlanguage}
+The division of labour inside a Transformer block is worth stating plainly:
+\emph{attention decides what information to gather; the feed-forward block
+decides what to do with it}. Attention moves information sideways between
+positions; the MLP transforms each position in place. Alternate the two enough
+times and you have a language model.
+\end{plainlanguage}
+
+Modern models use GELU or SiLU rather than ReLU, because their smooth curves
+give better gradient flow:
+\begin{equation}
+  \mathrm{SiLU}(x) = x\,\sigma(x) = \frac{x}{1+e^{-x}},
+  \qquad
+  \mathrm{GELU}(x) = x\,\Phi(x),
+  \label{eq:dl-gelu-silu}
+\end{equation}
+\where{$\sigma$ is the logistic function and $\Phi$ the cumulative distribution
+function of the standard normal --- the probability that a draw from
+$\mathcal{N}(0,1)$ falls below $x$.}
+
+\begin{engineernote}
+Both are the same shape: $x$ multiplied by a smooth gate that rises from $0$ to
+$1$. In practice $\Phi(x)$ is approximated as $\sigma(1.702x)$, which avoids
+evaluating the error function entirely --- so GELU and SiLU differ only in the
+steepness of that gate. If you have wondered why papers switch between them
+casually, this is why: the difference is small and largely empirical.
+\end{engineernote}
+
 \subsection{Mixture of Experts: Decoupling Capacity from Compute}
 
 In a dense network every parameter participates in every forward pass, so
@@ -2009,6 +2177,73 @@ capacity\textsuperscript{\cite{lieberJambaHybridTransformerMamba2024}}. Treat
 any claim that one family has simply won as a claim to check against a
 benchmark that includes long-context retrieval.
 \end{engineernote}
+
+\subsection{The Wider Field of Sequence Mixers}
+
+Mamba is the best known of a family of architectures that abandon quadratic
+attention, and it helps to see them
+together\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+
+\begin{description}
+  \item[RWKV\textsuperscript{\cite{pengRWKVReinventingRNNs2023}}] Reformulates
+    a recurrent network so it can be trained in parallel like a Transformer but
+    executed as an RNN, with $O(d)$ state per token rather than a cache growing
+    with context. The trick is a weighted key--value mechanism with an
+    exponential time-decay term, so the recurrence stays linear and therefore
+    parallelisable.
+  \item[RetNet\textsuperscript{\cite{sunRetentiveNetworkSuccessor2023}}]
+    Introduces a \emph{retention} mechanism admitting three equivalent forms:
+    parallel for training, recurrent for inference, and chunk-wise for long
+    sequences. Its claim is not a new capability but the removal of the usual
+    trade: train in parallel \emph{and} infer in constant state.
+  \item[xLSTM\textsuperscript{\cite{beckXLSTMExtendedLong2024}}] Returns to the
+    LSTM of \cref{eq:dl-lstm} and fixes what limited it: exponential gating and
+    a matrix-valued memory in place of the scalar cell state, with a
+    parallelisable variant. Notably from Hochreiter's group --- the same
+    lineage, thirty years on.
+  \item[Titans\textsuperscript{\cite{behrouzTitansLearningMemorize2025}}] Adds
+    a neural long-term memory module that is \emph{updated at inference time},
+    letting the model write to memory rather than only read context.
+\end{description}
+
+\begin{table}[htbp]
+\centering
+\caption{Sequence-mixing architectures compared. $n$ is sequence length, $d$
+the model dimension, $s$ the state size. The two columns that decide
+deployment are inference state and exact recall --- and they trade against each
+other.}
+\label{tab:dl-sequence-architectures}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.15\textwidth] Q[c,0.13\textwidth] Q[c,0.13\textwidth]
+           Q[c,0.13\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Architecture & Training & Per token & State & Character \\
+Transformer & $O(n^2 d)$ & $O(nd)$ & $O(nd)$ & Exact recall; cost grows with
+  context \\
+Mamba (SSM) & $O(nds)$ & $O(ds)$ & $O(ds)$ & Linear; selective state \\
+RWKV & $O(nd)$ & $O(d)$ & $O(d)$ & RNN inference, parallel training \\
+RetNet & $O(nd)$ & $O(d)$ & $O(d)$ & Three equivalent computational forms \\
+xLSTM & $O(nd)$ & $O(d)$ & $O(d^2)$ & Matrix memory; gated \\
+Hybrid (Jamba) & mixed & mixed & $O(nd)$ & Interleaves attention layers to
+  restore recall \\
+\end{tblr}
+\end{table}
+
+\begin{cautionbox}[Read this table with two cautions]
+\textbf{Complexity is not speed.} A lower asymptotic cost says nothing about
+wall-clock performance at the sizes you will actually run. Memory traffic,
+cache behaviour, and how well an operation maps onto SIMD hardware routinely
+dominate --- which is the whole point of
+\cref{tab:dl-operation-energy}. FlashAttention is still $O(n^2)$ and still
+beat the alternatives it replaced.
+
+\textbf{And this table will date.} The field is moving quickly; entries will be
+superseded and models named here may vanish. What is durable is the axis: a
+fixed-size state buys linear cost and loses exact recall, and every row is a
+position on that trade rather than a winner.
+\end{cautionbox}
 
 \subsection{Cheaper Attention, Without Replacing It}
 
@@ -2496,6 +2731,51 @@ Using the key--value cache calculation, work out the maximum batch size that
 fits in $16\,\text{GB}$ of memory at a $8{,}192$-token context, ignoring
 weights. Then state which single architectural change would double it.
 \end{checkpoint}
+
+\begin{v3topic}{Where the Floating Point Lives}
+Once the whole architecture is on the table, it becomes possible to ask a
+precise question: which parts genuinely need floating-point arithmetic? The
+answer has changed
+recently\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+
+\begin{table}[htbp]
+\centering
+\caption{Floating-point dependency of each Transformer component. The right
+column is the one that has moved: components long assumed to need floating
+point now have demonstrated integer-only implementations.}
+\label{tab:dl-fp-dependency}
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[l,0.22\textwidth] Q[c,0.13\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+Component & Needs FP? & Integer-only route \\
+Embedding lookup & no & A table read; already just a memory access \\
+Q/K/V projections & no & Ternary or low-bit weights with integer
+  accumulation\textsuperscript{\cite{maEra1bitLLMs2024}} \\
+Attention scores & no & Integer matrix multiply with a shared scale \\
+Softmax & \emph{was yes} & Polynomial or shift-based
+  approximation\textsuperscript{\cite{kimIBERTIntegeronlyBERT2021}}, or
+  softmax-free attention \\
+Layer normalisation & \emph{was yes} & Integer mean and variance; the square
+  root by iterative shift-and-add \\
+Feed-forward block & no & Quantised weights; activation by lookup table \\
+Output head & no & Integer projection; the final $\arg\max$ needs no
+  normalisation \\
+\end{tblr}
+\end{table}
+
+\begin{engineernote}
+The interesting shift is in the two middle rows. Softmax and layer
+normalisation were the standard reasons given for why a Transformer could not
+be integer-only: one needs exponentials, the other a square root and a
+division. Both now have demonstrated integer implementations, so the open
+question is no longer feasibility of any single component but the
+\emph{accumulated} accuracy cost of combining all of them at scale, and whether
+the resulting kernels actually run faster on the hardware you have. Judge such
+claims by measured end-to-end latency and quality, never by operation counts.
+\end{engineernote}
+\end{v3topic}
 
 \chapterreview{Represent}{Differentiate}{Optimise}{Scale}
 
