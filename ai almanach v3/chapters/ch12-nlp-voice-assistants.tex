@@ -50,10 +50,16 @@ failures stop being numerical and start being linguistic and social.
 
 \section{Natural Language Processing Foundations}
 
-\begin{v3topic}{From Pixels to Words: Why Language Is Harder}
+\subsection{From Pixels to Words: Why Language Is Harder}
+
+\begin{v3topic}{}
 It is worth being explicit about why language needed different machinery from
 the image problems of \cref{ch:computer-vision}, because each difference forces
-a specific architectural choice\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+a specific architectural choice --- and together they amount to a derivation of
+the architecture that answered
+them\textsuperscript{\cite{sutskeverSequenceSequenceLearning2014},
+\cite{bahdanauNeuralMachineTranslation2015},
+\cite{vaswaniAttentionAllYou2023}}.
 
 \begin{table}[htbp]
 \centering
@@ -826,6 +832,142 @@ words, the language model how plausible the word sequence is on its own.}
 \section{Large Language Models and Generative AI}
 
 % ---- 12.4.1 Pre-training and Fine-tuning ----------------------------------------------------
+\subsection{Autoregressive Generation: One Token at a Time}
+\label{sec:nlp-autoregressive-generation}
+
+\Cref{ch:deep-learning} built the Transformer, and the sections above turned
+text into tokens and tokens into vectors. One step is still missing, and it is
+the one that turns all of that into a system that \emph{writes}: how a stack of
+matrices becomes a stream of words.
+
+\begin{v3topic}{From the Final Vector to the Next Token}
+After the last Transformer block, each position holds a $d$-dimensional vector.
+The \keyterm{output head} --- a single matrix of shape $d \times V$ --- projects
+the vector at the \emph{final} position into one score per vocabulary entry:
+\begin{equation}
+  \mathbf{z} = W_{\text{vocab}}\,\mathbf{h}_T \in \mathbb{R}^{V},
+  \qquad
+  p = \mathrm{softmax}(\mathbf{z}) .
+  \label{eq:nlp-output-head}
+\end{equation}
+\where{$\mathbf{h}_T$ is the final-layer vector at the last position, $V$ the
+vocabulary size, and $\mathbf{z}$ the vector of \keyterm{logits} --- one raw
+score per possible next token. Many models \emph{tie} $W_{\text{vocab}}$ to the
+embedding table, reusing the same weights and paying for them once.}
+
+The loop is then: pick a token from $p$, append it to the input, and run the
+whole model again. That is the entire generation algorithm.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=5mm,
+  bx/.style={draw=AlmanachTeal,fill=AlmanachMist,rounded corners=1mm,
+    minimum height=8mm,minimum width=20mm,font=\sffamily\scriptsize,
+    align=center},
+  pick/.style={bx,fill=AlmanachOchre!22,draw=AlmanachOchre},
+  arr/.style={-{Stealth[length=1.7mm]},thick,draw=AlmanachInk!55},
+  lbl/.style={font=\sffamily\scriptsize,color=AlmanachInk!70}]
+  \node[bx] (ctx) {tokens so far};
+  \node[bx,right=of ctx] (model) {Transformer\\stack};
+  \node[bx,right=of model] (head) {output head\\\scriptsize $d\to V$};
+  \node[bx,right=of head] (soft) {softmax};
+  \node[pick,right=of soft] (samp) {sample};
+  \draw[arr] (ctx) -- (model); \draw[arr] (model) -- (head);
+  \draw[arr] (head) -- (soft); \draw[arr] (soft) -- (samp);
+  \draw[arr,draw=AlmanachOchre] (samp.south) -- ++(0,-7mm) -| (ctx.south)
+    node[near start,below,lbl,color=AlmanachOchre]
+    {append the chosen token, then run the whole model again};
+\end{tikzpicture}
+\caption{The generation loop. Every token costs one full forward pass through
+every layer, which is why generation is irreducibly sequential and why the
+key--value cache of \cref{ch:deep-learning} exists --- it avoids recomputing the
+history, but it cannot remove the loop.}
+\label{fig:nlp-generation-loop}
+\end{figure}
+
+\begin{cautionbox}[Why the model may not look ahead]
+During training the model sees whole sequences at once, which would let
+position $t$ attend to position $t+1$ and read the answer it is being asked to
+predict. The \keyterm{causal mask} prevents this by setting every score above
+the diagonal to $-\infty$ \emph{before} the softmax, so those weights become
+exactly zero (\cref{fig:dl-attention-matrix}).
+
+Two consequences worth holding on to. Masking before rather than after the
+softmax is what makes the remaining weights sum to one over the permitted
+positions only --- masking afterwards would leave them normalised over
+positions that were then discarded. And the mask is why a decoder can be
+trained on all positions in parallel while still only ever being generated one
+token at a time: training is parallel, inference is not.
+\end{cautionbox}
+\end{v3topic}
+
+\begin{v3topic}{Choosing the Next Token}
+The distribution $p$ does not decide anything on its own --- a \keyterm{decoding
+strategy} does, and it is a genuine engineering choice with a large effect on
+output.
+
+\begin{workedexample}[Temperature, top-$k$, and top-$p$ on the same logits]
+Five candidate tokens with logits $\mathbf{z} = (3.0,\ 2.0,\ 1.0,\ 0.5,\ 0.0)$.
+
+\emph{Plain softmax} ($T=1$): exponentials $20.09,\ 7.39,\ 2.72,\ 1.65,\ 1.00$
+sum to $32.84$, giving
+\[
+  p = (0.612,\ 0.225,\ 0.083,\ 0.050,\ 0.031).
+\]
+
+\emph{Temperature} divides the logits by $T$ before the softmax:
+\[
+\begin{aligned}
+  T = 0.5:\quad & p = (0.860,\ 0.116,\ 0.016,\ 0.006,\ 0.002)
+    &&\text{sharper --- nearly deterministic},\\
+  T = 2.0:\quad & p = (0.403,\ 0.244,\ 0.148,\ 0.115,\ 0.090)
+    &&\text{flatter --- more adventurous}.
+\end{aligned}
+\]
+$T\to0$ approaches always picking the top token; $T\to\infty$ approaches
+uniform noise.
+
+\emph{Top-$k$} keeps the $k$ highest and renormalises. With $k=2$ at $T=1$, the
+surviving mass is $0.612+0.225 = 0.837$, so
+\[
+  p' = (0.731,\ 0.269).
+\]
+
+\emph{Top-$p$} (nucleus) keeps the smallest set whose cumulative probability
+reaches $p$. With $p = 0.9$: the running total is
+$0.612 \to 0.837 \to 0.919$, so three tokens are kept and renormalised by
+$0.919$:
+\[
+  p' = (0.665,\ 0.245,\ 0.090).
+\]
+
+\emph{The difference that matters.} Top-$k$ always keeps exactly $k$ candidates
+--- including when the model is certain, where it forces three bad options to
+stay in play, and when the model is genuinely uncertain, where it may cut off
+good ones. Top-$p$ adapts: it keeps few candidates when the distribution is
+peaked and many when it is flat. That is why nucleus sampling is the usual
+default, and why quoting a temperature without the truncation method describes
+only half the decoder.
+\end{workedexample}
+
+\begin{engineernote}
+Set the decoder from the task, not from a default. Extraction, classification,
+and code that must compile want greedy decoding or a very low temperature ---
+reproducibility is worth more than variety, and greedy decoding is the only
+setting that is deterministic. Open-ended writing wants nucleus sampling around
+$T \approx 0.7$--$1.0$. And when you report an evaluation result, report the
+decoding settings with it: the same model at $T = 0$ and $T = 1$ is, for
+measurement purposes, two different systems.
+\end{engineernote}
+\end{v3topic}
+
+\begin{checkpoint}
+A model generates a $500$-token answer from a $2{,}000$-token prompt. State how
+many forward passes through the full stack are required, why the key--value
+cache does not reduce that number, and what it does reduce instead.
+\end{checkpoint}
+
 \subsection{Pre-training and Fine-tuning}
 
 

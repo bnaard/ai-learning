@@ -212,6 +212,74 @@ Trust, law, operations, applications, and evidence limitations \\
 \end{tblr}
 \end{table}
 
+\section*{The LLM path, step by step}
+
+The route table above is coarse. Because ``how does a large language model
+actually work?'' is the question readers most often arrive with, here is that
+one route at section level, in the order that builds understanding rather than
+the order the chapters happen to fall in.
+
+The material is deliberately split: the \emph{mechanisms} live in the deep
+learning chapter, because they are not specific to language, and the
+\emph{language} chapters put them to work. Read across the two in this
+sequence.
+
+\begingroup
+\small
+\noindent
+\begin{tblr}{
+  width=\textwidth,
+  colspec={Q[c,0.045\textwidth] Q[l,0.15\textwidth] X[l]},
+  row{1}={font=\bfseries,bg=AlmanachMist},
+  hlines,vlines}
+\# & Read & The question it answers \\
+1 & \S2.2--2.4 & What is a vector, a matrix, a gradient? Only needed if the
+  notation is unfamiliar; the chain rule in \S2.4.2 is the one that matters
+  later \\
+2 & \S6.1--6.3 & What is a neuron, why must it be nonlinear, and what is a
+  layer? \\
+3 & \S6.4 & What does ``training'' actually do? Backpropagation as bookkeeping \\
+4 & \S6.5 & Why do deep stacks need normalisation and residual connections? \\
+5 & \S11.1.1 & Why is language harder than images --- and what does each
+  difficulty force the architecture to provide? \\
+6 & \S11.1.4 & How does text become numbers? Tokenisation and byte-pair
+  encoding \\
+7 & \S11.2.1 & How do tokens become meaning? Embeddings, why the dimensions
+  must be many, and how attention composes a word from fragments \\
+8 & \S6.9.1--6.9.2 & The central mechanism: scaled dot-product attention,
+  computed by hand, and why several heads \\
+9 & \S6.9.3--6.9.4 & How is order encoded, and what is a full Transformer
+  block? \\
+10 & \S6.10.3 & The feed-forward block --- two thirds of all the parameters \\
+11 & \S11.4.1 & How does the model actually \emph{write}? The output head, the
+  causal mask, and the decoding strategy \\
+12 & \S6.10.2 & Where does the weight live? The parameter budget of a real
+  model \\
+13 & \S6.10.1 & What do these operations cost, and why is memory the wall? \\
+14 & \S6.10.4--6.10.6 & How is this being made cheaper? Mixture of experts,
+  state-space models, and the alternatives \\
+15 & \S11.4.2--11.4.5 & What is built on top? Pre-training, fine-tuning,
+  prompting, retrieval \\
+16 & \Cref{ch:practical-llm-engineering} & Take a real 135M-parameter
+  checkpoint apart, adapt it, and measure it \\
+\end{tblr}
+\captionof{table}{A reading path to understanding large language models.
+Each step answers one question and depends only on the steps above it.}
+\label{tab:frontmatter-llm-path}
+\endgroup
+\medskip
+
+\begin{didacticnote}[Where the path deliberately doubles back]
+Steps~8 to~10 send you back into the deep learning chapter after the language
+chapter has motivated the problem. That is intentional. Attention is a general
+sequence-mixing mechanism, not a language mechanism, and it is used for vision
+and audio in this book too --- so it is developed once, where it belongs, and
+referenced from everywhere it is applied. If you would rather read
+uninterrupted, take steps~1--4 and~8--10 first as a block, then the language
+steps; you will meet attention before you know why you need it, which is the
+trade the other ordering makes.
+\end{didacticnote}
+
 \section*{A repeated learning sequence}
 
 The sequence below makes the reasoning visible and exposes missing evidence.

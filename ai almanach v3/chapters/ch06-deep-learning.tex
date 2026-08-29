@@ -1876,7 +1876,8 @@ compose, which is why recent architectures combine them.}
 Every efficiency argument in this section rests on a hardware fact that is
 rarely stated: the operations a network performs differ in cost by four orders
 of magnitude, and the most expensive one is not arithmetic at
-all\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+all\textsuperscript{\cite{horowitzComputingsEnergyProblem2014},
+\cite{fogInstructionTables2026}}.
 
 \begin{table}[htbp]
 \centering
@@ -1956,7 +1957,9 @@ vocabulary size; the second term covers the input embedding table and the
 output head, which some models tie together and so pay for only once.}
 
 \begin{workedexample}[The parameter budget of a 7-billion-parameter model]
-Take $d = 4{,}096$, $N = 32$ layers, $V = 32{,}000$, untied embeddings. Since
+Take the dimensions of a widely documented 7-billion-parameter model ---
+$d = 4{,}096$, $N = 32$ layers, $V = 32{,}000$, untied
+embeddings\textsuperscript{\cite{touvronLlama2Open2023}}. Since
 $d^2 = 16{,}777{,}216$, each single $d\times d$ matrix costs
 $32 \times d^2 = 536.9$M parameters across all layers.
 
@@ -2181,8 +2184,7 @@ benchmark that includes long-context retrieval.
 \subsection{The Wider Field of Sequence Mixers}
 
 Mamba is the best known of a family of architectures that abandon quadratic
-attention, and it helps to see them
-together\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+attention, and it helps to see them together.
 
 \begin{description}
   \item[RWKV\textsuperscript{\cite{pengRWKVReinventingRNNs2023}}] Reformulates
@@ -2736,7 +2738,9 @@ weights. Then state which single architectural change would double it.
 Once the whole architecture is on the table, it becomes possible to ask a
 precise question: which parts genuinely need floating-point arithmetic? The
 answer has changed
-recently\textsuperscript{\cite{gerlachBeyondMultiplyAccumulate2026}}.
+recently\textsuperscript{\cite{kimIBERTIntegeronlyBERT2021},
+\cite{liIViTIntegeronlyQuantization2023},
+\cite{maEra1bitLLMs2024}}.
 
 \begin{table}[htbp]
 \centering
@@ -2758,7 +2762,7 @@ Softmax & \emph{was yes} & Polynomial or shift-based
   approximation\textsuperscript{\cite{kimIBERTIntegeronlyBERT2021}}, or
   softmax-free attention \\
 Layer normalisation & \emph{was yes} & Integer mean and variance; the square
-  root by iterative shift-and-add \\
+  root by iterative shift-and-add\textsuperscript{\cite{liIViTIntegeronlyQuantization2023}} \\
 Feed-forward block & no & Quantised weights; activation by lookup table \\
 Output head & no & Integer projection; the final $\arg\max$ needs no
   normalisation \\
